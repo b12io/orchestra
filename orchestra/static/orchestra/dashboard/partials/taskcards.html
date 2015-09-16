@@ -1,0 +1,18 @@
+<h4 ng-show="taskcards.label">{{taskcards.label}}</h5>
+<div class="task-cards">
+  <div ng-repeat="task in taskcards.tasks">
+    <div ng-class="{'col-lg-3': taskcards.flowable}"
+         title="{{task.detail}}">
+      <div class="task-card-wrapper">
+        <a href="/orchestra/app/task/{{task.id}}">
+          <div class="task-card">
+            <div class="task-type">
+              <h5>{{task.step}}</h5>
+            </div>
+            <h6 class="task-detail">{{task.detail}}</h6>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

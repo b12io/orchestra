@@ -1,0 +1,3 @@
+Welcome to Orchestra! Please follow this link to activate your Orchestra account:
+
+http://{{ site.domain }}{% url 'registration_activate' activation_key %}

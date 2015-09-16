@@ -1,0 +1,33 @@
+from django.test.utils import override_settings
+from unittest.mock import patch
+from orchestra.tests.helpers import OrchestraTestCase
+from orchestra.tests.helpers.fixtures import setup_models
+from orchestra.utils.machine_step_scheduler import (
+    AsynchronousMachineStepScheduler)
+from orchestra.utils.machine_step_scheduler import MachineStepScheduler
+
+
+class MachineStepSchedulerTestCase(OrchestraTestCase):
+
+    def setUp(self):
+        super(MachineStepSchedulerTestCase, self).setUp()
+        setup_models(self)
+
+    def test_machine_step_schedule(self):
+        scheduler = MachineStepScheduler()
+        with self.assertRaises(NotImplementedError):
+            scheduler.schedule(1, '')
+
+    @patch('orchestra.utils.machine_step_scheduler.SynchronousMachineStepScheduler.schedule')  # noqa
+    def test_asynchronous_scheduler(self, mock_schedule):
+        scheduler = AsynchronousMachineStepScheduler()
+        scheduler.schedule(1, 'step1')
+        mock_schedule.assert_called_once_with(1, 'step1')
+
+    @patch('orchestra.utils.machine_step_scheduler.schedule_function')
+    @override_settings(PRODUCTION=True, WORK_QUEUE=None)
+    def test_asynchronous_scheduler_prod(self, mock_schedule):
+        scheduler = AsynchronousMachineStepScheduler()
+        scheduler.schedule(1, 'step1')
+        mock_schedule.assert_called_once_with(None, 'machine_task_executor', 1,
+                                              'step1')

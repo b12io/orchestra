@@ -1,0 +1,170 @@
+<section class="wrapper task-view">
+
+
+<script type="text/ng-template" id="submit_task_modal.html">
+  <div class="modal-header">
+    <h3 class="modal-title">{{command | capitalize}} Confirmation</h3>
+  </div>
+  <div class="modal-body modal-confirm-body">
+    <div class="modal-confirm-text">
+      <div class="time-question">
+        Approximately how much time did you spend on <strong>this iteration</strong> of the task?
+      </div>
+        <div class="time-summary">
+          <span class="time-report form-inline input-group-sm">
+            <span class="time-unit-group">
+              <input type="text"
+                     class="form-control"
+                     id="current-time-hours"
+                     ng-model="currentIterationHours">
+                     <span class="time-unit"> hours</span>
+            </span>
+            <span class="time-unit-group">
+              <input type="text"
+                     class="form-control"
+                     id="current-time-minutes"
+                     ng-model="currentIterationMinutes">
+                     <span class="time-unit"> mins</span>
+            </span>
+          </span>
+        </div>
+        <div class="time-error-message" ng-bind="secondsErrorMessage"></div>
+        <div class="time-summary">
+          <span class="time-label">Total time so far</span>
+          <span class="time-report">
+            <span class="time-unit-group">
+              <span class="time-value-float">
+                <span class="time-value" ng-bind="totalPreviousHoursMinutes()[0]"></span>
+              </span>
+              <span class="time-unit"> hours</span>
+            </span>
+            <span class="time-unit-group">
+              <span class="time-value-float">
+                <span class="time-value" ng-bind="totalPreviousHoursMinutes()[1]"></span>
+              </span>
+              <span class="time-unit"> mins</span>
+            </span>
+          </span>
+        </div>
+        <hr />
+        <div class="time-summary">
+          <span class="time-label">Total time on task</span>
+          <span class="time-report">
+            <span class="time-unit-group">
+              <span class="time-value-float">
+                <span class="time-value" ng-bind="totalHoursMinutes()[0]"></span>
+              </span>
+              <span class="time-unit"> hours</span>
+            </span>
+            <span class="time-unit-group">
+              <span class="time-value-float">
+                <span class="time-value" ng-bind="totalHoursMinutes()[1]"></span>
+              </span>
+              <span class="time-unit"> mins</span>
+            </span>
+          </span>
+        </div>
+    </div>
+    <div class="pull-center">
+      <button class="btn btn-primary" ng-disabled="secondsErrorMessage !== null" ng-click="submit()">{{command | capitalize}}</button>
+      <button class="btn btn-default" ng-click="cancel()">Cancel</button>
+    </div>
+  </div>
+</script>
+
+
+<nav class="topbar-overview" ng-class="{'reviewer-topbar': vm.is_reviewer}">
+    <div class="topbar-leader">
+      <div class="project-overview">
+        <div class="workflow">{{ vm.taskAssignment.workflow.name}}</div>
+        {{ vm.taskAssignment.project.details}}
+      </div>
+      <div class="arrow-wrapper">
+        <div class="arrow-with-shadow"></div>
+      </div>
+    </div>
+    <div class="topbar-follower">
+      <div class="task-overview">
+        {{ vm.taskAssignment.step.name}}
+        <span ng-if="vm.is_reviewer">
+              Review
+        </span>
+      </div>
+    </div>
+</nav>
+
+<div class="fixed-infobox-outer" ng-if="vm.is_read_only">
+  <div class="fixed-infobox bg-info">
+    This task is in view-only mode. You cannot edit or review it at this time.
+  </div>
+</div>
+
+<div class="fixed-infobox-outer" ng-if="vm.saveError">
+  <div class="fixed-infobox btn-danger">
+    Error saving task. Trying again...
+  </div>
+</div>
+
+<div class="step-interface">
+  <div ng-if="vm.taskAssignment.project.project_data.project_folder_id">
+    <website-iframe title="Project Drive Folder"
+                    id="project-drive-folder"
+                    description="Resources for the project should be stored here. Open the folder in a new window and add it to your drive if you need to upload anything new!"
+                    iframe-url="{{vm.projectFolderEmbedUrl}}"
+                    external-url="{{vm.projectFolderExternalUrl}}">
+    </website-iframe>
+  </div>
+  <!-- Dynamically load the appropriate task interface based on the task's Step -->
+  <div ng-if="vm.taskAssignment.task.status !== 'Post-review Processing'"
+       dynamic-load="vm.angularDirective"></div>
+
+  <div dynamic-load="vm.teamMessagesDirective"></div>
+
+  <div ng-if="vm.taskAssignment.task.status === 'Post-review Processing'"
+       dynamic-load="vm.angularDirective"></div>
+</div>
+
+<section class="task-actions-wrapper">
+  <div class="task-actions">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+          <button ng-if="!vm.is_reviewer"
+                  type="button"
+                  class="btn btn-primary navbar-btn"
+                  ng-click="vm.submitTask('submit')"
+                  ng-disabled="vm.is_read_only || vm.saving || vm.submitting">
+            Submit
+          </button>
+          <button ng-if="vm.is_reviewer"
+                  type="button"
+                  class="btn btn-primary navbar-btn"
+                  ng-click="vm.submitTask('accept')"
+                  ng-disabled="vm.is_read_only || vm.saving || vm.submitting">
+            Accept
+          </button>
+          <button ng-if="vm.is_reviewer"
+                  type="button"
+                  class="btn btn-default navbar-btn"
+                  ng-click="vm.submitTask('reject')"
+                  ng-disabled="vm.is_read_only || vm.saving || vm.submitting">
+            Reject
+          </button>
+          <button type="button"
+                  class="btn btn-default navbar-btn"
+                  ng-click="vm.saveTask()"
+                  ng-disabled="vm.is_read_only || vm.saving || vm.submitting">
+            Save
+          </button>
+          <div class="save-message">
+            <div ng-show="vm.saving">Saving...</div>
+            <div ng-show="vm.lastSaved && !vm.saving">Saved at {{ vm.lastSaved | date:'mediumTime' }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+</section><!--/wrapper -->

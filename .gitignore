@@ -1,0 +1,24 @@
+# Byte-compiled / optimized / DLL files
+*.py[cod]
+*~
+__pycache__/
+
+# Sqlite
+*.sqlite3
+
+# Mac related
+.DS_Store
+
+# Emacs temp files
+[#]*[#]
+.\#*
+
+# Coverage data
+coverage_annotations/
+.coverage
+
+# Database backups data
+backup.sql
+
+# Compressed staticfiles
+/orchestra/staticfiles

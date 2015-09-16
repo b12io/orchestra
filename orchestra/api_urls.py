@@ -1,0 +1,53 @@
+from django.conf.urls import patterns
+from django.conf.urls import url
+from orchestra.views import dashboard_tasks
+from orchestra.views import new_task_assignment
+from orchestra.views import save_task_assignment
+from orchestra.views import status
+from orchestra.views import submit_task_assignment
+from orchestra.views import task_assignment_information
+from orchestra.views import upload_image
+from orchestra.project_api.views import create_project
+from orchestra.project_api.views import workflow_types
+from orchestra.project_api.views import project_details_url
+from orchestra.project_api.views import project_information
+
+
+urlpatterns = patterns(
+    '',
+    # Interface API
+    url(r'^interface/dashboard_tasks/$',
+        dashboard_tasks, name='dashboard_tasks'),
+    url(r'^interface/task_assignment_information/$',
+        task_assignment_information,
+        name='task_assignment_information'),
+    url(r'^interface/save_task_assignment/$',
+        save_task_assignment,
+        name='save_task_assignment'),
+    url(r'^interface/submit_task_assignment/$',
+        submit_task_assignment,
+        name='submit_task_assignment'),
+    url(r'^interface/new_task_assignment/(?P<task_type>\w+)/$',
+        new_task_assignment,
+        name='new_task_assignment'),
+    url(r'^interface/upload_image/$',
+        upload_image,
+        name='upload_image'),
+
+    # Client API
+    url(r'^project/project_information/$',
+        project_information,
+        name='project_information'),
+    url(r'^project/create_project/$',
+        create_project,
+        name='create_project'),
+    url(r'^project/workflow_types/$',
+        workflow_types,
+        name='workflow_types'),
+    url(r'^project/project_details_url/$',
+        project_details_url,
+        name='project_details_url'),
+    url(r'^status/$',
+        status,
+        name='status'),
+)
