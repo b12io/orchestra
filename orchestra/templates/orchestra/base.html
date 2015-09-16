@@ -1,0 +1,81 @@
+{% load compress %}
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en" ng-app="orchestra">
+  <head>
+    <base href="/orchestra/app/">
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="Dashboard">
+    <meta name="keyword" content="Dashboard, Bootstrap, Admin, Template, Theme, Responsive, Fluid, Retina">
+
+    <title data-ng-bind="title">{% block title %}{% endblock %} - Orchestra</title>
+
+    {% compress css %}
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="{% static 'orchestra/common/css/lib/bootstrap.css' %}">
+    <!--external css-->
+    <link rel="stylesheet" href="{% static 'orchestra/common/font-awesome/css/font-awesome.css' %}" />
+
+    <!-- Custom styles for this template -->
+    <link rel="stylesheet" href="{% static 'orchestra/common/css/lib/style.css' %}">
+    <link rel="stylesheet" href="{% static 'orchestra/common/css/lib/style-responsive.css' %}">
+    <link rel="stylesheet" type="text/x-scss" href="{% static 'orchestra/common/css/orchestra.scss' %}">
+    {% endcompress %}
+
+    {% block page_stylesheets %}
+    {% endblock page_stylesheets %}
+
+    {% block header %}
+    {% endblock %}
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+  <section id="container" >
+    <!--header start-->
+    <header class="header">
+        <!--logo start-->
+        <a href="/orchestra/app/" class="logo">
+          <i class="fa fa-random"></i>
+          <b>Orchestra</b>
+        </a>
+        <!--logo end-->
+        {% block topbar %}
+        {% endblock %}
+        <div class="top-menu">
+        </div>
+    </header>
+    <!--header end-->
+
+    <!-- MAIN SIDEBAR MENU -->
+    {% block sidebar %}
+    {% endblock %}
+
+    <!-- MAIN CONTENT -->
+    {% block main %}
+    {% endblock %}
+
+    <!-- js placed at the end of the document so the pages load faster -->
+    {% compress js %}
+    <script src="{% static "orchestra/common/js/lib/jquery.js" %}"></script>
+    <script src="{% static "orchestra/common/js/lib/bootstrap.min.js" %}"></script>
+    <script src="{% static "orchestra/common/js/lib/jquery-ui-1.9.2.custom.min.js" %}"></script>
+    <script src="{% static "orchestra/common/js/lib/jquery.ui.touch-punch.min.js" %}"></script>
+    <script class="include" type="text/javascript" src="{% static "orchestra/common/js/lib/jquery.dcjqaccordion.2.7.js" %}"></script>
+    {% endcompress js %}
+
+    <!--script for this page-->
+    {% block page_javascript %}
+    {% endblock page_javascript %}
+
+  </body>
+</html>

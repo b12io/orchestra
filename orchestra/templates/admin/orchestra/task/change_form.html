@@ -1,0 +1,27 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls %}
+{% block inline_field_sets %}
+    {{ block.super }}
+    {% if assignment_history %}
+        <fieldset class="module aligned">
+            <div class="form-row">
+                <h2>Task History</h2>
+                {% for assignment in assignment_history %}
+                    <div>
+                        <h3>
+                            Assignment {{ assignment.assignment_counter }}:
+                            {% if assignment.worker %}
+                                {{ assignment.worker.user.username }}
+                            {% else %}
+                                machine
+                            {% endif %}
+                            {% if assignment == current_assignment %}
+                                <strong>(current)</strong>
+                            {% endif %}
+                        </h3>
+                    </div>
+                {% endfor %}
+            </div>
+        </fieldset>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends 'registration/registration_base.html' %}
+
+{% block registration_block %}
+    <input type="text" class="form-control" placeholder="Username"
+           id="id_username" maxlength="30" name="username"
+           value="{% firstof form.username.value '' %}" autofocus>
+    <div class="error-field"> {{ form.username.errors.0 }} </div>
+    <br>
+    <input type="text" class="form-control" placeholder="E-mail"
+           id="id_email" maxlength="30" name="email"
+           value="{% firstof form.email.value '' %}" autofocus>
+    <div class="error-field"> {{ form.email.errors.0 }} </div>
+    <br>
+    <input type="password" class="form-control" placeholder="Password"
+           id="id_password1" name="password1"
+           value="{% firstof form.password1.value '' %}">
+    <div class="error-field"> {{ form.password1.errors.0 }} </div>
+    <br>
+    <input type="password" class="form-control" placeholder="Confirm password"
+           id="id_password2" name="password2"
+           value="{% firstof form.password2.value '' %}">
+    <div class="error-field"> {{ form.password2.errors.0 }} </div>
+    <br>
+    <div class="error-non-field"> {{ form.non_field_errors.0 }} </div>
+    <button class="btn btn-block btn-primary" type="submit"><i class="fa fa-lock"></i> CREATE AN ACCOUNT</button>
+    <hr>
+    <div class="registration">
+        <a href="{% url 'auth_login' %}">Sign in</a>
+    </div>
+    <div class="registration">
+        <a href="{% url 'auth_password_reset' %}">Forgot your password?</a>
+    </div>
+{% endblock registration_block %}
+

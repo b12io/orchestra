@@ -1,0 +1,15 @@
+.object-tools [data-tool-name="end_project_admin"] {
+    margin-right: 10px;
+}
+
+.object-tools [data-tool-name="end_project_admin"] a {
+    background: #AA0000 !important;
+    color: white !important;
+    border: solid 1px #AA0000 !important;
+    box-shadow: none !important;
+}
+
+.object-tools [data-tool-name="end_project_admin"] a:hover {
+    background: #CC0000 !important;
+    color: white !important;
+}

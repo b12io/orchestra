@@ -1,0 +1,17 @@
+{% extends 'orchestra/base.html' %}
+{% load staticfiles %}
+
+
+{% block main %}
+<div id="login-page">
+    <div class="container">
+        <form class="form-login" method="POST">
+            {% csrf_token %}
+            <div class="login-wrap">
+              {% block registration_block %}
+              {% endblock registration_block %}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

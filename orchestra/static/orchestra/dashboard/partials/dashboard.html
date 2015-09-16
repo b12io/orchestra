@@ -1,0 +1,76 @@
+<section class="wrapper site-min-height">
+  <section class="section-panel tasks-section">
+    <div class="container-fluid">
+      <div class="row section-header">
+        <div class="col-lg-12">
+          <h3>
+            Active Tasks ({{ vm.numActiveTasks() }})
+            <!-- New entry-level task button -->
+            <button type="button"
+                    ng-click="vm.newTask('entry_level')"
+                    ng-class="{'disabled': vm.preventNewTasks ||
+                                           vm.noTaskTimer}"
+                    class="btn btn-primary btn-new-entry-task">
+              New delivery task
+            </button>
+            <!-- New review task button -->
+            <button type="button"
+                    ng-if="vm.reviewerStatus"
+                    ng-click="vm.newTask('reviewer')"
+                    ng-class="{'disabled': vm.preventNewTasks ||
+                                           vm.noTaskTimer}"
+                    class="btn btn-primary btn-new-review-task">
+              New review task
+            </button>
+            <span class="warning-message"
+                  ng-show="vm.new_tasks===0 && !vm.preventNewTasks">
+              No tasks available at the moment
+            </span>
+            <i class="fa fa-spinner fa-spin" ng-show="vm.waiting"></i>
+          </h3>
+        </div>
+      </div>
+      <div class="row padded active-tasks">
+        <div class="col-lg-3 col-md-3 col-task">
+          <div taskcards="{tasks: vm.tasks.in_progress, label: 'In progress'}"
+               class="task-cards-wrapper">
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-3 col-task col-waiting">
+          <div taskcards="{tasks: vm.tasks.pending_review, label: 'Pending review'}"
+               class="task-cards-wrapper">
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-3 col-task">
+          <div taskcards="{tasks: vm.tasks.returned, label: 'Returned from reviewer'}"
+               class="task-cards-wrapper">
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-3 col-task col-waiting">
+          <div taskcards="{tasks: vm.tasks.pending_processing, label: 'Pending update'}"
+               class="task-cards-wrapper">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section> <!--/section-panel tasks-section -->
+
+  <section class="section-panel tasks-section">
+    <div class="container-fluid">
+      <div class="row section-header">
+        <div class="col-lg-12">
+          <h3>
+            Completed Tasks ({{ vm.tasks.complete.length || 0 }})
+          </h3>
+        </div>
+      </div>
+      <div class="row completed-tasks">
+        <div class="col-lg-12 col-task">
+          <div class="row">
+            <div taskcards="{tasks: vm.tasks.complete, flowable: true}"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section> <!--/section-panel tasks-section -->
+</section> <!--/wrapper -->

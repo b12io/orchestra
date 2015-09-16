@@ -1,0 +1,27 @@
+{% extends 'registration/registration_base.html' %}
+
+{% block registration_block %}
+    {% if next %}
+        <input type="hidden" name="next" value="{{ next }}" />
+    {% endif %}
+    <input type="text" class="form-control" placeholder="Username"
+           id="id_username" maxlength="254" name="username"
+           value="{% firstof form.username.value '' %}" autofocus>
+    <div class="error-field"> {{ form.username.errors.0 }} </div>
+    <br>
+    <input type="password" class="form-control" placeholder="Password"
+           id="id_password" name="password"
+           value="{% firstof form.password.value '' %}">
+    <div class="error-field"> {{ form.password.errors.0 }} </div>
+    <label class="checkbox">
+        <span class="pull-right">
+            <a href="{% url 'auth_password_reset' %}">Forgot your password?</a>
+        </span>
+    </label>
+    <div class="error-non-field"> {{ form.non_field_errors.0 }} </div>
+    <button class="btn btn-block btn-primary" type="submit"><i class="fa fa-lock"></i> SIGN IN</button>
+    <hr>
+    <div class="registration">
+        <a href="{% url 'registration_register' %}">Create an account</a>
+    </div>
+{% endblock %}

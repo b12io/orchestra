@@ -1,0 +1,54 @@
+class AssignmentPolicyError(Exception):
+    pass
+
+
+class IllegalTaskSubmission(Exception):
+    pass
+
+
+class InvalidSlugValue(Exception):
+    pass
+
+
+class MachineExecutionError(Exception):
+    pass
+
+
+class ModelSaveError(Exception):
+    pass
+
+
+class NoTaskAvailable(Exception):
+    pass
+
+
+class ReviewPolicyError(Exception):
+    pass
+
+
+class S3UploadError(Exception):
+    pass
+
+
+class SlugUniquenessError(Exception):
+    pass
+
+
+class TaskAssignmentError(Exception):
+    pass
+
+
+class TaskDependencyError(Exception):
+    pass
+
+
+class TaskStatusError(Exception):
+    pass
+
+
+class WorkerCertificationError(Exception):
+    pass
+
+
+class SnapshotsError(Exception):
+    pass
