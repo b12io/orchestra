@@ -22,3 +22,4 @@ backup.sql
 
 # Compressed staticfiles
 /orchestra/staticfiles
+example_project/staticfiles
