@@ -15,6 +15,7 @@ from orchestra.google_apps.permissions import read_with_link_permission
 from orchestra.google_apps.permissions import write_with_link_permission
 from orchestra.google_apps.service import Service
 from orchestra.utils.common_regex import image_file_regex
+from orchestra.utils.settings import run_if
 
 
 logger = logging.getLogger(__name__)
@@ -35,6 +36,7 @@ def _get_image_mimetype(response, title):
     return 'image/{}'.format(extension)
 
 
+@run_if('GOOGLE_APPS')
 def add_image(service, folder_id, url):
     """
     Add image to a folder.
@@ -73,6 +75,7 @@ def add_image(service, folder_id, url):
     return google_image
 
 
+@run_if('GOOGLE_APPS')
 def create_media_folder_with_images(parent_id, image_links, folder_name):
     """
     Given a folder name and a list of image links create a new
@@ -98,6 +101,7 @@ def create_media_folder_with_images(parent_id, image_links, folder_name):
             'image_counter': counter}
 
 
+@run_if('GOOGLE_APPS')
 def create_folder_with_permissions(parent_id, folder_name, permissions=None):
     """
     Create drive folder in the specified location with given permissions.
@@ -116,6 +120,7 @@ def create_folder_with_permissions(parent_id, folder_name, permissions=None):
     return folder
 
 
+@run_if('GOOGLE_APPS')
 def create_project_google_folder(project):
     """
     Create drive folder for project information
@@ -133,6 +138,7 @@ def create_project_google_folder(project):
     return folder
 
 
+@run_if('GOOGLE_APPS')
 def create_document_from_template(template_id, name,
                                   parent_ids=None, permissions=None):
     service = Service(settings.GOOGLE_P12_PATH,

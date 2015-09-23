@@ -20,6 +20,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         super(BasicTaskLifeCycleTestCase, self).setUp()
         setup_models(self)
 
+    @override_settings(GOOGLE_APPS=True)
     @patch.object(Service, '_create_drive_service',
                   new=mock_create_drive_service)
     def test_create_project_google_folder(self):

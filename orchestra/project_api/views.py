@@ -49,8 +49,7 @@ def create_project(request):
             task_class = WorkerCertification.TaskClass.REAL
         else:
             task_class = WorkerCertification.TaskClass.TRAINING
-
-        project = create_project_with_tasks(
+        args = (
             project_details['workflow_slug'],
             project_details['description'],
             project_details['priority'],
@@ -58,9 +57,11 @@ def create_project(request):
             project_details['project_data'],
             project_details['review_document_url']
         )
-        return {'project_id': project.id}
     except KeyError:
         raise BadRequest('One of the parameters is missing')
+
+    project = create_project_with_tasks(*args)
+    return {'project_id': project.id}
 
 
 @api_endpoint(['POST'])
