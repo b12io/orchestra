@@ -21,12 +21,12 @@ class SlackService(object):
 def add_worker_to_project_team(worker, project):
     slack = SlackService(settings.SLACK_EXPERTS_API_KEY)
     try:
-        response = slack.groups.invite(project.slack_group_id,
-                                       slack.users.get_user_id(
-                                           worker.slack_username))
-        if not response.body['already_in_group']:
-            welcome_message = ('{} has been added to the team. '
-                               'Welcome aboard!').format(worker.user.username)
+        user_id = slack.users.get_user_id(worker.slack_username)
+        response = slack.groups.invite(project.slack_group_id, user_id)
+        if not response.body.get('already_in_group'):
+            welcome_message = (
+                '<@{}|{}> has been added to the team. '
+                'Welcome aboard!').format(user_id, worker.slack_username)
             slack.chat.post_message(project.slack_group_id, welcome_message)
     except:
         # TODO(jrbotros): for now, using slack on a per-worker basis is
