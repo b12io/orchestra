@@ -1,6 +1,6 @@
+import random
 from datetime import datetime
 from importlib import import_module
-from random import random
 
 from django.conf import settings
 from django.db import transaction
@@ -33,6 +33,17 @@ logger = logging.getLogger(__name__)
 
 
 def _get_latest_task_data(task):
+    """
+    Return latest input data for a specified task.
+
+    Args:
+        task (orchestra.models.Task):
+            The task object for which to retrieve data.
+
+    Returns:
+        latest_data (str):
+            A serialized JSON blob containing the latest input data.
+    """
     active_assignment = (task.assignments
                          .filter(status=TaskAssignment.Status.PROCESSING))
     if active_assignment.exists():
@@ -42,38 +53,100 @@ def _get_latest_task_data(task):
                       .order_by('-assignment_counter').first())
     if not assignment:
         return None
-    return assignment.in_progress_task_data
+
+    latest_data = assignment.in_progress_task_data
+    return latest_data
 
 
 def worker_assigned_to_max_tasks(worker):
+    """
+    Check whether worker is assigned to the maximum number of tasks.
+
+    Args:
+        worker (orchestra.models.Worker):
+            The specified worker object.
+
+    Returns:
+        assigned_to_max_tasks (bool):
+            True if worker is assigned to the maximum number of tasks.
+    """
     # # TODO(jrbotros): allow per-user exception to task limit
     # return (TaskAssignment.objects
     #         .filter(worker=worker,
     #                 status=TaskAssignment.Status.PROCESSING,
     #                 task__status=Task.Status.PROCESSING)
     #         .count()) >= settings.ORCHESTRA_MAX_IN_PROGRESS_TASKS
-    return False
+    assigned_to_max_tasks = False
+    return assigned_to_max_tasks
 
 
 def worker_assigned_to_rejected_task(worker):
-    return (TaskAssignment.objects
-            .filter(worker=worker,
-                    status=TaskAssignment.Status.PROCESSING,
-                    task__status=Task.Status.POST_REVIEW_PROCESSING)
-            .exists())
+    """
+    Check whether worker is assigned to a task that has been rejected.
+
+    Args:
+        worker (orchestra.models.Worker):
+            The specified worker object.
+
+    Returns:
+        assigned_to_rejected_task (bool):
+            True if worker is assigned to a task that has been rejected.
+    """
+    assigned_to_rejected_task = (
+        TaskAssignment.objects
+                      .filter(worker=worker,
+                              status=TaskAssignment.Status.PROCESSING,
+                              task__status=Task.Status.POST_REVIEW_PROCESSING)
+                      .exists()
+    )
+    return assigned_to_rejected_task
 
 
 def worker_has_reviewer_status(worker,
                                task_class=WorkerCertification.TaskClass.REAL):
-    return (WorkerCertification.objects
-                               .filter(worker=worker,
-                                       role=WorkerCertification.Role.REVIEWER,
-                                       task_class=task_class)
-                               .exists())
+    """
+    Check whether worker is a reviewer for any certification for a
+    given task class.
+
+    Args:
+        worker (orchestra.models.Worker):
+            The specified worker object.
+        task_class (orchestra.models.WorkerCertification.TaskClass):
+            The specified task class.
+
+    Returns:
+        has_reviwer_status (bool):
+            True if worker is a reviewer for any certification for a
+            given task class.
+    """
+    has_reviwer_status = (
+        WorkerCertification.objects
+                           .filter(worker=worker,
+                                   role=WorkerCertification.Role.REVIEWER,
+                                   task_class=task_class)
+                           .exists())
+    return has_reviwer_status
 
 
 def _worker_certified_for_task(worker, task, role,
                                task_class=WorkerCertification.TaskClass.REAL):
+    """
+    Check whether worker is certified for a given task, role, and task
+    class.
+
+    Args:
+        worker (orchestra.models.Worker):
+            The specified worker object.
+        task (orchestra.models.Task):
+            The specified task object.
+        task_class (orchestra.models.WorkerCertification.TaskClass):
+            The specified task class.
+
+    Returns:
+        certified_for_task (bool):
+            True if worker is certified for a given task, role, and task
+            class.
+    """
     workflow = get_workflow_by_slug(task.project.workflow_slug)
     step = workflow.get_step(task.step_slug)
 
@@ -85,13 +158,24 @@ def _worker_certified_for_task(worker, task, role,
                 task_class=task_class,
                 certification__slug__in=step.required_certifications)
         .count())
-    return len(step.required_certifications) == match_count
+    certified_for_task = len(step.required_certifications) == match_count
+    return certified_for_task
 
 
 def _role_required_to_assign(task):
     """
     Return the role required to assign or reassign a task, and a flag to
     indicate whether the task requires reassignment.
+
+    Args:
+        task (orchestra.models.Task):
+            The specified task object.
+
+    Returns:
+        required_role (orchestra.models.WorkerCertification.Role):
+            Role required to assign or reassign the task.
+        needs_reassign (bool):
+            True if the task requires reassignment.
     """
     post_review_role = WorkerCertification.Role.ENTRY_LEVEL
     final_role = WorkerCertification.Role.ENTRY_LEVEL
@@ -130,6 +214,23 @@ def assign_task(worker_id, task_id):
     """
     Return a given task after assigning or reassigning it to the specified
     worker.
+
+    Args:
+        worker_id (int):
+            The ID of the worker to be assigned.
+        task_id (int):
+            The ID of the task to be assigned.
+
+    Returns:
+        task (orchestra.models.Task):
+            The newly assigned task.
+
+    Raises:
+        orchestra.core.errors.TaskAssignmentError:
+            The specified worker is already assigned to the given task
+            or the task status is not compatible with new assignment.
+        orchestra.core.errors.WorkerCertificationError:
+            The specified worker is not certified for the given task.
     """
     worker = Worker.objects.get(id=worker_id)
     task = Task.objects.get(id=task_id)
@@ -180,14 +281,20 @@ def assign_task(worker_id, task_id):
 
 def get_task_details(task_id):
     """
-    Get information about the task
+    Return various information about the specified task.
+
+    Args:
+        task_id (int): The ID of the desired task.
+
+    Returns:
+        task_details (dict): Information about the specified task.
     """
     task = Task.objects.get(id=task_id)
     workflow = get_workflow_by_slug(task.project.workflow_slug)
     step = workflow.get_step(task.step_slug)
     prerequisites = previously_completed_task_data(task)
 
-    return {
+    task_details = {
         'workflow': {
             'slug': workflow.slug,
             'name': workflow.name
@@ -205,14 +312,26 @@ def get_task_details(task_id):
         },
         'prerequisites': prerequisites
     }
+    return task_details
 
 
 def get_task_assignment_details(task_assignment):
+    """
+    Return various information about the specified task assignment.
+
+    Args:
+        task_assignment (orchestra.models.TaskAssignment):
+            The specified task assignment.
+
+    Returns:
+        task_assignment_details (dict):
+            Information about the specified task assignment.
+    """
     reviewer_task_assignment = (
         TaskAssignment.objects.filter(
             task=task_assignment.task)
         .order_by('-assignment_counter')[0])
-    return {
+    task_assignment_details = {
         'task': {
             'data': task_assignment.in_progress_task_data,
             'status': (dict(Task.STATUS_CHOICES)
@@ -229,9 +348,23 @@ def get_task_assignment_details(task_assignment):
             snapshot['work_time_seconds']
             for snapshot in task_assignment.snapshots['snapshots']]
     }
+    return task_assignment_details
 
 
 def get_task_overview_for_worker(task_id, worker):
+    """
+    Get information about `task` and its assignment for `worker`.
+
+    Args:
+        task_id (int):
+            The ID of the desired task object.
+        worker (orchestra.models.Worker):
+            The specified worker object.
+
+    Returns:
+        task_assignment_details (dict):
+            Information about `task` and its assignment for `worker`.
+    """
     task = Task.objects.get(id=task_id)
     if not is_worker_assigned_to_task(worker, task):
         raise TaskAssignmentError('Worker is not associated with task')
@@ -246,7 +379,16 @@ def get_task_overview_for_worker(task_id, worker):
 
 def tasks_assigned_to_worker(worker):
     """
-    Get all the tasks associated with a worker
+    Get all the tasks associated with `worker`.
+
+    Args:
+        worker (orchestra.models.Worker):
+            The specified worker object.
+
+    Returns:
+        tasks_assigned (dict):
+            A dict with information about the worker's tasks, used in
+            displaying the Orchestra dashboard.
     """
     valid_task_assignments = TaskAssignment.objects.exclude(
         task__status=Task.Status.ABORTED)
@@ -304,7 +446,7 @@ def tasks_assigned_to_worker(worker):
         'pending_processing': inactive_processing_task_assignments,
         'complete': complete_task_assignments}
 
-    retval = {}
+    tasks_assigned = {}
     for state, task_assignments in iter(task_assignments_overview.items()):
         tasks_val = []
         for task_assignment in task_assignments:
@@ -318,11 +460,27 @@ def tasks_assigned_to_worker(worker):
                               'project': workflow.name,
                               'detail':
                               task_assignment.task.project.short_description})
-        retval[state] = tasks_val
-    return retval
+        tasks_assigned[state] = tasks_val
+    return tasks_assigned
 
 
 def _is_review_needed(task):
+    """
+    Determine if `task` will be reviewed according to its step policy.
+
+    Args:
+        task (orchestra.models.Task):
+            The specified task object.
+
+    Returns:
+        review_needed (bool):
+            True if review is determined to be needed according to the
+            task's step policy.
+
+    Raises:
+        orchestra.core.errors.ReviewPolicyError:
+            The specified review policy type is not supported.
+    """
     workflow = get_workflow_by_slug(task.project.workflow_slug)
     step = workflow.get_step(task.step_slug)
 
@@ -336,7 +494,7 @@ def _is_review_needed(task):
         task_assignment_count = task.assignments.all().count()
         if max_reviews <= task_assignment_count - 1:
             return False
-        return random() < sample_rate
+        return random.random() < sample_rate
     elif policy == 'no_review':
         return False
     else:
@@ -345,11 +503,26 @@ def _is_review_needed(task):
 
 def get_next_task_status(task, snapshot_type):
     """
-    Given current task status and snapshot type provide
-    new task status.
-    If the second level reviewer rejects a task then
-    initial reviewer can not reject it down further down
-    and has to fix and submit the task.
+    Given current task status and snapshot type provide new task status.
+    If the second level reviewer rejects a task then initial reviewer
+    cannot reject it further down, but must fix and submit the task.
+
+    Args:
+        task (orchestra.models.Task):
+            The specified task object.
+        task_status (orchestra.models.TaskAssignment.SnapshotType):
+            The action to take upon task submission (e.g., SUBMIT,
+            ACCEPT, REJECT).
+
+    Returns:
+        next_status (orchestra.models.Task.Status):
+            The next status of `task`, once the `snapshot_type` action
+            has been completed.
+
+    Raises:
+        orchestra.core.errors.IllegalTaskSubmission:
+            The `snapshot_type` action cannot be taken for the task in
+            its current status.
     """
     if snapshot_type == TaskAssignment.SnapshotType.SUBMIT:
         if task.status == Task.Status.PROCESSING:
@@ -373,6 +546,26 @@ def get_next_task_status(task, snapshot_type):
 
 
 def _check_worker_allowed_new_assignment(worker, task_status):
+    """
+    Check if the worker can be assigned to a new task.
+
+    Args:
+        worker (orchestra.models.Worker):
+            The worker submitting the task.
+        task_status (orchestra.models.Task.Status):
+            The status of the desired new task assignment.
+
+    Returns:
+        allowed_new_assignment (bool):
+            True if the worker can be assigned to a new task.
+
+    Raises:
+        orchestra.core.errors.TaskAssignmentError:
+            Worker has pending reviewer feedback or is assigned to the
+            maximum number of tasks.
+        orchestra.core.errors.TaskStatusError:
+            New task assignment is not permitted for the given status.
+    """
     valid_statuses = [Task.Status.AWAITING_PROCESSING,
                       Task.Status.PENDING_REVIEW]
     if task_status not in valid_statuses:
@@ -385,6 +578,28 @@ def _check_worker_allowed_new_assignment(worker, task_status):
 
 
 def get_new_task_assignment(worker, task_status):
+    """
+    Check if new task assignment is available for the provided worker
+    and task status; if so, assign the task to the worker and return the
+    assignment.
+
+    Args:
+        worker (orchestra.models.Worker):
+            The worker submitting the task.
+        task_status (orchestra.models.Task.Status):
+            The status of the desired new task assignment.
+
+    Returns:
+        assignment (orchestra.models.TaskAssignment):
+            The newly created task assignment.
+
+    Raises:
+        orchestra.core.errors.WorkerCertificationError:
+            No human tasks are available for the given task status
+            except those for which the worker is not certified.
+        orchestra.core.errors.NoTaskAvailable:
+            No human tasks are available for the given task status.
+    """
     _check_worker_allowed_new_assignment(worker, task_status)
 
     tasks = (Task.objects
@@ -413,6 +628,26 @@ def get_new_task_assignment(worker, task_status):
 
 @transaction.atomic
 def save_task(task_id, task_data, worker):
+    """
+    Save the latest data to the database for a task assignment,
+    overwriting previously saved data.
+
+    Args:
+        task_id (int):
+            The ID of the task to save.
+        task_data (str):
+            A JSON blob of task data to commit to the database.
+        worker (orchestra.models.Worker):
+            The worker saving the task.
+
+    Returns:
+        None
+
+    Raises:
+        orchestra.core.errors.TaskAssignmentError:
+            The provided worker is not assigned to the given task or the
+            assignment is in a non-processing state.
+    """
     task = Task.objects.get(id=task_id)
     if not is_worker_assigned_to_task(worker, task):
         raise TaskAssignmentError('Worker is not associated with task')
@@ -433,9 +668,27 @@ def _are_desired_steps_completed_on_project(desired_steps,
                                             project=None,
                                             completed_tasks=None):
     """
-    Determines if `desired_steps` have already been completed on `project`.
-    Either `project` or `completed_tasks` will be passed in, since the caller
-    sometimes has one but not the other.
+    Determines if `desired_steps` have already been completed on
+    `project`. Either `project` or `completed_tasks` will be passed in,
+    since the caller sometimes has one but not the other.
+
+    Args:
+        desired_steps ([orchestra.workflow.Step]):
+            A list of steps to check for completion.
+        project (orchestra.models.Project):
+            The project to check for desired step completion,
+            optionally passed in instead of a list of completed tasks.
+        completed_tasks ([orchestra.models.Task]):
+            A list of tasks to check for desired step completion,
+            optionally passed in instead of a project.
+
+    Returns:
+        desired_steps_completed (bool):
+            True if the desired steps have been completed for the given
+            project or list of tasks.
+
+    Raises:
+        Exception: Either project or completed_tasks must be provided.
     """
     if completed_tasks is None:
         if project is None:
@@ -443,12 +696,46 @@ def _are_desired_steps_completed_on_project(desired_steps,
         completed_tasks = Task.objects.filter(status=Task.Status.COMPLETE,
                                               project=project)
     completed_step_slugs = {task.step_slug for task in completed_tasks}
-    return (len({step.slug for step in desired_steps} -
-                completed_step_slugs) == 0)
+    desired_steps_completed = (len({step.slug for step in desired_steps} -
+                               completed_step_slugs) == 0)
+    return desired_steps_completed
 
 
 @transaction.atomic
 def submit_task(task_id, task_data, snapshot_type, worker, work_time_seconds):
+    """
+    Returns a dict mapping task prerequisites onto their
+    latest task assignment information.  The dict is of the form:
+    {'previous-slug': {task_assignment_data}, ...}
+
+    Args:
+        task_id (int):
+            The ID of the task to submit.
+        task_data (str):
+            A JSON blob of task data to submit.
+        snapshot_type (orchestra.models.TaskAssignment.SnapshotType):
+            The action to take upon task submission (e.g., SUBMIT,
+            ACCEPT, REJECT).
+        worker (orchestra.models.Worker):
+            The worker submitting the task.
+        work_time_seconds (int):
+            The time taken by the worker on the latest iteration of
+            their task assignment.
+
+    Returns:
+        task (orchestra.models.Task):
+            The modified task object.
+
+    Raises:
+        orchestra.core.errors.IllegalTaskSubmission:
+            Submission prerequisites for the task are incomplete or the
+            assignment is in a non-processing state.
+        orchestra.core.errors.TaskAssignmentError:
+            Worker belongs to more than one assignment for the given
+            task.
+        orchestra.core.errors.TaskStatusError:
+            Task has already been completed.
+    """
     task = Task.objects.get(id=task_id)
 
     workflow = get_workflow_by_slug(task.project.workflow_slug)
@@ -509,9 +796,17 @@ def submit_task(task_id, task_data, snapshot_type, worker, work_time_seconds):
 
 def previously_completed_task_data(task):
     """
-    Returns a dict mapping task prerequisites on to their
+    Returns a dict mapping task prerequisites onto their
     latest task assignment information.  The dict is of the form:
     {'previous-slug': {task_assignment_data}, ...}
+
+    Args:
+        task (orchestra.models.Task): The specified task object.
+
+    Returns:
+        prerequisites (dict):
+            A dict mapping task prerequisites onto their latest task
+            assignment information..
     """
     workflow = get_workflow_by_slug(task.project.workflow_slug)
     step = workflow.get_step(task.step_slug)
@@ -536,6 +831,20 @@ def previously_completed_task_data(task):
 
 
 def update_related_assignment_status(task, assignment_counter, data):
+    """
+    Copy data to a specified task assignment and mark it as processing.
+
+    Args:
+        task (orchestra.models.Task):
+            The task whose assignments will be updated.
+        assignment_counter (int):
+            The index of the assignment to be updated.
+        data (str):
+            A JSON blob containing data to add to the assignment.
+
+    Returns:
+        None
+    """
     assignment = (TaskAssignment.objects
                   .get(task=task,
                        assignment_counter=assignment_counter))
@@ -545,6 +854,15 @@ def update_related_assignment_status(task, assignment_counter, data):
 
 
 def end_project(project_id):
+    """
+    Mark the specified project and its component tasks as aborted.
+
+    Args:
+        project_id (int): The ID of the project to abort.
+
+    Returns:
+        None
+    """
     project = Project.objects.get(id=project_id)
     project.status = Project.Status.ABORTED
     project.save()
@@ -555,6 +873,23 @@ def end_project(project_id):
 
 
 def _preassign_workers(task):
+    """
+    Assign a new task to a worker according to its assignment policy,
+    leaving the task unchanged if policy not present.
+
+    Args:
+        task (orchestra.models.Task):
+            The newly created task to assign.
+
+    Returns:
+        task (orchestra.models.Task):
+            The modified task object.
+
+    Raises:
+        orchestra.core.errors.AssignmentPolicyError:
+            The specified assignment policy type is not supported or a
+            machine step is given an assignment policy.
+    """
     workflow = get_workflow_by_slug(task.project.workflow_slug)
     step = workflow.get_step(task.step_slug)
 
@@ -578,6 +913,23 @@ def _preassign_workers(task):
 
 
 def _assign_worker_from_previously_completed_steps(task, related_steps):
+    """
+    Assign a new task to the entry-level worker of the specified tasks.
+    If no worker can be assigned, return the unmodified task.
+
+    Args:
+        task (orchestra.models.Task):
+            The newly created task to assign.
+        related_steps ([orchestra.workflow.steps]):
+            List of steps from which to attempt to assign a worker.
+
+    Returns:
+        task (orchestra.models.Task): The modified task object.
+
+    Raises:
+        orchestra.core.errors.AssignmentPolicyError:
+            Machine steps cannot be included in an assignment policy.
+    """
     workflow = get_workflow_by_slug(task.project.workflow_slug)
     for slug in related_steps:
         if workflow.get_step(slug).worker_type == Step.WorkerType.MACHINE:
@@ -602,6 +954,18 @@ def _assign_worker_from_previously_completed_steps(task, related_steps):
 
 # TODO(kkamalov): make a periodic job that runs this function periodically
 def create_subsequent_tasks(project):
+    """
+    Create tasks for a given project whose dependencies have been
+    completed.
+
+    Args:
+        project (orchestra.models.Project):
+            The project for which to create tasks.
+
+    Returns:
+        project (orchestra.models.Project):
+            The modified project object.
+    """
     workflow = get_workflow_by_slug(project.workflow_slug)
     all_step_slugs = workflow.get_step_slugs()
 
@@ -638,8 +1002,21 @@ def create_subsequent_tasks(project):
 
 
 def task_history_details(task_id):
+    """
+    Return assignment details for a specified task.
+
+    Args:
+        task_id (int):
+            The ID of the desired task object.
+
+    Returns:
+        details (dict):
+            A dictionary containing the current task assignment and an
+            in-order list of related task assignments.
+    """
     task = Task.objects.get(id=task_id)
-    return {
+    details = {
         'current_assignment': current_assignment(task),
         'assignment_history': assignment_history(task)
     }
+    return details

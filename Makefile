@@ -10,7 +10,7 @@ clean:
 lint:
 	flake8 .
 
-test: lint
+test: build_docs lint
 	cd example_project && python3 $(TEST_CMD)
 
 coverage:
@@ -29,3 +29,6 @@ test_coverage:
 	  coverage annotate -d $(COVERAGE_ANNOTATION) && \
 	  coverage report && \
 	  echo 'Annotated source in `example_project/$(COVERAGE_ANNOTATION)` directory'
+
+build_docs:
+	cd docs && make html
