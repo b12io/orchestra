@@ -23,3 +23,6 @@ backup.sql
 # Compressed staticfiles
 /orchestra/staticfiles
 example_project/staticfiles
+
+# Built documentation
+/docs/_build
