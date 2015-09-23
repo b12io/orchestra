@@ -1,6 +1,7 @@
 from unittest.mock import patch
 from unittest.mock import MagicMock
 
+from django.test import override_settings
 from django.test import TestCase
 from django.conf import settings
 
@@ -16,6 +17,7 @@ from orchestra.tests.helpers.google_apps import mock_create_drive_service
 from orchestra.tests.helpers.google_apps import fake_image_get
 
 
+@override_settings(GOOGLE_APPS=True)
 class TestGoogleAppsConvenience(TestCase):
 
     def setUp(self):

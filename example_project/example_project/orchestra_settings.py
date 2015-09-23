@@ -132,7 +132,13 @@ def setup_orchestra(settings_module_name):
     settings.AWS_S3_KEY = ''  # FILL IN
     settings.AWS_S3_SECRET = ''  # FILL IN
 
-    # REQUIRED: Google API related service email and path to a secret key.
+    # Feature flag for toggling optional Google Apps integration. If a
+    # service email and secret key are provided, Google Apps is used to
+    # structure project data in Drive folders and can be used for
+    # customizing workflow steps as well.
+    settings.GOOGLE_APPS = False
+
+    # Optional Google API related service email and path to a secret key.
     settings.GOOGLE_SERVICE_EMAIL = ''
     settings.GOOGLE_P12_PATH = ''
 
