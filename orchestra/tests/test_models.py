@@ -1,9 +1,12 @@
+from registration.signals import user_registered
+
 from orchestra.core.errors import ModelSaveError
 from orchestra.models import Worker
 from orchestra.models import WorkerCertification
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import CertificationFactory
 from orchestra.tests.helpers.fixtures import WorkerCertificationFactory
+from orchestra.tests.helpers.fixtures import UserFactory
 from orchestra.tests.helpers.fixtures import setup_models
 
 
@@ -36,3 +39,21 @@ class ModelsTestCase(OrchestraTestCase):
                 certification=certification,
                 worker=self.workers[0],
                 role=WorkerCertification.Role.REVIEWER)
+
+    def test_worker_autocreation(self):
+        """ When new users register, worker objects should be autocreated. """
+
+        # Create a user
+        user = UserFactory(username='test_registration_user',
+                           password='test',
+                           email='test_registration_user@test.com')
+
+        # There should be no worker yet
+        self.assertFalse(Worker.objects.filter(user=user).exists())
+
+        # Fake registering the user
+        user_registered.send(sender=self.__class__, user=user, request=None)
+
+        # Expect the worker object to be created
+        self.assertTrue(Worker.objects.filter(user=user).exists(),
+                        'Worker not autocreated on User registration')
