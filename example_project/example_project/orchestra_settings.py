@@ -67,10 +67,6 @@ def setup_orchestra(settings_module_name):
     # Currently disabled.
     settings.ORCHESTRA_MAX_IN_PROGRESS_TASKS = 3
 
-    # Notification-specific email for message bundling and searching
-    settings.ORCHESTRA_NOTIFICATIONS_FROM_EMAIL = (
-        'Orchestra <noreply@example.org>')
-
     # S3 bucket name to upload images to
     settings.EDITOR_IMAGE_BUCKET_NAME = 'CHANGEME'
 
@@ -124,6 +120,24 @@ def setup_orchestra(settings_module_name):
     if os.environ.get('BEANSTALK_WORKER') == 'True':
         settings.BEANSTALK_DISPATCH_TABLE = {
             'machine_task_executor': ('orchestra.machine_tasks', 'execute')}
+
+    # Email and Notifications
+    #########################
+
+    # For registration to work, an email backend must be configured.
+    # This file defaults to printing emails to the console if there is no email
+    # backend configured already, but that should be changed in production.
+    settings.EMAIL_BACKEND = getattr(
+        settings,
+        'EMAIL_BACKEND',
+        'django.core.mail.backends.console.EmailBackend')
+    settings.DEFAULT_FROM_EMAIL = getattr(
+        settings,
+        'DEFAULT_FROM_EMAIL',
+        'Orchestra <noreply@example.org>')
+
+    # Notification-specific email for message bundling and searching
+    settings.ORCHESTRA_NOTIFICATIONS_FROM_EMAIL = settings.DEFAULT_FROM_EMAIL
 
     # 3rd Party Integrations
     #########################
