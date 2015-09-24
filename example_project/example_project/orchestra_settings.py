@@ -40,9 +40,9 @@ def setup_orchestra(settings_module_name):
     settings.INSTALLED_APPS += (
         'compressor',
         'django_object_actions',
-        'registration',
         'orchestra',
         'beanstalk_dispatch',
+        'registration',
     )
 
     settings.STATICFILES_FINDERS += (
