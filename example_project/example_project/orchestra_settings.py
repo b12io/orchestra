@@ -56,6 +56,11 @@ def setup_orchestra(settings_module_name):
     # Allow pre-compression independent of user requests
     settings.COMPRESS_OFFLINE = True
 
+    # Add the Django admin and the Django CMS admin style to make it pretty.
+    # The CMS style must be listed before the admin, so we do some processing
+    # of the INSTALLED_APPS list to preserve that property.
+    settings.INSTALLED_APPS = install_admin(settings.INSTALLED_APPS)
+
     # Tasks and Workflows
     ######################
 
@@ -170,3 +175,35 @@ def setup_orchestra(settings_module_name):
     settings.SLACK_INTERNAL_API_KEY = ''
     settings.SLACK_EXPERTS_API_KEY = ''
     settings.SLACK_INTERNAL_NOTIFICATION_CHANNEL = '#orchestra-tasks'
+
+
+def install_admin(installed_apps):
+    admin_installed = 'django.contrib.admin' in installed_apps
+    cms_installed = 'djangocms_admin_style' in installed_apps
+
+    # If admin but not cms is installed, stick the cms in before it.
+    if admin_installed and not cms_installed:
+        admin_idx = installed_apps.index('django.contrib.admin')
+        new_installed_apps = (
+            tuple(installed_apps[:admin_idx]) +
+            ('djangocms_admin_style',) +
+            tuple(installed_apps[admin_idx:]))
+
+    # If cms but not admin is installed (unlikely!), append the admin.
+    elif not admin_installed and cms_installed:
+        new_installed_apps = installed_apps + (
+            'django.contrib.admin',
+        )
+
+    # If neither are installed, append both.
+    elif not admin_installed and not cms_installed:
+        new_installed_apps = installed_apps + (
+            'djangocms_admin_style',
+            'django.contrib.admin',
+        )
+
+    # If both are installed, do nothing.
+    else:
+        new_installed_apps = installed_apps
+
+    return new_installed_apps

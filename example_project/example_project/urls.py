@@ -6,9 +6,14 @@ Registers all of the orchestra URLs so orchestra is usable when
 here as well.
 """
 from django.conf.urls import include, url
+from django.contrib import admin
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
+
+    # Admin Views
+    url(r'^orchestra/admin/',
+        include(admin.site.urls)),
 
     # Registration Views
     # Eventually these will be auto-registered with the Orchestra URLs, but for
