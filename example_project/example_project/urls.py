@@ -19,8 +19,7 @@ urlpatterns = [
     # Eventually these will be auto-registered with the Orchestra URLs, but for
     # now we need to add them separately.
     url(r'^orchestra/accounts/',
-        include(
-            'registration.backends.default.urls')),
+        include('registration.backends.default.urls')),
 
     # Logout then login is not available as a standard django
     # registration route.
