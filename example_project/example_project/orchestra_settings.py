@@ -66,6 +66,7 @@ def setup_orchestra(settings_module_name):
 
     # Installed orchestra workflows
     settings.ORCHESTRA_PATHS = (
+        ('simple_workflow.workflow', 'simple_workflow'),
     )
 
     # The maximum number of tasks an expert can pick up at a time.
@@ -165,7 +166,7 @@ def setup_orchestra(settings_module_name):
     settings.GOOGLE_PROJECT_ROOT_ID = ''
 
     # Feature flags for toggling optional slack integration
-    settings.SLACK_INTERNAL = True
+    settings.SLACK_INTERNAL = False
     settings.SLACK_EXPERTS = False
 
     # Settings for slack notifications. Notifications are shared internally

@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.contrib.auth.models import User
 from django.db import models
 from jsonfield import JSONField
@@ -27,7 +28,7 @@ class Certification(models.Model):
 
 class Worker(models.Model):
     user = models.OneToOneField(User)
-    start_datetime = models.DateTimeField(auto_now_add=True)
+    start_datetime = models.DateTimeField(default=datetime.now)
     slack_username = models.CharField(max_length=200, blank=True, null=True)
 
     def __str__(self):

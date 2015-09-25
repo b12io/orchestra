@@ -1,0 +1,65 @@
+<section class="section-panel">
+  <div class="container-fluid">
+    <div class="row section-header">
+      <div class="col-lg-12 col-md-12 col-sm-12">
+        <h3>
+	  Rate the scraped Image!
+        </h3>
+      </div>
+    </div>
+    <div class="row padded">
+      <div class="col-lg-12 col-md-12 col-sm-12">
+	<div ng-if="!success" class="text-center">
+	  <div class="alert alert-warning">
+	    <p>Oh no! It looks like we were unable to scrape an image from {{taskAssignment.project.project_data.url}}</p>
+	  </div>
+	  <div>
+	    <p> Here's a sweet gif to look at instead. Feel free to submit the task at any time.</p>
+	    <img class="img-responsive center-block" ng-src="{{imageURL}}" alt="A sweet gif" />
+	  </div>
+	</div>
+	<div ng-if="success" class="text-center">
+	  <div class="alert alert-success">
+	    <p>We successfully scraped an image for you! Please rate it below.</p>
+	  </div>
+	  <div>
+	    <img class="img-responsive center-block" ng-src="{{imageURL}}" alt="A sweet gif" />
+	    <p> How awesome is this image?</p>
+	   </div>
+	  <form>
+	    <div class="radio">
+	      <label>
+		<input type="radio" name="imageRating" ng-model="taskAssignment.task.data.rating" value="1: This image is very not awesome">
+		1: This image is very not awesome.
+	      </label>
+	    </div>
+	    <div class="radio">
+	      <label>
+		<input type="radio" name="imageRating" ng-model="taskAssignment.task.data.rating" value="2: This image is slightly not awesome">
+		2: This image is slightly not awesome.
+	      </label>
+	    </div>
+	    <div class="radio">
+	      <label>
+		<input type="radio" name="imageRating" ng-model="taskAssignment.task.data.rating" value="3: This image is neither awesome nor not awesome">
+		3: This image is neither awesome nor not awesome.
+	      </label>
+	    </div>
+	    <div class="radio">
+	      <label>
+		<input type="radio" name="imageRating" ng-model="taskAssignment.task.data.rating" value="4: This image is slightly awesome">
+		4: This image is slightly awesome.
+	      </label>
+	    </div>
+	    <div class="radio">
+	      <label>
+		<input type="radio" name="imageRating" ng-model="taskAssignment.task.data.rating" value="5: This image is very awesome">
+		5: This image is very awesome.
+	      </label>
+	    </div>
+	  </form>
+	</div>
+      </div>
+    </div>
+  </div>
+</div>
