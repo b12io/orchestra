@@ -240,7 +240,7 @@ def conclusion():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-s', '--slow', action='store_true',
-                        help='Display text fast.')
+                        help='Slow down text printouts for readability.')
     args = parser.parse_args()
     FAST_MODE = not args.slow
     run_demo()
