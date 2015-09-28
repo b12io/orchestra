@@ -16,6 +16,19 @@ from orchestra.utils.assignment_snapshots import load_snapshots
 
 
 class Certification(models.Model):
+    """
+    Certifications allow workers to perform different types of tasks.
+
+    Attributes:
+        slug (str):
+            Unique identifier for the certification.
+        name (str):
+            Human-readable name for the certification.
+        description (str):
+            A longer description of the certification.
+        required_certifications ([orchestra.models.Certification]):
+            Prerequisite certifications for possessing this one.
+    """
     slug = models.CharField(max_length=200, unique=True)
     name = models.CharField(max_length=200)
     description = models.TextField()
@@ -27,6 +40,17 @@ class Certification(models.Model):
 
 
 class Worker(models.Model):
+    """
+    Workers are human experts within the Orchestra ecosystem.
+
+    Attributes:
+        user (django.contrib.auth.models.User):
+            Django user whom the worker represents.
+        start_datetime (datetime.datetime):
+            The time the worker was created.
+        slack_username (str):
+            The worker's Slack username if Slack integration is enabled.
+    """
     user = models.OneToOneField(User)
     start_datetime = models.DateTimeField(default=datetime.now)
     slack_username = models.CharField(max_length=200, blank=True, null=True)
@@ -36,7 +60,28 @@ class Worker(models.Model):
 
 
 class WorkerCertification(models.Model):
+    """
+    A WorkerCertification maps a worker to a certification they possess.
 
+    Attributes:
+        certification (orchestra.models.Certification):
+            Certification belonging to the corresponding worker.
+        worker (orchestra.models.Worker):
+            Worker possessing the given certification.
+        task_class (orchestra.models.WorkerCertification.TaskClass):
+            Represents whether the worker is in training for the given
+            certification or prepared to work on real tasks.
+        role (orchestra.models.WorkerCertification.Role):
+            Represents whather the worker is an entry-level or review
+            worker for the given certification.
+
+    Constraints:
+        `certification`, `worker`, `task_class`, and `role` are taken
+        to be unique_together.
+
+        Worker must possess an entry-level WorkerCertification before
+        obtaining a reviewer one.
+    """
     class Meta:
         unique_together = ('certification', 'worker', 'task_class', 'role')
 
@@ -84,6 +129,28 @@ class WorkerCertification(models.Model):
 
 
 class Project(models.Model):
+    """
+    A project is a collection of tasks representing a workflow.
+
+    Attributes:
+        status (orchestra.models.Project.Status):
+            Represents whether the project is being actively worked on.
+        workflow_slug (str):
+            Identifies the workflow that the project represents.
+        start_datetime (datetime.datetime):
+            The time the project was created.
+        priority (int):
+            Represents the relative priority of the project.
+        task_class (int):
+            Represents whether the project is a worker training exercise
+            or a deliverable project.
+        review_document_url (str):
+            The URL for the review document to be passed between workers
+            and reviwers for the project's tasks.
+        slack_group_id (str):
+            The project's internal Slack group ID if Slack integration
+            is enabled.
+    """
     class Status:
         ACTIVE = 0
         ABORTED = 2
@@ -113,6 +180,17 @@ class Project(models.Model):
 
 
 class Task(models.Model):
+    """
+    A task is a cohesive unit of work representing a workflow step.
+
+    Attributes:
+        step_slug (str):
+            Identifies the step that the project represents.
+        project (orchestra.models.Project):
+            The project to which the task belongs.
+        status (orchestra.models.Task.Status):
+            Represents the task's stage within its lifecycle.
+    """
     class Status:
         AWAITING_PROCESSING = 0
         PROCESSING = 1
@@ -141,7 +219,36 @@ class Task(models.Model):
 
 
 class TaskAssignment(models.Model):
+    """
+    A task assignment is a worker's assignment for a given task.
 
+    Attributes:
+        start_datetime (datetime.datetime):
+            The time the project was created.
+        worker (orchestra.models.Worker):
+            The worker to whom the given task is assigned.
+        task (orchestra.models.Task):
+            The given task for the task assignment.
+        status (orchestra.models.Project.Status):
+            Represents whether the assignment is currently being worked
+            on.
+        assignment_counter (int):
+            Identifies the level of the assignment in the given task's
+            review hierarchy (i.e., 0 represents an entry-level worker,
+            1 represents the task's first reviewer, etc.).
+        in_progress_task_data (str):
+            A JSON blob containing the worker's input data for the task
+            assignment.
+        snapshots (str):
+            A JSON blob containing saved snapshots of previous data from
+            the task assignment.
+
+    Constraints:
+        `task` and `assignment_counter` are taken to be unique_together.
+
+        Task assignments for machine-type tasks cannot have a `worker`,
+        while those for human-type tasks must have one.
+    """
     class Meta:
         unique_together = ('task', 'assignment_counter')
 

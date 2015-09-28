@@ -19,6 +19,9 @@ extensions = [
 
     # Autoformat docstrings based on Google style.
     'sphinx.ext.napoleon',
+
+    # Autoformat API endpoints.
+    'sphinxcontrib.httpdomain',
 ]
 
 templates_path = ['_templates']
