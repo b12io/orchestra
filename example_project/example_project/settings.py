@@ -34,6 +34,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'simple_workflow',
+    'journalism_workflow',
 )
 
 STATICFILES_FINDERS = (

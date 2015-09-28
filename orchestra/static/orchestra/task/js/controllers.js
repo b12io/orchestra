@@ -25,7 +25,6 @@
         success(function(data, status, headers, config) {
           vm.taskAssignment = data;
           vm.project = data.project;
-          vm.is_reviewer = data.is_reviewer;
           vm.is_read_only = data.is_read_only;
           vm.work_times_seconds = data.work_times_seconds;
 

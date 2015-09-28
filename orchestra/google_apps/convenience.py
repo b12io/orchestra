@@ -158,3 +158,60 @@ def create_document_from_template(template_id, name,
     upload_info['status'] = 'success'
     upload_info['id'] = document_id
     return upload_info
+
+
+@run_if('GOOGLE_APPS')
+def download_file(file_metadata):
+    """Download a file from a google drive folder.
+
+    Args:
+        file_metadata (dict):
+            A Google Apps API file resource.
+
+    Returns:
+        file_contents (str):
+            A buffer containing the raw binary contents of the file.
+        title (str):
+            The title of the file.
+        mimetype(str):
+            The mimetype of the file.
+    """
+
+    service = Service(settings.GOOGLE_P12_PATH,
+                      settings.GOOGLE_SERVICE_EMAIL)
+    mimetype = file_metadata['mimeType']
+    title = file_metadata['title']
+    return service.get_file_content(file_metadata['id']), title, mimetype
+
+
+@run_if('GOOGLE_APPS')
+def upload_file(parent_id, file_path, title, description, mimetype):
+    """Upload a file to a google drive folder.
+
+    Args:
+        parent_id (str):
+            Identifier for the drive folder to upload to.
+        file_path (str):
+            Local file path to the file to upload.
+        title (str):
+            Title for the uploaded document.
+        description (str):
+            A description of the file to upload.
+        mimetype (str):
+            Mimetype of the uploaded content.
+
+    Returns:
+        file_metadata (dict):
+            A Google Apps File resource with metadata about the uploaded file.
+    """
+
+    service = Service(settings.GOOGLE_P12_PATH,
+                      settings.GOOGLE_SERVICE_EMAIL)
+    file_metadata = service.insert_file(
+        title,
+        description,
+        parent_id,
+        mimetype,
+        file_path
+    )
+    return file_metadata

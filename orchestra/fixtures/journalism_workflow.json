@@ -1,0 +1,254 @@
+[
+  {
+    "model": "auth.User",
+    "pk": 100,
+    "fields": {
+      "username": "journalism-editor",
+      "first_name": "Journalism",
+      "last_name": "Editor",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "password": "pbkdf2_sha256$20000$Vlj4NZFOOKRG$4C4eHTnNKJf9lDJsLrnoIsT17thTwsbIgd3pObclOeo=",
+      "email": "noreply@example.org"
+    }
+  },
+  {
+    "model": "orchestra.Worker",
+    "pk": 100,
+    "fields": {
+      "user": 100
+    }
+  },
+
+  {
+    "model": "auth.User",
+    "pk": 101,
+    "fields": {
+      "username": "journalism-reporter-1",
+      "first_name": "Journalism",
+      "last_name": "Reporter1",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "password": "pbkdf2_sha256$20000$h1HYZUjmmuVB$kQDvyvVOVLx90qnV/CRp+UWZvKrKhZMrCAc7fzDeb18=",
+      "email": "noreply@example.org"
+    }
+  },
+  {
+    "model": "orchestra.Worker",
+    "pk": 101,
+    "fields": {
+      "user": 101
+    }
+  },
+
+  {
+    "model": "auth.User",
+    "pk": 102,
+    "fields": {
+      "username": "journalism-reporter-2",
+      "first_name": "Journalism",
+      "last_name": "Reporter2",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "password": "pbkdf2_sha256$20000$h1HYZUjmmuVB$kQDvyvVOVLx90qnV/CRp+UWZvKrKhZMrCAc7fzDeb18=",
+      "email": "noreply@example.org"
+    }
+  },
+  {
+    "model": "orchestra.Worker",
+    "pk": 102,
+    "fields": {
+      "user": 102
+    }
+  },
+
+  {
+    "model": "auth.User",
+    "pk": 103,
+    "fields": {
+      "username": "journalism-photographer-1",
+      "first_name": "Journalism",
+      "last_name": "Photographer1",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "password": "pbkdf2_sha256$20000$I7lMg90pwQ5g$X+D4O3KlUmWFLIlwyW0XTEThYuBA1rj5UloP4J4j7Gc=",
+      "email": "noreply@example.org"
+    }
+  },
+  {
+    "model": "orchestra.Worker",
+    "pk": 103,
+    "fields": {
+      "user": 103
+    }
+  },
+
+  {
+    "model": "auth.User",
+    "pk": 104,
+    "fields": {
+      "username": "journalism-photographer-2",
+      "first_name": "Journalism",
+      "last_name": "Photographer2",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "password": "pbkdf2_sha256$20000$I7lMg90pwQ5g$X+D4O3KlUmWFLIlwyW0XTEThYuBA1rj5UloP4J4j7Gc=",
+      "email": "noreply@example.org"
+    }
+  },
+  {
+    "model": "orchestra.Worker",
+    "pk": 104,
+    "fields": {
+      "user": 104
+    }
+  },
+
+  {
+    "model": "auth.User",
+    "pk": 105,
+    "fields": {
+      "username": "journalism-copy-editor",
+      "first_name": "Journalism",
+      "last_name": "CopyEditor",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "password": "pbkdf2_sha256$20000$LAyyE56J9Rbo$DdZGK2g0jgPJlaACKT1s6eJgbfRi56ykdCBsCGlnN8k=",
+      "email": "noreply@example.org"
+    }
+  },
+  {
+    "model": "orchestra.Worker",
+    "pk": 105,
+    "fields": {
+      "user": 105
+    }
+  },
+
+  {
+    "model": "orchestra.Certification",
+    "pk": 100,
+    "fields": {
+      "slug": "editor",
+      "name": "Editor",
+      "description": "Trained in planning story ideas"
+    }
+  },
+  {
+    "model": "orchestra.WorkerCertification",
+    "pk": 100,
+    "fields": {
+      "certification": 100,
+      "worker": 100,
+      "task_class": 1,
+      "role": 0
+    }
+  },
+
+  {
+    "model": "orchestra.Certification",
+    "pk": 101,
+    "fields": {
+      "slug": "reporter",
+      "name": "Reporter",
+      "description": "Trained in researching and writing articles"
+    }
+  },
+  {
+    "model": "orchestra.WorkerCertification",
+    "pk": 101,
+    "fields": {
+      "certification": 101,
+      "worker": 101,
+      "task_class": 1,
+      "role": 0
+    }
+  },
+  {
+    "model": "orchestra.WorkerCertification",
+    "pk": 102,
+    "fields": {
+      "certification": 101,
+      "worker": 102,
+      "task_class": 1,
+      "role": 0
+    }
+  },
+  {
+    "model": "orchestra.WorkerCertification",
+    "pk": 103,
+    "fields": {
+      "certification": 101,
+      "worker": 102,
+      "task_class": 1,
+      "role": 1
+    }
+  },
+
+  {
+    "model": "orchestra.Certification",
+    "pk": 102,
+    "fields": {
+      "slug": "photographer",
+      "name": "Photographer",
+      "description": "Trained in taking photos for articles"
+    }
+  },
+  {
+    "model": "orchestra.WorkerCertification",
+    "pk": 104,
+    "fields": {
+      "certification": 102,
+      "worker": 103,
+      "task_class": 1,
+      "role": 0
+    }
+  },
+  {
+    "model": "orchestra.WorkerCertification",
+    "pk": 105,
+    "fields": {
+      "certification": 102,
+      "worker": 104,
+      "task_class": 1,
+      "role": 0
+    }
+  },
+  {
+    "model": "orchestra.WorkerCertification",
+    "pk": 106,
+    "fields": {
+      "certification": 102,
+      "worker": 104,
+      "task_class": 1,
+      "role": 1
+    }
+  },
+
+  {
+    "model": "orchestra.Certification",
+    "pk": 103,
+    "fields": {
+      "slug": "copy_editor",
+      "name": "Copy Editor",
+      "description": "Trained in assembling photos and text into article layout"
+    }
+  },
+  {
+    "model": "orchestra.WorkerCertification",
+    "pk": 107,
+    "fields": {
+      "certification": 103,
+      "worker": 105,
+      "task_class": 1,
+      "role": 0
+    }
+  }
+
+]

@@ -16,6 +16,22 @@
     };
   });
 
+  angular.module('orchestra.task.directives').directive(
+    'bareIframe', function() {
+      return {
+	restrict: 'E',
+	controller: 'IframeController',
+	scope: {
+	  title: '@',
+          id: '@',
+          description: '@',
+          iframeUrl: '@',
+          externalUrl: '@'
+	},
+	templateUrl: '/static/orchestra/task/partials/bare_iframe.html',
+      };
+    });
+
   angular
     .module('orchestra.task.directives')
     .directive('dynamicLoad', dynamicLoad);

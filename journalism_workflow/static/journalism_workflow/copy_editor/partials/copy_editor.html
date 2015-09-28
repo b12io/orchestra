@@ -1,0 +1,63 @@
+<section class="section-panel">
+  <div class="container-fluid">
+    <div class="row section-header">
+      <div class="col-lg-12 col-md-12 col-sm-12">
+        <h3>
+	  Finalize the article copy
+        </h3>
+      </div>
+    </div>
+    <div class="row padded">
+      <div class="col-lg-12 col-md-12 col-sm-12">
+
+	<!-- Headline -->
+	<div class="row padded">
+	  <div class="col-lg-12 col-md-12 col-sm-12">
+	    <h3>Write a headline for the article</h3>
+	  </div>
+	</div>
+	<div class="row padded">
+	  <div class="col-lg-12 col-md-12 col-sm-12">
+	    <form class="form-horizontal text-right">
+	      <div class="form-group">
+		<label for="headlineInput" class="col-sm-1 col-md-1 col-lg-1 control-label text-right">Headline</label>
+		<div class="col-sm-11 col-md-11 col-lg-11">
+		  <input type="text" class="form-control" id="headlineInput" placeholder="Headline for the story" ng-model="taskAssignment.task.data.headline">
+		</div>
+	      </div>
+	    </form>
+	  </div>
+	</div>
+
+	<!-- Photo Captions -->
+	<div class="row padded">
+	  <div class="col-lg-12 col-md-12 col-sm-12">
+	    <h3>Caption the photos taken for the article</h3>
+	  </div>
+	</div>
+	<div class="row padded">
+	  <div ng-repeat="img in taskAssignment.task.data.photos">
+	    <div class="col-sm-6 col-md-4">
+	      <div class="thumbnail">
+		<a href="{{img.src}}" target="_blank">
+		  <img src="{{img.src}}" alt="Processed Image">
+		</a>
+		<div class="caption text-center">
+		  <h3>Caption</h3>
+		  <form class="form-horizontal">
+		    <div class="form-group">
+		      <div class="col-sm-12">
+			<input type="text" class="form-control" placeholder="Caption for the photo" ng-model="img.caption"/>
+		      </div>
+		    </div>
+		  </form>
+		</div>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+      </div>
+    </div>
+  </div>
+</div>

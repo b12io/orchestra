@@ -1,0 +1,58 @@
+<section class="section-panel">
+  <div class="container-fluid">
+    <div class="row section-header">
+      <div class="col-lg-12 col-md-12 col-sm-12">
+        <h3>
+	  Plan out the story idea
+        </h3>
+      </div>
+    </div>
+    <div class="row padded">
+      <div class="col-lg-12 col-md-12 col-sm-12">
+	<form class="form-horizontal text-right">
+
+	  <!-- Who was involved in the story -->
+	  <div class="form-group">
+	    <label for="whoInput" class="col-sm-1 control-label text-right">Who</label>
+	    <div class="col-sm-11">
+	      <input type="text" class="form-control" id="whoInput" placeholder="People Involved in the story" ng-model="taskAssignment.task.data.who">
+	    </div>
+	  </div>
+
+	  <!-- What happened in the story -->
+	  <div class="form-group">
+	    <label for="whatInput" class="col-sm-1 control-label text-right">What</label>
+	    <div class="col-sm-11">
+	      <input type="text" class="form-control" id="whatInput" placeholder="Events occurring in the story" ng-model="taskAssignment.task.data.what">
+	    </div>
+	  </div>
+
+	  <!-- When the story occurred -->
+	  <div class="form-group">
+	    <label for="whenInput" class="col-sm-1 control-label text-right">When</label>
+	    <div class="col-sm-11">
+	      <input type="text" class="form-control" id="whenInput" placeholder="Dates and Times important to the story" ng-model="taskAssignment.task.data.when">
+	    </div>
+	  </div>
+
+	  <!-- Where the story occurred -->
+	  <div class="form-group">
+	    <label for="whereInput" class="col-sm-1 control-label text-right">Where</label>
+	    <div class="col-sm-11">
+	      <input type="text" class="form-control" id="whereInput" placeholder="Locations important to the story" ng-model="taskAssignment.task.data.where">
+	    </div>
+	  </div>
+
+	  <!-- Other notes -->
+	  <div class="form-group">
+	    <label for="notesInput" class="col-sm-1 control-label text-right">Notes</label>
+	    <div class="col-sm-11">
+	      <textarea class="form-control" id="notesInput" placeholder="Other relevant notes" rows="5" ng-model="taskAssignment.task.data.notes"></textarea>
+	    </div>
+	  </div>
+
+	</form>
+      </div>
+    </div>
+  </div>
+</section>

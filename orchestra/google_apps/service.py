@@ -129,3 +129,47 @@ class Service(object):
         except errors.HttpError as error:
             logger.exception('An error occured: %s', error)
             return None
+
+    def list_folder(self, folder_id):
+        """Retrieve a list of File resources.
+
+        Args:
+            folder_id: ID of parent folder to list.
+        Returns:
+            List of File resources.
+        """
+        service = self._service
+        result = []
+        page_token = None
+        while True:
+            try:
+                param = {
+                    'q': "'{}' in parents".format(folder_id),
+                }
+                if page_token:
+                    param['pageToken'] = page_token
+                files = service.files().list(**param).execute()
+
+                result.extend(files['items'])
+                page_token = files.get('nextPageToken')
+                if not page_token:
+                    break
+            except errors.HttpError as error:
+                logger.exception('An error occurred: %s', error)
+                return None
+        return result
+
+    def get_file_content(self, file_id):
+        """Get a file's content.
+
+        Args:
+            file_id: ID of the file to get.
+
+        Returns:
+            File's content if successful, None otherwise.
+        """
+        try:
+            return self._service.files().get_media(fileId=file_id).execute()
+        except errors.HttpError as error:
+            logger.exception('An error occurred: %s', error)
+            return None
