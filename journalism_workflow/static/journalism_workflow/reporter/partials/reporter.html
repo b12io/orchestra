@@ -1,0 +1,89 @@
+<section class="section-panel">
+  <div class="container-fluid">
+    <div class="row section-header">
+      <div class="col-lg-12 col-md-12 col-sm-12">
+	<div ng-if="!taskAssignment.is_reviewer">
+          <h3>
+	    Draft the article based on the editor's story plan
+          </h3>
+	</div>
+	<div ng-if="taskAssignment.is_reviewer">
+          <h3>
+	    Review the article draft below
+          </h3>
+	</div>
+      </div>
+    </div>
+
+    <!-- Titles for the two columns -->
+    <div class="row padded">
+      <div class="col-lg4 col-md-4 col-sm-4">
+	<h3>Editor's story plan</h3>
+      </div>
+
+      <div class="col-lg-8 col-md-8 col-sm-8">
+	<h3>Article draft
+	  <a href="{{articleURL}}" target="_blank" class="btn" style="padding:0px 12px">
+	    Open in a new window
+	  </a>
+	</h3>
+      </div>
+
+    </div>
+
+    <div class="row padded">
+
+      <!-- Form with Editor's story plan -->
+      <div class="col-lg-4 col-md-4 col-sm-4">
+	<form class="form-horizontal text-right">
+
+	  <!-- Who was involved in the story -->
+	  <div class="form-group">
+	    <label for="whoInput" class="col-sm-2 col-md-2 col-lg-2 control-label text-right">Who</label>
+	    <div class="col-sm-10 col-md-10 col-lg-10">
+	      <input type="text" class="form-control" id="whoInput" value="{{who}}" disabled/>
+	    </div>
+	  </div>
+
+	  <!-- What happened in the story -->
+	  <div class="form-group">
+	    <label for="whatInput" class="col-sm-2 col-md-2 col-lg-2 control-label text-right">What</label>
+	    <div class="col-sm-10 col-md-10 col-lg-10">
+	      <input type="text" class="form-control" id="whatInput" value="{{what}}" disabled/>
+	    </div>
+	  </div>
+
+	  <!-- When the story occurred -->
+	  <div class="form-group">
+	    <label for="whenInput" class="col-sm-2 col-md-2 col-lg-2 control-label text-right">When</label>
+	    <div class="col-sm-10 col-md-10 col-lg-10">
+	      <input type="text" class="form-control" id="whenInput" value="{{when}}" disabled/>
+	    </div>
+	  </div>
+
+	  <!-- Where the story occurred -->
+	  <div class="form-group">
+	    <label for="whereInput" class="col-sm-2 col-md-2 col-lg-2 control-label text-right">Where</label>
+	    <div class="col-sm-10 col-md-10 col-lg-10">
+	      <input type="text" class="form-control" id="whereInput" value="{{where}}" disabled/>
+	    </div>
+	  </div>
+
+	  <!-- Other notes -->
+	  <div class="form-group">
+	    <label for="notesInput" class="col-sm-2 col-md-2 col-lg-2 control-label text-right">Notes</label>
+	    <div class="col-sm-10 col-md-10 col-lg-10">
+	      <textarea class="form-control" id="notesInput" rows="5" disabled>{{notes}}</textarea>
+	    </div>
+	  </div>
+
+	</form>
+      </div>
+
+      <!-- Google doc to draft article in. -->
+      <div class="col-lg-8 col-md-8 col-sm-8">
+	<bare-iframe title="Article draft" id="article-draft" iframe-url="{{articleURL}}"></bare-iframe>
+      </div>
+    </div>
+  </div>
+</section>

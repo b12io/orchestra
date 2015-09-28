@@ -73,7 +73,7 @@
 </script>
 
 
-<nav class="topbar-overview" ng-class="{'reviewer-topbar': vm.is_reviewer}">
+<nav class="topbar-overview" ng-class="{'reviewer-topbar': vm.taskAssignment.is_reviewer}">
     <div class="topbar-leader">
       <div class="project-overview">
         <div class="workflow">{{ vm.taskAssignment.workflow.name}}</div>
@@ -86,7 +86,7 @@
     <div class="topbar-follower">
       <div class="task-overview">
         {{ vm.taskAssignment.step.name}}
-        <span ng-if="vm.is_reviewer">
+        <span ng-if="vm.taskAssignment.is_reviewer">
               Review
         </span>
       </div>
@@ -129,21 +129,21 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12">
-          <button ng-if="!vm.is_reviewer"
+          <button ng-if="!vm.taskAssignment.is_reviewer"
                   type="button"
                   class="btn btn-primary navbar-btn"
                   ng-click="vm.submitTask('submit')"
                   ng-disabled="vm.is_read_only || vm.saving || vm.submitting">
             Submit
           </button>
-          <button ng-if="vm.is_reviewer"
+          <button ng-if="vm.taskAssignment.is_reviewer"
                   type="button"
                   class="btn btn-primary navbar-btn"
                   ng-click="vm.submitTask('accept')"
                   ng-disabled="vm.is_read_only || vm.saving || vm.submitting">
             Accept
           </button>
-          <button ng-if="vm.is_reviewer"
+          <button ng-if="vm.taskAssignment.is_reviewer"
                   type="button"
                   class="btn btn-default navbar-btn"
                   ng-click="vm.submitTask('reject')"

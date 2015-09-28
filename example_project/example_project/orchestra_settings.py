@@ -67,6 +67,7 @@ def setup_orchestra(settings_module_name):
     # Installed orchestra workflows
     settings.ORCHESTRA_PATHS = (
         ('simple_workflow.workflow', 'simple_workflow'),
+        ('journalism_workflow.workflow', 'journalism_workflow'),
     )
 
     # The maximum number of tasks an expert can pick up at a time.
