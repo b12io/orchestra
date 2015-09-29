@@ -46,6 +46,8 @@ def setup_orchestra(settings_module_name):
     )
 
     settings.STATICFILES_FINDERS += (
+        'django.contrib.staticfiles.finders.FileSystemFinder',
+        'django.contrib.staticfiles.finders.AppDirectoriesFinder',
         'compressor.finders.CompressorFinder',
     )
 
