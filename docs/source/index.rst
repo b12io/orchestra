@@ -7,11 +7,12 @@ Orchestra is an open source system to orchestrate teams of experts as they compl
    :maxdepth: 2
 
    getting_started
-   concepts
    example_use
-   contributing
+   concepts
    motivation
+   contributing
    api
+   core
 
 Indices and tables
 ------------------

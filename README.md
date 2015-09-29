@@ -30,13 +30,13 @@ Orchestra is
 [Apache 2](https://github.com/unlimitedlabs/orchestra/blob/master/LICENSE)-licensed.
 
 # About Unlimited Labs
-[Unlimited Labs](http://unlimitedlabs.com/) has open sourced Orchestra as part of our mission to empower creative and analytical experts in practicing their craft.
+[Unlimited Labs](http://unlimitedlabs.com/) has open sourced Orchestra as part of our goal to build a brighter future of work.
 
-We are a small team in NYC. We’re passionate about improving the future of how people do creative and analytical work. We have a strong team of designers and engineers from UC Berkeley, Harvard, MIT, and RPI who have worked extensively on systems that help people work productively online.
+We are a startup based in NYC that is passionate about improving how people do creative and analytical work. We have a strong team of engineers and designers who have worked extensively on systems that help people work productively online.
 
 Beyond focusing on profit, we believe that the products and experiences we design should be considerate of their greater social context and impact. To stay true to these values, we are in the process of becoming a [B-certified corporation](http://www.bcorporation.net/what-are-b-corps).
 
-# Thank you
+# Acknowledgements
 Thank you to all of the experts who have completed work on
 early versions of Orchestra to get it where it is today.
 
