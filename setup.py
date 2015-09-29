@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 setup(
     name='orchestra',
-    version='0.1.0',
+    version='0.1.1',
     description='A framework for building complex expert workflows.',
     author='Unlimited Labs, Inc.',
     author_email='hello@unlimitedlabs.com',
