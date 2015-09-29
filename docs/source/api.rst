@@ -3,6 +3,19 @@ API Reference
 
 Client API
 ----------
+Endpoints for communicating with Orchestra.
+
+All requests must be signed using `HTTP signatures <http://tools.ietf.org/html/draft-cavage-http-signatures-03>`_:
+
+.. sourcecode:: python
+
+   from httpsig.requests_auth import HTTPSignatureAuth
+
+   auth = HTTPSignatureAuth(key_id=settings.ORCHESTRA_PROJECT_API_KEY,
+                            secret=settings.ORCHESTRA_PROJECT_API_SECRET,
+                            algorithm='hmac-sha256')
+   response = requests.get('https://www.example.com/orchestra/api/project/create_project', auth=auth)
+
 
 .. http:post:: /orchestra/api/project/create_project
 

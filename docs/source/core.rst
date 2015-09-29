@@ -1,5 +1,6 @@
 Core Reference
 =============
+**Core reference still in progress.**
 
 .. contents::
     :depth: 2
