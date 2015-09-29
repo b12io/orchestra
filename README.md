@@ -4,7 +4,7 @@ Test status [![Circle CI](https://circleci.com/gh/unlimitedlabs/orchestra.svg?st
 
 Chat with the team [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/unlimitedlabs/orchestra)
 
-Orchestra is a system for coordinating project teams of experts and machines.
+Orchestra is a system for orchestrating project teams of experts and machines.
 Projects can include everything from design teams working on a client's
 project
 to newsrooms bringing together reporters, photographers, and editors for a
@@ -19,12 +19,11 @@ To learn more about Orchestra with some examples and a getting
 started guide, or to reach out to the Orchestra team, take
 a look at some of these resources:
 
-* [A blog post introducing Orchestra v0.1.0 to the world]()
-* [Talk slides from Strata on September 29, 2015]()
-* [Getting started with Orchestra in 5 minutes]()
 * [Orchestra website](http://orchestra.unlimitedlabs.com)
+* [A blog post introducing Orchestra v0.1.0 to the world](http://blog.unlimitedlabs.com/post/130097884236/introducing-orchestra)
+* [Documentation on readthedocs, and "Getting Started in 5 Minutes"](http://orchestra.readthedocs.org/en/latest/)
 * [Chat with the Orchestra team](https://gitter.im/unlimitedlabs/orchestra)
-* [Subscribe to the Orchestra mailing list]()
+* [Subscribe to the Orchestra mailing list](https://groups.google.com/forum/#!forum/orchestra-devel)
 
 # License
 Orchestra is
@@ -43,4 +42,3 @@ early versions of Orchestra to get it where it is today.
 
 A very special thank you to [Robert Jördens](https://github.com/jordens) for
 generously providing us with the `orchestra` package name on PyPi.
-
