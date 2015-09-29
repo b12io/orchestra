@@ -134,25 +134,7 @@ several fixtures relevant for running our examples, which you can load with
 
 * 'journalism_workflow': creates a number of accounts with certifications
   suitable for running our more complicated
-  :doc:`journalism workflow <example_use>`. The accounts are:
-
-  * username: ``journalism-editor``, password: ``editor``. A worker with
-    ``editor`` certification.
-
-  * username: ``journalism-reporter-1``, password: ``reporter``. A worker
-    with entry-level ``reporter`` certification.
-
-  * username: ``journalism-reporter-2``, password: ``reporter``. A worker
-    with review-level ``reporter`` certification.
-
-  * username: ``journalism-photographer-1``, password: ``photographer``. A
-    worker with entry-level ``photographer`` certification.
-
-  * username: ``journalism-photographer-2``, password: ``photographer``. A
-    worker with review-level ``photographer`` certification.
-
-  * username: ``journalism-copy-editor``, password: ``copy-editor``. A worker
-    with ``copy_editor`` certification.
+  :doc:`journalism workflow <example_use>`.
 
 In addition, you can use the Orchestra admin
 (http://127.0.0.1:8000/orchestra/admin) to create new users and certifications
@@ -210,6 +192,4 @@ which API calls to use, what their output looks like, and how machine steps
 interact with human steps and pass data back and forth.
 
 If you don't want to go to the trouble of running the script yourself, take a
-look at the :doc:`transcript of expected output <getting_started_transcript>`
-or watch `a video of us walking through the script
-<https://youtube.com/changeme>`_.
+look at the :doc:`transcript of expected output <getting_started_transcript>`.
