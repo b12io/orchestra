@@ -302,23 +302,29 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
             get_task_overview_for_worker(task.id, self.workers[2])
 
         data = get_task_overview_for_worker(task.id, self.workers[0])
-        expected = {'project': {'details': task.project.short_description,
-                                'id': task.project.id,
-                                'project_data': {},
-                                'review_document_url': None},
-                    'workflow': {'slug': 'test_workflow',
-                                 'name': 'The workflow'},
-                    'prerequisites': {},
-                    'step': {'slug': 'step1', 'name': 'The first step'},
-                    'status': 'Submitted',
-                    'task': {'data': {'test_key': 'test_value'},
-                             'status': 'Pending Review'},
-                    'task_id': task.id,
-                    'is_reviewer': False,
-                    'is_read_only': True,
-                    'work_times_seconds': []}
-        self.assertEquals(data,
-                          expected)
+        expected = {
+            'project': {'details': task.project.short_description,
+                        'id': task.project.id,
+                        'project_data': {},
+                        'review_document_url': None},
+            'workflow': {'slug': 'test_workflow',
+                         'name': 'The workflow'},
+            'prerequisites': {},
+            'step': {'slug': 'step1', 'name': 'The first step'},
+            'status': 'Submitted',
+            'task': {'data': {'test_key': 'test_value'},
+                     'status': 'Pending Review'},
+            'task_id': task.id,
+            'is_reviewer': False,
+            'is_read_only': True,
+            'work_times_seconds': [],
+            'worker': {
+                'username': self.workers[0].user.username,
+                'first_name': self.workers[0].user.first_name,
+                'last_name': self.workers[0].user.last_name,
+            }
+        }
+        self.assertEquals(data, expected)
 
     def test_task_assignment_saving(self):
         """

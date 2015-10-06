@@ -207,6 +207,8 @@ def setup_models(test_case):
     for user_id, certifications in workers.items():
         # Create user, worker, client
         user = (UserFactory(username='test_user_{}'.format(user_id),
+                            first_name='test_first_{}'.format(user_id),
+                            last_name='test_last_{}'.format(user_id),
                             password='test_{}'.format(user_id),
                             email='test_user_{}@test.com'.format(user_id)))
         test_case.workers[user_id] = WorkerFactory(user=user)
