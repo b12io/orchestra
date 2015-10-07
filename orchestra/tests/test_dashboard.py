@@ -115,7 +115,7 @@ class DashboardTestCase(OrchestraTestCase):
             self.clients[0], {'task_id': task_id},
             task.project.short_description,
             'Processing', 'Processing', False,
-            False, {})
+            False, {}, self.workers[0])
 
         # no more tasks for user 0 left
         response = (self.clients[0].get(
@@ -145,7 +145,7 @@ class DashboardTestCase(OrchestraTestCase):
             self.clients[1], {'task_id': returned['id']},
             Task.objects.get(id=returned['id']).project.short_description,
             'Processing', 'Reviewing', True,
-            False, {'test_key': 'test_value'})
+            False, {'test_key': 'test_value'}, self.workers[1])
 
     def test_save_entry_level_task_assignment(self):
         # user 0 only has certification for entry level tasks
@@ -191,7 +191,7 @@ class DashboardTestCase(OrchestraTestCase):
             self.clients[0], {'task_id': task_id},
             task.project.short_description,
             'Processing', 'Processing', False,
-            False, new_data)
+            False, new_data, self.workers[0])
 
     def test_save_reviewer_task_assignment(self):
         new_data = {'new_test_key': 'new_test_value'}
@@ -231,7 +231,7 @@ class DashboardTestCase(OrchestraTestCase):
             self.clients[1], {'task_id': task_id},
             task.project.short_description,
             'Processing', 'Reviewing', True,
-            False, reviewer_data)
+            False, reviewer_data, self.workers[1])
 
     def test_submit_entry_level_task_assignment(self):
         # user 0 only has certification for entry level tasks
@@ -304,7 +304,7 @@ class DashboardTestCase(OrchestraTestCase):
             self.clients[0], {'task_id': task_id},
             task.project.short_description,
             'Submitted', 'Pending Review', False,
-            True, data, work_times_seconds=[1])
+            True, data, self.workers[0], work_times_seconds=[1])
 
         # user cannot resubmit a task
         response = self._submit_assignment(
@@ -333,14 +333,14 @@ class DashboardTestCase(OrchestraTestCase):
             self.clients[0], {'task_id': task_id},
             task.project.short_description,
             'Submitted', 'Reviewing', False,
-            True, {'test_key': 'test_value'})
+            True, {'test_key': 'test_value'}, self.workers[0])
 
         # user 1 should be able to review the post
         self._verify_good_task_assignment_information(
             self.clients[1], {'task_id': task_id},
             task.project.short_description,
             'Processing', 'Reviewing', True,
-            False, {'test_key': 'test_value'})
+            False, {'test_key': 'test_value'}, self.workers[1])
 
         # user 1 can't submit a task
         response = self._submit_assignment(
@@ -360,14 +360,14 @@ class DashboardTestCase(OrchestraTestCase):
             self.clients[0], {'task_id': task_id},
             task.project.short_description,
             'Processing', 'Post-review Processing', False,
-            False, rejected_data)
+            False, rejected_data, self.workers[0])
 
         # user 1 should no longer be able to modify the post
         self._verify_good_task_assignment_information(
             self.clients[1], {'task_id': task_id},
             task.project.short_description,
             'Submitted', 'Post-review Processing', True,
-            True, rejected_data, work_times_seconds=[1])
+            True, rejected_data, self.workers[1], work_times_seconds=[1])
 
         # user 0 submits an updated data
         response = self._submit_assignment(
@@ -379,7 +379,7 @@ class DashboardTestCase(OrchestraTestCase):
             self.clients[1], {'task_id': task_id},
             task.project.short_description,
             'Processing', 'Reviewing', True,
-            False, data, work_times_seconds=[1])
+            False, data, self.workers[1], work_times_seconds=[1])
 
         accepted_data = {'accepted_key': 'accepted_val'}
         # user 1 accepts a task
@@ -393,7 +393,7 @@ class DashboardTestCase(OrchestraTestCase):
             self.clients[1], {'task_id': task_id},
             task.project.short_description,
             'Submitted', 'Pending Review', True,
-            True, accepted_data, work_times_seconds=[1, 1])
+            True, accepted_data, self.workers[1], work_times_seconds=[1, 1])
 
         # make sure a task can't be submitted twice
         response = self._submit_assignment(
@@ -424,7 +424,7 @@ class DashboardTestCase(OrchestraTestCase):
             self.clients[3], {'task_id': task_id},
             task.project.short_description,
             'Submitted', 'Post-review Processing', True,
-            True, rejected_data, work_times_seconds=[1])
+            True, rejected_data, self.workers[3], work_times_seconds=[1])
 
         # check client dashboards
         self._check_client_dashboard_state(self.clients[0], 'pending_review')
@@ -456,7 +456,7 @@ class DashboardTestCase(OrchestraTestCase):
             self.clients[3], {'task_id': task_id},
             task.project.short_description,
             'Submitted', 'Complete', True,
-            True, accepted_data, work_times_seconds=[1, 1])
+            True, accepted_data, self.workers[3], work_times_seconds=[1, 1])
 
         # check that reviewer cannot reaccept task
         response = self._submit_assignment(
@@ -517,14 +517,14 @@ class DashboardTestCase(OrchestraTestCase):
             self.clients[6], {'task_id': task.id},
             task.project.short_description,
             'Submitted', 'Complete', False,
-            True, {'test': 'test'},
+            True, {'test': 'test'}, self.workers[6],
             work_times_seconds=[35, 37])
 
         self._verify_good_task_assignment_information(
             self.clients[7], {'task_id': task.id},
             task.project.short_description,
             'Submitted', 'Complete', True,
-            True, {'test': 'test'},
+            True, {'test': 'test'}, self.workers[7],
             work_times_seconds=[36, 38])
 
     def _verify_bad_task_assignment_information(
@@ -541,7 +541,7 @@ class DashboardTestCase(OrchestraTestCase):
     def _verify_good_task_assignment_information(
             self, client, post_data, project_description,
             assignment_status, task_status, is_reviewer,
-            is_read_only, task_data, work_times_seconds=None):
+            is_read_only, task_data, worker, work_times_seconds=None):
         if work_times_seconds is None:
             work_times_seconds = []
         response = client.post(
@@ -552,20 +552,27 @@ class DashboardTestCase(OrchestraTestCase):
 
         task = Task.objects.get(id=post_data['task_id'])
         returned = json.loads(response.content.decode('utf-8'))
-        expected = {'project': {'details': project_description,
-                                'id': task.project.id,
-                                'project_data': {},
-                                'review_document_url': None},
-                    'status': assignment_status,
-                    'task': {'data': task_data, 'status': task_status},
-                    'task_id': task.id,
-                    'workflow': {
-                        'slug': 'test_workflow', 'name': 'The workflow'},
-                    'prerequisites': {},
-                    'step': {'slug': 'step1', 'name': 'The first step'},
-                    'is_reviewer': is_reviewer,
-                    'is_read_only': is_read_only,
-                    'work_times_seconds': work_times_seconds}
+        expected = {
+            'project': {'details': project_description,
+                        'id': task.project.id,
+                        'project_data': {},
+                        'review_document_url': None},
+            'status': assignment_status,
+            'task': {'data': task_data, 'status': task_status},
+            'task_id': task.id,
+            'workflow': {
+                'slug': 'test_workflow', 'name': 'The workflow'},
+            'prerequisites': {},
+            'step': {'slug': 'step1', 'name': 'The first step'},
+            'is_reviewer': is_reviewer,
+            'is_read_only': is_read_only,
+            'work_times_seconds': work_times_seconds,
+            'worker': {
+                'username': worker.user.username,
+                'first_name': worker.user.first_name,
+                'last_name': worker.user.last_name,
+            }
+        }
         self.assertEquals(returned, expected)
 
     def _submit_assignment(self, client, task_id, data=None,

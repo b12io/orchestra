@@ -331,12 +331,18 @@ def get_task_assignment_details(task_assignment):
         TaskAssignment.objects.filter(
             task=task_assignment.task)
         .order_by('-assignment_counter')[0])
-    task_assignment_details = {
+
+    worker = task_assignment.worker
+    worker_info = {attr: getattr(getattr(worker, 'user', None), attr, None)
+                   for attr in ('username', 'first_name', 'last_name')}
+
+    return {
         'task': {
             'data': task_assignment.in_progress_task_data,
             'status': (dict(Task.STATUS_CHOICES)
                        [task_assignment.task.status])
         },
+        'worker': worker_info,
         'status': (dict(TaskAssignment.STATUS_CHOICES)
                    [task_assignment.status]),
         'is_reviewer': (
@@ -348,7 +354,6 @@ def get_task_assignment_details(task_assignment):
             snapshot['work_time_seconds']
             for snapshot in task_assignment.snapshots['snapshots']]
     }
-    return task_assignment_details
 
 
 def get_task_overview_for_worker(task_id, worker):
