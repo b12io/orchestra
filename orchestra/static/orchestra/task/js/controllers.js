@@ -116,17 +116,21 @@
       vm.saving = true;
       vm.saveError = false;
       vm.cancelAutoSave();
+      orchestraService.signals.fireSignal('save.before');
       $http.post('/orchestra/api/interface/save_task_assignment/',
                  {'task_id': vm.taskId, 'task_data': vm.taskAssignment.task.data})
         .success(function(data, status, headers, config) {
           vm.lastSaved = Date.now();
           // Reset timeout counter on save success
           vm.autoSaveTimeout = 10000;
+          orchestraService.signals.fireSignal('save.success');
         })
         .error(function(data, status, headers, config) {
           vm.saveError = true;
+          orchestraService.signals.fireSignal('save.error');
         })
         .finally(function() {
+          orchestraService.signals.fireSignal('save.finally');
           vm.saving = false;
           if (vm.saveError) {
             // Retry save with exp backoff
@@ -138,6 +142,7 @@
 
     vm.confirmSubmission = function(command, totalSeconds) {
       vm.submitting = true;
+      orchestraService.signals.fireSignal('submit.before');
       $http.post('/orchestra/api/interface/submit_task_assignment/',
                  {'task_id': vm.taskId, 'task_data': vm.taskAssignment.task.data,
                   'command_type': command, 'work_time_seconds': totalSeconds})
@@ -145,11 +150,14 @@
           // Prevent additional confirmation dialog on leaving the page; data
           // will be saved by submission
           vm.cancelAutoSave();
+          orchestraService.signals.fireSignal('submit.success');
           $location.path('/');
         })
         .error(function(data, status, headers, config) {
+          orchestraService.signals.fireSignal('submit.error');
         })
         .finally(function() {
+          orchestraService.signals.fireSignal('submit.finally');
           vm.submitting = false;
         });
     };
