@@ -47,9 +47,25 @@ serviceModule.factory('orchestraService', function() {
         }
     }
 
+    var signals = new function() {
+        var registered = {};
+
+        this.registerSignal = function(signalType, callback) {
+            registered[signalType] = registered[signalType] || [];
+            registered[signalType].push(callback);
+        }
+        this.fireSignal = function(signalType) {
+            registered[signalType] = registered[signalType] || [];
+            registered[signalType].forEach(function(callback) {
+                callback();
+            });
+        }
+    }
+
     var orchestraService = new function() {
         this.googleUtils = googleUtils;
         this.taskUtils = taskUtils;
+        this.signals = signals;
     }
     return orchestraService;
 });
