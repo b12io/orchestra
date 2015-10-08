@@ -35,7 +35,7 @@ copyright = u'2015, Unlimited Labs'
 author = u'Unlimited Labs'
 
 version = '0.1'
-release = '0.1.0'
+release = '0.1.2'
 
 exclude_patterns = ['_build']
 
