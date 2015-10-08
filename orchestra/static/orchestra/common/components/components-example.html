@@ -1,0 +1,20 @@
+<!--
+Rich text editor component based on https://github.com/quilljs/quill/.
+
+To use the editor's image upload functionality, include `AWS_S3_KEY`,
+`AWS_S3_SECRET`, and `EDITOR_IMAGE_BUCKET_NAME` in your project's Orchestra
+settings.
+
+The `data` attribute binds the desired data to the rich text editor and will
+contain an HTML blob.
+
+The optional `image-prefix` attribute provides a prefix for editor image S3 keys
+(http://docs.aws.amazon.com/AWSImportExport/latest/DG/ManipulatingS3KeyNames.html).
+
+The optional `upload-limit-mb` attribute provides a maximum file size for editor
+images uploaded to S3.
+-->
+<orchestra-quill data="vm.testData"
+                 image-prefix="'editor-image-album'"
+                 upload-limit-mb="15">
+</orchestra-quill>
