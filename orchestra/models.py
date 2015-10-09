@@ -38,6 +38,9 @@ class Certification(models.Model):
     def __str__(self):
         return '{}'.format(self.slug)
 
+    class Meta:
+        app_label = 'orchestra'
+
 
 class Worker(models.Model):
     """
@@ -57,6 +60,9 @@ class Worker(models.Model):
 
     def __str__(self):
         return '{}'.format(self.user.username)
+
+    class Meta:
+        app_label = 'orchestra'
 
 
 class WorkerCertification(models.Model):
@@ -83,6 +89,7 @@ class WorkerCertification(models.Model):
         obtaining a reviewer one.
     """
     class Meta:
+        app_label = 'orchestra'
         unique_together = ('certification', 'worker', 'task_class', 'role')
 
     class TaskClass:
@@ -178,6 +185,9 @@ class Project(models.Model):
         return '{} ({})'.format(str(self.workflow_slug),
                                 self.short_description)
 
+    class Meta:
+        app_label = 'orchestra'
+
 
 class Task(models.Model):
     """
@@ -220,6 +230,9 @@ class Task(models.Model):
     def __str__(self):
         return '{} - {}'.format(str(self.project), str(self.step_slug))
 
+    class Meta:
+        app_label = 'orchestra'
+
 
 class TaskAssignment(models.Model):
     """
@@ -253,6 +266,7 @@ class TaskAssignment(models.Model):
         while those for human-type tasks must have one.
     """
     class Meta:
+        app_label = 'orchestra'
         unique_together = ('task', 'assignment_counter')
 
     class SnapshotType:

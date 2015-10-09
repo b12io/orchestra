@@ -2,11 +2,7 @@
 Django==1.8.3
 jsonfield==1.0.0
 django-compressor==1.5
-# Upgrade to newer jsonview once they release it to avoid Django
-# importlib deprecation warning.  The jsonview project fixes the problem
-# (https://github.com/jsocol/django-jsonview/commit/e7b8ae7da6fde829f1c4dcafc6635813213b5eb4)
-# but hasn't yet packaged it on pypi.
-django-jsonview==0.4.3
+django-jsonview==0.5.0
 requests==2.5.1
 factory_boy==2.5.2
 coverage==3.7.1
