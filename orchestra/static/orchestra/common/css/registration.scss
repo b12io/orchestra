@@ -1,0 +1,15 @@
+@import 'orchestra/common/css/common.scss';
+@import 'orchestra/common/css/base.scss';
+
+/* Login/account-related pages */
+.login-wrap {
+  font-size: 1.3rem;
+  .error-non-field {
+    padding: 0px 0px 10px 10px;
+    color: red;
+  }
+  .error-field {
+    padding: 5px 0px 0px 10px;
+    color: red;
+  }
+}

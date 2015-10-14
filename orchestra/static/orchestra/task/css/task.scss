@@ -1,0 +1,207 @@
+@import 'orchestra/common/css/common.scss';
+
+$topbar-height: 5rem;
+
+/* Confirmation modals */
+
+.modal-confirm-submit {
+  padding-top: 200px;
+}
+
+.modal-confirm-header {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.modal-header {
+  background: $main-blue;
+}
+
+.modal-confirm-body {
+  overflow: auto;
+  width: 300px;
+
+  hr {
+    margin: 0px 0px 3px 0px;
+  }
+
+  .time-error-message {
+    color: red;
+    text-align: right;
+    font-size: 1.2rem;
+    padding-right: 9px;
+  }
+
+  .time-question {
+    margin-bottom: 3px;
+  }
+
+  .time-summary {
+    overflow: auto;
+    padding-bottom: 3px;
+    .form-control {
+      width: 30px;
+      padding: 2px;
+      height: 23px;
+      text-align: right;
+    }
+
+    .time-label {
+      float: left;
+    }
+
+    .time-report {
+      float: right;
+
+      .time-unit-group {
+        float: left;
+        width: 70px;
+        .time-value-float {
+          width: 30px;
+          overflow: auto;
+          margin-right: 4px;
+          float: left;
+          .time-value {
+            float: right;
+            padding-right: 2px;
+          }
+        }
+        .time-unit {
+          font-size: 1.2rem;
+        }
+      }
+    }
+  }
+}
+
+.modal-confirm-text {
+  margin-bottom: 10px;
+  font-size: 1.5rem;
+}
+
+/* Fixed-location informational boxes */
+
+.fixed-infobox-outer {
+  margin: 20px auto;
+  position: fixed;
+  top: 160px;
+  left: 0;
+  right: 0;
+  z-index: 1009;
+}
+
+.fixed-infobox {
+  display: block;
+  text-align: center;
+  width: 40%;
+  margin: 0 auto;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.website-iframe {
+  width: 100%;
+  height: 400px;
+  border: 1px solid $light-gray;
+}
+
+.save-message {
+  display: inline-block;
+  position: relative;
+  left: 15px;
+  color: white;
+}
+
+.task-view {
+  font-size: 1.5rem;
+  position: relative;
+  .topbar-overview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    font-size: 1.8rem;
+    line-height: 2rem;
+    background-color: $light-gray;
+    box-shadow: 0 1px 3px $light-gray;
+    color: lighten($dark-gray, 10);
+    height: $topbar-height;
+    .topbar-leader {
+      float: left;
+      background-color: lighten($dark-gray, 10);
+      position: relative;
+      color: white;
+      z-index: 2;
+      .arrow-wrapper {
+        position: absolute;
+        right: -$topbar-height;
+        .arrow-with-shadow {
+          width: $topbar-height;
+          height: $topbar-height;
+          position: relative;
+          right: 0;
+          overflow: hidden;
+        }
+        .arrow-with-shadow:after {
+          content: "";
+          position: absolute;
+          width: $topbar-height / $sqrt-2;
+          height: $topbar-height / $sqrt-2;
+          @include vendor-prefix(transform, rotate(45deg));
+          top: 0.25 * $topbar-height / $sqrt-2;
+          left: -0.5 * $topbar-height / $sqrt-2;
+          box-shadow: 1px -1px 3px darken($light-gray, 5);
+          background-color: lighten($dark-gray, 10);
+        }
+      }
+      .project-overview {
+        padding: $panel-padding;
+        margin-left: $panel-margin;
+        background-color: lighten($dark-gray, 10);
+        float: left;
+        .workflow {
+          float: left;
+          font-weight: bold;
+          padding-right: $panel-padding;
+        }
+      }
+    }
+    .topbar-follower {
+      z-index: 1;
+      padding-top: $panel-padding;
+      padding-bottom: $panel-padding;
+      float: left;
+      .task-overview {
+        font-weight: bold;
+        margin-left: $topbar-height / 2;
+        padding-left: $topbar-height / 2;
+      }
+    }
+  }
+
+  .step-interface {
+    margin-top: $topbar-height + $panel-margin;
+  }
+
+  .reminders-title {
+    padding: 10px 0;
+    font-weight: bold;
+  }
+  .task-actions-wrapper {
+    position: absolute;
+    left: 0;
+    right: 0;
+    background-color: rgb(128, 128, 128);
+    .task-actions {
+      margin-left: $panel-margin;
+      margin-right: $panel-margin;
+      font-size: 1.3em;
+      .btn {
+        font-size: 1em;
+        &:not(:first-child) {
+          margin-left: $panel-button-margin;
+        }
+      }
+    }
+  }
+}
