@@ -1,0 +1,21 @@
+<div class="checklist-wrapper">
+    <div ng-if="data.items.length" class="toggle-completed"
+         ng-click="data.hideCompleted = !data.hideCompleted">
+        <span ng-if="data.hideCompleted">Show</span>
+        <span ng-if="!data.hideCompleted">Hide</span>
+        <span> completed items</span>
+    </div>
+    <ul class="checklist">
+        <div ng-repeat="item in data.items|orderBy:'order'">
+            <orchestra-checklist-item></orchestra-checklist-item>
+        </div>
+    </ul>
+    <div ng-click="addItem()" class="new-item">
+        <div class="line-item">
+            <div class="new-item-button">
+                <i class="fa fa-plus-square"></i>
+            </div>
+            <div class="new-item-text item-title">Add new checklist item<div>
+        </div>
+    </div>
+</div>

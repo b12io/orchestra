@@ -1,0 +1,256 @@
+@import 'orchestra/common/css/common.scss';
+
+$title-height: 30px;
+$tool-width: 25px;
+$item-toolbar-width: 3 * $tool-width;
+$item-title-padding: 10px;
+$checkbox-height: $title-height;
+$checkbox-font-size: 22px;
+
+.checklist-wrapper {
+  width: 100%;
+  padding: 15px;
+
+  .toggle-completed {
+    @extend .disable-select;
+    display: inline-block;
+    color: $main-blue;
+    cursor: pointer;
+    padding: $item-title-padding 0;
+    &:hover {
+      font-weight: bold;
+    }
+  }
+
+  .new-item {
+    color: white;
+    cursor: pointer;
+    margin-bottom: 15px;
+    border: none;
+    background-color: $dark-green;
+    &:hover {
+      background-color: $light-green;
+    }
+    .line-item {
+      .new-item-button {
+        float: left;
+        height: $checkbox-height;
+        width: $checkbox-height;
+        font-size: $checkbox-font-size;
+        text-align: center;
+        margin-left: 2px;
+      }
+      .new-item-text {
+        height: $title-height;
+        margin-left: 3px;
+        margin-top: 5px;
+      }
+    }
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+  ul.checklist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+// .checklist-item cannot be nested inside .checklist-wrapper or items will
+// not be styled on drag.
+li.checklist-item, .new-item {
+  list-style: none;
+  background-color: white;
+
+  position: relative;
+  margin-bottom: 0;
+  border: 1px solid #ccc;
+  box-shadow: none;
+  padding: 7px;
+
+  height: auto;
+  margin-top: -1px;
+  opacity: 1;
+  @include vendor-prefix(transition, all 1s);
+  &.item-hidden {
+    // TODO(jrbotros): make animation smoother with max-height and keyframes
+    @include vendor-prefix(transition, all 1s);
+    height: 0;
+    padding: 0;
+    margin-top: 0;
+    opacity: 0;
+    border: 0;
+    &.item-expanded {
+      margin: 0;
+    }
+  }
+
+  &.item-expanded {
+    @include vendor-prefix(transition, all 0.5s);
+    margin-top: 5px;
+    margin-bottom: 20px;
+  }
+
+  .item-description {
+    @include vendor-prefix(transition, all 0.5s);
+    opacity: 0;
+    height: 0;
+    margin-bottom: 0;
+    margin-left: $title-height;
+    margin-right: $item-toolbar-width;
+    overflow: hidden;
+    &.expanded {
+      @include vendor-prefix(transition, all 0.5s);
+      opacity: 1;
+      height: auto;
+      min-height: 100px;
+      margin-top: $item-title-padding;
+      margin-bottom: $item-title-padding;
+      padding-left: $item-title-padding;
+      .comment {
+        position: relative;
+        margin-top: -1px;
+        &:first-child {
+          margin-top: 0;
+        }
+        &:last-child {
+          margin-top: $item-title-padding;
+        }
+        .orchestra-quill-wrapper {
+          box-shadow: none;
+          border: 1px solid #ccc;
+          .orchestra-quill-editor {
+            min-height: 150px;
+            height: auto;
+          }
+          &.readonly {
+            .orchestra-quill-editor {
+              min-height: 0;
+              margin-top: 15px;
+            }
+          }
+          .orchestra-quill-toolbar {
+            margin-top: 0;
+            border-top: none;
+          }
+        }
+        .comment-meta {
+          font-size: 10px;
+          position: absolute;
+          top: 15px;
+          left: 15px;
+          right: 15px;
+          .comment-author {
+            float: left;
+          }
+          .comment-timestamp {
+            float: right;
+          }
+        }
+        .add-comment {
+          color: $dark-green;
+        }
+      }
+    }
+  }
+  .line-item {
+    overflow: hidden;
+    position: relative;
+    height: $title-height;
+    width: 100%;
+    cursor: pointer;
+    .item-title {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: $title-height;
+      right: $item-toolbar-width;
+      padding: 0 $item-title-padding;
+      input[type="text"] {
+        box-sizing: content-box;
+        max-width: 100%;
+        height: $title-height - 4px;
+        outline: none;
+        border: 1px solid $main-blue;
+        @include vendor-prefix(transition, border 0.5s);
+        &.readonly {
+          @extend .disable-select;
+          cursor: text;
+          border: 1px solid white;
+        }
+      }
+    }
+    input[type="checkbox"] {
+      display: none;
+    }
+    label {
+      @include vendor-prefix(transition, all 0.5s);
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: $checkbox-height;
+      width: $checkbox-height;
+      margin: 0;
+      color: white;
+      cursor: pointer;
+      border: 1px solid $main-blue;
+      box-shadow: inset 0 0 1px $main-blue;
+      &.checked {
+        @include vendor-prefix(transition, all 0.5s);
+        background-color: $main-blue;
+      }
+      i {
+        @include vendor-prefix(transition, all 0.5s);
+        visibility: hidden;
+      }
+      &.checked i {
+        @include vendor-prefix(transition, all 0.5s);
+        visibility: visible;
+      }
+      i {
+        font-size: $checkbox-font-size;
+        position: absolute;
+        top: 3px;
+        left: 3px;
+      }
+    }
+  }
+  .item-tools {
+    @extend .disable-select;
+    position: absolute;
+    right: $item-toolbar-width;
+
+    .tool {
+      width: $tool-width;
+      text-align: center;
+      position: absolute;
+      top: 5px;
+    }
+
+    .expand-toggle {
+      @extend .tool;
+      left: 0;
+      cursor: pointer;
+      &.selected {
+        color: $main-blue;
+      }
+    }
+
+    .edit-toggle {
+      @extend .tool;
+      left: $tool-width;
+      cursor: pointer;
+      &.selected {
+        color: $main-blue;
+      }
+    }
+
+    .item-remove {
+      @extend .tool;
+      left: 2 * $tool-width;
+      cursor: pointer;
+      color: red;
+    }
+  }
+}

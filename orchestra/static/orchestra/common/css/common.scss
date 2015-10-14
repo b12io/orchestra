@@ -26,3 +26,10 @@ $panel-button-margin: 1.5rem;
   -o-#{$name}: #{$argument};
   #{$name}: #{$argument};
 }
+
+.disable-select {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}

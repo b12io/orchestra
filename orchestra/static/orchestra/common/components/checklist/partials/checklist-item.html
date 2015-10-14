@@ -1,0 +1,55 @@
+<li ng-class="{'item-expanded': item.expanded,
+               'item-hidden': data.hideCompleted && item.checked}"
+    data-key="{{item.$$hashKey}}"
+    class="checklist-item item-{{item.$$hashKey}}">
+    <div ng-mouseenter="item.hover = true"
+         ng-mouseleave="item.hover = false"
+         class="line-item">
+        <input type="checkbox"
+               name="item-{{item.$$hashKey}}-checkbox"
+               id="item-{{item.$$hashKey}}-checkbox">
+        <label ng-class="{'checked': item.checked}"
+               ng-click="item.checked = !item.checked"
+               for="item-{{item.$$hashKey}}-checkbox">
+            <i class="fa fa-check"></i>
+        </label>
+        <div ng-click="expandItem(item)"
+             class="item-title">
+            <input ng-model="item.title"
+                   ng-readonly="item.readonly"
+                   ng-class="{'readonly': item.readonly}"
+                   ng-click="$event.stopPropagation(); item.readonly && editItem(item, $event);"
+                   ng-blur="item.readonly = true"
+                   ng-keydown="$event.keyCode == 13 && editItem(item)"
+                   class="item-title-input"
+                   type="text"
+                   placeholder="Item title here">
+        </div>
+        <div ng-hide="!item.hover && !item.expanded && item.readonly"
+             class="item-tools">
+            <div ng-click="expandItem(item)" class="expand-toggle" ng-class="{'selected': item.expanded}">
+                <i class="fa fa-comment-o"></i>
+            </div>
+            <div ng-click="editItem(item)" class="edit-toggle" ng-class="{'selected': !item.readonly}">
+                <i class="fa fa-edit"></i>
+            </div>
+            <div ng-click="removeItem(item, 'true')" class="item-remove">
+                <i class="fa fa-times"></i>
+            </div>
+        </div>
+    </div>
+    <div ng-class="{'expanded': item.expanded}" class="item-description">
+        <div ng-repeat="comment in item.comments track by $index"
+             class="comment">
+            <div class="comment-meta">
+              <div ng-if="!$last" class="comment-author">{{comment.author}}</div>
+              <div ng-if="!$last" class="comment-timestamp">{{getCommentTimestamp(comment)}}</div>
+            </div>
+            <div class="add-comment" ng-if="$last">Add a comment:</div>
+            <orchestra-quill readonly="!$last"
+                             data="comment.text"
+                             image-prefix="imagePrefix">
+            </orchestra-quill>
+        </div>
+    </div>
+</li>

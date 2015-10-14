@@ -10,13 +10,16 @@
       restrict: 'E',
       scope: {
         'data': '=',
-        'imagePrefix': '=',
+        'imagePrefix': '=?',
         'readonly': '=',
         'uploadLimitMb': '=?',
       },
       link: function(scope, el, attr) {
         // Suggested limit for image upload size is 5 MB.
         scope.uploadLimitMb = scope.uploadLimitMb || 5;
+
+        // Default image prefix is an empty string.
+        scope.imagePrefix = scope.imagePrefix || '';
 
         // Containers within directive template for Quill editor
         var editorContainer = el.find('.orchestra-quill-editor').get(0);
