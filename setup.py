@@ -1,13 +1,17 @@
 from setuptools import setup, find_packages
+
+from release import get_version
+
+version = get_version('orchestra')
 setup(
     name='orchestra',
-    version='0.1.2',
+    version=version,
     description='A framework for building complex expert workflows.',
     author='Unlimited Labs, Inc.',
     author_email='hello@unlimitedlabs.com',
     url='https://github.com/unlimitedlabs/orchestra',
     download_url=(
-        'https://github.com/unlimitedlabs/orchestra/tarball/v0.1.0'),
+        'https://github.com/unlimitedlabs/orchestra/tarball/v' + version),
     keywords=['crowdsourcing', 'workflows'],
     classifiers=[],
     packages=find_packages(),
