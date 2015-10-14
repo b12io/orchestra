@@ -1,0 +1,144 @@
+@import 'orchestra/common/css/common.scss';
+@import 'orchestra/common/css/base.scss';
+
+$task-card-height: 8.5rem;
+$task-card-padding: 1rem;
+$task-card-margin-bottom: 1.5rem;
+
+// TODO(jrbotros): use variable from bootstrap-sass?
+$bootstrap-md: "(min-width: 992px)";
+
+.tasks-section {
+  .section-header {
+    .warning-message {
+      font-style: italic;
+      margin-left: 1.5rem;
+      font-size: 1.5rem;
+    }
+
+    // New task buttons
+    .btn-new-task {
+      width: 150px;
+      margin: 0 5px;
+    }
+    .btn-new-entry-task {
+      @extend .btn-new-task;
+      background-color: $dark-green;
+      &.disabled {
+        background-color: rgba($dark-green, 0.6);
+      }
+    }
+    .btn-new-review-task {
+      @extend .btn-new-task;
+      background-color: $light-green;
+      &.disabled {
+        background-color: rgba($light-green, 0.6);
+      }
+    }
+  }
+
+  .col-task {
+    h4 {
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid $light-gray;
+    }
+    &.col-waiting {
+      background-color: #eee;
+      opacity: 0.6;
+    }
+
+    .tasks-inactive {
+      opacity: 0.6;
+      a, a:hover, a:focus, a:visited {
+        pointer-events: none;
+        cursor: default;
+      }
+      .task-card {
+        &:hover {
+          background-color: blue;
+        }
+      }
+    }
+
+    .task-cards {
+      min-height: $task-card-height;
+      // Divs created by ng-repeat
+      > div:not(:last-child) {
+        margin-bottom: $task-card-margin-bottom;
+        [class*="col-"] {
+          margin-bottom: $task-card-margin-bottom;
+        }
+      }
+      .task-card-wrapper {
+        width: 100%;
+        padding: $task-card-padding;
+        height: $task-card-height;
+        text-align: left;
+        background-color: white;
+
+        // Colored border to left of task card; use :before to avoid diagonal
+        // artifact with border-left
+        $card-border-width-small: 0.1rem;
+        $card-border-width-large: 1.5rem;
+        position: relative;
+        padding-left: $task-card-padding + $card-border-width-large;
+        border: $card-border-width-small solid $light-gray;
+        &:before {
+          content: '';
+          width: $card-border-width-large;
+          position: absolute;
+          top: -$card-border-width-small;
+          bottom: -$card-border-width-small;
+          left: -$card-border-width-small;
+          background: $main-blue;
+        }
+
+        &:hover {
+          background-color: rgba($bold-yellow, 0.2);
+        }
+        a {
+          color: $dark-gray;
+          &:hover, &:visited, &:focus {
+            color: $dark-gray;
+            text-decoration: none;
+          }
+          .task-card {
+            // Cut task descriptions off after two lines
+            height: $task-card-height - 2 * $task-card-padding;
+            overflow: hidden;
+            .task-type {
+              // border-bottom: 2px solid $main-blue;
+              h5 {
+                text-transform: uppercase;
+                color: $main-blue;
+                width: 100%;
+                font-size: 1.6em;
+                margin: 5px 0;
+                font-weight: bold;
+              }
+            }
+            .task-detail {
+              margin: 5px 0;
+              font-size: 1.2em;
+              line-height: 1.5em;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .active-tasks {
+    margin-top: 0;
+    @media #{$bootstrap-md} {
+      .task-cards {
+        min-height: $task-card-height * 4 + $task-card-margin-bottom * 3;
+      }
+    }
+  }
+
+  .completed-tasks {
+    padding-bottom: $panel-padding;
+  }
+}

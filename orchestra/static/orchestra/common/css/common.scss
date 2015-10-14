@@ -1,0 +1,28 @@
+/**
+ * Common stylesheet for Orchestra.
+ *
+ * This partial provides common variables and mixins useful for various view and
+ * component styles.
+ */
+
+$main-blue: rgb(0, 121, 191);
+$light-gray: rgb(204, 204, 204);
+$dark-gray: rgb(60, 60, 60);
+$light-green: rgb(46, 204, 113);
+$dark-green: rgb(39, 174, 96);
+$bold-yellow: rgb(230, 198, 55);
+
+$sqrt-2: 1.4142;
+
+$base-font-size: 10px;
+$panel-margin: 3rem;
+$panel-padding: 1.5rem;
+$panel-button-margin: 1.5rem;
+
+@mixin vendor-prefix($name, $argument) {
+  -webkit-#{$name}: #{$argument};
+  -ms-#{$name}: #{$argument};
+  -moz-#{$name}: #{$argument};
+  -o-#{$name}: #{$argument};
+  #{$name}: #{$argument};
+}
