@@ -46,7 +46,9 @@ def _prettify_project_details(project, tasks_data, steps):
     tasks = []
 
     # Tie the tasks to their relevant steps so they can be displayed in order
-    for step_slug, step_description in steps:
+    for step_information in steps:
+        step_slug = step_information['slug']
+        step_description = step_information['description']
         task = tasks_data.get(step_slug, {
             'step_slug': step_slug,
             'status': 'Not started',
@@ -54,6 +56,9 @@ def _prettify_project_details(project, tasks_data, steps):
         })
 
         task['step_description'] = step_description
+        if 'start_datetime' in task:
+            task['start_datetime'] = (datetime.strptime(
+                task['start_datetime'], '%Y-%m-%dT%H:%M:%S.%fZ'))
 
         # Assignment times need to be formatted more nicely
         for assignment in task.get('assignments', []):

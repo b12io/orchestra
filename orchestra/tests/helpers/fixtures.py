@@ -1,11 +1,14 @@
 import factory
 
+from copy import deepcopy
+from dateutil.parser import parse
 from django.contrib.auth.models import User
 from django.test import Client
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import WorkerCertification
 from orchestra.slack import create_project_slack_group
+from orchestra.utils.task_properties import assignment_history
 
 
 class UserFactory(factory.django.DjangoModelFactory):
@@ -227,7 +230,9 @@ def setup_models(test_case):
     # Create projects
     test_case.projects = {}
     for name, workflow_slug in projects.items():
-        test_case.projects[name] = ProjectFactory(workflow_slug=workflow_slug)
+        test_case.projects[name] = ProjectFactory(
+            workflow_slug=workflow_slug,
+            start_datetime=parse('2015-10-12T00:00:00+00:00'))
         create_project_slack_group(test_case.projects[name])
 
     # Create and assign taks
@@ -235,7 +240,8 @@ def setup_models(test_case):
     for task_slug, details in tasks.items():
         task = TaskFactory(project=test_case.projects[details['project_name']],
                            step_slug=test_case.test_step_slug,
-                           status=details['status'])
+                           status=details['status'],
+                           start_datetime=parse('2015-10-12T01:00:00+00:00'))
         test_case.tasks[task_slug] = task
         for i, (user_id,
                 task_data,
@@ -245,4 +251,56 @@ def setup_models(test_case):
                 task=task,
                 status=assignment_status,
                 assignment_counter=i,
-                in_progress_task_data=task_data)
+                in_progress_task_data=task_data,
+                start_datetime=parse(
+                    '2015-10-12T0{}:00:00+00:00'.format(2 + i)))
+
+
+def setup_task_history(test):
+    task = test.tasks['rejected_review']
+
+    test._submit_assignment(
+        test.clients[6], task.id, seconds=35)
+    test._submit_assignment(
+        test.clients[7], task.id, command='reject', seconds=36)
+    test._submit_assignment(
+        test.clients[6], task.id, seconds=37)
+    test._submit_assignment(
+        test.clients[7], task.id, command='accept', seconds=38)
+
+    # Fill out the snapshots for all assignments
+    assignments = assignment_history(task)
+    first_assignment = assignments[0]
+    second_assignment = assignments[1]
+    third_assignment = assignments[2]
+
+    first_assignment.snapshots['snapshots'] = deepcopy(
+        second_assignment.snapshots['snapshots'])
+    second_assignment.snapshots['snapshots'] = (
+        deepcopy(third_assignment.snapshots['snapshots']) +
+        second_assignment.snapshots['snapshots'])[:-1]
+
+    def fix_datetimes(snapshots, new_datetimes):
+        for snapshot, new_datetime in zip(snapshots, new_datetimes):
+            snapshot['datetime'] = new_datetime
+
+    # Explicitly set the iteration datetimes.  If we didn't, the timestamps
+    # would be `datetime.now`, which we can't test against.  The explicitly set
+    # times are predictable distance apart, so we can test the
+    # resulting latency reports.
+    fix_datetimes(
+        first_assignment.snapshots['snapshots'],
+        ['2015-10-12T02:02:00+00:00', '2015-10-12T03:05:00+00:00'])
+    fix_datetimes(
+        second_assignment.snapshots['snapshots'],
+        ['2015-10-12T03:01:00+00:00', '2015-10-12T03:07:00+00:00',
+         '2015-10-12T04:03:00+00:00', '2015-10-12T04:10:00+00:00'])
+    fix_datetimes(
+        third_assignment.snapshots['snapshots'],
+        ['2015-10-12T04:02:00+00:00', '2015-10-12T04:13:00+00:00'])
+
+    first_assignment.save()
+    second_assignment.save()
+    third_assignment.save()
+
+    return task

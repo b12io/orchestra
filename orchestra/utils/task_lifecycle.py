@@ -1,9 +1,9 @@
 import random
-from datetime import datetime
 from importlib import import_module
 
 from django.conf import settings
 from django.db import transaction
+from django.utils import timezone
 
 from orchestra.core.errors import AssignmentPolicyError
 from orchestra.core.errors import IllegalTaskSubmission
@@ -773,7 +773,7 @@ def submit_task(task_id, task_data, snapshot_type, worker, work_time_seconds):
     assignment.in_progress_task_data = task_data
     assignment.snapshots['snapshots'].append(
         {'data': assignment.in_progress_task_data,
-         'datetime': datetime.utcnow().isoformat(),
+         'datetime': timezone.now().isoformat(),
          'type': snapshot_type,
          'work_time_seconds': work_time_seconds
          })

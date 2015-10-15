@@ -47,6 +47,7 @@ class TaskSerializer(serializers.ModelSerializer):
             'status',
             'latest_data',
             'assignments',
+            'start_datetime'
         )
 
     status = serializers.SerializerMethodField()

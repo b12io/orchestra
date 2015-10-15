@@ -3,12 +3,14 @@ import json
 from copy import deepcopy
 from datetime import datetime
 from django.test import override_settings
+from django.utils import timezone
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.workflow import get_workflow_by_slug
 from orchestra.workflow import Step
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_models
+from orchestra.tests.helpers.fixtures import setup_task_history
 from orchestra.utils.task_lifecycle import create_subsequent_tasks
 from orchestra.utils.assignment_snapshots import load_snapshots
 
@@ -470,26 +472,28 @@ class DashboardTestCase(OrchestraTestCase):
         good_snapshots = {
             'snapshots': [{
                 'data': {},
-                'datetime': datetime.utcnow().isoformat(),
+                'datetime': timezone.now().isoformat(),
                 'type': TaskAssignment.SnapshotType.SUBMIT,
                 'work_time_seconds': 1
             }],
-            '__version': 1}
+            '__version': 2}
         old_snapshots = {
             'snapshots': [
                 {
                     'data': {},
+                    # timezone-naive
                     'datetime': datetime.utcnow().isoformat(),
                     'type': TaskAssignment.SnapshotType.SUBMIT,
                 }, {
                     'data': {},
-                    'datetime': datetime.utcnow().isoformat(),
+                    'datetime': timezone.now().isoformat(),
                     'type': TaskAssignment.SnapshotType.SUBMIT,
                     'work_time_seconds': 1
                 }]}
         upgraded_snapshots = deepcopy(old_snapshots)
-        upgraded_snapshots['__version'] = 1
+        upgraded_snapshots['__version'] = 2
         upgraded_snapshots['snapshots'][0]['work_time_seconds'] = 0
+        upgraded_snapshots['snapshots'][0]['datetime'] += '+00:00'
 
         self.assertEquals(load_snapshots(good_snapshots), good_snapshots)
         self.assertEquals(load_snapshots(old_snapshots), upgraded_snapshots)
@@ -499,26 +503,14 @@ class DashboardTestCase(OrchestraTestCase):
         Ensure that timing information is properly recorded across
         submissions/rejections/acceptances.
         """
-        task = self.tasks['rejected_review']
-
-        self._submit_assignment(
-            self.clients[6], task.id, seconds=35)
-
-        self._submit_assignment(
-            self.clients[7], task.id, command='reject', seconds=36)
-
-        self._submit_assignment(
-            self.clients[6], task.id, seconds=37)
-
-        self._submit_assignment(
-            self.clients[7], task.id, command='accept', seconds=38)
+        task = setup_task_history(self)
 
         self._verify_good_task_assignment_information(
             self.clients[6], {'task_id': task.id},
             task.project.short_description,
             'Submitted', 'Complete', False,
             True, {'test': 'test'}, self.workers[6],
-            work_times_seconds=[35, 37])
+            work_times_seconds=[36, 38, 35])
 
         self._verify_good_task_assignment_information(
             self.clients[7], {'task_id': task.id},
@@ -574,16 +566,3 @@ class DashboardTestCase(OrchestraTestCase):
             }
         }
         self.assertEquals(returned, expected)
-
-    def _submit_assignment(self, client, task_id, data=None,
-                           seconds=1, command='submit'):
-        if data is None:
-            data = {'test': 'test'}
-        request = json.dumps(
-            {'task_id': task_id, 'task_data': data, 'command_type': command,
-             'work_time_seconds': seconds})
-
-        return client.post(
-            '/orchestra/api/interface/submit_task_assignment/',
-            request,
-            content_type='application/json')

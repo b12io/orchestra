@@ -20,6 +20,7 @@ from orchestra.utils.assignment_snapshots import empty_snapshots
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.google_apps import mock_create_drive_service
+from orchestra.workflow import Step
 
 
 class ProjectAPITestCase(OrchestraTestCase):
@@ -110,9 +111,15 @@ class ProjectAPITestCase(OrchestraTestCase):
                 }
             },
             'steps': [
-                ['step1', 'The longer description of the first step'],
-                ['step2', 'The longer description of the second step'],
-                ['step3', 'The longer description of the third step']
+                {'slug': 'step1',
+                 'description': 'The longer description of the first step',
+                 'worker_type': Step.WorkerType.HUMAN},
+                {'slug': 'step2',
+                 'description': 'The longer description of the second step',
+                 'worker_type': Step.WorkerType.HUMAN},
+                {'slug': 'step3',
+                 'description': 'The longer description of the third step',
+                 'worker_type': Step.WorkerType.HUMAN}
             ]
         }
 
@@ -143,8 +150,8 @@ class ProjectAPITestCase(OrchestraTestCase):
             {'project_id': self.projects['no_task_assignments'].id},
             format='json')
         returned = json.loads(response.content.decode('utf-8'))
-        del returned['tasks']['step1']['id']
-        del returned['tasks']['step1']['project']
+        for key in ('id', 'project', 'start_datetime'):
+            del returned['tasks']['step1'][key]
         self.assertEquals(response.status_code, 200)
         self.assertEquals(returned['tasks'], {
             'step1': {
@@ -162,7 +169,7 @@ class ProjectAPITestCase(OrchestraTestCase):
     def test_get_workflow_steps(self):
         # See orchestra.tests.helpers.workflow for workflow description
         steps = get_workflow_steps('crazy_workflow')
-        slugs = [step[0] for step in steps]
+        slugs = [step['slug'] for step in steps]
 
         self.assertTrue(slugs.index('stepC') > slugs.index('stepA'))
         self.assertTrue(slugs.index('stepC') > slugs.index('stepB'))
