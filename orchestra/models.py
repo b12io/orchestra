@@ -1,6 +1,7 @@
 from datetime import datetime
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils import timezone
 from jsonfield import JSONField
 
 from orchestra.core.errors import ModelSaveError
@@ -9,7 +10,6 @@ from orchestra.workflow import get_step_choices
 from orchestra.workflow import get_workflow_by_slug
 from orchestra.workflow import Step
 from orchestra.utils.assignment_snapshots import load_snapshots
-
 
 # TODO(marcua): Convert ManyToManyFields to django-hstore referencefields or
 # wait for django-postgres ArrayFields in Django 1.8.
@@ -184,6 +184,8 @@ class Task(models.Model):
     A task is a cohesive unit of work representing a workflow step.
 
     Attributes:
+        start_datetime (datetime.datetime):
+            The time the Task was created.
         step_slug (str):
             Identifies the step that the project represents.
         project (orchestra.models.Project):
@@ -209,6 +211,7 @@ class Task(models.Model):
         (Status.ABORTED, 'Aborted'),
         (Status.COMPLETE, 'Complete'))
 
+    start_datetime = models.DateTimeField(default=timezone.now)
     step_slug = models.CharField(max_length=200,
                                  choices=get_step_choices())
     project = models.ForeignKey(Project, related_name='tasks')
@@ -224,7 +227,7 @@ class TaskAssignment(models.Model):
 
     Attributes:
         start_datetime (datetime.datetime):
-            The time the project was created.
+            The time the task was assigned for this iteration.
         worker (orchestra.models.Worker):
             The worker to whom the given task is assigned.
         task (orchestra.models.Task):
@@ -265,7 +268,7 @@ class TaskAssignment(models.Model):
         (Status.PROCESSING, 'Processing'),
         (Status.SUBMITTED, 'Submitted'))
 
-    start_datetime = models.DateTimeField(auto_now_add=True)
+    start_datetime = models.DateTimeField(default=timezone.now)
     worker = models.ForeignKey(Worker,
                                null=True,
                                blank=True)

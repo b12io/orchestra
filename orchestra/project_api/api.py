@@ -1,6 +1,8 @@
 from orchestra.models import Project
 from orchestra.workflow import get_workflow_by_slug
+from orchestra.project_api.serializers import ProjectSerializer
 from orchestra.project_api.serializers import TaskSerializer
+
 
 import logging
 
@@ -9,6 +11,19 @@ logger = logging.getLogger(__name__)
 
 class MalformedDependencyException(Exception):
     pass
+
+
+def get_project_information(project_id):
+    project = Project.objects.get(pk=project_id)
+    project_data = ProjectSerializer(project).data
+    tasks = get_project_task_data(project_id)
+    steps = get_workflow_steps(project.workflow_slug)
+
+    return {
+        'project': project_data,
+        'tasks': tasks,
+        'steps': steps
+    }
 
 
 def get_project_task_data(project_id):
@@ -58,8 +73,10 @@ def get_workflow_steps(workflow_slug):
             continue
 
         already_added.add(current_node)
-        steps.append((current_node,
-                      workflow.get_step(current_node).description))
+        current_step = workflow.get_step(current_node)
+        steps.append({'slug': current_node,
+                      'description': current_step.description,
+                      'worker_type': current_step.worker_type})
         for key, dependencies in graph.items():
             if (current_node in dependencies and
                     key not in already_added):

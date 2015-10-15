@@ -66,6 +66,9 @@
         <li>
             <p>
                 <strong>{{ task.step_description }}:</strong> {{ task.status }}
+                {% if 'start_datetime' in task %}
+                    (Created {{ task.start_datetime }})
+                {% endif %}
             </p>
 
             {% if task.assignments %}

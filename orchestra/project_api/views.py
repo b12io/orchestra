@@ -6,11 +6,9 @@ from jsonview.exceptions import BadRequest
 from orchestra.models import Project
 from orchestra.models import WorkerCertification
 from orchestra.project import create_project_with_tasks
-from orchestra.workflow import get_workflows
-from orchestra.project_api.api import get_workflow_steps
-from orchestra.project_api.api import get_project_task_data
+from orchestra.project_api.api import get_project_information
 from orchestra.project_api.decorators import api_endpoint
-from orchestra.project_api.serializers import ProjectSerializer
+from orchestra.workflow import get_workflows
 from urllib.parse import urlparse
 from urllib.parse import urlunsplit
 
@@ -21,22 +19,12 @@ logger = logging.getLogger(__name__)
 @api_endpoint(['POST'])
 def project_information(request):
     try:
-        try:
-            project_id = json.loads(request.body.decode())['project_id']
-        except KeyError:
-            raise BadRequest('project_id is required')
-
-        project = Project.objects.get(pk=project_id)
-        project_data = ProjectSerializer(project).data
-        tasks = get_project_task_data(project_id)
-        steps = get_workflow_steps(project.workflow_slug)
-
-        return {
-            'project': project_data,
-            'tasks': tasks,
-            'steps': steps
-        }
-
+        # TODO(marcua): Add checking for json.loads exceptions to all
+        # endpoints.
+        return get_project_information(
+            json.loads(request.body.decode())['project_id'])
+    except KeyError:
+        raise BadRequest('project_id is required')
     except Project.DoesNotExist:
         raise BadRequest('No project for given id')
 

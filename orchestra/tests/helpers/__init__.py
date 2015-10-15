@@ -48,3 +48,16 @@ class OrchestraTestCase(TestCase):
         returned = json.loads(response.content.decode('utf-8'))
         self.assertEquals(returned,
                           expected_json_payload)
+
+    def _submit_assignment(self, client, task_id, data=None,
+                           seconds=1, command='submit'):
+        if data is None:
+            data = {'test': 'test'}
+        request = json.dumps(
+            {'task_id': task_id, 'task_data': data, 'command_type': command,
+             'work_time_seconds': seconds})
+
+        return client.post(
+            '/orchestra/api/interface/submit_task_assignment/',
+            request,
+            content_type='application/json')
