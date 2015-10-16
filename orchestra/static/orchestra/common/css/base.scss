@@ -65,6 +65,16 @@ a.logo {
   }
 }
 
+#hijacked-warning {
+  left: 25%;
+  width: 50%;
+  border-radius: 0 0 5px 5px;
+  > span:last-child {
+    // Hack to override button container inline style
+    margin-right: 0 !important;
+  }
+}
+
 .section-panel {
   margin: $panel-button-margin;
   box-shadow: 0 1px 3px black;
