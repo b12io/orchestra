@@ -1,5 +1,6 @@
 include NOTICE
 include LICENSE
+include release.py
 recursive-include orchestra *
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
