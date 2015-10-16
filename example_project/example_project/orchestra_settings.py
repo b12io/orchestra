@@ -43,6 +43,8 @@ def setup_orchestra(settings_module_name):
         'orchestra',
         'beanstalk_dispatch',
         'registration',
+        'hijack',
+        'compat'
     )
 
     settings.STATICFILES_FINDERS += (
@@ -89,6 +91,10 @@ def setup_orchestra(settings_module_name):
     # Orchestra Registration setings
     settings.ACCOUNT_ACTIVATION_DAYS = 7  # One-week activation window
     settings.REGISTRATION_AUTO_LOGIN = True  # Automatically log the user in.
+
+    # Prevent hijack buttons from displaying in admin (otherwise, hijack can't
+    # be disabled by excluding the relevant URLs)
+    settings.SHOW_HIJACKUSER_IN_ADMIN = False
 
     # API Authentication
     #####################

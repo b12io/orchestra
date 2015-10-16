@@ -1,5 +1,6 @@
 {% load compress %}
 {% load staticfiles %}
+{% load hijack_tags %}
 
 <!DOCTYPE html>
 <html lang="en" ng-app="orchestra">
@@ -23,6 +24,7 @@
     <!-- Custom styles for this template -->
     <link rel="stylesheet" href="{% static 'orchestra/common/css/lib/style.css' %}">
     <link rel="stylesheet" href="{% static 'orchestra/common/css/lib/style-responsive.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'hijack/hijack-styles.css' %}" />
     <link rel="stylesheet" type="text/x-scss" href="{% static 'orchestra/common/css/orchestra.scss' %}">
     <link rel="stylesheet" href="{% static 'orchestra/common/components/quill/css/quill.snow.min.css' %}">
     <link rel="stylesheet" type="text/x-scss" href="{% static 'orchestra/common/components/quill/css/quill.scss' %}">
@@ -43,7 +45,7 @@
   </head>
 
   <body>
-
+  {{ request|hijackNotification }}
   <section id="container" >
     <!--header start-->
     <header class="header">

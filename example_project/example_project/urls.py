@@ -21,6 +21,9 @@ urlpatterns = [
     url(r'^orchestra/accounts/',
         include('registration.backends.default.urls')),
 
+    # Optionally include these routes to enable user hijack functionality.
+    url(r'^orchestra/switch/', include('hijack.urls')),
+
     # Logout then login is not available as a standard django
     # registration route.
     url(r'^orchestra/accounts/logout_then_login/$',
