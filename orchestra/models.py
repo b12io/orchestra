@@ -295,7 +295,7 @@ class TaskAssignment(models.Model):
 
     # Opaque field that stores current state of task as per the Step's
     # description
-    in_progress_task_data = JSONField()
+    in_progress_task_data = JSONField(default={})
 
     # When a worker submits, accepts, or rejects a task, we snapshot their
     # in_workflow_task_data along with the date in the following format:
@@ -305,7 +305,7 @@ class TaskAssignment(models.Model):
     #    'work_time_seconds': integer seconds,
     #    'type': value from SnapshotType}]
     #  '__version': 1}
-    snapshots = JSONField()
+    snapshots = JSONField(default={})
 
     def save(self, *args, **kwargs):
         workflow = get_workflow_by_slug(self.task.project.workflow_slug)
