@@ -8,7 +8,7 @@ from orchestra.workflow import Step
 from pandas import DataFrame
 
 
-def work_time_df(projects):
+def work_time_df(projects, human_only=True, complete_tasks_only=True):
     """
     Return projects' task assignment iteration timing information.
 
@@ -47,7 +47,8 @@ def work_time_df(projects):
     # version of this.
     time_data = list(itertools.chain.from_iterable(
         project_time_row_generator(
-            get_project_information(project.id))
+            get_project_information(project.id),
+            human_only, complete_tasks_only)
         for project in projects))
     df = DataFrame(time_data)
     return df
@@ -78,7 +79,9 @@ class Iteration(object):
         }
 
 
-def project_time_row_generator(project_information):
+def project_time_row_generator(project_information,
+                               human_only,
+                               complete_tasks_only):
     """
     Given a project, yields all task assignment iterations, reporting
     calendar and work times.
@@ -92,9 +95,11 @@ def project_time_row_generator(project_information):
         # TODO(marcua): Eventually we'll want to support more fine-grained
         # task filtering for completed vs. in-progress tasks, or to
         # include machine tasks.
-        if step_slug not in human_slugs:
+        if human_only and step_slug not in human_slugs:
             continue
-        if task['status'] != dict(Task.STATUS_CHOICES)[Task.Status.COMPLETE]:
+        if (complete_tasks_only
+                and task['status'] !=
+                dict(Task.STATUS_CHOICES)[Task.Status.COMPLETE]):
             continue
         iterations = []
         for assignment_idx, assignment in enumerate(task['assignments']):
