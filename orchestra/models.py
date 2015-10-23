@@ -321,6 +321,10 @@ class TaskAssignment(models.Model):
 
         super(TaskAssignment, self).save(*args, **kwargs)
 
+    def __str__(self):
+        return '{} - {} - {}'.format(
+            str(self.task), self.assignment_counter, str(self.worker))
+
 
 # Attach a post-init signal to TaskAssigment.  Every
 # TaskAssignment that gets constructed will now call
