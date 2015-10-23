@@ -25,20 +25,23 @@ def main(args):
     # Update orchestra/__init__.py with the new version
     if args.no_commit:
         print('--no-commit passed, not committing new version to Orchestra.')
+        release_version = old_version
+        version_text = 'current'
     else:
         update_version('orchestra', new_version, fake=args.fake)
+        release_version = new_version
+        version_text = 'new'
 
         # Commit the update to the repo
         commit_and_push(fake=args.fake)
 
     # Create a new tag for the release
-    version_text = 'current' if args.no_commit else 'new'
     if args.no_tag:
         print('--no-tag passed, not tagging the {} version.'.format(
             version_text))
-        tag_str = 'v{}'.format(old_version)
+        tag_str = 'v{}'.format(release_version)
     else:
-        tag_str = tag_release(new_version, fake=args.fake)
+        tag_str = tag_release(release_version, fake=args.fake)
 
     # Release the new version on pypi
     if args.no_pypi:
@@ -46,6 +49,12 @@ def main(args):
             version_text))
     else:
         pypi_release(tag_str, fake=args.fake)
+
+    if not args.no_tag:
+        print('Congratulations! Version {} has been tagged. You will want to '
+              'make sure that the documentation is up to date, by activating '
+              'v{} and by forcing a rebuild of the stable version. '
+              .format(release_version, release_version))
 
 
 def verify_and_warn(old_version, new_version, args):
