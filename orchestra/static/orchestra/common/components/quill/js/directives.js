@@ -36,9 +36,12 @@
 
         // Set up two-way link between quill and parent scope attribute passed
         // in by directive caller
-        if (scope.data) {
-          scope.editor.setHTML(scope.data);
-        }
+        scope.$watch('data', function(now, before) {
+          if (scope.data && scope.data != scope.editor.getHTML()) {
+            scope.editor.setHTML(scope.data);
+          }
+        });
+
 
         // Editor set to read-only upon initialization.
         if (scope.readonly) {
