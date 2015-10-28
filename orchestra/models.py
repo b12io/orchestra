@@ -1,4 +1,3 @@
-from datetime import datetime
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
@@ -55,7 +54,7 @@ class Worker(models.Model):
             The worker's Slack username if Slack integration is enabled.
     """
     user = models.OneToOneField(User)
-    start_datetime = models.DateTimeField(default=datetime.now)
+    start_datetime = models.DateTimeField(default=timezone.now)
     slack_username = models.CharField(max_length=200, blank=True, null=True)
 
     def __str__(self):
@@ -140,12 +139,12 @@ class Project(models.Model):
     A project is a collection of tasks representing a workflow.
 
     Attributes:
+        start_datetime (datetime.datetime):
+            The time the project was created.
         status (orchestra.models.Project.Status):
             Represents whether the project is being actively worked on.
         workflow_slug (str):
             Identifies the workflow that the project represents.
-        start_datetime (datetime.datetime):
-            The time the project was created.
         priority (int):
             Represents the relative priority of the project.
         task_class (int):
@@ -166,6 +165,7 @@ class Project(models.Model):
         (Status.ACTIVE, 'Active'),
         (Status.ABORTED, 'Aborted'))
 
+    start_datetime = models.DateTimeField(default=timezone.now)
     status = models.IntegerField(choices=STATUS_CHOICES,
                                  default=Status.ACTIVE)
 
@@ -173,7 +173,6 @@ class Project(models.Model):
                                      choices=get_workflow_choices())
 
     short_description = models.TextField()
-    start_datetime = models.DateTimeField(auto_now_add=True)
     priority = models.IntegerField()
     project_data = JSONField(default={})
     task_class = models.IntegerField(

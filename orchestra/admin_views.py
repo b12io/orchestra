@@ -1,8 +1,8 @@
-from datetime import datetime
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render
 from django.utils.encoding import force_text
 from django.utils.text import capfirst
+from django.utils.dateparse import parse_datetime
 from orchestra.models import Project
 from orchestra.orchestra_api import get_project_information
 
@@ -28,8 +28,7 @@ def project_details(request, project_id):
 
 
 def _prettify_project_details(project, tasks_data, steps):
-    project['start_datetime'] = datetime.strptime(project['start_datetime'],
-                                                  '%Y-%m-%dT%H:%M:%S.%fZ')
+    project['start_datetime'] = parse_datetime(project['start_datetime'])
 
     # Clean up the project_data dict's keys so they will display nicely
     url_regex = re.compile(r"url", re.IGNORECASE)
@@ -57,13 +56,11 @@ def _prettify_project_details(project, tasks_data, steps):
 
         task['step_description'] = step_description
         if 'start_datetime' in task:
-            task['start_datetime'] = (datetime.strptime(
-                task['start_datetime'], '%Y-%m-%dT%H:%M:%S.%fZ'))
+            task['start_datetime'] = parse_datetime(task['start_datetime'])
 
         # Assignment times need to be formatted more nicely
         for assignment in task.get('assignments', []):
-            new_datetime = datetime.strptime(assignment['start_datetime'],
-                                             '%Y-%m-%dT%H:%M:%S.%fZ')
+            new_datetime = parse_datetime(assignment['start_datetime'])
             assignment['start_datetime'] = new_datetime
 
         tasks.append(task)
