@@ -10,7 +10,7 @@ clean:
 lint:
 	flake8 .
 
-test: build_docs lint
+test: lint
 	cd example_project && python3 $(TEST_CMD)
 
 coverage:

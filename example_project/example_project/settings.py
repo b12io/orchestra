@@ -84,7 +84,7 @@ DATABASES = {
         'NAME': 'circle_test',
         'USER': 'ubuntu',
         'PASSWORD': '',
-        'HOST': '',
+        'HOST': 'localhost',
         'PORT': '5432',
     }
 }
