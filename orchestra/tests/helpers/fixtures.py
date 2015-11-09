@@ -4,6 +4,7 @@ from copy import deepcopy
 from dateutil.parser import parse
 from django.contrib.auth.models import User
 from django.test import Client
+from django.test import override_settings
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import WorkerCertification
@@ -68,6 +69,7 @@ class TaskAssignmentFactory(factory.django.DjangoModelFactory):
     snapshots = {}
 
 
+@override_settings(SLACK_EXPERTS=True)
 def setup_models(test_case):
     """ Set up models that we'll use in multiple tests """
     # Certification generation data
