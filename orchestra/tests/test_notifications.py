@@ -23,17 +23,21 @@ class BasicNotificationsTestCase(OrchestraTestCase):
         setup_models(self)
 
     @override_settings(SLACK_INTERNAL=True)
+    @override_settings(SLACK_EXPERTS=True)
     def test_notify_status_change(self):
-        slack_messages = self.slack.get_messages(
+        project = self.projects['empty_project']
+        internal_slack_messages = self.slack.get_messages(
             settings.SLACK_INTERNAL_NOTIFICATION_CHANNEL)
+        experts_slack_messages = self.slack.get_messages(
+            project.slack_group_id)
 
         def _validate_slack_messages(message_stub):
             """
             Check that correct slack message was sent if API key present.
             """
-            self.assertTrue(message_stub in slack_messages.pop())
+            self.assertIn(message_stub, internal_slack_messages.pop())
+            self.assertIn(message_stub, experts_slack_messages.pop())
 
-        project = self.projects['empty_project']
         task = TaskFactory(project=project,
                            step_slug=self.test_step_slug,
                            status=Task.Status.AWAITING_PROCESSING)
@@ -52,7 +56,8 @@ class BasicNotificationsTestCase(OrchestraTestCase):
                           "You've been assigned to a new task!")
 
         _validate_slack_messages('Task has been picked up by a worker.')
-        self.assertEquals(len(slack_messages), 0)
+        self.assertEquals(len(internal_slack_messages), 0)
+        self.assertEquals(len(experts_slack_messages), 0)
 
         with patch('orchestra.utils.task_lifecycle._is_review_needed',
                    return_value=True):
@@ -70,7 +75,8 @@ class BasicNotificationsTestCase(OrchestraTestCase):
                           'Your task is under review!')
 
         _validate_slack_messages('Task is awaiting review.')
-        self.assertEquals(len(slack_messages), 0)
+        self.assertEquals(len(internal_slack_messages), 0)
+        self.assertEquals(len(experts_slack_messages), 0)
 
         # Reviewer picks up task
         task = assign_task(self.workers[1].id, task.id)
@@ -79,7 +85,8 @@ class BasicNotificationsTestCase(OrchestraTestCase):
         self.assertEquals(len(self.mail.inbox), 0)
 
         _validate_slack_messages('Task is under review.')
-        self.assertEquals(len(slack_messages), 0)
+        self.assertEquals(len(internal_slack_messages), 0)
+        self.assertEquals(len(experts_slack_messages), 0)
 
         # Reviewer rejects task
         task = submit_task(task.id, {}, TaskAssignment.SnapshotType.REJECT,
@@ -94,7 +101,8 @@ class BasicNotificationsTestCase(OrchestraTestCase):
                           'Your task has been returned')
 
         _validate_slack_messages('Task was returned by reviewer.')
-        self.assertEquals(len(slack_messages), 0)
+        self.assertEquals(len(internal_slack_messages), 0)
+        self.assertEquals(len(experts_slack_messages), 0)
 
         # Entry-level worker resubmits task
         task = submit_task(task.id, {}, TaskAssignment.SnapshotType.SUBMIT,
@@ -109,7 +117,8 @@ class BasicNotificationsTestCase(OrchestraTestCase):
                           'A task is ready for re-review!')
 
         _validate_slack_messages('Task is under review.')
-        self.assertEquals(len(slack_messages), 0)
+        self.assertEquals(len(internal_slack_messages), 0)
+        self.assertEquals(len(experts_slack_messages), 0)
 
         # First reviewer accepts task
         with patch('orchestra.utils.task_lifecycle._is_review_needed',
@@ -126,7 +135,8 @@ class BasicNotificationsTestCase(OrchestraTestCase):
                           'Your task is under review!')
 
         _validate_slack_messages('Task is awaiting review.')
-        self.assertEquals(len(slack_messages), 0)
+        self.assertEquals(len(internal_slack_messages), 0)
+        self.assertEquals(len(experts_slack_messages), 0)
 
         # Second reviewer picks up task
         task = assign_task(self.workers[3].id, task.id)
@@ -135,7 +145,8 @@ class BasicNotificationsTestCase(OrchestraTestCase):
         self.assertEquals(len(self.mail.inbox), 0)
 
         _validate_slack_messages('Task is under review.')
-        self.assertEquals(len(slack_messages), 0)
+        self.assertEquals(len(internal_slack_messages), 0)
+        self.assertEquals(len(experts_slack_messages), 0)
 
         # Second reviewer rejects task
         task = submit_task(task.id, {}, TaskAssignment.SnapshotType.REJECT,
@@ -150,7 +161,8 @@ class BasicNotificationsTestCase(OrchestraTestCase):
                           'Your task has been returned')
 
         _validate_slack_messages('Task was returned by reviewer.')
-        self.assertEquals(len(slack_messages), 0)
+        self.assertEquals(len(internal_slack_messages), 0)
+        self.assertEquals(len(experts_slack_messages), 0)
 
         # First reviewer resubmits task
         task = submit_task(task.id, {}, TaskAssignment.SnapshotType.SUBMIT,
@@ -165,7 +177,8 @@ class BasicNotificationsTestCase(OrchestraTestCase):
                           'A task is ready for re-review!')
 
         _validate_slack_messages('Task is under review.')
-        self.assertEquals(len(slack_messages), 0)
+        self.assertEquals(len(internal_slack_messages), 0)
+        self.assertEquals(len(experts_slack_messages), 0)
 
         # Second reviewer accepts task; task is complete
         with patch('orchestra.utils.task_lifecycle._is_review_needed',
@@ -184,7 +197,8 @@ class BasicNotificationsTestCase(OrchestraTestCase):
         self.mail.clear()
 
         _validate_slack_messages('Task has been completed.')
-        self.assertEquals(len(slack_messages), 0)
+        self.assertEquals(len(internal_slack_messages), 0)
+        self.assertEquals(len(experts_slack_messages), 0)
 
         # End project
         end_project(task.project.id)
@@ -203,4 +217,5 @@ class BasicNotificationsTestCase(OrchestraTestCase):
 
         for task in project.tasks.all():
             _validate_slack_messages('Task has been aborted.')
-        self.assertEquals(len(slack_messages), 0)
+        self.assertEquals(len(internal_slack_messages), 0)
+        self.assertEquals(len(experts_slack_messages), 0)

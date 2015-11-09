@@ -84,6 +84,7 @@ def notify_status_change(task, previous_status=None):
         }
 
     _notify_internal_slack_status_change(task, current_worker)
+    _notify_experts_slack_status_change(task, current_worker)
 
     if message_info is not None:
         message_info['message'] += _task_information(task)
@@ -92,7 +93,7 @@ def notify_status_change(task, previous_status=None):
                   **message_info)
 
 
-def _task_information(task):
+def _task_information(task, with_slack_link=True):
     # TODO(jrbotros): incorporate Django sites framework
     dashboard_link = urljoin(settings.ORCHESTRA_URL,
                              reverse('orchestra:index'))
@@ -105,7 +106,7 @@ def _task_information(task):
                             task.step_slug,
                             dashboard_link)
 
-    if task.project.slack_group_id:
+    if task.project.slack_group_id and with_slack_link:
         slack_link = urljoin(settings.SLACK_EXPERTS_BASE_URL,
                              task.project.slack_group_id)
         task_information += 'View Slack channel: {}'.format(slack_link)
@@ -113,8 +114,10 @@ def _task_information(task):
     return task_information
 
 
-@run_if('SLACK_INTERNAL')
-def _notify_internal_slack_status_change(task, current_worker):
+def _notify_slack_status_change(task, current_worker, slack_api_key,
+                                slack_channel, with_slack_link=True,
+                                with_user_mention=False):
+    slack = SlackService(slack_api_key)
     slack_statuses = {
         Task.Status.PROCESSING: 'Task has been picked up by a worker.',
         Task.Status.PENDING_REVIEW: 'Task is awaiting review.',
@@ -123,13 +126,32 @@ def _notify_internal_slack_status_change(task, current_worker):
         Task.Status.COMPLETE: 'Task has been completed.',
         Task.Status.ABORTED: 'Task has been aborted.',
     }
-
-    slack = SlackService(settings.SLACK_INTERNAL_API_KEY)
+    slack_username = getattr(current_worker, 'slack_username', None)
+    worker_string = current_worker.user.username if current_worker else None
+    if current_worker and slack_username and with_user_mention:
+        user_id = slack.users.get_user_id(slack_username)
+        worker_string += ' (<@{}|{}>)'.format(user_id, slack_username)
     slack_message = ('*{}*\n'
                      '>>>'
                      'Current worker: {}'
                      '{}').format(slack_statuses[task.status],
-                                  current_worker,
-                                  _task_information(task))
-    slack.chat.post_message(settings.SLACK_INTERNAL_NOTIFICATION_CHANNEL,
-                            slack_message)
+                                  worker_string,
+                                  _task_information(
+                                      task, with_slack_link=with_slack_link))
+    slack.chat.post_message(slack_channel, slack_message)
+
+
+@run_if('SLACK_INTERNAL')
+def _notify_internal_slack_status_change(task, current_worker):
+    _notify_slack_status_change(task, current_worker,
+                                settings.SLACK_INTERNAL_API_KEY,
+                                settings.SLACK_INTERNAL_NOTIFICATION_CHANNEL)
+
+
+@run_if('SLACK_EXPERTS')
+def _notify_experts_slack_status_change(task, current_worker):
+    _notify_slack_status_change(task, current_worker,
+                                settings.SLACK_EXPERTS_API_KEY,
+                                task.project.slack_group_id,
+                                with_slack_link=False,
+                                with_user_mention=True)
