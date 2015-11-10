@@ -19,6 +19,7 @@ def upload_editor_image(image_data, image_type, prefix=None):
         'image/jpeg': 'jpg',
         'image/png': 'png',
         'image/gif': 'gif',
+        'image/svg+xml': 'svg',
     }
 
     try:

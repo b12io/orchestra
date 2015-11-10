@@ -21,7 +21,6 @@ $checkbox-font-size: 22px;
       font-weight: bold;
     }
   }
-
   .new-item {
     color: white;
     cursor: pointer;
@@ -92,6 +91,10 @@ li.checklist-item, .new-item {
     margin-bottom: 20px;
   }
 
+  .btn-add-comment {
+    margin-top: $item-title-padding;
+  }
+
   .item-description {
     @include vendor-prefix(transition, all 0.5s);
     opacity: 0;
@@ -104,7 +107,7 @@ li.checklist-item, .new-item {
       @include vendor-prefix(transition, all 0.5s);
       opacity: 1;
       height: auto;
-      min-height: 100px;
+      // min-height: 100px;
       margin-top: $item-title-padding;
       margin-bottom: $item-title-padding;
       padding-left: $item-title-padding;
@@ -117,39 +120,32 @@ li.checklist-item, .new-item {
         &:last-child {
           margin-top: $item-title-padding;
         }
-        .orchestra-quill-wrapper {
-          box-shadow: none;
-          border: 1px solid #ccc;
-          .orchestra-quill-editor {
-            min-height: 150px;
-            height: auto;
+        .comment-editor {
+          position: relative;
+          .btn-submit-comment {
+            position: absolute;
+            top: 6px;
+            right: 6px;
           }
-          &.readonly {
-            .orchestra-quill-editor {
-              min-height: 0;
-              margin-top: 15px;
+          .cancel-comment {
+            color: $main-blue;
+            position: absolute;
+            top: 12px;
+            right: 130px;
+            font-size: 12px;
+            &:hover {
+              text-decoration: underline;
+              cursor: pointer;
             }
           }
-          .orchestra-quill-toolbar {
-            margin-top: 0;
-            border-top: none;
-          }
         }
+
         .comment-meta {
           font-size: 10px;
           position: absolute;
-          top: 15px;
-          left: 15px;
-          right: 15px;
-          .comment-author {
-            float: left;
-          }
-          .comment-timestamp {
-            float: right;
-          }
-        }
-        .add-comment {
-          color: $dark-green;
+          top: 10px;
+          left: 10px;
+          z-index: 1;
         }
       }
     }
@@ -232,8 +228,15 @@ li.checklist-item, .new-item {
       @extend .tool;
       left: 0;
       cursor: pointer;
+      overflow: visible;
       &.selected {
         color: $main-blue;
+      }
+      .badge-comments {
+        position: absolute;
+        top: 0;
+        right: 0;
+        font-size: 6px;
       }
     }
 
@@ -251,6 +254,67 @@ li.checklist-item, .new-item {
       left: 2 * $tool-width;
       cursor: pointer;
       color: red;
+    }
+  }
+  .comment-tools {
+    @extend .disable-select;
+    position: absolute;
+    right: $item-toolbar-width * 2 / 3;
+    top: 0;
+
+    .tool {
+      width: $tool-width;
+      text-align: center;
+      position: absolute;
+      top: 5px;
+    }
+
+    .edit-toggle {
+      @extend .tool;
+      left: 0;
+      cursor: pointer;
+      &.selected {
+        color: $main-blue;
+      }
+    }
+
+    .item-remove {
+      @extend .tool;
+      left: $tool-width;
+      cursor: pointer;
+      color: red;
+    }
+  }
+
+  .orchestra-quill-wrapper {
+    box-shadow: none;
+    border: 1px solid #ccc;
+    .orchestra-quill-editor {
+      margin-top: 41px;
+      // Override default quill height
+      height: auto;
+    }
+
+    @include vendor-prefix(transition, margin 0.5s);
+    &:not(.readonly) {
+      @include vendor-prefix(transition, margin 0.5s);
+      margin: 10px 0;
+      .orchestra-quill-editor {
+        margin-top: 0;
+        height: 200px;
+      }
+    }
+
+    .orchestra-quill-toolbar {
+      margin-top: 0;
+      padding-left: 135px;
+      border-top: none;
+    }
+  }
+
+  .comment.new-comment {
+    .orchestra-quill-toolbar {
+      padding-left: 0;
     }
   }
 }

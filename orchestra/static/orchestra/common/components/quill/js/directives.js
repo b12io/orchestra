@@ -42,21 +42,27 @@
           }
         });
 
-
-        // Editor set to read-only upon initialization.
-        if (scope.readonly) {
-          scope.editor.editor.disable();
-          toolbarContainer.remove();
-          return;
-        }
+        scope.$watch('readonly', function(now, before) {
+          if (now) {
+            scope.editor.editor.disable();
+          }
+          else {
+            scope.editor.editor.enable();
+          }
+        });
 
         scope.editor.on('text-change', function() {
           // Set the focus outside the $digest block.
           // Taken from https://docs.angularjs.org/error/$rootScope/inprog?p0=$digest.
           $timeout(function() {
+                    if (scope.editor.getText().trim().length === 0) {
+                      scope.data = undefined;
+                    }
+                    else {
                       scope.data = scope.editor.getHTML();
-                      scope.$apply();
-                    }, 0, false);
+                    }
+                    scope.$apply();
+                  }, 0, false);
         });
 
         // Upload image via the toolbar button
@@ -175,7 +181,7 @@
         // adding it to the editor (replacing the given character range)
         function uploadImage(file, range, e) {
           var uploadAPIEndpoint = '/orchestra/api/interface/upload_image/'
-          var supportedTypes = ['image/jpeg', 'image/png', 'image/gif']
+          var supportedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml']
 
           if (supportedTypes.indexOf(file.type) === -1) {
             alert('Files type ' + file.type + ' not supported.')

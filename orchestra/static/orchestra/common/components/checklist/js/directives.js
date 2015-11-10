@@ -24,20 +24,18 @@
                           'timestamp': new Date(new Date() - 3*60*60*1000),
                           'text': "The hero image you've chosen doesn't fit " +
                                   'well with the color scheme. Try something ' +
-                                  'less washed out?'
+                                  'less washed out?',
+                          'readonly': true,
+                          'active': false,
                         },
                         {
                           'author': 'john',
                           'timestamp': new Date(new Date() - 2*60*60*1000),
                           'text': 'Sounds good! I swapped it out, what do ' +
-                                  'you think? '
+                                  'you think? ',
+                          'readonly': true,
+                          'active': false,
                         },
-                        {
-                          'author': '',
-                          'text': 'This is a sample checklist comment. ' +
-                                  'You can add a new comment for each new ' +
-                                  'round of iteration on your work!'
-                        }
                       ],
           'checked': false,
           'expanded': false,
@@ -51,30 +49,6 @@
         scope.data.items = scope.data.items || [sampleItem];
         scope.data.deletedItems = scope.data.deletedItems || [];
         scope.hideCompleted = false;
-
-        // Prepare data for submit
-        orchestraService.signals.registerSignal('submit.before', function() {
-          scope.data.items.forEach(function(item) {
-            // Add author and date information to the latest comment. Then,
-            // create a new comment space for the next worker.
-            if (item.comments[item.comments.length - 1].text) {
-              item.comments[item.comments.length - 1].author = scope.author;
-              item.comments[item.comments.length - 1].timestamp = Date.now();
-              item.comments.push({'author': '', 'text': ''});
-            }
-          });
-        });
-
-        orchestraService.signals.registerSignal('submit.error', function() {
-          scope.data.items.forEach(function(item) {
-            // Revert comment changes from submit.before handler
-            if (item.comments[item.comments.length - 1].text) {
-              item.comments.pop();
-              item.comments[item.comments.length - 1].author = '';
-              item.comments[item.comments.length - 1].timestamp = undefined;
-            }
-          });
-        });
 
         // Setup drag to reorder
         scope.preventAction = false;
@@ -129,10 +103,55 @@
           };
         }
 
+        scope.addComment = function(item) {
+          item.newComment = {
+            'author': scope.author,
+            'text': '',
+            'readonly': false,
+            // Comment is active if it was left during the current iteration
+            'active': true,
+          };
+        }
+
+        scope.removeComment = function(item, index) {
+          if (confirm('Are you sure you want to delete this comment?')) {
+            item.comments.splice(index, 1);
+          }
+        }
+
+        scope.removeNewComment = function(item) {
+          if (confirm('Are you sure you want to delete this comment?')) {
+            item.newComment = undefined;
+          }
+        }
+
+        scope.editComment = function(comment) {
+          comment.readonly = !comment.readonly
+          // comment.timestamp = comment.readonly ? Date.now() : undefined;
+        }
+
+        scope.submitComment = function(item) {
+          item.newComment.timestamp = Date.now();
+          item.newComment.readonly = true;
+          item.comments.push(item.newComment);
+          item.newComment = undefined;
+        }
+
+        scope.commitComments = function() {
+          scope.data.items.forEach(function(item) {
+            item.newComment = false;
+            item.comments.forEach(function(comment) {
+              comment.readonly = true;
+              comment.active = false;
+            })
+          })
+        }
+        orchestraService.signals.registerSignal('submit.before', scope.commitComments)
+
         // Add new checklist item
         scope.addItem = function() {
           scope.data.items.push({'title': '',
-                                 'comments': [{'author': scope.author, 'text': ''}],
+                                 'comments': [],
                                  'checked': false,
                                  'expanded': false,
                                  'readonly': true,
@@ -176,7 +195,7 @@
 
         // Return localized comment timestamp
         scope.getCommentTimestamp = function(comment) {
-          return new Date(comment.timestamp).toLocaleString();
+          return comment.timestamp ? new Date(comment.timestamp).toLocaleString() : 'Currently editing';
         }
       },
       templateUrl: '/static/orchestra/common/components/checklist/partials/checklist.html'
@@ -185,9 +204,9 @@
 
   angular
     .module('orchestra.common.components.directives')
-    .directive('orchestraChecklistItem', ['$http', '$timeout', '$compile', 'orchestraService', orchestraChecklistItem]);
+    .directive('orchestraChecklistItem', ['$http', '$timeout', '$compile', orchestraChecklistItem]);
 
-  function orchestraChecklistItem($http, $timeout, $compile, orchestraService) {
+  function orchestraChecklistItem($http, $timeout, $compile) {
     return {
       restrict: 'E',
       link: function(scope, el, attr) {
