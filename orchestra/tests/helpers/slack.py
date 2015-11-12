@@ -82,14 +82,14 @@ class BaseAPI(object):
 
 class Groups(BaseAPI):
     def create(self, group_name):
-        # Mock group id is the same as the group name
-        group_id = str(group_name)
+        group_id = str(len(self.data['groups']))
         self.data['groups'][group_id] = {
             'id': group_id,
             'users': [],
             'messages': [],
             'topic': None,
-            'purpose': None
+            'purpose': None,
+            'name': group_name.strip('#'),
         }
         return self.Response({'group': self.data['groups'][group_id]})
 
@@ -124,11 +124,20 @@ class Groups(BaseAPI):
 
         self.data['groups'][group_id]['purpose'] = purpose
 
+    def list(self):
+        return self.Response(
+            {'ok': True, 'groups': list(self.data['groups'].values())})
+
 
 class Chat(BaseAPI):
-    def post_message(self, group_id, text):
-        self._validate_group(group_id=group_id)
-        self.data['groups'][group_id]['messages'].append(text)
+    def post_message(self, group_identifier, text):
+        if group_identifier.startswith('#'):
+            groups = [
+                group for group in self.data['groups'].values()
+                if group['name'] == group_identifier.strip('#')]
+            group_identifier = groups[0]['id']
+        self._validate_group(group_id=group_identifier)
+        self.data['groups'][group_identifier]['messages'].append(text)
 
 
 class Users(BaseAPI):

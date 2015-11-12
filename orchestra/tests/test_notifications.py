@@ -5,6 +5,7 @@ from django.test import override_settings
 
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
+from orchestra.slack import _project_slack_group_name
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.fixtures import TaskFactory
@@ -26,8 +27,12 @@ class BasicNotificationsTestCase(OrchestraTestCase):
     @override_settings(SLACK_EXPERTS=True)
     def test_notify_status_change(self):
         project = self.projects['empty_project']
-        internal_slack_messages = self.slack.get_messages(
-            settings.SLACK_INTERNAL_NOTIFICATION_CHANNEL)
+        internal_name = settings.SLACK_INTERNAL_NOTIFICATION_CHANNEL.strip('#')
+        internal_groups = [
+            group for group in self.slack.groups.list().body['groups']
+            if group['name'] == internal_name]
+        internal_group_id = internal_groups[0]['id']
+        internal_slack_messages = self.slack.get_messages(internal_group_id)
         experts_slack_messages = self.slack.get_messages(
             project.slack_group_id)
 
@@ -219,3 +224,50 @@ class BasicNotificationsTestCase(OrchestraTestCase):
             _validate_slack_messages('Task has been aborted.')
         self.assertEquals(len(internal_slack_messages), 0)
         self.assertEquals(len(experts_slack_messages), 0)
+
+    def test_slack_group_id(self):
+        def fake_random_string():
+            fake_random_string.num_calls = (
+                getattr(fake_random_string, 'num_calls', 0) + 1)
+            return str(fake_random_string.num_calls)
+
+        for group_name in ('ketchup-3-sales-1', 'bongo-bash723581-3',
+                           'bongo-bash723581-4'):
+            self.slack.groups.create(group_name)
+
+        project = self.projects['reject_rev_proj']
+
+        # Ensure slack group names are properly slugified and randomized.
+        project.short_description = "Sally's Plumbing Emporium | Write Copy"
+        group_name = _project_slack_group_name(project)
+        self.assertTrue(group_name.startswith('sallys-plumbing'))
+        self.assertEqual(len(group_name), 20)
+
+        # Ensure slack group names are properly slugified and randomized.
+        project.short_description = "Sally's Plumbingorama Emporium | Write"
+        group_name = _project_slack_group_name(project)
+        self.assertTrue(group_name.startswith('sallys-plumbingo'))
+        self.assertEqual(len(group_name), 21)
+
+        # Test that we create unique slack IDs if there are conflicts by
+        # mocking the randomization logic to return deterministic results and
+        # ensure that we don't repeat project IDs.
+        with patch('orchestra.slack._random_string', new=fake_random_string):
+            for short_description, group_id in (
+                    # Because the mock function's counter is at 1 and
+                    # ketchup-3-sales-1 already exists, the channel gets set
+                    # to ketchup-3-sales-2.
+                    ('ketchup #3 Sales --:/ kitchen supplies',
+                     'ketchup-3-sales-2'),
+                    # Because the mock function's counter is at 3 and bongo-
+                    # bash723581-3 / bongo-bash723581-4 already exist, the
+                    # channel gets set to bongo-bash723581-5.
+                    ('!!bongo bash*&#$(*$7235818923701842312',
+                     'bongo-bash723581-5'),
+                    ('shortie', 'shortie-6'),
+                    ('what a treat!', 'what-a-treat-7'),
+                    ('what a treat!', 'what-a-treat-8'),
+                    ('what a treat!', 'what-a-treat-9'),
+                    ("Sally's Plumbing Emporium", 'sallys-plumbing-10')):
+                project.short_description = short_description
+                self.assertEqual(_project_slack_group_name(project), group_id)
