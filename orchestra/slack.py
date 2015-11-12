@@ -1,9 +1,9 @@
-import base64
-from uuid import uuid1
+import random
+import slacker
+import string
 
 from django.conf import settings
-import slacker
-
+from django.utils.text import slugify
 from orchestra.utils.settings import run_if
 
 
@@ -50,9 +50,27 @@ def create_project_slack_group(project):
     return project.slack_group_id
 
 
+def _random_string():
+    return ''.join(
+        random.choice(string.ascii_lowercase + string.digits)
+        for idx in range(4))
+
+
 def _project_slack_group_name(project):
     """
-    Return a unique identifier for project slack groups; must fit into slack's
-    21 char limit for group names.
+    Return a unique and readable identifier for project slack groups.
+
+    Slack group names are capped at 21 characters in length.
     """
-    return base64.b64encode(uuid1().bytes)
+    name = None
+    # The human-readable portion of the name (16 characters) involves
+    # slugifying the project short description.
+    descriptor = slugify(project.short_description)[:16].strip('-')
+    slack = SlackService(settings.SLACK_EXPERTS_API_KEY)
+    groups = {group['name'] for group in slack.groups.list().body['groups']}
+    while True:
+        # Add 4 characters of randomness (~1.68 million permutations).
+        name = '{}-{}'.format(descriptor, _random_string())
+        if name not in groups:
+            break
+    return name
