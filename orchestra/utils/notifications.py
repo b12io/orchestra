@@ -84,7 +84,8 @@ def notify_status_change(task, previous_status=None):
         }
 
     _notify_internal_slack_status_change(task, current_worker)
-    _notify_experts_slack_status_change(task, current_worker)
+    if task.project.slack_group_id:
+        _notify_experts_slack_status_change(task, current_worker)
 
     if message_info is not None:
         message_info['message'] += _task_information(task)
