@@ -33,7 +33,8 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
     def test_create_project_slack_group(self):
         groups = self.slack.data['groups']
         num_groups = len(groups)
-        project = ProjectFactory(workflow_slug='test_workflow')
+        project = ProjectFactory(
+            workflow_version=self.workflow_versions['test_workflow'])
         self.assertFalse(project.id in groups)
         group_id = create_project_slack_group(project)
         self.assertEquals(len(groups), num_groups + 1)

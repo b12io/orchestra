@@ -2,5 +2,7 @@ include NOTICE
 include LICENSE
 include release.py
 recursive-include orchestra *
+recursive-include simple_workflow *
+recursive-include journalism_workflow *
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]

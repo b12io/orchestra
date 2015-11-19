@@ -1,6 +1,6 @@
-###############################
+##############################
 Example Use Case: The Newsroom
-###############################
+##############################
 
 Below we'll walk you through an example of how Orchestra could be used in a
 newsroom by journalists, editors, and photographers to craft a story. The code
@@ -47,7 +47,9 @@ Setup
 
 If you haven't followed the :doc:`getting started guide <getting_started>` to
 set up Orchestra yet, you should do that now. Also, make sure that
-``'journalism_workflow'`` is in your ``INSTALLED_APPS`` setting.
+``'journalism_workflow'`` is in your ``INSTALLED_APPS`` setting, and that you
+have loaded the workflow into the database (``python manage.py loadworkflow
+journalism_workflow journalism_v1``).
 
 The journalism workflow requires Google Apps integration to run,
 so make sure in ``orchestra_settings.py`` you set ``settings.GOOGLE_APPS`` to
@@ -56,9 +58,9 @@ so make sure in ``orchestra_settings.py`` you set ``settings.GOOGLE_APPS`` to
 and correct values for those settings are described in `the Google Apps
 documentation <https://developers.google.com/drive/web/delegation>`_.
 
-Next, make sure you have the journalism workflow fixtures installed by running
-(if you haven't already) ``python manage.py loaddata journalism_workflow``. This
-will create the following accounts:
+Next, make sure you have the journalism workflow sample data installed by
+running (if you haven't already) ``python manage.py loadworkflowsampledata
+journalism journalism_v1``. This will create the following accounts:
 
 * username: ``journalism-editor``, password: ``editor``. A worker with
   ``editor`` certification.
@@ -78,21 +80,17 @@ will create the following accounts:
 * username: ``journalism-copy-editor``, password: ``copy-editor``. A worker
   with ``copy_editor`` certification.
 
-Finally, we've included a management script to start and monitor the workflow.
-Download it to the directory of your project next to ``manage.py`` with::
-
-  wget https://raw.githubusercontent.com/unlimitedlabs/orchestra/stable/example_project/journalism_workflow_ctl.py
-
 Start the workflow
 =====================
 
-To start the workflow:
+The journalism workflow comes with a management script to start and monitor the
+workflow. To start the workflow:
 
 * Make sure Orchestra is running with ``python manage.py runserver``.
 
 * In another tab, run::
 
-  python journalism_workflow_ctl --new
+      python manage.py journalism_workflow_ctl --new
 
 This will take a bit (because it is automatically running the document
 creation workflow step), but will eventually return a project id (probably
@@ -150,7 +148,7 @@ been kicked off by a newsroom's content management system with auto-layout
 capabilities based on the JSON the project produced. To see the JSON that the
 workflow produces for input into such a system, run::
 
-  python journalism_workflow_ctl --finish -p <PROJECT_ID>
+  python manage.py journalism_workflow_ctl --finish -p <PROJECT_ID>
 
 where ``<PROJECT_ID>`` is the project id you were given when you created the
 project.
@@ -186,81 +184,115 @@ machine steps.
 The workflow definition
 =======================
 
-The workflow is defined in `journalism_workflow/workflow.py <https://github.com/unlimitedlabs/orchestra/blob/stable/journalism_workflow/workflow.py>`_.
-It declaratively defines the steps listed above, in programmatic form.
+The workflow is defined in `journalism_workflow/workflow.json <https://github.com/unlimitedlabs/orchestra/blob/stable/journalism_workflow/workflow.json>`_,
+and its latest version (version 1) is defined in `journalism_workflow/v1/version.json <https://github.com/unlimitedlabs/orchestra/blob/stable/journalism_workflow/v1/version.json>`_.
+These files declaratively defines the steps listed above, in programmatic form.
 
-First, we define the workflow with a name and short description::
+`workflow.json <https://github.com/unlimitedlabs/orchestra/blob/stable/journalism_workflow/workflow.json>`_
+defines the workflow with a name and short description::
 
-  from orchestra.workflow import Workflow
+  {
+    "slug": "journalism",
+    "name": "Journalism Workflow",
+    "description": "Create polished newspaper articles from scratch.",
+  }
 
-  journalism_workflow = Workflow(
-    slug='journalism',
-    name='Journalism Workflow',
-    description='Create polished newspaper articles from scratch.',
-  )
+It also describes certifications required by the workflow::
 
-Then, we add the steps of the workflow. Check out `the source
-<https://github.com/unlimitedlabs/orchestra/blob/stable/journalism_workflow/workflow.py>`_
+  {
+    "certifications": [
+      {
+        "slug": "editor",
+        "name": "Editor",
+        "description": "Trained in planning story ideas"
+      },
+      {
+        "slug": "reporter",
+        "name": "Reporter",
+        "description": "Trained in researching and writing articles"
+      },
+      {
+        "slug": "photographer",
+        "name": "Photographer",
+        "description": "Trained in taking photos for articles"
+      },
+      {
+        "slug": "copy_editor",
+        "name": "Copy Editor",
+        "description": "Trained in assembling photos and text into article layout"
+      }
+    ]
+  }
+
+And provides the location of a python function to load sample data::
+
+  {
+    "sample_data_load_function": {
+      "module": "journalism_workflow.load_sample_data",
+      "name": "load"
+    }
+  }
+
+``version.json`` defines the steps of the workflow. Check out `the source <https://github.com/unlimitedlabs/orchestra/blob/stable/journalism_workflow/v1/version.json>`_
 for all of the step definitions, but here we'll list two.
 
 Below is the definition of the human step that takes an editor's story idea and
 asks a reporter to write an article based on it::
 
-  from orchestra.workflow import Step
-
-  # A reporter researches and drafts an article based on the editor's idea
-  reporter_step = Step(
-    slug='reporting',
-    name='Reporting',
-    description='Research and draft the article text',
-    worker_type=Step.WorkerType.HUMAN,
-    creation_depends_on=[editor_step],
-    required_certifications=['reporter'],
-    user_interface={
-      'javascript_includes': [
-        '/static/journalism_workflow/reporter/js/modules.js',
-        '/static/journalism_workflow/reporter/js/controllers.js',
-        '/static/journalism_workflow/reporter/js/directives.js',
-      ],
-      'stylesheet_includes': [],
-      'angular_module': 'journalism_workflow.reporter.module',
-      'angular_directive': 'reporter',
+  {
+    "slug": "reporting",
+    "name": "Reporting",
+    "description": "Research and draft the article text",
+    "is_human": true,
+    "creation_depends_on": [
+      "article_planning"
+    ],
+    "required_certifications": [
+      "reporter"
+    ],
+    "review_policy": {
+      "policy": "sampled_review",
+      "rate": 1,
+      "max_reviews": 1
     },
-
-    # A senior reporter should review the article text.
-    review_policy={
-      'policy': 'sampled_review',
-      'rate': 1,        # review all tasks
-      'max_reviews': 1  # exactly once
-    },
-  )
-  journalism_workflow.add_step(reporter_step)
+    "user_interface": {
+      "angular_module": "journalism_workflow.v1.reporter.module",
+      "angular_directive": "reporter",
+      "javascript_includes": [
+        "/static/journalism_workflow/v1/reporter/js/modules.js",
+	"/static/journalism_workflow/v1/reporter/js/controllers.js",
+	"/static/journalism_workflow/v1/reporter/js/directives.js"
+      ]
+    }
+  }
 
 Note that we've specified step dependencies with ``creation_depends_on``,
 required worker skills with ``required_certifications``, and user interface
 javascript files with ``user_interface``. In addition, we've asked that all
 reporters have their work reviewed by a senior reporter by specifying a
 sampled ``review_policy`` with a rate of 100% (``rate`` goes from 0 to 1).
-Finally, we add the step to our workflow with
-``journalism_workflow.add_step(reporter_step)``.
 
 Next, we show a machine step, in this case the step that takes our
 photographers' output (a directory of images), and processes those images for
 layout::
 
-  photo_adjustment_step = Step(
-    slug='photo_adjustment',
-    name='Photo Adjustment',
-    description='Automatically crop and rescale images',
-    worker_type=Step.WorkerType.MACHINE,
-    creation_depends_on=[photographer_step],
-    function=autoadjust_photos,
-  )
-  journalism_workflow.add_step(photo_adjustment_step)
+  {
+    "slug": "photo_adjustment",
+    "name": "Photo Adjustment",
+    "description": "Automatically crop and rescale images",
+    "is_human": false,
+    "creation_depends_on": [
+      "photography"
+    ],
+    "execution_function": {
+      "module": "journalism_workflow.v1.adjust_photos",
+      "name": "autoadjust_photos"
+    }
+  }
 
-The basic arguments are similar, but we specify the step type as
-``Step.WorkerType.MACHINE``, and insead of a user interface, we pass a python
-function to execute (``autoadjust_photos()`` here).
+The basic arguments are similar, but we specify the step type as not human
+(``"is_human": false``), and insead of a user interface, we pass a python
+function to execute (``autoadjust_photos`` here).
 
 
 The interface implementations
@@ -272,18 +304,18 @@ interface for each human step. Orchestra uses `angular.js
 under `journalism_workflow/static/journalism_workflow <https://github.com/unlimitedlabs/orchestra/tree/stable/journalism_workflow/static/journalism_workflow>`_.
 
 Remember that in our :ref:`workflow definition <workflow_def>`, we specified
-user interfaces with a JSON object that looked like this::
+user interfaces with JSON that looked like this::
 
-  user_interface={
-    'javascript_includes': [
-      '/static/journalism_workflow/editor/js/modules.js',
-      '/static/journalism_workflow/editor/js/controllers.js',
-      '/static/journalism_workflow/editor/js/directives.js',
+  {
+    "angular_module": "journalism_workflow.v1.editor.module",
+    "angular_directive": "editor",
+    "javascript_includes": [
+      "/static/journalism_workflow/v1/editor/js/modules.js",
+      "/static/journalism_workflow/v1/editor/js/controllers.js",
+      "/static/journalism_workflow/v1/editor/js/directives.js"
     ],
-    'stylesheet_includes': [],
-    'angular_module': 'journalism_workflow.editor.module',
-    'angular_directive': 'editor',
-  },
+    "stylesheet_includes": []
+  }
 
 Orchestra will automatically inject the specified ``angular_directive`` into
 the website, which should be implemented in the files listed in
@@ -324,8 +356,8 @@ as examples.
 The machine steps
 =================
 
-Our workflow has two machine steps, `one for creating documents and folders <https://github.com/unlimitedlabs/orchestra/blob/stable/journalism_workflow/documents.py>`_,
-and `one for adjusting images <https://github.com/unlimitedlabs/orchestra/blob/stable/journalism_workflow/adjust_photos.py>`_.
+Our workflow has two machine steps, `one for creating documents and folders <https://github.com/unlimitedlabs/orchestra/blob/stable/journalism_workflow/v1/documents.py>`_,
+and `one for adjusting images <https://github.com/unlimitedlabs/orchestra/blob/stable/journalism_workflow/v1/adjust_photos.py>`_.
 
 A machine step is just a Python function with a simple signature::
 
@@ -340,10 +372,46 @@ returns a JSON-encodable dictionary containing state that should be made
 available to future steps (in the ``prerequisites`` argument for a machine
 step, and in the angular scope for a human interface).
 
-For example, our image adjustment step (in `journalism_workflow/adjust_photos.py
-<https://github.com/unlimitedlabs/orchestra/blob/stable/journalism_workflow/adjust_photos.py>`_)
+For example, our image adjustment step (in `journalism_workflow/v1/adjust_photos.py
+<https://github.com/unlimitedlabs/orchestra/blob/stable/journalism_workflow/v1/adjust_photos.py>`_)
 gets the global project directory from ``project_data``, uses Orchestra's
 Google Apps integration to create a new subfolder for processed photos,
 downloads all the raw photos, uses `pillow <https://python-pillow.github.io/>`_
 to process them (for now it just makes them greyscale), then re-uploads them to
 the new folder.
+
+Providing sample data
+=====================
+
+In the :ref:`workflow definition <workflow_def>`, we specified a module and
+function name for loading sample data with JSON that looked like::
+
+  {
+    "sample_data_load_function": {
+      "module": "journalism_workflow.load_sample_data",
+      "name": "load"
+    }
+  }
+
+
+This function should create Django model objects (typically
+`Users <https://docs.djangoproject.com/en/1.8/ref/contrib/auth/#django.contrib.auth.models.User>`_,
+:class:`Workers <orchestra.models.Worker>`, and
+:class:`WorkerCertifications <orchestra.models.WorkerCertification>`) that are
+helpful for a sample run through the workflow. The function has a simple
+signature, and might look like (for example)::
+
+  from django.contrib.auth.models import User
+
+  def load(workflow_version):
+    user = User.objects.update_or_create(
+      username='test_user',
+      defaults={
+        'first_name': 'Test',
+        'last_name': 'User',
+    })
+    user.set_password('test')
+
+Once that function is defined, sample data can be loaded with::
+
+  python manage.py loadworkflowsampledata <WORKFLOW_SLUG> <VERSION_SLUG>

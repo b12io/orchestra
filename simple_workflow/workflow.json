@@ -1,0 +1,10 @@
+{
+  "slug": "simple_workflow",
+  "name": "Simple Workflow",
+  "description": "Crawl a web page for an image and rate it.",
+  "certifications": [],
+  "sample_data_load_function": {
+    "module": "simple_workflow.load_sample_data",
+    "name": "load"
+  }
+}

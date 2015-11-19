@@ -5,7 +5,6 @@ from dateutil.parser import parse
 from operator import attrgetter
 from orchestra.models import Task
 from orchestra.project_api.api import get_project_information
-from orchestra.workflow import Step
 from pandas import DataFrame
 
 
@@ -100,7 +99,7 @@ def project_time_row_generator(project_information,
     # lol at this variable name
     human_slugs = {
         step['slug'] for step in project_information['steps']
-        if step['worker_type'] == Step.WorkerType.HUMAN}
+        if step['is_human']}
 
     for step_slug, task in iter(project_information['tasks'].items()):
         # TODO(marcua): Eventually we'll want to support more fine-grained

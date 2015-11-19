@@ -20,7 +20,6 @@ from orchestra.utils.assignment_snapshots import empty_snapshots
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.google_apps import mock_create_drive_service
-from orchestra.workflow import Step
 
 
 class ProjectAPITestCase(OrchestraTestCase):
@@ -113,13 +112,13 @@ class ProjectAPITestCase(OrchestraTestCase):
             'steps': [
                 {'slug': 'step1',
                  'description': 'The longer description of the first step',
-                 'worker_type': Step.WorkerType.HUMAN},
+                 'is_human': True},
                 {'slug': 'step2',
                  'description': 'The longer description of the second step',
-                 'worker_type': Step.WorkerType.HUMAN},
+                 'is_human': True},
                 {'slug': 'step3',
                  'description': 'The longer description of the third step',
-                 'worker_type': Step.WorkerType.HUMAN}
+                 'is_human': True}
             ]
         }
 
@@ -162,12 +161,8 @@ class ProjectAPITestCase(OrchestraTestCase):
             }
         })
 
-    @override_settings(
-        ORCHESTRA_PATHS=(('orchestra.tests.helpers.workflow', 'workflow3'),
-                         ('orchestra.tests.helpers.workflow', 'workflow4'),
-                         ('orchestra.tests.helpers.workflow', 'workflow5'),))
     def test_get_workflow_steps(self):
-        # See orchestra.tests.helpers.workflow for workflow description
+        # See orchestra.tests.helpers.fixtures for workflow description
         steps = get_workflow_steps('crazy_workflow')
         slugs = [step['slug'] for step in steps]
 
@@ -241,10 +236,11 @@ class ProjectAPITestCase(OrchestraTestCase):
 
         workflows = json.loads(response.content.decode('utf-8'))['workflows']
         workflows = dict(workflows)
-        self.assertEquals(workflows,
-                          {'test_workflow_2': 'The workflow 2',
-                           'test_workflow': 'The workflow',
-                           'assignment_policy_workflow': 'The workflow'})
+        self.assertEquals(
+            workflows,
+            {version_slug: version.name for version_slug, version
+             in self.workflow_versions.items()}
+        )
 
     def test_permissions(self):
         self.api_client.force_authenticate(user=AnonymousUser())

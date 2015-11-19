@@ -5,10 +5,8 @@ import sys
 
 sys.path.insert(0, os.path.abspath('../..'))
 
-# Methods in task_lifecycle currently require the ORCHESTRA_PATHS
-# setting; this will change when workflows are moved into the database.
 from django.conf import settings
-settings.configure(ORCHESTRA_PATHS=())
+settings.configure()
 
 # -- General configuration ------------------------------------------------
 

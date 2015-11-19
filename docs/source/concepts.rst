@@ -1,7 +1,7 @@
 Key Concepts
 ============
 
-Let's first recap our example reporting workflow:
+Let's first recap our example :doc:`reporting workflow<example_use>`:
 
 .. image:: ../static/img/journalism_workflow/workflow.png
    :height: 300px

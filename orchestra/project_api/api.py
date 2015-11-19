@@ -1,6 +1,7 @@
 from orchestra.models import Project
-from orchestra.workflow import get_workflow_by_slug
 from orchestra.project_api.serializers import ProjectSerializer
+from orchestra.models import Step
+from orchestra.models import WorkflowVersion
 from orchestra.project_api.serializers import TaskSerializer
 
 
@@ -14,10 +15,13 @@ class MalformedDependencyException(Exception):
 
 
 def get_project_information(project_id):
-    project = Project.objects.get(pk=project_id)
+    project = Project.objects.select_related(
+        'workflow_version__workflow').get(pk=project_id)
+    workflow_version = project.workflow_version
+    workflow = workflow_version.workflow
     project_data = ProjectSerializer(project).data
     tasks = get_project_task_data(project_id)
-    steps = get_workflow_steps(project.workflow_slug)
+    steps = get_workflow_steps(workflow.slug, workflow_version.slug)
 
     return {
         'project': project_data,
@@ -31,25 +35,51 @@ def get_project_task_data(project_id):
 
     tasks = {}
     for task in project.tasks.all():
-        tasks[task.step_slug] = TaskSerializer(task).data
+        tasks[task.step.slug] = TaskSerializer(task).data
 
     return tasks
 
 
-def get_workflow_steps(workflow_slug):
-    """Get a sorted list of steps for a project
+def get_workflow_steps(workflow_slug, version_slug=None):
+    """Get a sorted list of steps for a project.
 
-    Returns a list of (slug, short_description) tuples topologically sorted so
-    that earlier steps are prerequisites for later ones. """
+    Arguments:
+        workflow_slug (str):
+            Unique identifier of the workflow to get steps for.
+        version_slug (str):
+            identifier for the version of the workflow to get steps for. For
+            backwards compatibility, this parameter may be omitted and a
+            version slug can be passed in the 'workflow_slug' argument. In
+            this case, the version slug must be unique across workflows or an
+            exception will be raised.
 
-    workflow = get_workflow_by_slug(workflow_slug)
+    Returns:
+        workflow_steps (str):
+            A list of (step_slug, step_description) tuples topologically sorted
+            so that earlier steps are prerequisites for later ones.
+    """
+    # TODO(dhaas): Be less backwards-compatible?
+    if version_slug is None:
+        try:
+            workflow_version = WorkflowVersion.objects.get(slug=workflow_slug)
+        except WorkflowVersion.MultipleObjectsReturned:
+            raise ValueError('No workflow slug passed, and version slug {} is '
+                             'not unique.'.format(workflow_slug))
+    else:
+        workflow_version = WorkflowVersion.objects.get(
+            slug=version_slug,
+            workflow__slug=workflow_slug)
 
     # Build a directed graph of the step dependencies
+    # TODO(dhaas): make DB access more efficient.
     graph = {}
-    for step in workflow.get_steps():
+    for step in workflow_version.steps.all():
         graph[step.slug] = [dependency.slug for dependency
-                            in step.creation_depends_on]
+                            in step.creation_depends_on.all()]
+    return _traverse_step_graph(graph, workflow_version)
 
+
+def _traverse_step_graph(graph, workflow_version):
     queue = []
     for key, value in graph.items():
         if value == []:
@@ -60,7 +90,7 @@ def get_workflow_steps(workflow_slug):
     if not len(queue):
         raise MalformedDependencyException("All %s workflow steps have "
                                            "dependencies. There is no start "
-                                           "point." % workflow_slug)
+                                           "point." % workflow_version.slug)
 
     # Build the steps list in order using a breadth-first-like traversal of the
     # step dependency graph
@@ -72,11 +102,16 @@ def get_workflow_steps(workflow_slug):
         if current_node in already_added:
             continue
 
+        # TODO(dhaas): make DB access more efficient (one option: cache steps
+        # in the graph).
         already_added.add(current_node)
-        current_step = workflow.get_step(current_node)
+        current_step = Step.objects.get(
+            workflow_version=workflow_version,
+            slug=current_node)
         steps.append({'slug': current_node,
                       'description': current_step.description,
-                      'worker_type': current_step.worker_type})
+                      'is_human': current_step.is_human})
+
         for key, dependencies in graph.items():
             if (current_node in dependencies and
                     key not in already_added):

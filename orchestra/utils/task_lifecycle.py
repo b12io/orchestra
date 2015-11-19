@@ -25,8 +25,6 @@ from orchestra.utils.notifications import notify_status_change
 from orchestra.utils.task_properties import assignment_history
 from orchestra.utils.task_properties import current_assignment
 from orchestra.utils.task_properties import is_worker_assigned_to_task
-from orchestra.workflow import get_workflow_by_slug
-from orchestra.workflow import Step
 
 import logging
 logger = logging.getLogger(__name__)
@@ -147,18 +145,16 @@ def _worker_certified_for_task(worker, task, role,
             True if worker is certified for a given task, role, and task
             class.
     """
-    workflow = get_workflow_by_slug(task.project.workflow_slug)
-    step = workflow.get_step(task.step_slug)
-
+    step = task.step
     match_count = (
         WorkerCertification
         .objects
         .filter(worker=worker,
                 role=role,
                 task_class=task_class,
-                certification__slug__in=step.required_certifications)
+                certification__in=step.required_certifications.all())
         .count())
-    certified_for_task = len(step.required_certifications) == match_count
+    certified_for_task = step.required_certifications.count() == match_count
     return certified_for_task
 
 
@@ -289,15 +285,16 @@ def get_task_details(task_id):
     Returns:
         task_details (dict): Information about the specified task.
     """
-    task = Task.objects.get(id=task_id)
-    workflow = get_workflow_by_slug(task.project.workflow_slug)
-    step = workflow.get_step(task.step_slug)
+    task = Task.objects.select_related('step__workflow_version').get(
+        id=task_id)
+    step = task.step
+    workflow_version = step.workflow_version
     prerequisites = previously_completed_task_data(task)
 
     task_details = {
         'workflow': {
-            'slug': workflow.slug,
-            'name': workflow.name
+            'slug': workflow_version.slug,
+            'name': workflow_version.name,
         },
         'step': {
             'slug': step.slug,
@@ -455,14 +452,13 @@ def tasks_assigned_to_worker(worker):
     for state, task_assignments in iter(task_assignments_overview.items()):
         tasks_val = []
         for task_assignment in task_assignments:
-            workflow = get_workflow_by_slug(
-                task_assignment.task.project.workflow_slug)
-            step = workflow.get_step(
-                task_assignment.task.step_slug)
+            step = task_assignment.task.step
+            workflow_version = step.workflow_version
+
             # TODO(marcua): project should be workflow here, no?
             tasks_val.append({'id': task_assignment.task.id,
                               'step': step.name,
-                              'project': workflow.name,
+                              'project': workflow_version.name,
                               'detail':
                               task_assignment.task.project.short_description})
         tasks_assigned[state] = tasks_val
@@ -486,12 +482,10 @@ def _is_review_needed(task):
         orchestra.core.errors.ReviewPolicyError:
             The specified review policy type is not supported.
     """
-    workflow = get_workflow_by_slug(task.project.workflow_slug)
-    step = workflow.get_step(task.step_slug)
-
-    policy = step.review_policy.get('policy', None)
-    sample_rate = step.review_policy.get('rate', None)
-    max_reviews = step.review_policy.get('max_reviews', None)
+    policy_dict = task.step.review_policy
+    policy = policy_dict.get('policy', None)
+    sample_rate = policy_dict.get('rate', None)
+    max_reviews = policy_dict.get('max_reviews', None)
 
     if (policy == 'sampled_review' and
             sample_rate is not None and
@@ -678,14 +672,15 @@ def _are_desired_steps_completed_on_project(desired_steps,
     since the caller sometimes has one but not the other.
 
     Args:
-        desired_steps ([orchestra.workflow.Step]):
-            A list of steps to check for completion.
+        desired_steps (django.db.models.QuerySet):
+            A queryset of orchestra.models.Step objects to check for
+            completion.
         project (orchestra.models.Project):
             The project to check for desired step completion,
             optionally passed in instead of a list of completed tasks.
-        completed_tasks ([orchestra.models.Task]):
-            A list of tasks to check for desired step completion,
-            optionally passed in instead of a project.
+        completed_tasks (django.db.models.QuerySet):
+            A queryset of orchestra.models.Task to check for desired step
+            completion, optionally passed in instead of a project.
 
     Returns:
         desired_steps_completed (bool):
@@ -700,10 +695,10 @@ def _are_desired_steps_completed_on_project(desired_steps,
             raise Exception('Must provide either project or completed_tasks')
         completed_tasks = Task.objects.filter(status=Task.Status.COMPLETE,
                                               project=project)
-    completed_step_slugs = {task.step_slug for task in completed_tasks}
-    desired_steps_completed = (len({step.slug for step in desired_steps} -
-                               completed_step_slugs) == 0)
-    return desired_steps_completed
+    completed_step_slugs = set(completed_tasks.values_list('step__slug',
+                                                           flat=True))
+    desired_step_slugs = set(desired_steps.values_list('slug', flat=True))
+    return not (desired_step_slugs - completed_step_slugs)
 
 
 @transaction.atomic
@@ -741,10 +736,8 @@ def submit_task(task_id, task_data, snapshot_type, worker, work_time_seconds):
         orchestra.core.errors.TaskStatusError:
             Task has already been completed.
     """
-    task = Task.objects.get(id=task_id)
-
-    workflow = get_workflow_by_slug(task.project.workflow_slug)
-    step = workflow.get_step(task.step_slug)
+    task = Task.objects.select_related('step', 'project').get(id=task_id)
+    step = task.step
     if not _are_desired_steps_completed_on_project(step.submission_depends_on,
                                                    project=task.project):
         raise IllegalTaskSubmission('Submission prerequisites are not '
@@ -813,12 +806,11 @@ def previously_completed_task_data(task):
             A dict mapping task prerequisites onto their latest task
             assignment information..
     """
-    workflow = get_workflow_by_slug(task.project.workflow_slug)
-    step = workflow.get_step(task.step_slug)
+    step = task.step
     prerequisites = {}
 
-    for required_step in step.creation_depends_on:
-        required_task = Task.objects.get(step_slug=required_step.slug,
+    for required_step in step.creation_depends_on.all():
+        required_task = Task.objects.get(step=required_step,
                                          project=task.project)
         if required_task.status != Task.Status.COMPLETE:
             raise TaskDependencyError('Task depenency is not satisfied')
@@ -831,7 +823,7 @@ def previously_completed_task_data(task):
         task_assignment_details.update(task_details)
 
         # TODO(kkamalov): check for circular prerequisites
-        prerequisites[required_task.step_slug] = task_assignment_details
+        prerequisites[required_step.slug] = task_assignment_details
     return prerequisites
 
 
@@ -895,13 +887,11 @@ def _preassign_workers(task):
             The specified assignment policy type is not supported or a
             machine step is given an assignment policy.
     """
-    workflow = get_workflow_by_slug(task.project.workflow_slug)
-    step = workflow.get_step(task.step_slug)
-
+    step = task.step
     policy = step.assignment_policy.get('policy')
     related_steps = step.assignment_policy.get('steps')
 
-    if step.worker_type == Step.WorkerType.MACHINE:
+    if not step.is_human:
         if policy:
             raise AssignmentPolicyError('Machine step should not have '
                                         'assignment policy.')
@@ -925,8 +915,8 @@ def _assign_worker_from_previously_completed_steps(task, related_steps):
     Args:
         task (orchestra.models.Task):
             The newly created task to assign.
-        related_steps ([orchestra.workflow.steps]):
-            List of steps from which to attempt to assign a worker.
+        related_steps ([str]):
+            List of step slugs from which to attempt to assign a worker.
 
     Returns:
         task (orchestra.models.Task): The modified task object.
@@ -935,25 +925,28 @@ def _assign_worker_from_previously_completed_steps(task, related_steps):
         orchestra.core.errors.AssignmentPolicyError:
             Machine steps cannot be included in an assignment policy.
     """
-    workflow = get_workflow_by_slug(task.project.workflow_slug)
-    for slug in related_steps:
-        if workflow.get_step(slug).worker_type == Step.WorkerType.MACHINE:
+    workflow_version = task.step.workflow_version
+    for step_slug in related_steps:
+        step = workflow_version.steps.get(slug=step_slug)
+        if not step.is_human:
             raise AssignmentPolicyError('Machine step should not be '
                                         'member of assignment policy')
-    related_tasks = Task.objects.filter(step_slug__in=related_steps,
-                                        project=task.project)
+    related_tasks = (
+        Task.objects
+        .filter(step__slug__in=related_steps, project=task.project)
+        .select_related('step'))
     for related_task in related_tasks:
         entry_level_assignment = assignment_history(related_task).first()
         if entry_level_assignment and entry_level_assignment.worker:
             try:
                 return assign_task(entry_level_assignment.worker.id, task.id)
-            except:
+            except Exception:
                 # Task could not be assigned to related worker, try with
                 # another related worker
                 logger.warning('Tried to assign worker %s to step %s, for '
                                'which they are not certified',
                                entry_level_assignment.worker.id,
-                               task.step_slug, exc_info=True)
+                               task.step.slug, exc_info=True)
     return task
 
 
@@ -971,31 +964,30 @@ def create_subsequent_tasks(project):
         project (orchestra.models.Project):
             The modified project object.
     """
-    workflow = get_workflow_by_slug(project.workflow_slug)
-    all_step_slugs = workflow.get_step_slugs()
+    workflow_version = project.workflow_version
+    all_steps = workflow_version.steps.all()
 
     # get all completed tasks associated with a given project
     completed_tasks = Task.objects.filter(status=Task.Status.COMPLETE,
                                           project=project)
-    completed_step_slugs = {task.step_slug for task in completed_tasks}
-    for step_slug in all_step_slugs:
-        if (step_slug in completed_step_slugs or
-            Task.objects.filter(project=project,
-                                step_slug=step_slug).exists()):
+    completed_step_slugs = set(completed_tasks.values_list('step__slug',
+                                                           flat=True))
+    for step in all_steps:
+        if step.slug in completed_step_slugs or Task.objects.filter(
+                project=project, step=step).exists():
             continue
-        step = workflow.get_step(step_slug)
 
         if _are_desired_steps_completed_on_project(
                 step.creation_depends_on, completed_tasks=completed_tasks):
             # create new task and task_assignment
-            task = Task(step_slug=step_slug,
+            task = Task(step=step,
                         project=project,
                         status=Task.Status.AWAITING_PROCESSING)
             task.save()
 
             _preassign_workers(task)
 
-            if step.worker_type == Step.WorkerType.MACHINE:
+            if not step.is_human:
                 machine_step_scheduler_module = import_module(
                     settings.MACHINE_STEP_SCHEDULER[0])
                 machine_step_scheduler_class = getattr(
@@ -1003,7 +995,7 @@ def create_subsequent_tasks(project):
                     settings.MACHINE_STEP_SCHEDULER[1])
 
                 machine_step_scheduler = machine_step_scheduler_class()
-                machine_step_scheduler.schedule(project.id, step_slug)
+                machine_step_scheduler.schedule(project.id, step.slug)
 
 
 def task_history_details(task_id):

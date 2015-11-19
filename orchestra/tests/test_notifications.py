@@ -44,7 +44,7 @@ class BasicNotificationsTestCase(OrchestraTestCase):
             self.assertIn(message_stub, experts_slack_messages.pop())
 
         task = TaskFactory(project=project,
-                           step_slug=self.test_step_slug,
+                           step=self.test_step,
                            status=Task.Status.AWAITING_PROCESSING)
 
         # Entry-level worker picks up task

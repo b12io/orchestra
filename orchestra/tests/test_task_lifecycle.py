@@ -15,6 +15,7 @@ from orchestra.models import TaskAssignment
 from orchestra.models import WorkerCertification
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_models
+from orchestra.tests.helpers.fixtures import StepFactory
 from orchestra.utils.assignment_snapshots import empty_snapshots
 from orchestra.utils.task_lifecycle import _worker_certified_for_task
 from orchestra.utils.task_lifecycle import _check_worker_allowed_new_assignment
@@ -31,8 +32,6 @@ from orchestra.utils.task_lifecycle import worker_has_reviewer_status
 from orchestra.utils.task_properties import assignment_history
 from orchestra.utils.task_properties import current_assignment
 from orchestra.utils.task_properties import is_worker_assigned_to_task
-from orchestra.workflow import get_workflow_by_slug
-from orchestra.workflow import Step
 
 
 class BasicTaskLifeCycleTestCase(OrchestraTestCase):
@@ -93,18 +92,16 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
                                     Task.Status.AWAITING_PROCESSING)
 
         # Worker should not be served machine tasks
-        workflow_slug = 'test_workflow_2'
-        workflow = get_workflow_by_slug(workflow_slug)
-        simple_machine = workflow.get_step('simple_machine')
-        simple_machine.creation_depends_on = []
-
-        project = Project.objects.create(workflow_slug=workflow_slug,
+        workflow_version = self.workflow_versions['test_workflow_2']
+        simple_machine = self.workflow_steps[
+            workflow_version.slug]['simple_machine']
+        project = Project.objects.create(workflow_version=workflow_version,
                                          short_description='',
                                          priority=0,
                                          task_class=0)
         Task.objects.create(project=project,
                             status=Task.Status.AWAITING_PROCESSING,
-                            step_slug='simple_machine')
+                            step=simple_machine)
 
         with self.assertRaises(NoTaskAvailable):
             get_new_task_assignment(self.workers[5],
@@ -331,18 +328,16 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         Ensure that workers are required for human tasks,
         and no workers are required for machine tasks.
         """
-        workflow_slug = 'test_workflow_2'
-        workflow = get_workflow_by_slug(workflow_slug)
-        simple_machine = workflow.get_step('simple_machine')
-        simple_machine.creation_depends_on = []
-
-        project = Project.objects.create(workflow_slug=workflow_slug,
+        workflow_version = self.workflow_versions['test_workflow_2']
+        simple_machine = self.workflow_steps[
+            workflow_version.slug]['simple_machine']
+        project = Project.objects.create(workflow_version=workflow_version,
                                          short_description='',
                                          priority=0,
                                          task_class=0)
         task = Task.objects.create(project=project,
                                    status=Task.Status.PROCESSING,
-                                   step_slug='simple_machine')
+                                   step=simple_machine)
 
         # We expect an error because a worker
         # is being saved on a machine task.
@@ -353,9 +348,10 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
                                           in_progress_task_data={},
                                           snapshots={})
 
+        human_step = self.workflow_steps[workflow_version.slug]['step4']
         task = Task.objects.create(project=project,
                                    status=Task.Status.PROCESSING,
-                                   step_slug='step4')
+                                   step=human_step)
 
         # We expect an error because no worker
         # is being saved on a human task
@@ -411,11 +407,11 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
 
     def test_sampled_get_next_task_status(self):
         task = self.tasks['processing_task']
-        workflow = get_workflow_by_slug(task.project.workflow_slug)
-        step = workflow.get_step(task.step_slug)
+        step = task.step
         step.review_policy = {'policy': 'sampled_review',
                               'rate': 0.5,
                               'max_reviews': 1}
+        step.save()
         task.status = Task.Status.PROCESSING
         complete_count = 0
         for i in range(0, 1000):
@@ -427,11 +423,11 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
 
     def test_legal_get_next_task_status(self):
         task = self.tasks['processing_task']
-        workflow = get_workflow_by_slug(task.project.workflow_slug)
-        step = workflow.get_step(task.step_slug)
-        step.review_policy = {}
+        step = task.step
 
         task.status = Task.Status.PROCESSING
+        step.review_policy = {}
+        step.save()
         with self.assertRaises(ReviewPolicyError):
             get_next_task_status(task,
                                  TaskAssignment.SnapshotType.SUBMIT)
@@ -439,6 +435,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         step.review_policy = {'policy': 'sampled_review',
                               'rate': 1,
                               'max_reviews': 1}
+        step.save()
         self.assertEquals(
             get_next_task_status(task,
                                  TaskAssignment.SnapshotType.SUBMIT),
@@ -447,6 +444,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         step.review_policy = {'policy': 'sampled_review',
                               'rate': 0,
                               'max_reviews': 1}
+        step.save()
         self.assertEquals(
             get_next_task_status(task,
                                  TaskAssignment.SnapshotType.SUBMIT),
@@ -464,6 +462,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         step.review_policy = {'policy': 'sampled_review',
                               'rate': 1,
                               'max_reviews': 0}
+        step.save()
         self.assertEquals(
             get_next_task_status(task,
                                  TaskAssignment.SnapshotType.ACCEPT),
@@ -472,6 +471,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         step.review_policy = {'policy': 'sampled_review',
                               'rate': 1,
                               'max_reviews': 2}
+        step.save()
         self.assertEquals(
             get_next_task_status(task,
                                  TaskAssignment.SnapshotType.ACCEPT),
@@ -488,6 +488,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         step.review_policy = {'policy': 'sampled_review',
                               'rate': 1,
                               'max_reviews': 1}
+        step.save()
         self.assertEquals(
             get_next_task_status(task,
                                  TaskAssignment.SnapshotType.ACCEPT),
@@ -555,18 +556,20 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
 
     def test_malformed_assignment_policy(self):
         project = self.projects['assignment_policy']
+        workflow_version = project.workflow_version
+        first_step = self.workflow_steps[workflow_version.slug]['step_0']
 
-        # Machine should not have an assignment policy
-        workflow = get_workflow_by_slug('assignment_policy_workflow')
-        machine_step = Step(
+        # Create an invalid machine step with an assignment policy
+        malformed_step = StepFactory(
+            workflow_version=workflow_version,
             slug='machine_step',
-            worker_type=Step.WorkerType.MACHINE,
-            assignment_policy={'policy': 'previously_completed_steps',
-                               'steps': ['step_0']},
-            creation_depends_on=[workflow.get_step('step_0')],
-            function=lambda *args: None,
+            is_human=False,
+            assignment_policy={
+                'policy': 'previously_completed_steps',
+                'steps': ['step_0']
+            },
         )
-        workflow.add_step(machine_step)
+        malformed_step.creation_depends_on.add(first_step)
 
         # Create first task in project
         create_subsequent_tasks(project)
@@ -586,14 +589,15 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         project.tasks.all().delete()
 
         # Machine should not be member of assignment policy
-        (workflow.get_step('step_0')
-            .assignment_policy) = {'policy': 'previously_completed_steps',
-                                   'steps': ['machine_step']}
+        first_step.assignment_policy = {
+            'policy': 'previously_completed_steps',
+            'steps': ['machine_step']
+        }
+        first_step.save()
         with self.assertRaises(AssignmentPolicyError):
             create_subsequent_tasks(project)
 
         # Reset workflow and project
-        (workflow.get_step('step_0')
-            .assignment_policy) = {'policy': 'anyone_certified'}
-        del workflow.steps['machine_step']
+        first_step.assignment_policy = {}
+        first_step.save()
         project.tasks.all().delete()

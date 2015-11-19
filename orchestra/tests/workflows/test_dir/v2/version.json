@@ -1,0 +1,42 @@
+{
+  "slug": "test_v2",
+  "name": "Test Workflow V2",
+  "description": "Second test workflow version",
+  "steps": [
+    {
+      "slug": "s1",
+      "name": "Step 1",
+      "description": "The first step.",
+      "is_human": false,
+      "execution_function": {
+	"module": "v2.machine",
+	"name": "machine_function"
+      }
+    },
+
+    {
+      "slug": "s2",
+      "name": "Step 2",
+      "description": "The second step",
+      "is_human": true,
+      "creation_depends_on": [
+	"s1"
+      ],
+      "required_certifications": [
+	"certification2"
+      ],
+      "review_policy": {
+	"policy": "no_review"
+      },
+      "user_interface": {
+	"angular_module": "test_dir.v2.s2.module",
+	"angular_directive": "s2",
+	"javascript_includes": [
+	  "/static/test_dir/v2/s2/js/modules.js",
+	  "/static/test_dir/v2/s2/js/controllers.js",
+	  "/static/test_dir/v2/s2/js/directives.js"
+	]
+      }
+    }
+  ]
+}

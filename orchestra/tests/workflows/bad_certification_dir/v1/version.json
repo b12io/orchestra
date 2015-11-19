@@ -1,0 +1,17 @@
+{
+  "slug": "bad_certification_v1",
+  "name": "Bad Certification Workflow v1",
+  "description": "Need a version here.",
+  "steps": [
+    {
+      "slug": "s1",
+      "name": "Step 1",
+      "description": "The first step",
+      "is_human": false,
+      "execution_function": {
+	"module": "v1.machine",
+	"name": "machine_function"
+      }
+    }
+  ]
+}

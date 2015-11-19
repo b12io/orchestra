@@ -1,0 +1,131 @@
+{
+  "slug": "journalism_v1",
+  "name": "Journalism Workflow Version 1",
+  "description": "Create polished newspaper articles from scratch.",
+  "steps": [
+    {
+      "slug": "document_creation",
+      "name": "Document Creation",
+      "description": "Create google documents for the project in the relevant folder.",
+      "is_human": false,
+      "execution_function": {
+	"module": "journalism_workflow.v1.documents",
+	"name": "create_documents"
+      }
+    },
+    {
+      "slug": "article_planning",
+      "name": "Article Planning",
+      "description": "Plan out the high-level idea for the story.",
+      "is_human": true,
+      "creation_depends_on": [
+	"document_creation"
+      ],
+      "required_certifications": [
+	"editor"
+      ],
+      "review_policy": {
+	"policy": "no_review"
+      },
+      "user_interface": {
+	"angular_module": "journalism_workflow.v1.editor.module",
+	"angular_directive": "editor",
+	"javascript_includes": [
+	  "/static/journalism_workflow/v1/editor/js/modules.js",
+	  "/static/journalism_workflow/v1/editor/js/controllers.js",
+	  "/static/journalism_workflow/v1/editor/js/directives.js"
+	]
+      }
+    },
+    {
+      "slug": "reporting",
+      "name": "Reporting",
+      "description": "Research and draft the article text",
+      "is_human": true,
+      "creation_depends_on": [
+	"article_planning"
+      ],
+      "required_certifications": [
+	"reporter"
+      ],
+      "review_policy": {
+	"policy": "sampled_review",
+	"rate": 1,
+	"max_reviews": 1
+      },
+      "user_interface": {
+	"angular_module": "journalism_workflow.v1.reporter.module",
+	"angular_directive": "reporter",
+	"javascript_includes": [
+	  "/static/journalism_workflow/v1/reporter/js/modules.js",
+	  "/static/journalism_workflow/v1/reporter/js/controllers.js",
+	  "/static/journalism_workflow/v1/reporter/js/directives.js"
+	]
+      }
+    },
+    {
+      "slug": "photography",
+      "name": "Photography",
+      "description": "Take and edit photos to accompany the article.",
+      "is_human": true,
+      "creation_depends_on": [
+	"article_planning"
+      ],
+      "required_certifications": [
+	"photographer"
+      ],
+      "review_policy": {
+	"policy": "sampled_review",
+	"rate": 1,
+	"max_reviews": 1
+      },
+      "user_interface": {
+	"angular_module": "journalism_workflow.v1.photographer.module",
+	"angular_directive": "photographer",
+	"javascript_includes": [
+	  "/static/journalism_workflow/v1/photographer/js/modules.js",
+	  "/static/journalism_workflow/v1/photographer/js/controllers.js",
+	  "/static/journalism_workflow/v1/photographer/js/directives.js"
+	]
+      }
+    },
+    {
+      "slug": "photo_adjustment",
+      "name": "Photo Adjustment",
+      "description": "Automatically crop and rescale images",
+      "is_human": false,
+      "creation_depends_on": [
+	"photography"
+      ],
+      "execution_function": {
+	"module": "journalism_workflow.v1.adjust_photos",
+	"name": "autoadjust_photos"
+      }
+    },
+    {
+      "slug": "copy_editing",
+      "name": "Copy Editing",
+      "description": "caption photos and generate a headline for the story.",
+      "is_human": true,
+      "creation_depends_on": [
+	"photo_adjustment",
+	"reporting"
+      ],
+      "required_certifications": [
+	"copy_editor"
+      ],
+      "review_policy": {
+	"policy": "no_review"
+      },
+      "user_interface": {
+	"angular_module": "journalism_workflow.v1.copy_editor.module",
+	"angular_directive": "copyEditor",
+	"javascript_includes": [
+	  "/static/journalism_workflow/v1/copy_editor/js/modules.js",
+	  "/static/journalism_workflow/v1/copy_editor/js/controllers.js",
+	  "/static/journalism_workflow/v1/copy_editor/js/directives.js"
+	]
+      }
+    }
+  ]
+}

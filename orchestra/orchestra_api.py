@@ -62,7 +62,8 @@ def create_orchestra_project(client,
                              priority,
                              project_data,
                              review_document_url,
-                             task_class):
+                             task_class,
+                             workflow_version_slug=None):
 
     data = {
         'workflow_slug': workflow_slug,
@@ -72,6 +73,8 @@ def create_orchestra_project(client,
         'review_document_url': review_document_url,
         'task_class': task_class
     }
+    if workflow_version_slug:
+        data['workflow_version_slug'] = workflow_version_slug
     response = _make_api_request('post', 'create_project',
                                  data=json.dumps(data))
     project_id = json.loads(response.text)['project_id']

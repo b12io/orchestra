@@ -22,6 +22,11 @@ class ProjectSerializer(serializers.ModelSerializer):
             'task_class',
         )
 
+    # TODO(dhaas): rename this workflow_version_slug
+    workflow_slug = serializers.SlugRelatedField(source='workflow_version',
+                                                 slug_field='slug',
+                                                 read_only=True)
+
     task_class = serializers.ChoiceField(
         choices=WorkerCertification.TASK_CLASS_CHOICES)
 
@@ -49,6 +54,10 @@ class TaskSerializer(serializers.ModelSerializer):
             'assignments',
             'start_datetime'
         )
+
+    step_slug = serializers.SlugRelatedField(source='step',
+                                             slug_field='slug',
+                                             read_only=True)
 
     status = serializers.SerializerMethodField()
     latest_data = serializers.SerializerMethodField()

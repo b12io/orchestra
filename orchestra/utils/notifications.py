@@ -102,9 +102,9 @@ def _task_information(task, with_slack_link=True):
                         'Project: {} | {}\n'
                         'Task: {}\n\n'
                         'View dashboard: {}\n').format(
-                            task.project.workflow_slug,
+                            task.project.workflow_version.slug,
                             task.project.short_description,
-                            task.step_slug,
+                            task.step.slug,
                             dashboard_link)
 
     if task.project.slack_group_id and with_slack_link:

@@ -1,0 +1,39 @@
+{
+  "slug": "simple_workflow_v1",
+  "name": "Simple Workflow Version 1",
+  "description": "Crawl a web page for an image and rate it.",
+  "steps": [
+    {
+      "slug": "crawl",
+      "name": "Web Crawling",
+      "description": "Find an awesome image on a website.",
+      "is_human": false,
+      "execution_function": {
+	"module": "simple_workflow.v1.crawl",
+	"name": "crawl_page"
+      }
+    },
+
+    {
+      "slug": "rate",
+      "name": "Image Rating",
+      "description": "Rate the image that we found.",
+      "is_human": true,
+      "creation_depends_on": [
+	"crawl"
+      ],
+      "review_policy": {
+	"policy": "no_review"
+      },
+      "user_interface": {
+	"angular_module": "simple_workflow.v1.rate.module",
+	"angular_directive": "rate",
+	"javascript_includes": [
+	  "/static/simple_workflow/v1/rate/js/modules.js",
+	  "/static/simple_workflow/v1/rate/js/controllers.js",
+	  "/static/simple_workflow/v1/rate/js/directives.js"
+	]
+      }
+    }
+  ]
+}
