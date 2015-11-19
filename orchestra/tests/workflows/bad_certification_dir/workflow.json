@@ -1,0 +1,15 @@
+{
+  "slug": "bad_certification_dir",
+  "name": "Bad Certification Workflow",
+  "description": "Reference a bad certification.",
+  "certifications": [
+    {
+      "slug": "certification1",
+      "name": "First Certification",
+      "description": "The first one",
+      "required_certifications": [
+	"certificationDoesNotExist"
+      ]
+    }
+  ]
+}

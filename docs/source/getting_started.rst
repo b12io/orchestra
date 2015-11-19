@@ -123,25 +123,32 @@ Alternatively, just make sure to add the following code inside the
 
 
 Finally, you'll need to get the database set up. Create your database
-with ``python manage.py migrate``. You'll also want to make sure you have an
-initial worker account set up to try out example workflows. We've provided
-several fixtures relevant for running our examples, which you can load with
-``python manage.py loaddata <FIXTURE_NAME>``:
+with ``python manage.py migrate``. You'll also want to make sure you have
+loaded our example workflows and set up some user accounts to try them out.
+To load the workflows, run::
 
-* 'demo_admin': creates a single admin account (username: ``admin``, password:
-  ``admin``) suitable for logging in to the admin and managing the database.
+    python manage.py loadworkflow <APP_LABEL> <WORKFLOW_VERSION>
 
-* 'demo_worker': creates a single worker (username: ``demo``, password:
-  ``demo``) suitable for running  the
-  :ref:`simple demo workflow <demo-section>`.
+Each of our example workflows provides a set of sample users already configured
+with proper certifications. To load them, run::
 
-* 'journalism_workflow': creates a number of accounts with certifications
-  suitable for running our more complicated
-  :doc:`journalism workflow <example_use>`.
+    python manage.py loadworkflowsampledata <WORKFLOW_SLUG> <WORKFLOW_VERSION>
+
+The example workflows we currently release with Orchestra are:
+
+* A :ref:`simple demo workflow <demo-section>` with one human and one machine
+  step. Its app label is ``simple_workflow``, its workflow slug is
+  ``simple_workflow``, and the latest version is ``simple_workflow_v1``.
+
+* A more complicated :doc:`journalism workflow <example_use>`. Its app label
+  is ``journalism_workflow``, its workflow slug is ``journalism``, and the
+  latest version is ``journalism_v1``.
 
 In addition, you can use the Orchestra admin
 (http://127.0.0.1:8000/orchestra/admin) to create new users and certifications
-of your own at any time once Orchestra is running.
+of your own at any time once Orchestra is running. If you haven't created an
+admin account for your Django project, you can load a sample one (username:
+``admin``, password: ``admin``) with ``python manage.py loaddata demo_admin``.
 
 Now Orchestra should be ready to go! If you're confused about any of the above,
 check out our barebones `example project <https://github.com/unlimitedlabs/orchestra/tree/stable/example_project>`_.
@@ -155,9 +162,9 @@ Django project with ``python manage.py runserver`` (you'll want to switch to
 something more robust in production, of course), and navigate to
 ``http://127.0.0.1:8000/orchestra/app`` in your favorite browser.
 
-If you see the Orchestra sign-in page, your setup is working! Logging in as
-the demo user we set up above should show you a dashboard with no available
-tasks.
+If you see the Orchestra sign-in page, your setup is working! If you loaded the
+simple workflow's sample data above, logging in as its user (username ``demo``,
+password ``demo``) should show you a dashboard with no available tasks.
 
 .. _demo-section:
 
@@ -170,7 +177,7 @@ end, we've included a very simple example workflow with two steps, one
 machine and one human. The machine step takes a URL and extracts a random
 image from the page. The human step asks an expert to rate how "awesome" the
 image is on a scale from one to five. If you're interested in how we defined
-the workflow, take a look at `the code <https://raw.githubusercontent.com/unlimitedlabs/orchestra/stable/simple_workflow/workflow.py>`_,
+the workflow, take a look at `the code <https://raw.githubusercontent.com/unlimitedlabs/orchestra/stable/simple_workflow/v1/version.json>`_,
 though we walk through a more interesting example in
 :doc:`this documentation <example_use>`.
 
@@ -180,14 +187,13 @@ run it:
 * Make sure you added ``simple_workflow`` to your ``INSTALLED_APPS`` setting
   following the previous section.
 
-* Pull down the script into your project's root directory (``your_project``,
-  next to ``manage.py``)::
+* Make sure you loaded the workflow and its sample data following the previous
+  section. This should have created a user with username ``demo`` and password
+  ``demo``.
 
-      wget https://raw.githubusercontent.com/unlimitedlabs/orchestra/stable/example_project/interactive_simple_workflow_demo.py
+* Run the interactive walkthrough::
 
-* Run the script::
-
-      python interactive_simple_workflow_demo.py
+      python manage.py interactive_simple_workflow_demo
 
 The script will walk you through using :ref:`the Orchestra Client API
 <client_api>` to create a new project based on the simple workflow, explaining

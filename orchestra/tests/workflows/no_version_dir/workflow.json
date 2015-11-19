@@ -1,0 +1,20 @@
+{
+  "slug": "test_dir",
+  "name": "Test Workflow",
+  "description": "Test workflow functionality.",
+  "certifications": [
+    {
+      "slug": "certification1",
+      "name": "First Certification",
+      "description": "The first one"
+    },
+    {
+      "slug": "certification2",
+      "name": "Second Certification",
+      "description": "The second one",
+      "required_certifications": [
+	"certification1"
+      ]
+    }
+  ]
+}

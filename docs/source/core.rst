@@ -5,13 +5,6 @@ Core Reference
 .. contents::
     :depth: 2
 
-.. workflow:
-
-Workflow
---------------
-.. automodule:: orchestra.workflow
-    :members:
-
 .. models:
 
 Models

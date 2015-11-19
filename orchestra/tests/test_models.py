@@ -20,7 +20,8 @@ class ModelsTestCase(OrchestraTestCase):
     def test_certification_roles(self):
         """ Ensure that workers can be certified at multiple roles. """
         certification = CertificationFactory(
-            slug='cat_herding', name='Cat herding')
+            slug='cat_herding', name='Cat herding',
+            workflow=self.workflows['w1'])
         WorkerCertificationFactory(
             certification=certification,
             worker=self.workers[0],
@@ -33,7 +34,8 @@ class ModelsTestCase(OrchestraTestCase):
     def test_reviewer_requires_entry_level(self):
         """ Workers must have entry-level certification before they review. """
         certification = CertificationFactory(
-            slug='cat_herding', name='Cat herding')
+            slug='cat_herding', name='Cat herding',
+            workflow=self.workflows['w1'])
         with self.assertRaises(ModelSaveError):
             WorkerCertificationFactory(
                 certification=certification,

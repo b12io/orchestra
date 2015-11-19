@@ -1,2 +1,7 @@
 # Packages needed to build docs on https://readthedocs.org
-# Nothing yet!
+Django==1.8.3
+sphinxcontrib-httpdomain==1.4.0
+django-registration-redux==1.2
+jsonfield==1.0.0
+python-dateutil==2.4.2
+slacker==0.7.0

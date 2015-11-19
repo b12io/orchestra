@@ -52,3 +52,7 @@ class WorkerCertificationError(Exception):
 
 class SnapshotsError(Exception):
     pass
+
+
+class WorkflowError(Exception):
+    pass

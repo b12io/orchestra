@@ -18,7 +18,7 @@ from orchestra.core.errors import IllegalTaskSubmission
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import Worker
-from orchestra.workflow import get_workflows
+from orchestra.models import Step
 from orchestra.utils.s3 import upload_editor_image
 from orchestra.utils.task_lifecycle import save_task
 from orchestra.utils.task_lifecycle import submit_task
@@ -42,22 +42,22 @@ def index(request):
         'angular_modules': [],
         'angular_directives': defaultdict(lambda: defaultdict(lambda: {}))}
 
-    for slug, workflow in iter(get_workflows().items()):
-        for step in workflow.get_human_steps():
-            # Preserve js and stylesheet order while removing duplicates
-            for js in step.user_interface.get('javascript_includes', []):
-                if js not in javascript_includes:
-                    javascript_includes.append(js)
-            for style in step.user_interface.get('stylesheet_includes', []):
-                if style not in stylesheet_includes:
-                    stylesheet_includes.append(style)
+    for step in Step.objects.filter(is_human=True):
+        # Preserve js and stylesheet order while removing duplicates
+        for js in step.user_interface.get('javascript_includes', []):
+            if js not in javascript_includes:
+                javascript_includes.append(js)
+        for style in step.user_interface.get('stylesheet_includes', []):
+            if style not in stylesheet_includes:
+                stylesheet_includes.append(style)
 
-            if step.user_interface.get('angular_module'):
-                orchestra_arguments['angular_modules'].append(
-                    step.user_interface['angular_module'])
+        if step.user_interface.get('angular_module'):
+            orchestra_arguments['angular_modules'].append(
+                step.user_interface['angular_module'])
 
-            if step.user_interface.get('angular_directive'):
-                orchestra_arguments['angular_directives'][workflow.slug][step.slug] = (  # noqa
+        if step.user_interface.get('angular_directive'):
+            orchestra_arguments['angular_directives'][
+                step.workflow_version.slug][step.slug] = (
                     step.user_interface['angular_directive'])
 
     return render(request, 'orchestra/index.html', {
@@ -100,8 +100,8 @@ def new_task_assignment(request, task_type):
 
     task = task_assignment.task
     return {'id': task.id,
-            'step': task.step_slug,
-            'project': task.project.workflow_slug,
+            'step': task.step.slug,
+            'project': task.project.workflow_version.slug,
             'detail': task.project.short_description}
 
 

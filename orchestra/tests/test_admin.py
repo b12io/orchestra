@@ -1,38 +1,27 @@
-from unittest import skip
 from unittest.mock import patch
 
-from django.conf import settings
 from django.forms.models import model_to_dict
 from django.test import override_settings
+from django.utils import timezone
 
 from orchestra.admin.forms import TaskForm
 from orchestra.core.errors import WorkerCertificationError
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
-from orchestra.models import Project
-from orchestra.models import WorkerCertification
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.fixtures import ProjectFactory
-from orchestra.tests.helpers.fixtures import CertificationFactory
-from orchestra.tests.helpers.fixtures import WorkerCertificationFactory
 from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.task_lifecycle import create_subsequent_tasks
 from orchestra.utils.task_lifecycle import submit_task
 from orchestra.utils.task_properties import assignment_history
 from orchestra.utils.task_properties import is_worker_assigned_to_task
-from orchestra.workflow import get_workflows
-from orchestra.workflow import Step
-
-ORIGINAL_ORCHESTRA_PATHS = settings.ORCHESTRA_PATHS
 
 
 class AdminTestCase(OrchestraTestCase):
 
     def setUp(self):
         super(AdminTestCase, self).setUp()
-        # Can't put this in self.setUp since test workflows don't work for
-        # the form save test (see comment below)
         setup_models(self)
 
     @override_settings(MACHINE_STEP_SCHEDULER=(
@@ -46,9 +35,8 @@ class AdminTestCase(OrchestraTestCase):
         # (Test form init with no task instance)
         TaskForm()
 
-        project = Project.objects.get(workflow_slug='test_workflow_2')
-        self.assertEquals(Task.objects.filter(project=project).count(),
-                          0)
+        project = self.projects['test_human_and_machine']
+        self.assertEquals(Task.objects.filter(project=project).count(), 0)
         create_subsequent_tasks(project)
 
         # Human task was created but not assigned
@@ -94,43 +82,19 @@ class AdminTestCase(OrchestraTestCase):
         self.assertEquals(form.fields['currently_assigned_to'].initial,
                           None)
 
-    @skip('Broken until workflows are in the DB or the admin is re-written')
-    # TODO(jrbotros): combine the two tests in this test case, since the
-    # following test just calls save in the same situations as the first.
-    @override_settings(ORCHESTRA_PATHS=ORIGINAL_ORCHESTRA_PATHS)
     def test_task_form_save(self):
         """
         Test task form save for new, human and machine tasks
         """
-        # Workflow steps are hard-coded on `choices` for `Project` models
-        # regardless of `settings.py`.  Once we move workflows back into the
-        # database, we should use the test workflows rather than the production
-        # ones in `settings.py.`  Until then, the hack below suffices.
-        workflows = get_workflows()
-        test_workflow_slug = 'website_design'
-        workflow = workflows[test_workflow_slug]
-        human_steps = {step_slug: step
-                       for step_slug, step in workflow.steps.items()
-                       if step.worker_type == Step.WorkerType.HUMAN}
-        step_slug, step = human_steps.popitem()
-        project = ProjectFactory(workflow_slug=test_workflow_slug)
-        for certification_slug in step.required_certifications:
-            certification = CertificationFactory(slug=certification_slug)
-            for uname in (0, 1, 3, 6):
-                WorkerCertificationFactory(
-                    certification=certification,
-                    worker=self.workers[uname],
-                    role=WorkerCertification.Role.ENTRY_LEVEL)
-            for uname in (3, 6):
-                WorkerCertificationFactory(
-                    certification=certification,
-                    worker=self.workers[uname],
-                    role=WorkerCertification.Role.REVIEWER)
+        workflow_version = self.workflow_versions['test_workflow']
+        human_step = self.workflow_steps[workflow_version.slug]['step1']
+        project = ProjectFactory(workflow_version=workflow_version)
 
         # Add new task to project
         form = TaskForm({'project': project.id,
                          'status': Task.Status.AWAITING_PROCESSING,
-                         'step_slug': step_slug})
+                         'step': human_step.id,
+                         'start_datetime': timezone.now()})
         form.is_valid()
         self.assertTrue(form.is_valid())
         task = form.save()
@@ -139,7 +103,8 @@ class AdminTestCase(OrchestraTestCase):
         # Add new task to project and assign to entry_level worker (0)
         form = TaskForm({'project': project.id,
                          'status': Task.Status.AWAITING_PROCESSING,
-                         'step_slug': step_slug})
+                         'step': human_step.id,
+                         'start_datetime': timezone.now()})
         self.assertTrue(form.is_valid())
         form.cleaned_data['currently_assigned_to'] = self.workers[0].id
         task = form.save()
@@ -150,15 +115,15 @@ class AdminTestCase(OrchestraTestCase):
         self.assertEquals(task.status, Task.Status.PROCESSING)
 
         # Render task with preexisting entry_level assignment (0) and reassign
-        # to another entry_level worker (1)
+        # to another entry_level worker (4)
         form = TaskForm(model_to_dict(task), instance=task)
         self.assertEquals(form.fields['currently_assigned_to'].initial,
                           self.workers[0].id)
         form.is_valid()
         self.assertTrue(form.is_valid())
-        form.cleaned_data['currently_assigned_to'] = self.workers[1].id
+        form.cleaned_data['currently_assigned_to'] = self.workers[4].id
         task = form.save()
-        self.assertTrue(is_worker_assigned_to_task(self.workers[1],
+        self.assertTrue(is_worker_assigned_to_task(self.workers[4],
                                                    task))
         self.assertEquals(assignment_history(task).count(), 1)
         self.assertEquals(task.status, Task.Status.PROCESSING)
@@ -168,21 +133,21 @@ class AdminTestCase(OrchestraTestCase):
                    return_value=True):
             task = submit_task(task.id, {},
                                TaskAssignment.SnapshotType.SUBMIT,
-                               self.workers[1], 0)
+                               self.workers[4], 0)
 
-        # Assign to reviewer (3) and reassign to another reviewer (6)
-        task = assign_task(self.workers[3].id, task.id)
+        # Assign to reviewer (1) and reassign to another reviewer (3)
+        task = assign_task(self.workers[1].id, task.id)
         self.assertTrue(task.status, Task.Status.REVIEWING)
-        self.assertTrue(is_worker_assigned_to_task(self.workers[3],
+        self.assertTrue(is_worker_assigned_to_task(self.workers[1],
                                                    task))
         task = Task.objects.get(id=task.id)
         form = TaskForm(model_to_dict(task), instance=task)
         self.assertEquals(form.fields['currently_assigned_to'].initial,
-                          self.workers[3].id)
+                          self.workers[1].id)
         self.assertTrue(form.is_valid())
-        form.cleaned_data['currently_assigned_to'] = self.workers[6].id
+        form.cleaned_data['currently_assigned_to'] = self.workers[3].id
         task = form.save()
-        self.assertTrue(is_worker_assigned_to_task(self.workers[6],
+        self.assertTrue(is_worker_assigned_to_task(self.workers[3],
                                                    task))
         self.assertEquals(assignment_history(task).count(), 2)
         self.assertEquals(task.status, Task.Status.REVIEWING)

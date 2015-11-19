@@ -2,17 +2,11 @@ import json
 from unittest.mock import patch
 
 from django.test import TestCase
-from django.test import override_settings
 
 from orchestra.tests.helpers.notifications import MockMail
 from orchestra.tests.helpers.slack import MockSlacker
 
 
-@override_settings(
-    ORCHESTRA_PATHS=(('orchestra.tests.helpers.workflow', 'workflow'),
-                     ('orchestra.tests.helpers.workflow', 'workflow2'),
-                     ('orchestra.tests.helpers.workflow',
-                      'assignment_policy_workflow')))
 class OrchestraTestCase(TestCase):
 
     def setUp(self):  # noqa
@@ -61,3 +55,21 @@ class OrchestraTestCase(TestCase):
             '/orchestra/api/interface/submit_task_assignment/',
             request,
             content_type='application/json')
+
+    def assertModelInstanceExists(self,
+                                  model_class,
+                                  lookup_attributes,
+                                  check_attributes={}):
+        try:
+            model_instance = model_class.objects.get(**lookup_attributes)
+        except model_class.DoesNotExist:
+            self.fail('{} instance not created in database.'
+                      .format(str(model_class)))
+        for attribute_name, expected_value in check_attributes.items():
+            self.assertEqual(getattr(model_instance, attribute_name),
+                             expected_value)
+        return model_instance
+
+    def assertModelInstanceNotExists(self, model_class, lookup_attributes):
+        with self.assertRaises(model_class.DoesNotExist):
+            model_class.objects.get(**lookup_attributes)

@@ -8,8 +8,32 @@ from django.test import override_settings
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import WorkerCertification
+from orchestra.models import Workflow
+from orchestra.models import Step
+from orchestra.models import WorkflowVersion
 from orchestra.slack import create_project_slack_group
 from orchestra.utils.task_properties import assignment_history
+from orchestra.tests.helpers.workflow import workflow_fixtures
+from orchestra.workflow.defaults import get_default_assignment_policy
+from orchestra.workflow.defaults import get_default_review_policy
+
+
+class WorkflowFactory(factory.django.DjangoModelFactory):
+
+    class Meta:
+        model = Workflow
+
+
+class WorkflowVersionFactory(factory.django.DjangoModelFactory):
+
+    class Meta:
+        model = WorkflowVersion
+
+
+class StepFactory(factory.django.DjangoModelFactory):
+
+    class Meta:
+        model = Step
 
 
 class UserFactory(factory.django.DjangoModelFactory):
@@ -57,8 +81,6 @@ class TaskFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = 'orchestra.Task'
 
-    step_slug = 'step1'
-
 
 class TaskAssignmentFactory(factory.django.DjangoModelFactory):
 
@@ -72,56 +94,64 @@ class TaskAssignmentFactory(factory.django.DjangoModelFactory):
 @override_settings(SLACK_EXPERTS=True)
 def setup_models(test_case):
     """ Set up models that we'll use in multiple tests """
-    # Certification generation data
-    certifications = [
-        {
-            'slug': 'certification1',
-            'name': 'The first certification',
-            'required_certifications': []
-        },
-        {
-            'slug': 'certification2',
-            'name': 'The second certification',
-            'required_certifications': ['certification1']
-        }
-    ]
+
+    # Workflow generation data
+    workflows = workflow_fixtures
 
     # Worker generation data
     workers = {
         0: [
-            ('certification1', WorkerCertification.Role.ENTRY_LEVEL)
+            ('certification1', WorkerCertification.Role.ENTRY_LEVEL),
+            ('certification1_ap', WorkerCertification.Role.ENTRY_LEVEL),
         ],
         1: [
             ('certification1', WorkerCertification.Role.ENTRY_LEVEL),
-            ('certification1', WorkerCertification.Role.REVIEWER)
+            ('certification1', WorkerCertification.Role.REVIEWER),
+            ('certification1_ap', WorkerCertification.Role.ENTRY_LEVEL),
+            ('certification1_ap', WorkerCertification.Role.REVIEWER),
         ],
         2: [],
         3: [
             ('certification1', WorkerCertification.Role.ENTRY_LEVEL),
-            ('certification1', WorkerCertification.Role.REVIEWER)
+            ('certification1', WorkerCertification.Role.REVIEWER),
+            ('certification1_ap', WorkerCertification.Role.ENTRY_LEVEL),
+            ('certification1_ap', WorkerCertification.Role.REVIEWER),
         ],
         4: [
             ('certification1', WorkerCertification.Role.ENTRY_LEVEL),
-            ('certification2', WorkerCertification.Role.ENTRY_LEVEL)
+            ('certification2', WorkerCertification.Role.ENTRY_LEVEL),
+            ('certification1_ap', WorkerCertification.Role.ENTRY_LEVEL),
+            ('certification2_ap', WorkerCertification.Role.ENTRY_LEVEL),
         ],
         5: [
             ('certification1', WorkerCertification.Role.ENTRY_LEVEL),
             ('certification2', WorkerCertification.Role.ENTRY_LEVEL),
-            ('certification2', WorkerCertification.Role.REVIEWER)
+            ('certification2', WorkerCertification.Role.REVIEWER),
+            ('certification1_ap', WorkerCertification.Role.ENTRY_LEVEL),
+            ('certification2_ap', WorkerCertification.Role.ENTRY_LEVEL),
+            ('certification2_ap', WorkerCertification.Role.REVIEWER),
         ],
         6: [
             ('certification1', WorkerCertification.Role.ENTRY_LEVEL),
             ('certification1', WorkerCertification.Role.REVIEWER),
             ('certification2', WorkerCertification.Role.ENTRY_LEVEL),
-            ('certification2', WorkerCertification.Role.REVIEWER)
+            ('certification2', WorkerCertification.Role.REVIEWER),
+            ('certification1_ap', WorkerCertification.Role.ENTRY_LEVEL),
+            ('certification1_ap', WorkerCertification.Role.REVIEWER),
+            ('certification2_ap', WorkerCertification.Role.ENTRY_LEVEL),
+            ('certification2_ap', WorkerCertification.Role.REVIEWER),
         ],
         7: [
             ('certification1', WorkerCertification.Role.ENTRY_LEVEL),
-            ('certification1', WorkerCertification.Role.REVIEWER)
+            ('certification1', WorkerCertification.Role.REVIEWER),
+            ('certification1_ap', WorkerCertification.Role.ENTRY_LEVEL),
+            ('certification1_ap', WorkerCertification.Role.REVIEWER),
         ],
         8: [
             ('certification1', WorkerCertification.Role.ENTRY_LEVEL),
-            ('certification1', WorkerCertification.Role.REVIEWER)
+            ('certification1', WorkerCertification.Role.REVIEWER),
+            ('certification1_ap', WorkerCertification.Role.ENTRY_LEVEL),
+            ('certification1_ap', WorkerCertification.Role.REVIEWER),
         ]
     }
 
@@ -139,6 +169,7 @@ def setup_models(test_case):
     }
 
     # Task generation data
+    test_case.test_version_slug = 'test_workflow'
     test_case.test_step_slug = 'step1'
     test_data = {'test_key': 'test_value'}
     tasks = {
@@ -196,16 +227,124 @@ def setup_models(test_case):
         },
     }
 
-    # Create certifications and dependencies
-    test_case.certifications = {}
-    for details in certifications:
-        new_slug = details['slug']
-        test_case.certifications[new_slug] = CertificationFactory(
-            slug=new_slug, name=details['name'])
-        for required_slug in details['required_certifications']:
-            test_case.certifications[new_slug].required_certifications.add(
-                test_case.certifications[required_slug])
+    # Create the objects
+    _setup_workflows(test_case, workflows)
+    _setup_workers(test_case, workers)
+    _setup_projects(test_case, projects)
+    _setup_tasks(test_case, tasks)
 
+
+def _setup_workflows(test_case, workflows):
+    # Create workflows
+    test_case.workflows = {}
+    test_case.certifications = {}
+    test_case.workflow_versions = {}
+    test_case.workflow_steps = {}
+    for workflow_idx, workflow_details in enumerate(workflows):
+        workflow = WorkflowFactory(
+            slug=workflow_details['slug'],
+            name=workflow_details['name'],
+            code_directory='/test/dir/{}'.format(workflow_idx),
+        )
+        test_case.workflows[workflow_details['slug']] = workflow
+
+        # Create certifications and dependencies
+        for cert_details in workflow_details.get('certifications', []):
+            certification = CertificationFactory(
+                slug=cert_details['slug'],
+                name=cert_details['name'],
+                workflow=workflow,
+            )
+            test_case.certifications[cert_details['slug']] = certification
+
+            for required_slug in cert_details['required_certifications']:
+                certification.required_certifications.add(
+                    test_case.certifications[required_slug])
+
+        # Create workflow versions
+        for version_details in workflow_details['versions']:
+            version = WorkflowVersionFactory(
+                workflow=workflow,
+                slug=version_details['slug'],
+                name=version_details['name'],
+                description=version_details['description'],
+            )
+            test_case.workflow_versions[version_details['slug']] = version
+
+            # Create workflow steps
+            test_case.workflow_steps[version.slug] = {}
+            workflow_steps = test_case.workflow_steps[version.slug]
+            workflow_step_backrefs = []
+            for step_details in version_details['steps']:
+                is_human = step_details['is_human']
+                step = StepFactory(
+                    workflow_version=version,
+                    slug=step_details['slug'],
+                    name=step_details['name'],
+                    is_human=is_human,
+                    description=step_details.get('description', ''),
+
+                    # TODO(dhaas): make default policies work
+                    review_policy=step_details.get(
+                        'review_policy',
+                        get_default_review_policy(is_human)
+                    ),
+                    assignment_policy=step_details.get(
+                        'assignment_policy',
+                        get_default_assignment_policy(is_human)
+                    ),
+                    user_interface=step_details.get('user_interface', {}),
+                    execution_function=step_details.get('execution_function',
+                                                        {}),
+                )
+                workflow_steps[step.slug] = step
+
+                # Add required certifications
+                for required_slug in step_details.get(
+                        'required_certifications', []):
+                    step.required_certifications.add(
+                        test_case.certifications[required_slug])
+
+                # Add step dependencies
+                workflow_step_backrefs.extend(
+                    _add_step_dependencies(
+                        step_details, workflow_steps, 'creation_depends_on'))
+                workflow_step_backrefs.extend(
+                    _add_step_dependencies(
+                        step_details, workflow_steps, 'submission_depends_on'))
+
+            # Create backreferences we missed
+            _create_backrefs(test_case.workflow_steps[version.slug],
+                             workflow_step_backrefs)
+
+
+def _add_step_dependencies(step_dict, existing_workflow_steps, attr):
+    backrefs = []
+    step = existing_workflow_steps.get(step_dict['slug'])
+    for dependent_slug in step_dict.get(attr, []):
+        dependent_step = existing_workflow_steps.get(dependent_slug)
+
+        # Some workflow fixtures have intentional step cycles, so
+        # we create the backward references later.
+        if not dependent_step:
+            backrefs.append({
+                'attr': attr,
+                'step': step,
+                'ref': dependent_slug,
+            })
+            continue
+
+        getattr(step, attr).add(dependent_step)
+    return backrefs
+
+
+def _create_backrefs(workflow_steps, backrefs):
+    for backref in backrefs:
+        dependency = workflow_steps[backref['ref']]
+        getattr(backref['step'], backref['attr']).add(dependency)
+
+
+def _setup_workers(test_case, workers):
     # Create and certify workers
     test_case.workers = {}
     test_case.clients = {}
@@ -229,21 +368,29 @@ def setup_models(test_case):
                 worker=test_case.workers[user_id],
                 role=role)
 
+
+def _setup_projects(test_case, projects):
     # Create projects
     test_case.projects = {}
     for name, workflow_slug in projects.items():
         test_case.projects[name] = ProjectFactory(
-            workflow_slug=workflow_slug,
-            start_datetime=parse('2015-10-12T00:00:00+00:00'))
+            start_datetime=parse('2015-10-12T00:00:00+00:00'),
+            workflow_version=test_case.workflow_versions[workflow_slug])
         create_project_slack_group(test_case.projects[name])
 
-    # Create and assign taks
+
+def _setup_tasks(test_case, tasks):
+    # Create and assign tasks
     test_case.tasks = {}
+    test_case.test_step = test_case.workflow_steps[
+        test_case.test_version_slug][test_case.test_step_slug]
     for task_slug, details in tasks.items():
-        task = TaskFactory(project=test_case.projects[details['project_name']],
-                           step_slug=test_case.test_step_slug,
-                           status=details['status'],
-                           start_datetime=parse('2015-10-12T01:00:00+00:00'))
+        task = TaskFactory(
+            project=test_case.projects[details['project_name']],
+            step=test_case.test_step,
+            status=details['status'],
+            start_datetime=parse('2015-10-12T01:00:00+00:00'),
+        )
         test_case.tasks[task_slug] = task
         for i, (user_id,
                 task_data,

@@ -4,14 +4,68 @@ from django.utils import timezone
 from jsonfield import JSONField
 
 from orchestra.core.errors import ModelSaveError
-from orchestra.workflow import get_workflow_choices
-from orchestra.workflow import get_step_choices
-from orchestra.workflow import get_workflow_by_slug
-from orchestra.workflow import Step
 from orchestra.utils.assignment_snapshots import load_snapshots
 
 # TODO(marcua): Convert ManyToManyFields to django-hstore referencefields or
 # wait for django-postgres ArrayFields in Django 1.8.
+
+
+class Workflow(models.Model):
+    """
+    Workflows describe the steps and requirements for experts to complete work.
+
+    This model represents workflows that have been loaded into the database and
+    are usable by Orchestra projects. All workflows are also defined in the
+    codebase (see the `code_directory` attribute).
+
+    Attributes:
+        slug (str):
+            Unique identifier for the workflow.
+        name (str):
+            Human-readable name for the workflow.
+        description (str):
+            A longer description of the workflow.
+        code_directory (str):
+            The full path to the location of the workflow's manifest.
+    """
+    slug = models.CharField(max_length=200, unique=True)
+    name = models.CharField(max_length=200)
+    description = models.TextField()
+    code_directory = models.CharField(max_length=255, unique=True)
+    sample_data_load_function = JSONField(default={})
+
+    class Meta:
+        app_label = 'orchestra'
+
+    def __str__(self):
+        return self.slug
+
+
+class WorkflowVersion(models.Model):
+    """
+    WorkflowVersions represent changes made to a single workflow over time.
+
+    Attributes:
+        slug (str):
+            Unique identifier for the workflow version.
+        name (str):
+            Human-readable name for the workflow version.
+        description (str):
+            A longer description of the workflow version.
+        workflow (orchestra.models.Workflow):
+            The workflow that this is a version of.
+    """
+    slug = models.CharField(max_length=200)
+    name = models.CharField(max_length=200)
+    description = models.TextField()
+    workflow = models.ForeignKey(Workflow, related_name='versions')
+
+    class Meta:
+        app_label = 'orchestra'
+        unique_together = (('workflow', 'slug'),)
+
+    def __str__(self):
+        return '{} - {}'.format(self.workflow.slug, self.slug)
 
 
 class Certification(models.Model):
@@ -27,18 +81,94 @@ class Certification(models.Model):
             A longer description of the certification.
         required_certifications ([orchestra.models.Certification]):
             Prerequisite certifications for possessing this one.
+        workflow (orchestra.models.Workflow):
+            The workflow the certification is scoped to.
     """
-    slug = models.CharField(max_length=200, unique=True)
+    slug = models.CharField(max_length=200)
     name = models.CharField(max_length=200)
     description = models.TextField()
-    required_certifications = models.ManyToManyField('self',
-                                                     blank=True)
+    required_certifications = models.ManyToManyField(
+        'self',
+        blank=True,
+        related_name='dependent_certifications',
+        symmetrical=False)
+    workflow = models.ForeignKey(Workflow, related_name='certifications')
 
     def __str__(self):
         return '{}'.format(self.slug)
 
     class Meta:
         app_label = 'orchestra'
+        unique_together = (('workflow', 'slug'),)
+
+
+class Step(models.Model):
+    """
+    Steps represent individual tasks in a workflow version.
+
+    Attributes:
+        slug (str):
+            Unique identifier for the workflow step.
+        name (str):
+            Human-readable name for the workflow step.
+        description (str):
+            A longer description of the workflow step.
+        workflow_version (orchestra.models.WorkflowVersion):
+            The workflow version that this is a step of.
+        creation_depends_on ([orchestra.models.Step]):
+            Workflow steps that must be complete to begin this step.
+        submission_depends_on ([orchestra.models.Step]):
+            Workflow steps that must be complete to end this step.
+        is_human (bool):
+            False if this step is performed by a machine.
+        execution_function (str):
+            A JSON blob containing the path to and name of a python method that
+            will execute this step (only valid for machine steps).
+        required_certifications ([orchestra.models.Certification]):
+            The certifications a worker must have in order to work on this step
+            (only valid for human steps).
+        assignment_policy (str):
+            A JSON blob used to decide which worker to assign to this step
+            (only valid for human steps).
+        review_policy (str):
+            A JSON blob used to decide whether or not to review this step
+            (only valid for human steps).
+        user_interface (str):
+            A JSON blob used to describe the files used in the user interface
+            for this step (only valid for human steps).
+    """
+    # General fields
+    slug = models.CharField(max_length=200)
+    name = models.CharField(max_length=200)
+    description = models.TextField()
+    workflow_version = models.ForeignKey(WorkflowVersion, related_name='steps')
+    creation_depends_on = models.ManyToManyField(
+        'self',
+        blank=True,
+        related_name='creation_dependents',
+        symmetrical=False)
+    submission_depends_on = models.ManyToManyField(
+        'self',
+        blank=True,
+        related_name='submission_dependents',
+        symmetrical=False)
+
+    # Machine step fields
+    is_human = models.BooleanField()
+    execution_function = JSONField(default={})
+
+    # Human step fields
+    required_certifications = models.ManyToManyField(Certification, blank=True)
+    assignment_policy = JSONField(default={})
+    review_policy = JSONField(default={})
+    user_interface = JSONField(default={})
+
+    class Meta:
+        app_label = 'orchestra'
+        unique_together = (('workflow_version', 'slug'),)
+
+    def __str__(self):
+        return self.slug
 
 
 class Worker(models.Model):
@@ -143,8 +273,8 @@ class Project(models.Model):
             The time the project was created.
         status (orchestra.models.Project.Status):
             Represents whether the project is being actively worked on.
-        workflow_slug (str):
-            Identifies the workflow that the project represents.
+        workflow_version (orchestra.models.WorkflowVersion):
+            Identifies the workflow that the project follows.
         priority (int):
             Represents the relative priority of the project.
         task_class (int):
@@ -169,8 +299,8 @@ class Project(models.Model):
     status = models.IntegerField(choices=STATUS_CHOICES,
                                  default=Status.ACTIVE)
 
-    workflow_slug = models.CharField(max_length=200,
-                                     choices=get_workflow_choices())
+    workflow_version = models.ForeignKey(WorkflowVersion,
+                                         related_name='projects')
 
     short_description = models.TextField()
     priority = models.IntegerField()
@@ -181,7 +311,7 @@ class Project(models.Model):
     slack_group_id = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
-        return '{} ({})'.format(str(self.workflow_slug),
+        return '{} ({})'.format(str(self.workflow_version.slug),
                                 self.short_description)
 
     class Meta:
@@ -195,8 +325,8 @@ class Task(models.Model):
     Attributes:
         start_datetime (datetime.datetime):
             The time the Task was created.
-        step_slug (str):
-            Identifies the step that the project represents.
+        step (orchestra.models.Step):
+            Identifies the step that the task represents.
         project (orchestra.models.Project):
             The project to which the task belongs.
         status (orchestra.models.Task.Status):
@@ -221,13 +351,12 @@ class Task(models.Model):
         (Status.COMPLETE, 'Complete'))
 
     start_datetime = models.DateTimeField(default=timezone.now)
-    step_slug = models.CharField(max_length=200,
-                                 choices=get_step_choices())
+    step = models.ForeignKey(Step, related_name='tasks')
     project = models.ForeignKey(Project, related_name='tasks')
     status = models.IntegerField(choices=STATUS_CHOICES)
 
     def __str__(self):
-        return '{} - {}'.format(str(self.project), str(self.step_slug))
+        return '{} - {}'.format(str(self.project), str(self.step.slug))
 
     class Meta:
         app_label = 'orchestra'
@@ -307,9 +436,7 @@ class TaskAssignment(models.Model):
     snapshots = JSONField(default={})
 
     def save(self, *args, **kwargs):
-        workflow = get_workflow_by_slug(self.task.project.workflow_slug)
-        step = workflow.get_step(self.task.step_slug)
-        if step.worker_type == Step.WorkerType.HUMAN:
+        if self.task.step.is_human:
             if self.worker is None:
                 raise ModelSaveError('Worker has to be present '
                                      'if worker type is Human')

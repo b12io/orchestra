@@ -1,6 +1,8 @@
 API Reference
 =============
 
+.. _client_api:
+
 Client API
 ----------
 Endpoints for communicating with Orchestra.
@@ -21,13 +23,12 @@ All requests must be signed using `HTTP signatures <http://tools.ietf.org/html/d
 
    Creates a project with the given data and returns its ID.
 
-   :query project_id: The ID for the desired project.
    :query task_class: One of `real` or `training` to specify the task class type.
    :query workflow_slug: The slug corresponding to the desired project's workflow.
    :query description: A short description of the project.
    :query priority: An integer describing the priority of the project, with higher numbers describing a greater priority.
    :query project_data: Other miscellaneous data with which to initialize the project.
-   :query review_document_url: Team messages Google Doc for the project. ???
+   :query review_document_url: Team messages Google Doc for the project.
 
    **Example response**:
 

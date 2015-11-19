@@ -1,0 +1,24 @@
+{
+  "slug": "test_dir",
+  "name": "Test Workflow",
+  "description": "Test workflow functionality.",
+  "certifications": [
+    {
+      "slug": "certification1",
+      "name": "First Certification",
+      "description": "The first one"
+    },
+    {
+      "slug": "certification2",
+      "name": "Second Certification",
+      "description": "The second one",
+      "required_certifications": [
+	"certification1"
+      ]
+    }
+  ],
+  "sample_data_load_function": {
+    "module": "orchestra.tests.workflows.test_dir.load_sample_data",
+    "name": "load"
+  }
+}

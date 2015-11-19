@@ -1,14 +1,13 @@
-
 import json
 
 from django.core.urlresolvers import reverse
 from jsonview.exceptions import BadRequest
 from orchestra.models import Project
 from orchestra.models import WorkerCertification
+from orchestra.models import WorkflowVersion
 from orchestra.project import create_project_with_tasks
 from orchestra.project_api.api import get_project_information
 from orchestra.project_api.decorators import api_endpoint
-from orchestra.workflow import get_workflows
 from urllib.parse import urlparse
 from urllib.parse import urlunsplit
 
@@ -45,10 +44,12 @@ def create_project(request):
             project_details['project_data'],
             project_details['review_document_url']
         )
+        version_slug = project_details.get('workflow_version_slug', None)
     except KeyError:
         raise BadRequest('One of the parameters is missing')
 
-    project = create_project_with_tasks(*args)
+    project = create_project_with_tasks(
+        *args, workflow_version_slug=version_slug)
     return {'project_id': project.id}
 
 
@@ -73,7 +74,6 @@ def project_details_url(request):
 
 @api_endpoint(['GET'])
 def workflow_types(request):
-    workflows = get_workflows()
-    workflow_choices = {workflow_slug: workflow.name for
-                        workflow_slug, workflow in workflows.items()}
+    workflows = WorkflowVersion.objects.all()
+    workflow_choices = {w.slug: w.name for w in workflows}
     return {'workflows': workflow_choices}

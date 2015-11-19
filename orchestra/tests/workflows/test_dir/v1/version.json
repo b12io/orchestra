@@ -1,0 +1,73 @@
+{
+  "slug": "test_v1",
+  "name": "Test Workflow v1",
+  "description": "First test workflow version",
+  "steps": [
+    {
+      "slug": "s1",
+      "name": "Step 1",
+      "description": "The first step",
+      "is_human": false,
+      "execution_function": {
+	"module": "v1.machine",
+	"name": "machine_function"
+      }
+    },
+
+    {
+      "slug": "s2",
+      "name": "Step 2",
+      "description": "The second step",
+      "is_human": true,
+      "creation_depends_on": [
+	"s1"
+      ],
+      "required_certifications": [
+	"certification1"
+      ],
+      "review_policy": {
+	"policy": "no_review"
+      },
+      "user_interface": {
+	"angular_module": "test_dir.v1.s2.module",
+	"angular_directive": "s2",
+	"javascript_includes": [
+	  "/static/test_dir/v1/s2/js/modules.js",
+	  "/static/test_dir/v1/s2/js/controllers.js",
+	  "/static/test_dir/v1/s2/js/directives.js"
+	]
+      }
+    },
+
+    {
+      "slug": "s3",
+      "name": "Step 3",
+      "description": "The third step",
+      "is_human": true,
+      "creation_depends_on": [
+	"s1"
+      ],
+      "submission_depends_on": [
+	"s2"
+      ],
+      "required_certifications": [
+	"certification1",
+	"certification2"
+      ],
+      "review_policy": {
+	"policy": "sampled_review",
+	"rate": 1,
+	"max_reviews": 1
+      },
+      "user_interface": {
+	"angular_module": "test_dir.v1.s3.module",
+	"angular_directive": "s3",
+	"javascript_includes": [
+	  "/static/test_dir/v1/s3/js/modules.js",
+	  "/static/test_dir/v1/s3/js/controllers.js",
+	  "/static/test_dir/v1/s3/js/directives.js"
+	]
+      }
+    }
+  ]
+}

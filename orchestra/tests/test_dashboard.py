@@ -6,8 +6,7 @@ from django.test import override_settings
 from django.utils import timezone
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
-from orchestra.workflow import get_workflow_by_slug
-from orchestra.workflow import Step
+from orchestra.models import Step
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.fixtures import setup_task_history
@@ -42,7 +41,8 @@ class DashboardTestCase(OrchestraTestCase):
             '/orchestra/api/interface/new_task_assignment/entry_level/'))
         self.assertEquals(response.status_code, 200)
 
-        task = Task.objects.get(step_slug='step4', project=project)
+        human_step = self.workflow_steps['test_workflow_2']['step4']
+        task = Task.objects.get(step=human_step, project=project)
         data = {'submit_key1': 'submit_val1'}
 
         # user 0 submits a task
@@ -52,9 +52,10 @@ class DashboardTestCase(OrchestraTestCase):
         # Machine Task was created
         self.assertEquals(Task.objects.filter(project=project).count(),
                           2)
+        machine_step = self.workflow_steps['test_workflow_2']['simple_machine']
         machine_task_assignment = (
             TaskAssignment.objects
-            .filter(task__step_slug='simple_machine',
+            .filter(task__step=machine_step,
                     task__project=project)[0])
 
         self.assertTrue(machine_task_assignment.status,
@@ -97,8 +98,8 @@ class DashboardTestCase(OrchestraTestCase):
         task = Task.objects.get(id=task_id)
         self.assertEquals(
             {'id': task.id,
-             'step': task.step_slug,
-             'project': task.project.workflow_slug,
+             'step': task.step.slug,
+             'project': task.project.workflow_version.slug,
              'detail': task.project.short_description},
             returned)
 
@@ -285,9 +286,15 @@ class DashboardTestCase(OrchestraTestCase):
 
         # user 0 can't submit a task if its submission prerequisites aren't
         # complete
-        workflow = get_workflow_by_slug(task.project.workflow_slug)
-        step = workflow.get_step(task.step_slug)
-        step.submission_depends_on = [Step(slug='imaginary_test_step')]
+        step = task.step
+        step.submission_depends_on = [
+            Step.objects.create(
+                workflow_version=step.workflow_version,
+                slug='imaginary_test_step',
+                is_human=True,
+            )
+        ]
+        step.save()
         response = self._submit_assignment(
             self.clients[0], task_id)
         self.assertEquals(response.status_code, 400)
@@ -295,6 +302,7 @@ class DashboardTestCase(OrchestraTestCase):
         self.assertEquals(returned['message'],
                           'Submission prerequisites are not complete.')
         step.submission_depends_on = []
+        step.save()
 
         data = {'submit_key1': 'submit_val1'}
         # user 0 submits a task
