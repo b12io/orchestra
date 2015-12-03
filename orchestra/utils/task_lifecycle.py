@@ -285,14 +285,19 @@ def get_task_details(task_id):
     Returns:
         task_details (dict): Information about the specified task.
     """
-    task = Task.objects.select_related('step__workflow_version').get(
+    task = Task.objects.select_related('step__workflow_version__workflow').get(
         id=task_id)
     step = task.step
     workflow_version = step.workflow_version
+    workflow = workflow_version.workflow
     prerequisites = previously_completed_task_data(task)
 
     task_details = {
         'workflow': {
+            'slug': workflow.slug,
+            'name': workflow.name,
+        },
+        'workflow_version': {
             'slug': workflow_version.slug,
             'name': workflow_version.name,
         },

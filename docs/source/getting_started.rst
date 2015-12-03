@@ -132,17 +132,17 @@ To load the workflows, run::
 Each of our example workflows provides a set of sample users already configured
 with proper certifications. To load them, run::
 
-    python manage.py loadworkflowsampledata <WORKFLOW_SLUG> <WORKFLOW_VERSION>
+    python manage.py loadworkflowsampledata <WORKFLOW_SLUG>/<WORKFLOW_VERSION>
 
 The example workflows we currently release with Orchestra are:
 
 * A :ref:`simple demo workflow <demo-section>` with one human and one machine
   step. Its app label is ``simple_workflow``, its workflow slug is
-  ``simple_workflow``, and the latest version is ``simple_workflow_v1``.
+  ``simple_workflow``, and the latest version is ``v1``.
 
 * A more complicated :doc:`journalism workflow <example_use>`. Its app label
   is ``journalism_workflow``, its workflow slug is ``journalism``, and the
-  latest version is ``journalism_v1``.
+  latest version is ``v1``.
 
 In addition, you can use the Orchestra admin
 (http://127.0.0.1:8000/orchestra/admin) to create new users and certifications

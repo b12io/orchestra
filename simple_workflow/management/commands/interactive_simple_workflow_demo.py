@@ -81,6 +81,7 @@ class Command(BaseCommand):
         print('''
 create_orchestra_project(
     'simple_workflow',                       # The slug representing our workflow  # noqa
+    'v1',                                    # The version of the workflow to use  # noqa
     'A test run of our simple workflow',     # A description of the new project
     10,                                      # A priority level for the project
     {
@@ -97,6 +98,7 @@ create_orchestra_project(
         project_id = create_orchestra_project(
             None,
             'simple_workflow',
+            'v1',
             'A test run of our simple workflow',
             10,
             {
@@ -104,7 +106,6 @@ create_orchestra_project(
             },
             'https://docs.google.com/document/d/1s0IJycNAwHtZfsUwyo6lCJ7kI9pTOZddcaiRDdZUSAs',  # noqa
             'train',
-            workflow_version_slug='simple_workflow_v1'
         )
         print('Project with id {} created!'.format(project_id))
         self.pause(2)

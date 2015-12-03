@@ -89,7 +89,8 @@ class ProjectAPITestCase(OrchestraTestCase):
         expected = {
             'project': {
                 'task_class': 1,
-                'workflow_slug': 'test_workflow',
+                'workflow_slug': 'w1',
+                'workflow_version_slug': 'test_workflow',
                 'project_data': {},
                 'review_document_url': None,
                 'priority': 0,
@@ -163,7 +164,7 @@ class ProjectAPITestCase(OrchestraTestCase):
 
     def test_get_workflow_steps(self):
         # See orchestra.tests.helpers.fixtures for workflow description
-        steps = get_workflow_steps('crazy_workflow')
+        steps = get_workflow_steps('w3', 'crazy_workflow')
         slugs = [step['slug'] for step in steps]
 
         self.assertTrue(slugs.index('stepC') > slugs.index('stepA'))
@@ -176,10 +177,10 @@ class ProjectAPITestCase(OrchestraTestCase):
         self.assertTrue(slugs.index('stepG') > slugs.index('stepF'))
         self.assertTrue(slugs.index('stepH') > slugs.index('stepF'))
 
-        steps = get_workflow_steps('erroneous_workflow_1')
+        steps = get_workflow_steps('w4', 'erroneous_workflow_1')
 
         with self.assertRaises(MalformedDependencyException):
-            steps = get_workflow_steps('erroneous_workflow_2')
+            steps = get_workflow_steps('w5', 'erroneous_workflow_2')
 
     @patch.object(Service, '_create_drive_service',
                   new=mock_create_drive_service)
@@ -190,7 +191,8 @@ class ProjectAPITestCase(OrchestraTestCase):
             .count())
         response = self.api_client.post(
             '/orchestra/api/project/create_project/',
-            {'workflow_slug': 'test_workflow',
+            {'workflow_slug': 'w1',
+             'workflow_version_slug': 'test_workflow',
              'description': 'short test description',
              'priority': 10,
              'task_class': 'real',
@@ -207,7 +209,8 @@ class ProjectAPITestCase(OrchestraTestCase):
         # Creating a 'training' project should set task_class correctly.
         response = self.api_client.post(
             '/orchestra/api/project/create_project/',
-            {'workflow_slug': 'test_workflow',
+            {'workflow_slug': 'w1',
+             'workflow_version_slug': 'test_workflow',
              'description': 'short test description',
              'priority': 10,
              'task_class': 'training',
@@ -222,7 +225,7 @@ class ProjectAPITestCase(OrchestraTestCase):
         # Creating a project with missing parameters should fail.
         response = self.api_client.post(
             '/orchestra/api/project/create_project/',
-            {'workflow_slug': 'test_workflow'},
+            {'workflow_slug': 'w1'},
             format='json')
         self.ensure_response(response,
                              {'error': 400,
@@ -238,8 +241,19 @@ class ProjectAPITestCase(OrchestraTestCase):
         workflows = dict(workflows)
         self.assertEquals(
             workflows,
-            {version_slug: version.name for version_slug, version
-             in self.workflow_versions.items()}
+            {
+                workflow_slug: {
+                    'name': workflow.name,
+                    'versions': {
+                        v.slug: {
+                            'name': v.name,
+                            'description': v.description,
+                        }
+                        for v in workflow.versions.all()
+                    }
+                }
+                for workflow_slug, workflow in self.workflows.items()
+            }
         )
 
     def test_permissions(self):

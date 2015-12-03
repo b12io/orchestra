@@ -49,6 +49,7 @@ class Command(BaseCommand):
         project_id = create_orchestra_project(
             None,
             'journalism',
+            'v1',
             'A test run of our journalism workflow',
             10,
             {
@@ -56,7 +57,6 @@ class Command(BaseCommand):
             },
             'https://docs.google.com/document/d/1s0IJycNAwHtZfsUwyo6lCJ7kI9pTOZddcaiRDdZUSAs',  # noqa
             'train',
-            workflow_version_slug='journalism_v1',
         )
         print('Project with id {} created!'.format(project_id))
         return project_id

@@ -6,26 +6,16 @@ from orchestra.utils.task_lifecycle import create_subsequent_tasks
 
 
 def create_project_with_tasks(workflow_slug,
+                              workflow_version_slug,
                               description,
                               priority,
                               task_class,
                               project_data,
-                              review_document_url,
-                              workflow_version_slug=None):
+                              review_document_url):
 
-    # Allow backwards compatibility with calls that pass in a version slug in
-    # the 'workflow_slug' variable.
-    # TODO(dhaas): be less backward-compatible?
-    if workflow_version_slug is None:
-        try:
-            workflow_version = WorkflowVersion.objects.get(slug=workflow_slug)
-        except WorkflowVersion.MultipleObjectsReturned:
-            raise ValueError('No workflow slug passed, and version slug {} is '
-                             'not unique.'.format(workflow_slug))
-    else:
-        workflow_version = WorkflowVersion.objects.get(
-            slug=workflow_version_slug,
-            workflow__slug=workflow_slug)
+    workflow_version = WorkflowVersion.objects.get(
+        slug=workflow_version_slug,
+        workflow__slug=workflow_slug)
 
     project = Project.objects.create(workflow_version=workflow_version,
                                      short_description=description,

@@ -39,10 +39,24 @@ class LoadWorkflowSampleDataTestCase(OrchestraTestCase):
         assert_test_dir_workflow_loaded(self)
         assert_test_dir_v1_loaded(self)
 
+        # Calling the command with an invalid version argument should fail.
+        invalid_args = (
+            VERSION_1,  # Workflow slug omitted
+            TEST_WORKFLOW,  # Version slug omitted
+            '{}/{}/'.format(TEST_WORKFLOW, VERSION_1),  # Too many slashes
+            '{}.{}'.format(TEST_WORKFLOW, VERSION_1),  # Wrong separator
+        )
+        for invalid_arg in invalid_args:
+            invalid_stderr = StringIO()
+            invalid_message = 'Please specify workflow versions in the format'
+            call_command('loadworkflowsampledata', invalid_arg,
+                         stderr=invalid_stderr)
+            self.assertIn(invalid_message, invalid_stderr.getvalue())
+
         # Loading valid sample data should succeed without errors
+        v1_str = '{}/{}'.format(TEST_WORKFLOW, VERSION_1)
         stdout = StringIO()
-        call_command('loadworkflowsampledata', TEST_WORKFLOW,
-                     VERSION_1, stdout=stdout)
+        call_command('loadworkflowsampledata', v1_str, stdout=stdout)
         output = stdout.getvalue()
         success_message = 'Successfully loaded sample data'
         self.assertIn(success_message, output)
@@ -52,8 +66,10 @@ class LoadWorkflowSampleDataTestCase(OrchestraTestCase):
 
         # Loading sample data for a nonexistent workflow should fail
         stderr1 = StringIO()
-        call_command('loadworkflowsampledata', NONEXISTENT_WORKFLOW_SLUG,
-                     VERSION_1, stderr=stderr1)
+        call_command(
+            'loadworkflowsampledata',
+            '{}/{}'.format(NONEXISTENT_WORKFLOW_SLUG, VERSION_1),
+            stderr=stderr1)
         output1 = stderr1.getvalue()
         no_workflow_error = ('Workflow {} has not been loaded into the '
                              'database'.format(NONEXISTENT_WORKFLOW_SLUG))
@@ -61,8 +77,10 @@ class LoadWorkflowSampleDataTestCase(OrchestraTestCase):
 
         # Loading sample data for a nonexistent version should fail
         stderr2 = StringIO()
-        call_command('loadworkflowsampledata', TEST_WORKFLOW,
-                     NONEXISTENT_VERSION, stderr=stderr2)
+        call_command(
+            'loadworkflowsampledata',
+            '{}/{}'.format(TEST_WORKFLOW, NONEXISTENT_VERSION),
+            stderr=stderr2)
         output2 = stderr2.getvalue()
         no_version_error = ('Version {} does not exist'
                             .format(NONEXISTENT_VERSION))
@@ -75,8 +93,7 @@ class LoadWorkflowSampleDataTestCase(OrchestraTestCase):
         try:
             os.rename(module_path, new_path)
             stderr3 = StringIO()
-            call_command('loadworkflowsampledata', TEST_WORKFLOW,
-                         VERSION_1, stderr=stderr3)
+            call_command('loadworkflowsampledata', v1_str, stderr=stderr3)
             output3 = stderr3.getvalue()
             no_module_error = 'An error occurred while loading sample data'
             self.assertIn(no_module_error, output3)
@@ -89,8 +106,7 @@ class LoadWorkflowSampleDataTestCase(OrchestraTestCase):
         workflow.sample_data_load_function = None
         workflow.save()
         stderr4 = StringIO()
-        call_command('loadworkflowsampledata', TEST_WORKFLOW, VERSION_1,
-                     stderr=stderr4)
+        call_command('loadworkflowsampledata', v1_str, stderr=stderr4)
         output4 = stderr4.getvalue()
         no_load_function_error = ('Workflow {} does not provide sample data'
                                   .format(TEST_WORKFLOW))
