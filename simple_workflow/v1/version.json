@@ -1,5 +1,5 @@
 {
-  "slug": "simple_workflow_v1",
+  "slug": "v1",
   "name": "Simple Workflow Version 1",
   "description": "Crawl a web page for an image and rate it.",
   "steps": [

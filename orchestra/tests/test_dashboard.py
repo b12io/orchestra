@@ -561,6 +561,9 @@ class DashboardTestCase(OrchestraTestCase):
             'task': {'data': task_data, 'status': task_status},
             'task_id': task.id,
             'workflow': {
+                'slug': 'w1', 'name': 'Workflow One',
+            },
+            'workflow_version': {
                 'slug': 'test_workflow', 'name': 'The workflow'},
             'prerequisites': {},
             'step': {'slug': 'step1', 'name': 'The first step'},

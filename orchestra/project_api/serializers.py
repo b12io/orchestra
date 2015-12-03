@@ -14,6 +14,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'workflow_slug',
+            'workflow_version_slug',
             'short_description',
             'start_datetime',
             'priority',
@@ -22,10 +23,13 @@ class ProjectSerializer(serializers.ModelSerializer):
             'task_class',
         )
 
-    # TODO(dhaas): rename this workflow_version_slug
-    workflow_slug = serializers.SlugRelatedField(source='workflow_version',
-                                                 slug_field='slug',
-                                                 read_only=True)
+    workflow_slug = serializers.SerializerMethodField()
+
+    def get_workflow_slug(self, obj):
+        return obj.workflow_version.workflow.slug
+
+    workflow_version_slug = serializers.SlugRelatedField(
+        source='workflow_version', slug_field='slug', read_only=True)
 
     task_class = serializers.ChoiceField(
         choices=WorkerCertification.TASK_CLASS_CHOICES)

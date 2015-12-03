@@ -40,35 +40,23 @@ def get_project_task_data(project_id):
     return tasks
 
 
-def get_workflow_steps(workflow_slug, version_slug=None):
+def get_workflow_steps(workflow_slug, version_slug):
     """Get a sorted list of steps for a project.
 
     Arguments:
         workflow_slug (str):
             Unique identifier of the workflow to get steps for.
         version_slug (str):
-            identifier for the version of the workflow to get steps for. For
-            backwards compatibility, this parameter may be omitted and a
-            version slug can be passed in the 'workflow_slug' argument. In
-            this case, the version slug must be unique across workflows or an
-            exception will be raised.
+            identifier for the version of the workflow to get steps for.
 
     Returns:
         workflow_steps (str):
             A list of (step_slug, step_description) tuples topologically sorted
             so that earlier steps are prerequisites for later ones.
     """
-    # TODO(dhaas): Be less backwards-compatible?
-    if version_slug is None:
-        try:
-            workflow_version = WorkflowVersion.objects.get(slug=workflow_slug)
-        except WorkflowVersion.MultipleObjectsReturned:
-            raise ValueError('No workflow slug passed, and version slug {} is '
-                             'not unique.'.format(workflow_slug))
-    else:
-        workflow_version = WorkflowVersion.objects.get(
-            slug=version_slug,
-            workflow__slug=workflow_slug)
+    workflow_version = WorkflowVersion.objects.get(
+        slug=version_slug,
+        workflow__slug=workflow_slug)
 
     # Build a directed graph of the step dependencies
     # TODO(dhaas): make DB access more efficient.

@@ -49,7 +49,7 @@ If you haven't followed the :doc:`getting started guide <getting_started>` to
 set up Orchestra yet, you should do that now. Also, make sure that
 ``'journalism_workflow'`` is in your ``INSTALLED_APPS`` setting, and that you
 have loaded the workflow into the database (``python manage.py loadworkflow
-journalism_workflow journalism_v1``).
+journalism_workflow v1``).
 
 The journalism workflow requires Google Apps integration to run,
 so make sure in ``orchestra_settings.py`` you set ``settings.GOOGLE_APPS`` to
@@ -60,7 +60,7 @@ documentation <https://developers.google.com/drive/web/delegation>`_.
 
 Next, make sure you have the journalism workflow sample data installed by
 running (if you haven't already) ``python manage.py loadworkflowsampledata
-journalism journalism_v1``. This will create the following accounts:
+journalism/v1``. This will create the following accounts:
 
 * username: ``journalism-editor``, password: ``editor``. A worker with
   ``editor`` certification.
@@ -414,4 +414,4 @@ signature, and might look like (for example)::
 
 Once that function is defined, sample data can be loaded with::
 
-  python manage.py loadworkflowsampledata <WORKFLOW_SLUG> <VERSION_SLUG>
+  python manage.py loadworkflowsampledata <WORKFLOW_SLUG>/<WORKFLOW_VERSION>

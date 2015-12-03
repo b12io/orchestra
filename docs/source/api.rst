@@ -25,6 +25,7 @@ All requests must be signed using `HTTP signatures <http://tools.ietf.org/html/d
 
    :query task_class: One of `real` or `training` to specify the task class type.
    :query workflow_slug: The slug corresponding to the desired project's workflow.
+   :query workflow_version_slug: The slug corresponding to the desired version of the workflow.
    :query description: A short description of the project.
    :query priority: An integer describing the priority of the project, with higher numbers describing a greater priority.
    :query project_data: Other miscellaneous data with which to initialize the project.
@@ -60,6 +61,7 @@ All requests must be signed using `HTTP signatures <http://tools.ietf.org/html/d
                   "sample_data_item": "sample_data_value_new"
               },
               "workflow_slug": "sample_workflow_slug",
+              "workflow_version_slug": "v1",
               "start_datetime": "2015-09-23T20:16:02.667288Z"
           },
           "steps": [
@@ -106,14 +108,35 @@ All requests must be signed using `HTTP signatures <http://tools.ietf.org/html/d
 
 .. http:get:: /orchestra/api/project/workflow_types
 
-   Return all stored workflows.
+   Return all stored workflows and their versions.
 
    **Example response**:
 
    .. sourcecode:: json
 
       {
-        "workflows": {
-                       "reporting": "A sample workflow for the newsroom."
-                     }
+          "workflows": {
+	      "journalism": {
+	          "name": "Journalism Workflow",
+		  "versions": {
+		      "v1": {
+		          "name": "Journalism Workflow Version 1",
+			  "description": "Create polished newspaper articles from scratch."
+		      },
+		      "v2": {
+		          "name": "Journalism Workflow Version 2",
+			  "description": "Create polished newspaper articles from scratch."
+		      }
+                  }
+	      },
+	      "simple_workflow": {
+	          "name": "Simple Workflow",
+		  "versions": {
+		      "v1": {
+		          "name": "Simple Workflow Version 1",
+			  "description": "Crawl a web page for an image and rate it."
+		      }
+		  }
+	      }
+	  }
       }
