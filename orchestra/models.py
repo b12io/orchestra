@@ -304,7 +304,7 @@ class Project(models.Model):
 
     short_description = models.TextField()
     priority = models.IntegerField()
-    project_data = JSONField(default={})
+    project_data = JSONField(default={}, blank=True)
     task_class = models.IntegerField(
         choices=WorkerCertification.TASK_CLASS_CHOICES)
     review_document_url = models.URLField(null=True, blank=True)
@@ -423,7 +423,7 @@ class TaskAssignment(models.Model):
 
     # Opaque field that stores current state of task as per the Step's
     # description
-    in_progress_task_data = JSONField(default={})
+    in_progress_task_data = JSONField(default={}, blank=True)
 
     # When a worker submits, accepts, or rejects a task, we snapshot their
     # in_workflow_task_data along with the date in the following format:
@@ -433,7 +433,7 @@ class TaskAssignment(models.Model):
     #    'work_time_seconds': integer seconds,
     #    'type': value from SnapshotType}]
     #  '__version': 1}
-    snapshots = JSONField(default={})
+    snapshots = JSONField(default={}, blank=True)
 
     def save(self, *args, **kwargs):
         if self.task.step.is_human:

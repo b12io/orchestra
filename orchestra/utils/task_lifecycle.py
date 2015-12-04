@@ -4,6 +4,7 @@ from importlib import import_module
 from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 
 from orchestra.core.errors import AssignmentPolicyError
 from orchestra.core.errors import IllegalTaskSubmission
@@ -19,41 +20,18 @@ from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import Worker
 from orchestra.models import WorkerCertification
+from orchestra.project_api.serializers import TaskSerializer
+from orchestra.project_api.serializers import TaskAssignmentSerializer
 from orchestra.slack import add_worker_to_project_team
 from orchestra.utils.assignment_snapshots import empty_snapshots
 from orchestra.utils.notifications import notify_status_change
 from orchestra.utils.task_properties import assignment_history
 from orchestra.utils.task_properties import current_assignment
+from orchestra.utils.task_properties import last_snapshotted_assignment
 from orchestra.utils.task_properties import is_worker_assigned_to_task
 
 import logging
 logger = logging.getLogger(__name__)
-
-
-def _get_latest_task_data(task):
-    """
-    Return latest input data for a specified task.
-
-    Args:
-        task (orchestra.models.Task):
-            The task object for which to retrieve data.
-
-    Returns:
-        latest_data (str):
-            A serialized JSON blob containing the latest input data.
-    """
-    active_assignment = (task.assignments
-                         .filter(status=TaskAssignment.Status.PROCESSING))
-    if active_assignment.exists():
-        assignment = active_assignment[0]
-    else:
-        assignment = (task.assignments.all()
-                      .order_by('-assignment_counter').first())
-    if not assignment:
-        return None
-
-    latest_data = assignment.in_progress_task_data
-    return latest_data
 
 
 def worker_assigned_to_max_tasks(worker):
@@ -158,53 +136,6 @@ def _worker_certified_for_task(worker, task, role,
     return certified_for_task
 
 
-def _role_required_to_assign(task):
-    """
-    Return the role required to assign or reassign a task, and a flag to
-    indicate whether the task requires reassignment.
-
-    Args:
-        task (orchestra.models.Task):
-            The specified task object.
-
-    Returns:
-        required_role (orchestra.models.WorkerCertification.Role):
-            Role required to assign or reassign the task.
-        needs_reassign (bool):
-            True if the task requires reassignment.
-    """
-    post_review_role = WorkerCertification.Role.ENTRY_LEVEL
-    final_role = WorkerCertification.Role.ENTRY_LEVEL
-    assignment_count = task.assignments.count()
-    if assignment_count > 2:
-        # Role required to reassign post-review processing tasks
-        post_review_role = WorkerCertification.Role.REVIEWER
-    if assignment_count > 1:
-        # Role required to reassign complete and aborted tasks
-        final_role = WorkerCertification.Role.REVIEWER
-
-    roles = {
-        Task.Status.AWAITING_PROCESSING: WorkerCertification.Role.ENTRY_LEVEL,
-        Task.Status.PENDING_REVIEW: WorkerCertification.Role.REVIEWER
-    }
-    reassigns = {
-        Task.Status.PROCESSING: WorkerCertification.Role.ENTRY_LEVEL,
-        Task.Status.REVIEWING: WorkerCertification.Role.REVIEWER,
-        Task.Status.POST_REVIEW_PROCESSING: post_review_role,
-        Task.Status.COMPLETE: final_role
-    }
-
-    # If task rejected from higher-level reviewer to a lower-level one, it can
-    # only be reassigned to a reviewer
-    required_role, needs_reassign = roles.get(task.status, None), False
-    if required_role is None:
-        required_role, needs_reassign = reassigns.get(task.status, None), True
-    if required_role is None:
-        raise TaskStatusError('Task status not found.')
-    return required_role, needs_reassign
-
-
-# TODO(jrbotros): make this accept worker_id, task_id instead
 @transaction.atomic
 def assign_task(worker_id, task_id):
     """
@@ -230,25 +161,26 @@ def assign_task(worker_id, task_id):
     """
     worker = Worker.objects.get(id=worker_id)
     task = Task.objects.get(id=task_id)
-    required_role, requires_reassign = _role_required_to_assign(task)
+
+    roles = {
+        Task.Status.AWAITING_PROCESSING: WorkerCertification.Role.ENTRY_LEVEL,
+        Task.Status.PENDING_REVIEW: WorkerCertification.Role.REVIEWER
+    }
+
+    required_role = roles.get(task.status)
+    if required_role is None:
+        raise TaskAssignmentError('Status incompatible with new assignment')
+
     assignment = current_assignment(task)
     if not _worker_certified_for_task(worker, task, required_role):
         raise WorkerCertificationError('Worker not certified for this task.')
     if is_worker_assigned_to_task(worker, task):
         raise TaskAssignmentError('Worker already assigned to this task.')
 
-    # If task is currently in progress, reassign it
-    if requires_reassign:
-        assignment.worker = worker
-        assignment.save()
-        add_worker_to_project_team(worker, task.project)
-        return task
-
-    # Otherwise, create new assignment
     assignment_counter = task.assignments.count()
     in_progress_task_data = {}
 
-    if required_role == WorkerCertification.Role.REVIEWER:
+    if assignment:
         # In-progress task data is the latest
         # submission by a previous worker
         in_progress_task_data = assignment.in_progress_task_data
@@ -258,8 +190,6 @@ def assign_task(worker_id, task_id):
         task.status = Task.Status.PROCESSING
     elif previous_status == Task.Status.PENDING_REVIEW:
         task.status = Task.Status.REVIEWING
-    else:
-        raise TaskAssignmentError('Status incompatible with new assignment')
     task.save()
 
     (TaskAssignment.objects
@@ -272,6 +202,299 @@ def assign_task(worker_id, task_id):
 
     add_worker_to_project_team(worker, task.project)
     notify_status_change(task, previous_status)
+    return task
+
+
+@transaction.atomic
+def reassign_assignment(worker_id, assignment_id):
+    """
+    Return a given assignment after reassigning it to the specified
+    worker.
+
+    Args:
+        worker_id (int):
+            The ID of the worker to be assigned.
+        assignment_id (int):
+            The ID of the assignment to be assigned.
+
+    Returns:
+        assignment (orchestra.models.TaskAssignment):
+            The newly assigned assignment.
+
+    Raises:
+        orchestra.core.errors.TaskAssignmentError:
+            The specified worker is already assigned to the given task.
+        orchestra.core.errors.WorkerCertificationError:
+            The specified worker is not certified for the given assignment.
+    """
+    worker = Worker.objects.get(id=worker_id)
+    assignment = TaskAssignment.objects.get(id=assignment_id)
+    if assignment.assignment_counter > 0:
+        role = WorkerCertification.Role.REVIEWER
+    else:
+        role = WorkerCertification.Role.ENTRY_LEVEL
+
+    if not _worker_certified_for_task(worker, assignment.task, role):
+        raise WorkerCertificationError(
+            'Worker not certified for this assignment.')
+    if is_worker_assigned_to_task(worker, assignment.task):
+        raise TaskAssignmentError('Worker already assigned to this task.')
+
+    assignment.worker = worker
+    assignment.save()
+    add_worker_to_project_team(worker, assignment.task.project)
+
+    return assignment
+
+
+@transaction.atomic
+def complete_and_skip_task(task_id):
+    """
+    Marks a task and its assignments as complete and creates subsequent tasks.
+
+    Args:
+        task_id (int):
+            The ID of the task to be marked as complete and skipped.
+
+    Returns:
+        task (orchestra.models.Task):
+            The completed and skipped task.
+    """
+    task = Task.objects.get(id=task_id)
+    task.status = Task.Status.COMPLETE
+    task.save()
+    for assignment in task.assignments.all():
+        assignment.status = TaskAssignment.Status.SUBMITTED
+        assignment.save()
+    create_subsequent_tasks(task.project)
+    return task
+
+
+@transaction.atomic
+def revert_task_to_datetime(task_id, revert_datetime, fake=False):
+    """
+    Reverts a task to its state immediately before the specified
+    datetime.
+
+    Args:
+        task_id (int):
+            The ID of the task to be reverted.
+        revert_datetime (datetime.datetime):
+            The datetime before which to revert the task.
+        fake (bool):
+            Determines whether the revert is actually carried out;
+            otherwise, an audit trail is passively generated.
+
+    Returns:
+        audit (dict):
+            An audit trail for the revert, e.g.,
+
+            {
+                'task': {...},
+                'change': 'reverted'
+                'assignments': [
+                    {
+                        # worker_0 assignment
+                        'assignment': {...},
+                        'change': 'reverted',
+                        'snapshots': [
+                            {
+                                'snapshot': {...},
+                                'change': 'unchanged'
+                            }
+                            {
+                                'snapshot': {...},
+                                'change': 'deleted'
+                            },
+                        ]
+                    },
+                    {
+                        # worker_1 assignment
+                        'assignment': {...},
+                        'change': 'deleted',
+                        'snapshots': [
+                            {
+                                'snapshot': {...},
+                                'change': 'deleted'
+                            },
+                            {
+                                'snapshot': {...},
+                                'change': 'deleted'
+                            }
+                        ]
+                    }
+                ],
+            }
+    """
+    task = Task.objects.get(id=task_id)
+    audit = {
+        'task': TaskSerializer(task).data,
+        'change': 'unchanged',
+        'assignments': []
+    }
+    reverted = False
+
+    for assignment in assignment_history(task).all():
+        assignment_audit = _revert_assignment_to_datetime(
+            assignment, revert_datetime, fake)
+        audit['assignments'].append(assignment_audit)
+        if assignment_audit['change'] != 'unchanged':
+            reverted = True
+
+    # Delete task if it starts after revert_datetime
+    if task.start_datetime >= revert_datetime:
+        audit['change'] = 'deleted'
+        if not fake:
+            task.delete()
+    elif reverted:
+        audit['change'] = 'reverted'
+        if not fake:
+            _revert_task_status(task)
+
+    return audit
+
+
+def _revert_assignment_to_datetime(assignment, revert_datetime, fake=False):
+    """
+    Reverts an assignment to its state immediately before the specified
+    datetime.
+
+    Args:
+        assignment (orchestra.models.TaskAssignment):
+            The assignment to be reverted.
+        revert_datetime (datetime.datetime):
+            The datetime before which to revert the assignment.
+        fake (bool):
+            Determines whether the revert is actually carried out;
+            otherwise, an audit trail is passively generated.
+
+    Returns:
+        audit (dict):
+            An audit trail for the revert, e.g.,
+
+            {
+                'assignment': {...},
+                'change': 'reverted',
+                'snapshots': [
+                    {
+                        'snapshot': {...},
+                        'change': 'deleted'
+                    },
+                    {
+                        'snapshot': {},
+                        'change': 'unchanged'
+                    }
+                ]
+            }
+    """
+    audit = {
+        'assignment': TaskAssignmentSerializer(assignment).data,
+        'change': 'unchanged',
+        'snapshots': [{'snapshot': snapshot, 'change': 'unchanged'}
+                      for snapshot in assignment.snapshots['snapshots']],
+    }
+    # Revert assignment to datetime by removing snapshots
+    gt_idx = None
+    snapshots = assignment.snapshots['snapshots']
+    for i, snapshot in enumerate(snapshots):
+        if parse_datetime(snapshot['datetime']) >= revert_datetime:
+            gt_idx = i
+            break
+    if gt_idx is not None:
+        # Revert to before this snapshot
+        audit['change'] = 'reverted'
+        for i, _ in enumerate(audit['snapshots']):
+            if i >= gt_idx:
+                audit['snapshots'][i]['change'] = 'deleted'
+        if not fake:
+            assignment.snapshots['snapshots'] = snapshots[:gt_idx]
+            # Reset assignment data to the oldest deleted snapshot. When
+            # we determine which assignment is processing in
+            # _revert_task_status, we'll revert all other assignments
+            # to their latest submitted snapshot data.
+            assignment.in_progress_task_data = snapshots[gt_idx]['data']
+            assignment.save()
+
+    if assignment.start_datetime >= revert_datetime:
+        audit['change'] = 'deleted'
+        if not fake:
+            # Delete assignments created after the revert datetime.
+            assignment.delete()
+
+    return audit
+
+
+def _revert_task_status(task):
+    """
+    Reverts the status of an otherwise-reverted task.
+
+    Args:
+        task (orchestra.models.Task):
+            The task with status to revert.
+
+    Returns:
+        task (orchestra.models.Task):
+            The task with reverted status.
+    """
+    assignments = assignment_history(task)
+    num_assignments = assignments.count()
+
+    reverted_status = None
+    current_assignment_counter = None
+    previous_assignment_counter = None
+    if num_assignments == 0:
+        # No assignment is present
+        reverted_status = Task.Status.AWAITING_PROCESSING
+    else:
+        assignment = last_snapshotted_assignment(task.id)
+        if not assignment:
+            # Task has an assignment but no snapshots
+            reverted_status = Task.Status.PROCESSING
+            current_assignment_counter = 0
+        else:
+            latest_counter = assignment.assignment_counter
+            snapshot = assignment.snapshots['snapshots'][-1]
+            if snapshot['type'] == TaskAssignment.SnapshotType.REJECT:
+                # Task was last rejected back to previous worker
+                reverted_status = Task.Status.POST_REVIEW_PROCESSING
+                current_assignment_counter = latest_counter - 1
+                previous_assignment_counter = latest_counter
+
+            elif (snapshot['type'] in (TaskAssignment.SnapshotType.SUBMIT,
+                                       TaskAssignment.SnapshotType.ACCEPT)):
+                if latest_counter == num_assignments - 1:
+                    # Task was last submitted and no higher-level
+                    # assignments are present (reverted tasks will never end
+                    # in a completed state)
+                    reverted_status = Task.Status.PENDING_REVIEW
+                else:
+                    reverted_status = Task.Status.REVIEWING
+                    previous_assignment_counter = latest_counter
+                    current_assignment_counter = latest_counter + 1
+
+    if current_assignment_counter is not None:
+        current_assignment = task.assignments.get(
+            assignment_counter=current_assignment_counter)
+        current_assignment.status = TaskAssignment.Status.PROCESSING
+        current_assignment.save()
+
+    if previous_assignment_counter is not None:
+        previous_assignment = task.assignments.get(
+            assignment_counter=previous_assignment_counter)
+        previous_assignment.status = TaskAssignment.Status.SUBMITTED
+        previous_assignment.save()
+
+    # TODO(jrbotros): The revert methos should "peel off" snapshots,
+    # rather than deleting them in bulk and recalculating the assignment
+    # and task statuses; this logic needs to be cleaned up.
+    for assignment in task.assignments.all():
+        if assignment.status == TaskAssignment.Status.SUBMITTED:
+            latest_snapshot = assignment.snapshots['snapshots'][-1]
+            assignment.in_progress_task_data = latest_snapshot['data']
+            assignment.save()
+
+    task.status = reverted_status
+    task.save()
     return task
 
 
@@ -809,7 +1032,7 @@ def previously_completed_task_data(task):
     Returns:
         prerequisites (dict):
             A dict mapping task prerequisites onto their latest task
-            assignment information..
+            assignment information.
     """
     step = task.step
     prerequisites = {}
@@ -820,11 +1043,13 @@ def previously_completed_task_data(task):
         if required_task.status != Task.Status.COMPLETE:
             raise TaskDependencyError('Task depenency is not satisfied')
 
-        task_assignment = (required_task.assignments
-                           .order_by('-assignment_counter')[0])
-
         task_details = get_task_details(required_task.id)
-        task_assignment_details = get_task_assignment_details(task_assignment)
+
+        assignment = assignment_history(required_task).last()
+        task_assignment_details = {}
+        if assignment:
+            # Task assignment should be present unless task was skipped.
+            task_assignment_details = get_task_assignment_details(assignment)
         task_assignment_details.update(task_details)
 
         # TODO(kkamalov): check for circular prerequisites
@@ -991,34 +1216,11 @@ def create_subsequent_tasks(project):
             task.save()
 
             _preassign_workers(task)
-
             if not step.is_human:
                 machine_step_scheduler_module = import_module(
                     settings.MACHINE_STEP_SCHEDULER[0])
                 machine_step_scheduler_class = getattr(
                     machine_step_scheduler_module,
                     settings.MACHINE_STEP_SCHEDULER[1])
-
                 machine_step_scheduler = machine_step_scheduler_class()
                 machine_step_scheduler.schedule(project.id, step.slug)
-
-
-def task_history_details(task_id):
-    """
-    Return assignment details for a specified task.
-
-    Args:
-        task_id (int):
-            The ID of the desired task object.
-
-    Returns:
-        details (dict):
-            A dictionary containing the current task assignment and an
-            in-order list of related task assignments.
-    """
-    task = Task.objects.get(id=task_id)
-    details = {
-        'current_assignment': current_assignment(task),
-        'assignment_history': assignment_history(task)
-    }
-    return details

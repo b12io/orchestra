@@ -2,7 +2,7 @@
   'use strict';
 
   var modules = ['orchestra.routes', 'orchestra.config', 'orchestra.dashboard',
-                 'orchestra.task', 'orchestra.common'];
+                 'orchestra.task', 'orchestra.project_management', 'orchestra.common'];
   // Dynamically instantiate each of the angular modules from Orchestra
   // Workflow Steps
   angular.forEach(window.orchestra.angular_modules, function(module) {
@@ -15,13 +15,14 @@
   angular.module('orchestra.config', []);
   angular.module('orchestra.dashboard', []);
   angular.module('orchestra.task', []);
+  angular.module('orchestra.project_management', []);
   angular.module('orchestra.common', []);
 
   // Dynamically instantiate each of the angular modules from Orchestra
   // Workflow Steps
   angular.forEach(window.orchestra.angular_modules, function(module) {
     angular.module(module, []);
-   })
+  })
 
   angular.module('orchestra').run(run);
 

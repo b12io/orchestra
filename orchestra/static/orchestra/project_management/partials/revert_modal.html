@@ -1,0 +1,8 @@
+<div class="revert-modal">
+  <div class="header-wrapper">
+    Are you sure you want to revert the task to this point? The following changes cannot be undone:
+  </div>
+  <pre class="json-view">{{audit | json}}</pre>
+  <button ng-click="cancel()" class="btn btn-default">Cancel</button>
+  <button ng-click="confirmRevert()" class="btn btn-danger">Confirm revert</button>
+</div>

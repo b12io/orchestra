@@ -1,7 +1,6 @@
 import base64
 import json
 import os
-
 from collections import defaultdict
 
 from django.conf import settings
@@ -10,6 +9,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from jsonview.decorators import json_view
 from jsonview.exceptions import BadRequest
+
 from orchestra.core.errors import TaskStatusError
 from orchestra.core.errors import WorkerCertificationError
 from orchestra.core.errors import NoTaskAvailable

@@ -3,9 +3,11 @@ import numpy as np
 from datetime import timedelta
 from dateutil.parser import parse
 from operator import attrgetter
+
+from pandas import DataFrame
+
 from orchestra.models import Task
 from orchestra.project_api.api import get_project_information
-from pandas import DataFrame
 
 
 def work_time_df(projects, human_only=True, complete_tasks_only=True):
@@ -56,8 +58,9 @@ def work_time_df(projects, human_only=True, complete_tasks_only=True):
     df = DataFrame(time_data)
     # Pandas treats all non-primitives as strings, so we explicitly cast
     # datetimes as datetimes instead of strings.
-    df['start_datetime'] = df['start_datetime'].astype('datetime64[ns]')
-    df['end_datetime'] = df['end_datetime'].astype('datetime64[ns]')
+    if not df.empty:
+        df['start_datetime'] = df['start_datetime'].astype('datetime64[ns]')
+        df['end_datetime'] = df['end_datetime'].astype('datetime64[ns]')
     return df
 
 
@@ -112,23 +115,22 @@ def project_time_row_generator(project_information,
                 dict(Task.STATUS_CHOICES)[Task.Status.COMPLETE]):
             continue
         iterations = []
+
         for assignment_idx, assignment in enumerate(task['assignments']):
+            iterations.append(Iteration(
+                project_information['project'], task,
+                assignment_idx + 1, 0, assignment['worker']['username'],
+                timedelta(seconds=0),
+                parse(assignment['start_datetime'])))
             for iteration, snapshot in enumerate(
                     assignment['snapshots']['snapshots']):
-                if iteration == 0:
-                    iterations.append(Iteration(
-                        project_information['project'], task,
-                        assignment_idx + 1, 0, assignment['worker'],
-                        timedelta(seconds=0),
-                        parse(assignment['start_datetime'])))
                 iterations.append(Iteration(
                     project_information['project'], task,
                     assignment_idx + 1,
                     iteration + 1,
-                    assignment['worker'],
+                    assignment['worker']['username'],
                     timedelta(seconds=snapshot['work_time_seconds']),
                     parse(snapshot['datetime'])))
-
         # To calculate calendar time, zip together each iteration
         # (in time-order) with the end time of the previous iteration
         # so that we can subtract the two.

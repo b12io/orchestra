@@ -31,7 +31,7 @@ serviceModule.factory('orchestraService', function() {
                 if (currentStep.prerequisites[desired_slug]) {
                     return currentStep.prerequisites[desired_slug]
                 }
-                for (step_slug in currentStep.prerequisites) {
+                for (var step_slug in currentStep.prerequisites) {
                     stepsToTraverse.push(currentStep.prerequisites[step_slug])
                 }
             }

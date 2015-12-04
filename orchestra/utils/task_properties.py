@@ -1,4 +1,5 @@
 from orchestra.models import Task
+from orchestra.models import TaskAssignment
 
 
 def assignment_history(task):
@@ -34,6 +35,45 @@ def current_assignment(task):
         return assignments.reverse()[1]
     else:
         return assignments.last()
+
+
+def last_snapshotted_assignment(task_id):
+    task = Task.objects.get(id=task_id)
+
+    assignments = assignment_history(task)
+    if not assignments:
+        return None
+
+    snapshots = assignments.first().snapshots['snapshots']
+    if not snapshots:
+        return None
+
+    snapshot = snapshots[0]
+    current_assignment_counter = 0
+    latest_snapshot_index = [0 for assignment in assignments]
+    while True:
+        if snapshot['type'] in (TaskAssignment.SnapshotType.SUBMIT,
+                                TaskAssignment.SnapshotType.ACCEPT):
+            next_assignment_counter = current_assignment_counter + 1
+        elif snapshot['type'] == TaskAssignment.SnapshotType.REJECT:
+            next_assignment_counter = current_assignment_counter - 1
+        else:
+            raise Exception('Snapshot status not found.')
+
+        if next_assignment_counter == assignments.count():
+            return assignments[current_assignment_counter]
+
+        latest_snapshot_index[current_assignment_counter] += 1
+
+        next_assignment_snapshots = (assignments[next_assignment_counter]
+                                     .snapshots['snapshots'])
+        try:
+            snapshot = (next_assignment_snapshots[
+                latest_snapshot_index[next_assignment_counter]])
+        except IndexError:
+            return assignments[current_assignment_counter]
+
+        current_assignment_counter = next_assignment_counter
 
 
 def all_workers(task):

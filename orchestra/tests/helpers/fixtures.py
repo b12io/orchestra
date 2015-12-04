@@ -1,10 +1,12 @@
-import factory
-
 from copy import deepcopy
 from dateutil.parser import parse
+from unittest.mock import patch
+
+import factory
 from django.contrib.auth.models import User
 from django.test import Client
 from django.test import override_settings
+
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import WorkerCertification
@@ -12,6 +14,8 @@ from orchestra.models import Workflow
 from orchestra.models import Step
 from orchestra.models import WorkflowVersion
 from orchestra.slack import create_project_slack_group
+from orchestra.utils.task_lifecycle import assign_task
+from orchestra.utils.task_lifecycle import submit_task
 from orchestra.utils.task_properties import assignment_history
 from orchestra.tests.helpers.workflow import workflow_fixtures
 from orchestra.workflow.defaults import get_default_assignment_policy
@@ -166,6 +170,7 @@ def setup_models(test_case):
         'aborted_project': 'test_workflow',
         'project_to_end': 'test_workflow',
         'assignment_policy': 'assignment_policy_workflow',
+        'project_management_project': 'test_workflow',
     }
 
     # Task generation data
@@ -180,7 +185,7 @@ def setup_models(test_case):
                 (0, test_data, TaskAssignment.Status.SUBMITTED)
             ],
         },
-        'processing_task': {
+        'awaiting_processing': {
             'project_name': 'no_task_assignments',
             'status': Task.Status.AWAITING_PROCESSING,
             'assignments': []
@@ -195,6 +200,15 @@ def setup_models(test_case):
         },
         'rejected_review': {
             'project_name': 'reject_rev_proj',
+            'status': Task.Status.POST_REVIEW_PROCESSING,
+            'assignments': [
+                (5, {}, TaskAssignment.Status.SUBMITTED),
+                (6, test_data, TaskAssignment.Status.PROCESSING),
+                (7, {}, TaskAssignment.Status.SUBMITTED)
+            ]
+        },
+        'project_management_task': {
+            'project_name': 'project_management_project',
             'status': Task.Status.POST_REVIEW_PROCESSING,
             'assignments': [
                 (5, {}, TaskAssignment.Status.SUBMITTED),
@@ -452,4 +466,98 @@ def setup_task_history(test):
     second_assignment.save()
     third_assignment.save()
 
+    return task
+
+
+def setup_complete_task(test_case, times):
+    task = TaskFactory(
+        project=test_case.projects['empty_project'],
+        status=Task.Status.AWAITING_PROCESSING,
+        step=test_case.test_step,
+        start_datetime=times['awaiting_pickup'])
+
+    workers = {
+        'entry': test_case.workers[0],
+        'reviewer': test_case.workers[1]
+    }
+
+    assign_task(workers['entry'].id, task.id)
+    entry_assignment = task.assignments.get(worker=workers['entry'])
+    # Modify assignment with correct datetime
+    entry_assignment.start_datetime = times['entry_pickup']
+    entry_assignment.save()
+
+    task.refresh_from_db()
+    test_case.assertEquals(task.status, Task.Status.PROCESSING)
+
+    submit_task(
+        task.id, {'test': 'entry_submit'},
+        TaskAssignment.SnapshotType.SUBMIT,
+        workers['entry'], 0)
+
+    task.refresh_from_db()
+    test_case.assertEquals(task.status, Task.Status.PENDING_REVIEW)
+
+    # Modify snapshot with correct datetime
+    entry_assignment.refresh_from_db()
+    (entry_assignment.snapshots
+        ['snapshots'][0]['datetime']) = times['entry_submit']
+    entry_assignment.save()
+
+    assign_task(workers['reviewer'].id, task.id)
+    reviewer_assignment = task.assignments.get(
+        worker=workers['reviewer'])
+    # Modify assignment with correct datetime
+    reviewer_assignment.start_datetime = times['reviewer_pickup']
+    reviewer_assignment.save()
+
+    task.refresh_from_db()
+    test_case.assertEquals(task.status, Task.Status.REVIEWING)
+
+    submit_task(
+        task.id, {'test': 'reviewer_reject'},
+        TaskAssignment.SnapshotType.REJECT,
+        workers['reviewer'], 0)
+    # Modify snapshot with correct datetime
+    reviewer_assignment.refresh_from_db()
+    (reviewer_assignment.snapshots
+        ['snapshots'][0]['datetime']) = times['reviewer_reject']
+    reviewer_assignment.save()
+
+    task.refresh_from_db()
+    test_case.assertEquals(task.status, Task.Status.POST_REVIEW_PROCESSING)
+
+    submit_task(
+        task.id, {'test': 'entry_resubmit'},
+        TaskAssignment.SnapshotType.SUBMIT,
+        workers['entry'], 0)
+    # Modify snapshot with correct datetime
+    entry_assignment.refresh_from_db()
+    (entry_assignment.snapshots
+        ['snapshots'][1]['datetime']) = times['entry_resubmit']
+    entry_assignment.save()
+
+    task.refresh_from_db()
+    test_case.assertEquals(task.status, Task.Status.REVIEWING)
+
+    with patch('orchestra.utils.task_lifecycle._is_review_needed',
+               return_value=False):
+        submit_task(
+            task.id, {'test': 'reviewer_accept'},
+            TaskAssignment.SnapshotType.ACCEPT,
+            workers['reviewer'], 0)
+
+    # Modify snapshot with correct datetime
+    reviewer_assignment.refresh_from_db()
+    (reviewer_assignment.snapshots
+        ['snapshots'][1]['datetime']) = times['reviewer_accept']
+    reviewer_assignment.save()
+
+    task.refresh_from_db()
+    test_case.assertEquals(task.status, Task.Status.COMPLETE)
+    test_case.assertEquals(task.assignments.count(), 2)
+    for assignment in task.assignments.all():
+        test_case.assertEquals(
+            assignment.status, TaskAssignment.Status.SUBMITTED)
+        test_case.assertEquals(len(assignment.snapshots['snapshots']), 2)
     return task

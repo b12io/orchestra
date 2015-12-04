@@ -1,4 +1,3 @@
-import json
 from unittest.mock import patch
 
 from orchestra.core.errors import IllegalTaskSubmission
@@ -16,20 +15,19 @@ from orchestra.models import WorkerCertification
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.fixtures import StepFactory
+from orchestra.tests.helpers.fixtures import TaskAssignmentFactory
+from orchestra.tests.helpers.fixtures import TaskFactory
 from orchestra.utils.assignment_snapshots import empty_snapshots
-from orchestra.utils.task_lifecycle import _worker_certified_for_task
 from orchestra.utils.task_lifecycle import _check_worker_allowed_new_assignment
+from orchestra.utils.task_lifecycle import _worker_certified_for_task
 from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.task_lifecycle import create_subsequent_tasks
-from orchestra.utils.task_lifecycle import end_project
 from orchestra.utils.task_lifecycle import get_new_task_assignment
 from orchestra.utils.task_lifecycle import get_next_task_status
 from orchestra.utils.task_lifecycle import get_task_overview_for_worker
 from orchestra.utils.task_lifecycle import submit_task
-from orchestra.utils.task_lifecycle import task_history_details
 from orchestra.utils.task_lifecycle import worker_assigned_to_rejected_task
 from orchestra.utils.task_lifecycle import worker_has_reviewer_status
-from orchestra.utils.task_properties import assignment_history
 from orchestra.utils.task_properties import current_assignment
 from orchestra.utils.task_properties import is_worker_assigned_to_task
 
@@ -172,125 +170,66 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         self.assertTrue(worker_has_reviewer_status(self.workers[6]))
 
     def test_assign_task(self):
+        entry_task = TaskFactory(
+            project=self.projects['base_test_project'],
+            status=Task.Status.AWAITING_PROCESSING,
+            step=self.test_step)
+
         # Assign entry-level task to entry-level worker
-        entry_tasks = Task.objects.filter(
-            status=Task.Status.AWAITING_PROCESSING)
-        self.assertEquals(entry_tasks.count(), 1)
-        entry_task = entry_tasks.first()
         entry_task = assign_task(self.workers[0].id, entry_task.id)
         self.assertTrue(is_worker_assigned_to_task(self.workers[0],
                                                    entry_task))
         self.assertEquals(entry_task.status, Task.Status.PROCESSING)
         self.assertEquals(entry_task.assignments.count(), 1)
 
-        # Attempt to reassign task to same worker
-        with self.assertRaises(TaskAssignmentError):
-            entry_task = assign_task(self.workers[0].id, entry_task.id)
-        self.assertTrue(is_worker_assigned_to_task(self.workers[0],
-                                                   entry_task))
-        self.assertEquals(entry_task.status, Task.Status.PROCESSING)
-        self.assertEquals(entry_task.assignments.count(), 1)
+        # Attempt to assign task which isn't awaiting a new assignment
+        invalid = (Task.Status.PROCESSING, Task.Status.ABORTED,
+                   Task.Status.REVIEWING, Task.Status.COMPLETE,
+                   Task.Status.POST_REVIEW_PROCESSING)
+        for status in invalid:
+            invalid_status_task = Task.objects.create(
+                project=self.projects['base_test_project'],
+                status=status,
+                step=self.test_step)
 
-        # Reassign entry-level task to another entry-level worker
-        entry_task = assign_task(self.workers[1].id, entry_task.id)
-        self.assertFalse(is_worker_assigned_to_task(self.workers[0],
-                                                    entry_task))
-        self.assertTrue(is_worker_assigned_to_task(self.workers[1],
-                                                   entry_task))
-        self.assertEquals(entry_task.assignments.count(), 1)
-        self.assertEquals(entry_task.status, Task.Status.PROCESSING)
+            with self.assertRaises(TaskAssignmentError):
+                invalid_status_task = assign_task(
+                    self.workers[0].id, invalid_status_task.id)
+
+        # Attempt to assign review task to worker already in review hierarchy
+        review_task = Task.objects.create(
+            project=self.projects['base_test_project'],
+            status=Task.Status.PENDING_REVIEW,
+            step=self.test_step)
+        test_data = {'test_assign': True}
+        TaskAssignmentFactory(
+            worker=self.workers[1],
+            task=review_task,
+            status=TaskAssignment.Status.SUBMITTED,
+            in_progress_task_data=test_data,
+            snapshots=empty_snapshots())
+
+        with self.assertRaises(TaskAssignmentError):
+            assign_task(self.workers[1].id, review_task.id)
+        self.assertEqual(
+            current_assignment(review_task).in_progress_task_data, test_data)
+
+        # Attempt to assign review task to worker not certified for task
+        with self.assertRaises(WorkerCertificationError):
+            assign_task(self.workers[2].id, review_task.id)
+        self.assertEqual(
+            current_assignment(review_task).in_progress_task_data, test_data)
 
         # Assign review task to review worker
-        review_tasks = Task.objects.filter(status=Task.Status.PENDING_REVIEW)
-        self.assertEquals(review_tasks.count(), 1)
-        review_task = review_tasks.first()
         self.assertEquals(review_task.assignments.count(), 1)
-        review_task = assign_task(self.workers[1].id, review_task.id)
-        self.assertEquals(review_task.assignments.count(), 2)
-        self.assertEqual(current_assignment(review_task).worker,
-                         self.workers[1])
-        self.assertEquals(review_task.status, Task.Status.REVIEWING)
-
-        # Attempt to reassign review task to entry-level worker
-        with self.assertRaises(WorkerCertificationError):
-            review_task = assign_task(self.workers[0].id, review_task.id)
-        self.assertEquals(review_task.assignments.count(), 2)
-        self.assertEqual(current_assignment(review_task).worker,
-                         self.workers[1])
-        self.assertEquals(review_task.status, Task.Status.REVIEWING)
-
-        # Reassign review task to another reviewer
         review_task = assign_task(self.workers[3].id, review_task.id)
         self.assertEquals(review_task.assignments.count(), 2)
-        self.assertEqual(current_assignment(review_task).worker,
-                         self.workers[3])
-        self.assertEquals(review_task.status, Task.Status.REVIEWING)
-
-        # Reassign rejected entry-level task to another entry-level worker
-        reject_entry_tasks = Task.objects.filter(
-            status=Task.Status.POST_REVIEW_PROCESSING,
-            project=self.projects['reject_entry_proj'])
-        self.assertEquals(reject_entry_tasks.count(), 1)
-        reject_entry_task = reject_entry_tasks.first()
-        reject_entry_task = assign_task(self.workers[5].id,
-                                        reject_entry_task.id)
-        self.assertFalse(is_worker_assigned_to_task(self.workers[4],
-                                                    reject_entry_task))
-        self.assertTrue(is_worker_assigned_to_task(self.workers[5],
-                                                   reject_entry_task))
-        self.assertEquals(reject_entry_task.status,
-                          Task.Status.POST_REVIEW_PROCESSING)
-        self.assertEquals(reject_entry_task.assignments.count(), 2)
-        # In-progress data preserved after successful reassign
-        self.assertEquals((current_assignment(reject_entry_task)
-                           .in_progress_task_data),
-                          {'test_key': 'test_value'})
-
-        # Attempt to reassign rejected review task to entry-level worker
-        reject_tasks = Task.objects.filter(
-            status=Task.Status.POST_REVIEW_PROCESSING,
-            project=self.projects['reject_rev_proj'])
-        self.assertEquals(reject_tasks.count(), 1)
-        reject_review_task = reject_tasks.first()
-        with self.assertRaises(WorkerCertificationError):
-            reject_review_task = assign_task(self.workers[4].id,
-                                             reject_review_task.id)
-        self.assertFalse(is_worker_assigned_to_task(self.workers[4],
-                                                    reject_review_task))
-        self.assertTrue(is_worker_assigned_to_task(self.workers[6],
-                                                   reject_review_task))
-        self.assertEquals(reject_review_task.status,
-                          Task.Status.POST_REVIEW_PROCESSING)
-        self.assertEquals(reject_review_task.assignments.count(), 3)
-
-        # Reassign reviewer post-review task to another reviewer
-        reject_review_task = assign_task(self.workers[8].id,
-                                         reject_review_task.id)
-        self.assertFalse(is_worker_assigned_to_task(self.workers[6],
-                                                    reject_review_task))
-        self.assertTrue(is_worker_assigned_to_task(self.workers[8],
-                                                   reject_review_task))
-        self.assertEquals(reject_review_task.status,
-                          Task.Status.POST_REVIEW_PROCESSING)
-        self.assertEquals(reject_review_task.assignments.count(), 3)
-
-        # Attempt to reassign aborted task
-        aborted_tasks = Task.objects.filter(status=Task.Status.ABORTED)
-        self.assertEquals(aborted_tasks.count(), 1)
-        aborted_task = aborted_tasks.first()
-        with self.assertRaises(TaskStatusError):
-            aborted_task = assign_task(self.workers[5].id, aborted_task.id)
-        self.assertEquals(aborted_task.assignments.count(), 1)
-        self.assertEqual(current_assignment(aborted_task).worker,
-                         self.workers[4])
-
-    def test_end_project(self):
-        project = self.projects['project_to_end']
-        end_project(project.id)
-        self.assertEquals(Project.objects.get(id=project.id).status,
-                          Project.Status.ABORTED)
-        for task in Task.objects.filter(project=project):
-            self.assertEquals(task.status, Task.Status.ABORTED)
+        self.assertEqual(
+            current_assignment(review_task).worker, self.workers[3])
+        self.assertEqual(
+            current_assignment(review_task).in_progress_task_data, test_data)
+        self.assertEquals(
+            review_task.status, Task.Status.REVIEWING)
 
     def test_get_task_overview_for_worker(self):
         task = self.tasks['review_task']
@@ -348,7 +287,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
                                           task=task,
                                           status=0,
                                           in_progress_task_data={},
-                                          snapshots={})
+                                          snapshots=empty_snapshots())
 
         human_step = self.workflow_steps[workflow_version.slug]['step4']
         task = Task.objects.create(project=project,
@@ -361,10 +300,10 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
             TaskAssignment.objects.create(task=task,
                                           status=0,
                                           in_progress_task_data={},
-                                          snapshots={})
+                                          snapshots=empty_snapshots())
 
     def test_illegal_get_next_task_status(self):
-        task = self.tasks['processing_task']
+        task = self.tasks['awaiting_processing']
         illegal_statuses = [Task.Status.AWAITING_PROCESSING,
                             Task.Status.PENDING_REVIEW,
                             Task.Status.COMPLETE]
@@ -408,7 +347,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
                                  TaskAssignment.SnapshotType.SUBMIT)
 
     def test_sampled_get_next_task_status(self):
-        task = self.tasks['processing_task']
+        task = self.tasks['awaiting_processing']
         step = task.step
         step.review_policy = {'policy': 'sampled_review',
                               'rate': 0.5,
@@ -424,7 +363,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         self.assertTrue(complete_count < 600)
 
     def test_legal_get_next_task_status(self):
-        task = self.tasks['processing_task']
+        task = self.tasks['awaiting_processing']
         step = task.step
 
         task.status = Task.Status.PROCESSING
@@ -495,18 +434,6 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
             get_next_task_status(task,
                                  TaskAssignment.SnapshotType.ACCEPT),
             Task.Status.COMPLETE)
-
-    def test_task_history_details(self):
-        task = self.tasks['processing_task']
-        observed = task_history_details(task.id)
-        observed['assignment_history'] = list(observed['assignment_history'])
-        expected = {
-            'current_assignment': current_assignment(task),
-            'assignment_history': list(assignment_history(task))
-        }
-        self.assertEquals(
-            json.dumps(observed, sort_keys=True),
-            json.dumps(expected, sort_keys=True))
 
     def test_preassign_workers(self):
         project = self.projects['assignment_policy']

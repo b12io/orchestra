@@ -1,5 +1,7 @@
+from django.conf.urls import include
 from django.conf.urls import patterns
 from django.conf.urls import url
+
 from orchestra.views import dashboard_tasks
 from orchestra.views import new_task_assignment
 from orchestra.views import save_task_assignment
@@ -18,21 +20,30 @@ urlpatterns = patterns(
     # Interface API
     url(r'^interface/dashboard_tasks/$',
         dashboard_tasks, name='dashboard_tasks'),
+
     url(r'^interface/task_assignment_information/$',
         task_assignment_information,
         name='task_assignment_information'),
+
     url(r'^interface/save_task_assignment/$',
         save_task_assignment,
         name='save_task_assignment'),
+
     url(r'^interface/submit_task_assignment/$',
         submit_task_assignment,
         name='submit_task_assignment'),
+
     url(r'^interface/new_task_assignment/(?P<task_type>\w+)/$',
         new_task_assignment,
         name='new_task_assignment'),
+
     url(r'^interface/upload_image/$',
         upload_image,
         name='upload_image'),
+
+    url(r'^interface/project_management/',
+        include('orchestra.interface_api.project_management.urls',
+                namespace='project_management')),
 
     # Client API
     url(r'^project/project_information/$',

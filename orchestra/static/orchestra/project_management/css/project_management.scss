@@ -1,0 +1,166 @@
+@import 'orchestra/common/css/common.scss';
+
+.project-management-modal {
+  font-size: 1.5rem;
+  padding: 15px;
+  .json-view {
+    margin-top: 10px;
+    max-height: 50vh;
+  }
+}
+
+.slack-modal {
+  @extend .project-management-modal;
+  input {
+    width: 200px;
+  }
+  .add-user {
+    cursor: pointer;
+    color: $light-green;
+  }
+  .remove-user {
+    cursor: pointer;
+    color: red;
+  }
+}
+
+.data-modal {
+  @extend .project-management-modal;
+  .header-wrapper {
+    overflow: auto;
+    .data-header {
+      float: left
+    }
+    .btn-admin {
+      float: right;
+    }
+  }
+}
+
+.revert-modal {
+  @extend .project-management-modal;
+  .header-wrapper {
+    overflow: auto;
+  }
+}
+
+.project-management {
+  margin-top: 75px;
+  font-size: 1.5rem;
+  position: relative;
+
+  .project-description {
+    font-size: 3rem;
+    margin: 0 10px;
+  }
+
+  .axis-wrapper {
+    position: relative;
+    display: inline-block;
+  }
+
+  .axis {
+    shape-rendering: crispEdges;
+
+    &.x {
+      line {
+        stroke: #000;
+      }
+
+      path {
+        fill: none;
+        stroke: #000;
+      }
+
+    }
+  }
+
+  .x.label {
+    color: black;
+    position: absolute;
+  }
+
+  .step-slug {
+    cursor: pointer;
+  }
+
+  svg {
+    // Ensure SVG is correct height (otherwise, +6px inexplicably are added).
+    vertical-align: top;
+    overflow: visible;
+  }
+
+  .task-view {
+    position: relative;
+    display: inline-block;
+
+    .add-assignment {
+      @extend .disable-select;
+      display: block;
+      cursor: pointer;
+      text-align: right;
+    }
+
+    .worker-name {
+      @extend .disable-select;
+      display: block;
+      cursor: pointer;
+      text-align: right;
+      background-color: inherit;
+      &.readonly {
+        outline: none;
+        border: none;
+      }
+    }
+  }
+
+  .vis-wrapper {
+    position: relative;
+    margin-bottom: 75px;
+    .svg-wrapper {
+      overflow-x: auto;
+
+      // Hide scrollbar on Safari
+      overflow-y: hidden;
+      position: relative;
+    }
+    .freeze-pane-left {
+      @extend .disable-select;
+
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      background-color: white;
+      text-align: right;
+      border-right: 1px solid #333;
+      min-width: 225px;
+
+      $freeze-pane-padding: 10px;
+      .scale-buttons {
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding-right: $freeze-pane-padding;
+      }
+      .task-name {
+        padding: 0 $freeze-pane-padding;
+        .step-status {
+          font-size: 0.8em;
+        }
+        .task-action {
+          margin-left: 5px;
+        }
+      }
+    }
+  }
+
+  .project-actions {
+    @extend .disable-select;
+    display: inline-block;
+    cursor: pointer;
+    .project-actions-menu {
+      font-size: 2em;
+    }
+  }
+}

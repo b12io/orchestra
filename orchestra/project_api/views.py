@@ -59,9 +59,8 @@ def project_details_url(request):
 
     if project_id is None:
         raise BadRequest('project_id parameter is missing')
-    project_details_url = reverse('orchestra:project_details',
-                                  kwargs={'project_id':
-                                          project_id})
+    project_details_url = '{}/project/{}'.format(
+        reverse('orchestra:index'), project_id)
     parsed_url = urlparse(request.build_absolute_uri())
     url = urlunsplit((parsed_url.scheme,
                       parsed_url.netloc,

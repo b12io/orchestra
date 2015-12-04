@@ -1,0 +1,8 @@
+<div class="slack-modal">
+    <h1>Edit Slack group membership</h1>
+    <input ng-model="slackUsername" placeholder="Slack username to add/remove">
+    <i ng-click="editSlackMembership('add', slackUsername)"
+       title="Add user" class="fa fa-plus add-user"></i>
+    <i ng-click="editSlackMembership('remove', slackUsername)"
+       title="Remove user" class="fa fa-minus remove-user"></i>
+</div>
