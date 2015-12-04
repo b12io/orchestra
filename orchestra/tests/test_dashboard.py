@@ -413,7 +413,7 @@ class DashboardTestCase(OrchestraTestCase):
         self.assertEquals(returned['message'],
                           'Worker is not allowed to submit')
 
-        # user4 is picking up a task as a reviewer
+        # user 3 is picking up a task as a reviewer
         response = (self.clients[3].get(
             '/orchestra/api/interface/new_task_assignment/reviewer/'))
         self.assertEquals(response.status_code, 200)
@@ -423,7 +423,7 @@ class DashboardTestCase(OrchestraTestCase):
 
         rejected_data = {'rejected_key': 'rejected_val'}
 
-        # user4 rejects a task
+        # user 3 rejects a task
         response = self._submit_assignment(
             self.clients[3], task_id, data=rejected_data, command='reject')
         self.assertEquals(response.status_code, 200)

@@ -1,0 +1,50 @@
+<div class="project-management">
+  <section class="section-panel">
+    <div class="container-fluid">
+      <div class="row padded">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+          <span class="project-description">{{vis.dataService.data.project.short_description}}</span>
+          <div class="project-actions">
+            <button type="button" ng-click="vis.createSubsequentTasks()" class="btn btn-default">
+              Create subsequent tasks
+            </button>
+            <button type="button" ng-click="vis.showSlackActions()" class="btn btn-default">
+              Edit Slack users
+            </button>
+            <button type="button" ng-click="vis.showProjectData()" class="btn btn-default">
+              View project data
+            </button>
+            <a href="{{vis.dataService.data.project.admin_url}}" target="_blank">
+              <button type="button" class="btn btn-default">View in admin</button>
+            </a>
+            <button ng-click="vis.endProject()" class="btn btn-danger">End project</button>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+          <div class="vis-wrapper">
+            <div class="freeze-pane-left">
+              <div class="scale-buttons">
+                <button ng-click="vis.axis.relativeTime = !vis.axis.relativeTime; vis.draw()"
+                        class="btn btn-default btn-sm">
+                  Switch to {{vis.axis.relativeTime ? 'local' : 'relative'}} time
+                </button>
+                <button ng-click="vis.params.scaleWidth = vis.params.scaleWidth / 1.1; vis.draw()"
+                        class="btn btn-default btn-sm">
+                  -
+                </button>
+                <button ng-click="vis.params.scaleWidth = vis.params.scaleWidth * 1.1; vis.draw()"
+                        class="btn btn-default btn-sm">
+                  +
+                </button>
+              </div>
+              <div class="task-names"></div>
+            </div>
+            <div class="svg-wrapper"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

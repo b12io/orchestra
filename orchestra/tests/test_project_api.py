@@ -40,7 +40,7 @@ class ProjectAPITestCase(OrchestraTestCase):
         returned = json.loads(response.content.decode('utf-8'))
         project_details_url = returned.get('project_details_url')
         self.assertEquals(project_details_url,
-                          ('http://testserver/orchestra/project_details/%s' %
+                          ('http://testserver/orchestra/app/project/%s' %
                            project.id))
 
         response = self.api_client.post(
@@ -101,7 +101,11 @@ class ProjectAPITestCase(OrchestraTestCase):
                         'snapshots': empty_snapshots(),
                         'status': 'Submitted',
                         'in_progress_task_data': {'test_key': 'test_value'},
-                        'worker': 'test_user_0',
+                        'worker': {
+                            'username': self.workers[0].user.username,
+                            'first_name': self.workers[0].user.first_name,
+                            'last_name': self.workers[0].user.last_name,
+                        },
                     }],
                     'latest_data': {
                         'test_key': 'test_value'

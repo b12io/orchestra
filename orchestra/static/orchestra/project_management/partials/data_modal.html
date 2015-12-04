@@ -1,0 +1,13 @@
+<div class="data-modal">
+  <div class="modal-inner">
+    <div class="header-wrapper">
+      <span class="data-header">{{header}}</span>
+      <div class="actions-wrapper">
+        <a href="{{admin_url}}" target='_blank' class="btn btn-default btn-sm btn-admin">
+            View in admin
+        </a>
+      </div>
+    </div>
+    <pre class="json-view">{{data | json}}</pre>
+  </div>
+</div>

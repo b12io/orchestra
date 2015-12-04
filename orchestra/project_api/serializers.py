@@ -2,7 +2,6 @@ from orchestra.models import Project
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import WorkerCertification
-from orchestra.utils.task_lifecycle import _get_latest_task_data
 from rest_framework import serializers
 
 
@@ -71,7 +70,29 @@ class TaskSerializer(serializers.ModelSerializer):
         return dict(Task.STATUS_CHOICES).get(obj.status, None)
 
     def get_latest_data(self, obj):
-        return _get_latest_task_data(obj)
+        """
+        Return latest input data for a specified task.
+
+        Args:
+            task (orchestra.models.Task):
+                The task object for which to retrieve data.
+
+        Returns:
+            latest_data (str):
+                A serialized JSON blob containing the latest input data.
+        """
+        active_assignment = (obj.assignments
+                             .filter(status=TaskAssignment.Status.PROCESSING))
+        if active_assignment.exists():
+            assignment = active_assignment[0]
+        else:
+            assignment = (obj.assignments.all()
+                          .order_by('-assignment_counter').first())
+        if not assignment:
+            return None
+
+        latest_data = assignment.in_progress_task_data
+        return latest_data
 
     def get_assignments(self, obj):
         assignments = TaskAssignmentSerializer(obj.assignments.all()
@@ -95,10 +116,25 @@ class TaskAssignmentSerializer(serializers.ModelSerializer):
             'snapshots',
         )
 
-    worker = serializers.StringRelatedField()
+    worker = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
     in_progress_task_data = serializers.SerializerMethodField()
     snapshots = serializers.SerializerMethodField()
+
+    def get_worker(self, obj):
+        if not obj.worker:
+            return {
+                'id': None,
+                'username': None,
+                'first_name': None,
+                'last_name': None,
+            }
+        return {
+            'id': obj.worker.id,
+            'username': obj.worker.user.username,
+            'first_name': obj.worker.user.first_name,
+            'last_name': obj.worker.user.last_name,
+        }
 
     def get_status(self, obj):
         return dict(TaskAssignment.STATUS_CHOICES).get(obj.status, None)

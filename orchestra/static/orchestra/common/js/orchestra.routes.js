@@ -30,6 +30,12 @@
       controllerAs: 'vm',
       templateUrl: '/static/orchestra/task/partials/task.html'
     })
+    .when('/project/:projectId', {
+      title: 'Project',
+      controller: 'ProjectManagementController',
+      controllerAs: 'vm',
+      templateUrl: '/static/orchestra/project_management/partials/project_management.html'
+    })
     .otherwise('/');
   }
 })();

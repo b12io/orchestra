@@ -17,7 +17,7 @@ class ProjectPropertiesTestCase(OrchestraTestCase):
     def test_completed_projects(self):
         projects = Project.objects.all()
         initial_task = assign_task(self.workers[6].id,
-                                   self.tasks['processing_task'].id)
+                                   self.tasks['awaiting_processing'].id)
         with patch('orchestra.utils.task_lifecycle._is_review_needed',
                    return_value=False):
             initial_task = submit_task(initial_task.id, {},
