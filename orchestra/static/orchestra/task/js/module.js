@@ -10,4 +10,5 @@
 
   angular.module('orchestra.task.controllers', []);
   angular.module('orchestra.task.directives', ['ui.bootstrap', 'angular-capitalize-filter']);
+  angular.module('orchestra.task.services', []);
 })();

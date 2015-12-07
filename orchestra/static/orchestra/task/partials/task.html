@@ -99,7 +99,7 @@
   </div>
 </div>
 
-<div class="fixed-infobox-outer" ng-if="vm.saveError">
+<div class="fixed-infobox-outer" ng-if="vm.autoSaver.saveError">
   <div class="fixed-infobox btn-danger">
     Error saving task. Trying again...
   </div>
@@ -133,32 +133,34 @@
                   type="button"
                   class="btn btn-primary navbar-btn"
                   ng-click="vm.submitTask('submit')"
-                  ng-disabled="vm.is_read_only || vm.saving || vm.submitting">
+                  ng-disabled="vm.is_read_only || vm.autoSaver.saving || vm.submitting">
             Submit
           </button>
           <button ng-if="vm.taskAssignment.is_reviewer"
                   type="button"
                   class="btn btn-primary navbar-btn"
                   ng-click="vm.submitTask('accept')"
-                  ng-disabled="vm.is_read_only || vm.saving || vm.submitting">
+                  ng-disabled="vm.is_read_only || vm.autoSaver.saving || vm.submitting">
             Accept
           </button>
           <button ng-if="vm.taskAssignment.is_reviewer"
                   type="button"
                   class="btn btn-default navbar-btn"
                   ng-click="vm.submitTask('reject')"
-                  ng-disabled="vm.is_read_only || vm.saving || vm.submitting">
+                  ng-disabled="vm.is_read_only || vm.autoSaver.saving || vm.submitting">
             Reject
           </button>
           <button type="button"
                   class="btn btn-default navbar-btn"
-                  ng-click="vm.saveTask()"
-                  ng-disabled="vm.is_read_only || vm.saving || vm.submitting">
+                  ng-click="vm.autoSaver.save()"
+                  ng-disabled="vm.is_read_only || vm.autoSaver.saving || vm.submitting">
             Save
           </button>
           <div class="save-message">
-            <div ng-show="vm.saving">Saving...</div>
-            <div ng-show="vm.lastSaved && !vm.saving">Saved at {{ vm.lastSaved | date:'mediumTime' }}</div>
+            <div ng-show="vm.autoSaver.saving">Saving...</div>
+            <div ng-show="vm.autoSaver.lastSaved && !vm.autoSaver.saving">
+              Saved at {{ vm.autoSaver.lastSaved | date:'mediumTime' }}
+            </div>
           </div>
         </div>
       </div>

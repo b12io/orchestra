@@ -5,11 +5,8 @@
     .module('orchestra.task.controllers')
     .controller('TaskController', TaskController);
 
-  TaskController.$inject = ['$location', '$scope', '$routeParams', '$http', '$sce',
-                            '$compile', '$modal', '$timeout', 'orchestraService'];
-
-  function TaskController($location, $scope, $routeParams, $http, $sce,
-                          $compile, $modal, $timeout, orchestraService) {
+  function TaskController($location, $scope, $routeParams, $http, $rootScope,
+                          $modal, $timeout, autoSaveTask, orchestraService) {
     var vm = this;
     vm.taskId = $routeParams.taskId;
     vm.taskAssignment = {};
@@ -32,10 +29,17 @@
           vm.projectFolderEmbedUrl = orchestraService.googleUtils.folders.embedListUrl(projectFolderId)
           vm.projectFolderExternalUrl = orchestraService.googleUtils.folders.externalUrl(projectFolderId)
 
-          vm.saveError = false;
-          vm.saving = false;
           if (!vm.is_read_only) {
-            vm.setupAutoSave();
+            $scope.$watch('vm.taskAssignment.task.data', function(newVal, oldVal) {
+              // Ensure save fired at initialization
+              // [http://stackoverflow.com/a/18915585]
+              if (newVal != oldVal) {
+                $rootScope.$broadcast('task.data:change');
+              }
+            }, true);
+
+            vm.autoSaver = autoSaveTask;
+            autoSaveTask.setup($scope, vm.taskId, vm.taskAssignment.task.data);
           }
 
           var directiveTag = (window.orchestra
@@ -66,80 +70,6 @@
         });
     };
 
-    // TODO(jrbotros): Move all save functionality into its own module
-    vm.setupAutoSave = function() {
-      vm.autoSaveTimeout = 10000;
-
-      $scope.$watch('vm.taskAssignment.task.data', function(newVal, oldVal) {
-        // Ensure save fired at initialization
-        // [http://stackoverflow.com/a/18915585]
-        if (newVal != oldVal) {
-          vm.scheduleAutoSave();
-        }
-      }, true);
-
-      // Browser close or reload
-      window.onbeforeunload = function() {
-        if (vm.autoSaveTimer || vm.saveError) {
-          return 'Your latest changes haven\'t been saved.'
-        }
-      }
-
-      // Angular location change
-      $scope.$on('$locationChangeStart', function(e) {
-        if (vm.autoSaveTimer || vm.saveError) {
-          if (!confirm('Your latest changes haven\'t been saved.\n\n' +
-                      'Are you sure you want to leave this page?')) {
-            e.preventDefault();
-          }
-        }
-      });
-    }
-
-    vm.scheduleAutoSave = function() {
-      if (!vm.autoSaveTimer && !vm.is_read_only) {
-        vm.autoSaveTimer = $timeout(function() {
-          vm.saveTask();
-        }, vm.autoSaveTimeout)
-      }
-    }
-
-    vm.cancelAutoSave = function() {
-      $timeout.cancel(vm.autoSaveTimer);
-      vm.autoSaveTimer = undefined;
-    }
-
-    vm.saveTask = function() {
-      if (vm.is_read_only) {
-        return;
-      }
-      vm.saving = true;
-      vm.saveError = false;
-      vm.cancelAutoSave();
-      orchestraService.signals.fireSignal('save.before');
-      $http.post('/orchestra/api/interface/save_task_assignment/',
-                 {'task_id': vm.taskId, 'task_data': vm.taskAssignment.task.data})
-        .success(function(data, status, headers, config) {
-          vm.lastSaved = Date.now();
-          // Reset timeout counter on save success
-          vm.autoSaveTimeout = 10000;
-          orchestraService.signals.fireSignal('save.success');
-        })
-        .error(function(data, status, headers, config) {
-          vm.saveError = true;
-          orchestraService.signals.fireSignal('save.error');
-        })
-        .finally(function() {
-          orchestraService.signals.fireSignal('save.finally');
-          vm.saving = false;
-          if (vm.saveError) {
-            // Retry save with exp backoff
-            vm.autoSaveTimeout *= 2;
-            vm.scheduleAutoSave();
-          }
-        });
-    };
-
     vm.confirmSubmission = function(command, totalSeconds) {
       vm.submitting = true;
       orchestraService.signals.fireSignal('submit.before');
@@ -149,7 +79,7 @@
         .success(function(data, status, headers, config) {
           // Prevent additional confirmation dialog on leaving the page; data
           // will be saved by submission
-          vm.cancelAutoSave();
+          vm.autoSaver.cancel();
           orchestraService.signals.fireSignal('submit.success');
           $location.path('/');
         })
