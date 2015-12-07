@@ -1,4 +1,4 @@
-var serviceModule =  angular.module('orchestra.task.services', []);
+var serviceModule =  angular.module('orchestra.common.services');
 
 serviceModule.factory('orchestraService', function() {
     var googleUtils = new function() {
