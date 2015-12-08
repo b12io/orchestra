@@ -95,7 +95,7 @@ class Certification(models.Model):
     workflow = models.ForeignKey(Workflow, related_name='certifications')
 
     def __str__(self):
-        return '{}'.format(self.slug)
+        return '{} - {}'.format(self.slug, self.workflow.slug)
 
     class Meta:
         app_label = 'orchestra'
@@ -168,7 +168,8 @@ class Step(models.Model):
         unique_together = (('workflow_version', 'slug'),)
 
     def __str__(self):
-        return self.slug
+        return '{} - {} - {}'.format(self.slug, self.workflow_version.slug,
+                                     self.workflow_version.workflow.slug)
 
 
 class Worker(models.Model):
@@ -245,8 +246,9 @@ class WorkerCertification(models.Model):
     role = models.IntegerField(choices=ROLE_CHOICES)
 
     def __str__(self):
-        return '{} - {} - {} - {}'.format(
+        return '{} - {} - {} - {} - {}'.format(
             self.worker.user.username, self.certification.slug,
+            self.certification.workflow.slug,
             dict(WorkerCertification.TASK_CLASS_CHOICES)[self.task_class],
             dict(WorkerCertification.ROLE_CHOICES)[self.role])
 
