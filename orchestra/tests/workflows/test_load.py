@@ -163,7 +163,41 @@ class LoadWorkflowTestCase(OrchestraTestCase):
         assert_test_dir_v1_loaded(self)
         assert_test_dir_v2_not_loaded(self)
 
-        # New versions should load correctly
+        # New versions with bad slugs should not load correctly
+        v2_step_2 = v2_data['steps'][1]
+        v2_step_2_create_dependencies = v2_step_2['creation_depends_on']
+        v2_step_2_create_dependencies.append('not_a_real_step')
+        bad_slug_error = '{}.{} contains a non-existent slug'
+        with self.assertRaisesMessage(
+                WorkflowError,
+                bad_slug_error.format('s2', 'creation_depends_on')):
+            with transaction.atomic():
+                load_workflow_version(v2_data, workflow)
+        v2_step_2['creation_depends_on'] = (
+            v2_step_2_create_dependencies[:-1])
+
+        v2_step_2_submit_dependencies = v2_step_2['submission_depends_on']
+        v2_step_2_submit_dependencies.append('not_a_real_step')
+        with self.assertRaisesMessage(
+                WorkflowError,
+                bad_slug_error.format('s2', 'submission_depends_on')):
+            with transaction.atomic():
+                load_workflow_version(v2_data, workflow)
+        v2_step_2['submission_depends_on'] = (
+            v2_step_2_submit_dependencies[:-1])
+
+        v2_step_2_certification_dependencies = v2_step_2[
+            'required_certifications']
+        v2_step_2_certification_dependencies.append('not_a_real_certification')
+        with self.assertRaisesMessage(
+                WorkflowError,
+                bad_slug_error.format('s2', 'required_certifications')):
+            with transaction.atomic():
+                load_workflow_version(v2_data, workflow)
+        v2_step_2['required_certifications'] = (
+            v2_step_2_certification_dependencies[:-1])
+
+        # Otherwise, new versions should load correctly
         with transaction.atomic():
             load_workflow_version(v2_data, workflow)
         assert_test_dir_workflow_loaded(self)
