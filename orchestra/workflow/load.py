@@ -132,13 +132,8 @@ def load_workflow_version(version_data, workflow, force=False):
 
         # Don't prevent updates to these, because we want to allow
         # certifications to evolve over the lifetime of a workflow.
-        required_certification_slugs = set(step_data.get(
-            'required_certifications', []))
-        required_certifications = list(Certification.objects.filter(
-            workflow=workflow,
-            slug__in=required_certification_slugs
-        ))
-        step.required_certifications = required_certifications
+        _set_step_dependencies(step, step_data, 'required_certifications',
+                               Certification, workflow=workflow)
 
     # Set up step dependencies once the steps objects are in the DB.
     for step_data in version_data['steps']:
@@ -148,36 +143,42 @@ def load_workflow_version(version_data, workflow, force=False):
             workflow_version=version
         )
 
-        # Verify that step creation dependencies aren't being updated.
-        creation_depends_on_slugs = set(step_data.get(
-            'creation_depends_on', []))
-        old_step_creation_dependencies = old_creation_dependencies.get(
-            step_slug)
-        if old_step_creation_dependencies and (creation_depends_on_slugs !=
-                                               old_step_creation_dependencies):
-            raise WorkflowError(
-                'Even with --force, cannot change the topology of a workflow. '
-                'Drop and recreate the database to reset, or create a new '
-                'version for your workflow.')
+        # Set step creation dependencies.
+        _verify_dependencies_not_updated(
+            step_data,
+            'creation_depends_on',
+            old_creation_dependencies.get(step_slug)
+        )
+        _set_step_dependencies(step, step_data, 'creation_depends_on', Step,
+                               workflow_version=version)
 
-        creation_depends_on = list(Step.objects.filter(
-            workflow_version=version,
-            slug__in=creation_depends_on_slugs
-        ))
-        step.creation_depends_on = creation_depends_on
+        # Set step submission dependencies.
+        _verify_dependencies_not_updated(
+            step_data,
+            'submission_depends_on',
+            old_submission_dependencies.get(step_slug)
+        )
+        _set_step_dependencies(step, step_data, 'submission_depends_on', Step,
+                               workflow_version=version)
 
-        # Verify that step submission dependencies aren't being updated.
-        submission_depends_on_slugs = set(step_data.get(
-            'submission_depends_on', []))
-        if (step_slug in old_submission_dependencies and
-            submission_depends_on_slugs != old_submission_dependencies[
-                step_slug]):
-            raise WorkflowError(
-                'Even with --force, cannot change the topology of a workflow. '
-                'Drop and recreate the database to reset, or create a new '
-                'version for your workflow.')
-        submission_depends_on = list(Step.objects.filter(
-            workflow_version=version,
-            slug__in=submission_depends_on_slugs
-        ))
-        step.submission_depends_on = submission_depends_on
+
+def _verify_dependencies_not_updated(step_data, dependency_attr,
+                                     old_dependencies):
+    new_dependencies = set(step_data.get(dependency_attr, []))
+    if old_dependencies is not None and old_dependencies != new_dependencies:
+        raise WorkflowError(
+            'Even with --force, cannot change the topology of a workflow. '
+            'Drop and recreate the database to reset, or create a new '
+            'version for your workflow.')
+
+
+def _set_step_dependencies(step, step_data, dependency_attr, dependency_model,
+                           **model_filters):
+    dependency_slugs = set(step_data.get(dependency_attr, []))
+    dependencies = list(dependency_model.objects.filter(
+        slug__in=dependency_slugs, **model_filters))
+    if len(dependencies) != len(dependency_slugs):
+        raise WorkflowError(
+            '{}.{} contains a non-existent slug.'
+            .format(step_data['slug'], dependency_attr))
+    setattr(step, dependency_attr, dependencies)

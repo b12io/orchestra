@@ -22,6 +22,8 @@
       "creation_depends_on": [
 	"s1"
       ],
+      "submission_depends_on": [
+      ],
       "required_certifications": [
 	"certification2"
       ],
