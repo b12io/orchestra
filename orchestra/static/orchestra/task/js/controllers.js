@@ -6,7 +6,8 @@
     .controller('TaskController', TaskController);
 
   function TaskController($location, $scope, $routeParams, $http, $rootScope,
-                          $modal, $timeout, autoSaveTask, orchestraService) {
+                          $modal, $timeout, autoSaveTask, orchestraService,
+                          requiredFields) {
     var vm = this;
     vm.taskId = $routeParams.taskId;
     vm.taskAssignment = {};
@@ -30,6 +31,7 @@
           vm.projectFolderExternalUrl = orchestraService.googleUtils.folders.externalUrl(projectFolderId)
 
           if (!vm.is_read_only) {
+            requiredFields.setup(vm);
             $scope.$watch('vm.taskAssignment.task.data', function(newVal, oldVal) {
               // Ensure save fired at initialization
               // [http://stackoverflow.com/a/18915585]
@@ -72,7 +74,12 @@
 
     vm.confirmSubmission = function(command, totalSeconds) {
       vm.submitting = true;
-      orchestraService.signals.fireSignal('submit.before');
+      if (orchestraService.signals.fireSignal('submit.before') === false) {
+        // If any of the registered signal handlers returns false, prevent
+        // submit.
+        vm.submitting = false;
+        return;
+      };
       $http.post('/orchestra/api/interface/submit_task_assignment/',
                  {'task_id': vm.taskId, 'task_data': vm.taskAssignment.task.data,
                   'command_type': command, 'work_time_seconds': totalSeconds})
