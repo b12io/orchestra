@@ -60,7 +60,12 @@
         autoSaver.saving = true;
         autoSaver.saveError = false;
         autoSaver.cancel();
-        orchestraService.signals.fireSignal('save.before');
+        if (orchestraService.signals.fireSignal('save.before') === false) {
+          // If any of the registered signal handlers returns false, prevent
+          // save.
+          autoSaver.saving = false;
+          return;
+        };
         $http.post('/orchestra/api/interface/save_task_assignment/',
              {'task_id': autoSaver.taskId, 'task_data': autoSaver.data})
         .success(function(data, status, headers, config) {

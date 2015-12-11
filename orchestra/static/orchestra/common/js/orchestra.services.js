@@ -55,10 +55,12 @@ serviceModule.factory('orchestraService', function() {
             registered[signalType].push(callback);
         }
         this.fireSignal = function(signalType) {
+            var success = true;
             registered[signalType] = registered[signalType] || [];
             registered[signalType].forEach(function(callback) {
-                callback();
+                success = callback() && success;
             });
+            return success;
         }
     }
 

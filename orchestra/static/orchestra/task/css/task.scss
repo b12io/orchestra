@@ -198,4 +198,20 @@ $topbar-height: 5rem;
       }
     }
   }
+
+  .required-field-error {
+    &.checkbox-error {
+      label {
+        border-left: 2px solid red;
+        overflow: auto;
+        margin-bottom: 10px;
+      }
+    }
+    &.text-error {
+      input {
+        border: 1px solid red;
+        box-shadow: 0px 0px 1px red inset;
+      }
+    }
+  }
 }
