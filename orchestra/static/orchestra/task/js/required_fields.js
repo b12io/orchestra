@@ -9,45 +9,77 @@
    */
   serviceModule.factory('requiredFields', function($rootScope, orchestraService) {
     var requiredFields = {
-      fields: [],
+      fields: {},
       invalid: [],
+      validators: {
+        'input-checkbox': [
+          function(elem) {
+            return elem.checked;
+          }
+        ],
+        'input-text': [
+          function(elem) {
+            return elem.value && elem.value.length > 0;
+          }
+        ],
+      },
       setup: function(data) {
         /**
          * Sets up the base data on which to validate fields.
          */
         this.data = data;
       },
-      require: function(fields) {
+      require: function(fieldType, field) {
         /**
-         * Sets a field as required. Fields are specified by
-         * dot-delimited key strings (e.g., `key0.key1.key2`).
+         * Sets a field as required. Fields are HTML elements to be
+         * checked by one or more validators according to their field
+         * type.
          */
-        this.fields = this.fields.concat(fields)
+        if (this.fields[fieldType] === undefined) {
+          this.fields[fieldType] = [field];
+        }
+        else {
+          this.fields[fieldType].push(field);
+        }
       },
       validate: function() {
         /**
-         * Validates required fields. For the required field
-         * `key0.key1.key2` to be valid, `this.data[key0][key1][key2]`
-         * must exist and not be falsy.
+         * Validates required fields according to their registered
+         * validators.
          */
         var requiredFields = this;
         requiredFields.invalid = [];
-        requiredFields.fields.forEach(function(field) {
-          // For each field, check that each successive key exists and
-          // is not falsy.
-          var obj = requiredFields.data;
-          var keys = field.split('.');
-          for (var i in keys) {
-            var key = keys[i];
-            obj = obj[key];
-            if (!obj) {
-              requiredFields.invalid.push(field)
-              break;
-            }
+        for (var fieldType in requiredFields.fields) {
+          var validators = requiredFields.validators[fieldType];
+          if (!validators) {
+            console.error('Validators not found for field type:' + fieldType);
+            continue;
           }
-        })
+          var fields = requiredFields.fields[fieldType];
+          fields.forEach(function(field) {
+            var success = true;
+            validators.forEach(function(validator) {
+              success = success && validator(field);
+            })
+            if (!success) {
+              requiredFields.invalid.push(field);
+            }
+          })
+        }
         $rootScope.$broadcast('orchestra:task:validatedFields');
         return requiredFields.invalid.length === 0;
+      },
+      registerValidator: function(fieldType, validator) {
+        /**
+         * Register a validator function to the given field type.
+         */
+        var requiredFields = this;
+        if (requiredFields.validators[fieldType] === undefined) {
+          requiredFields.validators[fieldType].push(validator);
+        }
+        else {
+          requiredFields.validators[fieldType] = [validator];
+        }
       }
     };
 
@@ -75,21 +107,21 @@
       return {
         restrict: 'EA',
         link: function(scope, elem, attrs) {
+          var field = elem.find('input')[0];
           var errorClass = elem.attr('data-error-class');
           if (!errorClass) {
-            var type = elem.find('input').attr('type');
-            errorClass = type + '-error';
+            errorClass = field.getAttribute('type') + '-error';
           }
-          var field = elem.find('input').attr('ng-model');
-          requiredFields.require([field]);
+          if (field &&
+              field.getAttribute('type') != 'checkbox' &&
+              field.getAttribute('type') != 'text') {
+            console.error('Unsupported required field type.');
+            return;
+          }
+          requiredFields.require('input-' + field.getAttribute('type'), field);
           var toggleError = function() {
             if (requiredFields.invalid.indexOf(field) >= 0) {
               elem.addClass('required-field-error ' + errorClass);
-              scope.$watch(field, function(oldVal, newVal) {
-                if (oldVal != newVal) {
-                  elem.removeClass('required-field-error ' + errorClass);
-                }
-              })
             }
             else {
               elem.removeClass('required-field-error ' + errorClass);
