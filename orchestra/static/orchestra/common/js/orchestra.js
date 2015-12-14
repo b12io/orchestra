@@ -17,6 +17,7 @@
   angular.module('orchestra.task', []);
   angular.module('orchestra.project_management', []);
   angular.module('orchestra.common', []);
+  angular.module('orchestra.analytics', []);
 
   // Dynamically instantiate each of the angular modules from Orchestra
   // Workflow Steps
@@ -26,13 +27,13 @@
 
   angular.module('orchestra').run(run);
 
-  run.$inject = ['$http', '$location', '$rootScope'];
+  run.$inject = ['$http', '$location', '$rootScope', '$window'];
 
   /**
   * @name run
   * @desc Update xsrf $http headers to align with Django's defaults
   */
-  function run($http, $location, $rootScope) {
+  function run($http, $location, $rootScope, $window) {
     $http.defaults.xsrfHeaderName = 'X-CSRFToken';
     $http.defaults.xsrfCookieName = 'csrftoken';
 
@@ -40,6 +41,17 @@
     var base_title = ' | Orchestra'
     $rootScope.$on('$routeChangeSuccess', function (event, current, previous) {
       $rootScope.title = current.$$route.title + base_title;
+
+      // Only send page views if:
+      // 1) Google Analytics is on, and
+      // 2) this isn't the initial pageload (analytics.html logs first page load).
+      if (typeof $window.ga !== 'undefined' && typeof previous !== 'undefined') {
+        $window.ga('set', {
+          location: $location.absUrl(),
+          title: $rootScope.title
+        });
+        $window.ga('send', 'pageview');
+      }
     });
   }
 })();

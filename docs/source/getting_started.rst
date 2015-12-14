@@ -75,9 +75,10 @@ Next, edit the ``orchestra_settings.py`` file:
 
 * Optionally, add 3rd party credentials in the "3rd Party Integrations" section
   so that Orchestra can store files on `Amazon S3
-  <https://aws.amazon.com/s3/>`_ and use `Google Apps
+  <https://aws.amazon.com/s3/>`_, use `Google Apps
   <http://apps.google.com>`_ and `Slack <https://slack.com/>`_ to help
-  communicate with expert workers.
+  communicate with expert workers, and track usage
+  in `Google Analytics <https://analytics.google.com/>`_.
 
 Then, at the bottom of your existing settings file
 (``your_project/your_project/settings.py``), import the Orchestra

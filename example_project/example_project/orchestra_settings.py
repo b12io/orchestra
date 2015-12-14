@@ -186,6 +186,28 @@ def setup_orchestra(settings_module_name):
     settings.SLACK_EXPERTS_API_KEY = ''
     settings.SLACK_INTERNAL_NOTIFICATION_CHANNEL = '#orchestra-tasks'
 
+    # Optionally configure a google analytics key to learn about your users.
+    settings.GOOGLE_ANALYTICS_KEY = ''
+    # Pass the Google Analytics key to templates with a context processor.
+    install_google_analytics(settings)
+
+
+def install_google_analytics(settings):
+    try:
+        assert(len(settings.TEMPLATES) == 1)
+        assert(settings.TEMPLATES[0]['BACKEND'] ==
+               'django.template.backends.django.DjangoTemplates')
+        settings.TEMPLATES[0]['OPTIONS']['context_processors'].append(
+            'orchestra.context_processors.google_analytics')
+    except:
+        raise ValueError(
+            "Expected settings.TEMPLATES to contain a single DjangoTemplates "
+            "entry with `['OPTIONS']['context_processors']` in which to "
+            "place a Google Analytics context processor.  If your template "
+            "setup is more complex, please manually add "
+            "'orchestra.context_processors.google_analytics' to "
+            "the appropriate context processor list.")
+
 
 def install_admin(installed_apps):
     admin_installed = 'django.contrib.admin' in installed_apps
