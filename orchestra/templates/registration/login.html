@@ -1,5 +1,7 @@
 {% extends 'registration/registration_base.html' %}
 
+{% block title %}Login{% endblock %}
+
 {% block registration_block %}
     {% if next %}
         <input type="hidden" name="next" value="{{ next }}" />

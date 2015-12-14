@@ -19,7 +19,7 @@
     <!-- iPhone/iPad icon -->
     <link rel="apple-touch-icon" href="{% static 'orchestra/icons/apple-touch-icon.png' %}">
 
-    <title data-ng-bind="title">{% block title %}{% endblock %} - Orchestra</title>
+    <title data-ng-bind="title">{% block title %}{% endblock %} | Orchestra</title>
 
     {% compress css %}
     <!-- Bootstrap core CSS -->
@@ -89,6 +89,8 @@
     <!--script for this page-->
     {% block page_javascript %}
     {% endblock page_javascript %}
+
+    {% include 'orchestra/analytics.html' %}
 
   </body>
 </html>
