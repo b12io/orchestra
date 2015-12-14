@@ -9,8 +9,6 @@
    */
   serviceModule.factory('requiredFields', function($rootScope, orchestraService) {
     var requiredFields = {
-      fields: {},
-      invalid: [],
       validators: {
         'input-checkbox': [
           function(elem) {
@@ -27,6 +25,8 @@
         /**
          * Sets up the base data on which to validate fields.
          */
+        this.fields = {};
+        this.invalid = [];
         this.data = data;
       },
       require: function(fieldType, field) {
