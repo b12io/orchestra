@@ -57,8 +57,9 @@ def index(request):
 
         if step.user_interface.get('angular_directive'):
             orchestra_arguments['angular_directives'][
-                step.workflow_version.slug][step.slug] = (
-                    step.user_interface['angular_directive'])
+                step.workflow_version.workflow.slug][
+                    step.workflow_version.slug][step.slug] = (
+                        step.user_interface['angular_directive'])
 
     return render(request, 'orchestra/index.html', {
         'javascript_includes': javascript_includes,

@@ -45,7 +45,7 @@
           }
 
           var directiveTag = (window.orchestra
-            .angular_directives[data.workflow.slug]
+            .angular_directives[data.workflow.slug][data.workflow_version.slug]
             [data.step.slug]);
 
           var inject = []
