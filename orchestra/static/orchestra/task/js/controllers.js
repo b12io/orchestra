@@ -26,10 +26,6 @@
           vm.is_read_only = data.is_read_only;
           vm.work_times_seconds = data.work_times_seconds;
 
-          var projectFolderId = vm.taskAssignment.project.project_data.project_folder_id;
-          vm.projectFolderEmbedUrl = orchestraService.googleUtils.folders.embedListUrl(projectFolderId)
-          vm.projectFolderExternalUrl = orchestraService.googleUtils.folders.externalUrl(projectFolderId)
-
           if (!vm.is_read_only) {
             requiredFields.setup(vm);
             $scope.$watch('vm.taskAssignment.task.data', function(newVal, oldVal) {
