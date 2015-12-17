@@ -242,7 +242,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
             'project': {'details': task.project.short_description,
                         'id': task.project.id,
                         'project_data': {},
-                        'review_document_url': None},
+                        'team_messages_url': None},
             'workflow': {'slug': 'w1',
                          'name': 'Workflow One'},
             'workflow_version': {'slug': 'test_workflow',

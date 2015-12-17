@@ -55,7 +55,6 @@ class Command(BaseCommand):
             {
                 'article_draft_template': '1F9ULJ_eoJFz1whqjK2thsC6gJup2f35IsUUpbcizcfA'  # noqa
             },
-            'https://docs.google.com/document/d/1s0IJycNAwHtZfsUwyo6lCJ7kI9pTOZddcaiRDdZUSAs',  # noqa
             'train',
         )
         print('Project with id {} created!'.format(project_id))

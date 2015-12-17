@@ -106,14 +106,7 @@
 </div>
 
 <div class="step-interface">
-  <!-- Dynamically load the appropriate task interface based on the task's Step -->
-  <div ng-if="vm.taskAssignment.task.status !== 'Post-review Processing'"
-       dynamic-load="vm.angularDirective"></div>
-
-  <div dynamic-load="vm.teamMessagesDirective"></div>
-
-  <div ng-if="vm.taskAssignment.task.status === 'Post-review Processing'"
-       dynamic-load="vm.angularDirective"></div>
+  <div dynamic-load="vm.angularDirective"></div>
 </div>
 
 <section class="task-actions-wrapper">

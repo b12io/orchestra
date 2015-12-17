@@ -556,7 +556,7 @@ class DashboardTestCase(OrchestraTestCase):
             'project': {'details': project_description,
                         'id': task.project.id,
                         'project_data': {},
-                        'review_document_url': None},
+                        'team_messages_url': None},
             'status': assignment_status,
             'task': {'data': task_data, 'status': task_status},
             'task_id': task.id,

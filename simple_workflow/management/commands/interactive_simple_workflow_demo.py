@@ -104,7 +104,6 @@ create_orchestra_project(
             {
                 'url': 'http://www.jrbotros.com/'
             },
-            'https://docs.google.com/document/d/1s0IJycNAwHtZfsUwyo6lCJ7kI9pTOZddcaiRDdZUSAs',  # noqa
             'train',
         )
         print('Project with id {} created!'.format(project_id))

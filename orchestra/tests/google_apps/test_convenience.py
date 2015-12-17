@@ -48,7 +48,8 @@ class TestGoogleAppsConvenience(TestCase):
                           settings.GOOGLE_SERVICE_EMAIL)
         image_data = add_image(service, 'test_folder',
                                'http://nocontenttype.com/image.jpeg')
-        self.assertEquals(image_data, {'id': 1})
+        self.assertEquals(
+            image_data, {'id': 1, 'alternateLink': 'http://a.google.com/link'})
 
         image_data = add_image(service, 'test_folder',
                                'http://nocontenttype.com/error.jpg')

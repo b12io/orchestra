@@ -10,8 +10,7 @@ def create_project_with_tasks(workflow_slug,
                               description,
                               priority,
                               task_class,
-                              project_data,
-                              review_document_url):
+                              project_data):
 
     workflow_version = WorkflowVersion.objects.get(
         slug=workflow_version_slug,
@@ -21,8 +20,7 @@ def create_project_with_tasks(workflow_slug,
                                      short_description=description,
                                      priority=priority,
                                      project_data=project_data,
-                                     task_class=task_class,
-                                     review_document_url=review_document_url)
+                                     task_class=task_class)
 
     create_project_slack_group(project)
     create_project_google_folder(project)

@@ -92,7 +92,7 @@ class ProjectAPITestCase(OrchestraTestCase):
                 'workflow_slug': 'w1',
                 'workflow_version_slug': 'test_workflow',
                 'project_data': {},
-                'review_document_url': None,
+                'team_messages_url': None,
                 'priority': 0,
             },
             'tasks': {
@@ -200,8 +200,7 @@ class ProjectAPITestCase(OrchestraTestCase):
              'description': 'short test description',
              'priority': 10,
              'task_class': 'real',
-             'project_data': {},
-             'review_document_url': 'http://test.test'},
+             'project_data': {}},
             format='json')
         self.assertEquals(response.status_code, 200)
 
@@ -218,8 +217,7 @@ class ProjectAPITestCase(OrchestraTestCase):
              'description': 'short test description',
              'priority': 10,
              'task_class': 'training',
-             'project_data': {},
-             'review_document_url': 'http://test.test'},
+             'project_data': {}},
             format='json')
         self.assertEquals(response.status_code, 200)
         project_id = json.loads(response.content.decode('utf-8'))['project_id']
