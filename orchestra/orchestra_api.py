@@ -62,7 +62,6 @@ def create_orchestra_project(client,
                              description,
                              priority,
                              project_data,
-                             review_document_url,
                              task_class):
     data = {
         'workflow_slug': workflow_slug,
@@ -70,7 +69,6 @@ def create_orchestra_project(client,
         'description': description,
         'priority': priority,
         'project_data': project_data,
-        'review_document_url': review_document_url,
         'task_class': task_class
     }
     response = _make_api_request('post', 'create_project',

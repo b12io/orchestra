@@ -28,6 +28,8 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         # TODO(jrbotros): add additional functionality to google mock
         project_folder = create_project_google_folder(project)
         self.assertEquals(project_folder['id'], 1)
+        self.assertEquals(
+            project.team_messages_url, 'http://a.google.com/link')
 
     @override_settings(SLACK_EXPERTS=True)
     def test_create_project_slack_group(self):

@@ -21,6 +21,7 @@ from orchestra.utils.settings import run_if
 logger = logging.getLogger(__name__)
 _image_mimetype_regex = re.compile('(image/(?:jpg|jpeg|gif|png))',
                                    re.IGNORECASE)
+TEAM_MESSAGES_TEMPLATE_ID = '1d0kIgq8G_Su6j5abP-tP6yJ2sp-sFDk6vZiREil0_70'
 
 
 def _get_image_mimetype(response, title):
@@ -134,6 +135,11 @@ def create_project_google_folder(project):
         [write_with_link_permission])
     folder_id = folder.get('id')
     project.project_data['project_folder_id'] = folder_id
+    project.team_messages_url = create_document_from_template(
+        TEAM_MESSAGES_TEMPLATE_ID,
+        'Team Messages',
+        [folder_id],
+        [write_with_link_permission])['alternateLink']
     project.save()
     return folder
 

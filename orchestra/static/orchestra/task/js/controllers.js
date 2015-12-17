@@ -61,9 +61,11 @@
           }
           vm.angularDirective = inject;
 
+          // Inject This into any task with the following directive:
+          //   <div dynamic-load="vm.teamMessagesDirective"></div>
           vm.teamMessagesDirective = ('<website-iframe title="Team Messages" ' +
                                       'id="team-messages"' +
-                                      'iframe-url="{{vm.taskAssignment.project.review_document_url}}"> '+
+                                      'iframe-url="{{vm.taskAssignment.project.team_messages_url}}"> '+
                                       '</website-iframe>');
         });
     };

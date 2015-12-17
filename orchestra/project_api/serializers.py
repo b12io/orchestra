@@ -18,7 +18,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             'start_datetime',
             'priority',
             'project_data',
-            'review_document_url',
+            'team_messages_url',
             'task_class',
         )
 

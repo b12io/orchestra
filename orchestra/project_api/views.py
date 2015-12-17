@@ -43,7 +43,6 @@ def create_project(request):
             project_details['priority'],
             task_class,
             project_details['project_data'],
-            project_details['review_document_url']
         )
     except KeyError:
         raise BadRequest('One of the parameters is missing')

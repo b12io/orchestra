@@ -28,7 +28,7 @@ def _execute_permission_fail():
 
 
 def _execute_no_error():
-    return {'id': 1}
+    return {'id': 1, 'alternateLink': 'http://a.google.com/link'}
 
 
 def _execute_error():

@@ -29,7 +29,6 @@ All requests must be signed using `HTTP signatures <http://tools.ietf.org/html/d
    :query description: A short description of the project.
    :query priority: An integer describing the priority of the project, with higher numbers describing a greater priority.
    :query project_data: Other miscellaneous data with which to initialize the project.
-   :query review_document_url: Team messages Google Doc for the project.
 
    **Example response**:
 
@@ -55,7 +54,7 @@ All requests must be signed using `HTTP signatures <http://tools.ietf.org/html/d
               "id": 123,
               "short_description": "Project Description",
               "priority": 10,
-              "review_document_url": "http://review.document.url",
+              "team_messages_url": "http://review.document.url",
               "task_class": 1,
               "project_data": {
                   "sample_data_item": "sample_data_value_new"

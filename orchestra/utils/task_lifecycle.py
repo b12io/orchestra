@@ -532,7 +532,7 @@ def get_task_details(task_id):
         'project': {
             'id': task.project.id,
             'details': task.project.short_description,
-            'review_document_url': task.project.review_document_url,
+            'team_messages_url': task.project.team_messages_url,
             'project_data': task.project.project_data
         },
         'prerequisites': prerequisites

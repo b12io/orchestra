@@ -168,11 +168,11 @@ def setup_orchestra(settings_module_name):
     settings.GOOGLE_APPS = False
 
     # Optional Google API related service email and path to a secret key.
-    settings.GOOGLE_SERVICE_EMAIL = ''
-    settings.GOOGLE_P12_PATH = ''
+    settings.GOOGLE_SERVICE_EMAIL = ''  # noqa
+    settings.GOOGLE_P12_PATH = ''  # noqa
 
-    # Google Drive root folder id for Media Extraction.
-    settings.GOOGLE_PROJECT_ROOT_ID = ''
+    # Google Drive root folder id in which we create projects.
+    settings.GOOGLE_PROJECT_ROOT_ID = ''  # noqa
 
     # Feature flags for toggling optional slack integration
     settings.SLACK_INTERNAL = False

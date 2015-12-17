@@ -282,9 +282,9 @@ class Project(models.Model):
         task_class (int):
             Represents whether the project is a worker training exercise
             or a deliverable project.
-        review_document_url (str):
-            The URL for the review document to be passed between workers
-            and reviwers for the project's tasks.
+        team_messages_url (str):
+            A scratchpad in which teammates can collaborate, created only if
+            Google Apps support is turned on.
         slack_group_id (str):
             The project's internal Slack group ID if Slack integration
             is enabled.
@@ -309,7 +309,7 @@ class Project(models.Model):
     project_data = JSONField(default={}, blank=True)
     task_class = models.IntegerField(
         choices=WorkerCertification.TASK_CLASS_CHOICES)
-    review_document_url = models.URLField(null=True, blank=True)
+    team_messages_url = models.URLField(null=True, blank=True)
     slack_group_id = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
