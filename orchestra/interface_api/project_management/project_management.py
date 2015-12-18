@@ -20,7 +20,6 @@ def project_management_information(project_id):
     project = Project.objects.get(id=project_id)
     df = work_time_df([project],
                       human_only=False, complete_tasks_only=False)
-    df['end_datetime'] = df['start_datetime'] + df['calendar_time']
     project_information = get_project_information(project.id)
     project_information['project']['status'] = dict(
         Project.STATUS_CHOICES).get(project.status, None)

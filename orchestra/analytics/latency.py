@@ -10,6 +10,12 @@ from orchestra.models import Task
 from orchestra.project_api.api import get_project_information
 
 
+DATAFRAME_COLUMNS = ['project_id', 'project_description', 'task_id',
+                     'task_step_slug', 'assignment_level', 'iteration',
+                     'start_datetime', 'work_time', 'calendar_time',
+                     'end_datetime', 'worker']
+
+
 def work_time_df(projects, human_only=True, complete_tasks_only=True):
     """
     Return projects' task assignment iteration timing information.
@@ -55,12 +61,14 @@ def work_time_df(projects, human_only=True, complete_tasks_only=True):
             get_project_information(project.id),
             human_only, complete_tasks_only)
         for project in projects))
-    df = DataFrame(time_data)
+
+    # Ensure that even an empty DataFrame has the correct columns
+    df = DataFrame(time_data, columns=DATAFRAME_COLUMNS)
+
     # Pandas treats all non-primitives as strings, so we explicitly cast
     # datetimes as datetimes instead of strings.
-    if not df.empty:
-        df['start_datetime'] = df['start_datetime'].astype('datetime64[ns]')
-        df['end_datetime'] = df['end_datetime'].astype('datetime64[ns]')
+    df['start_datetime'] = df['start_datetime'].astype('datetime64[ns]')
+    df['end_datetime'] = df['end_datetime'].astype('datetime64[ns]')
     return df
 
 
@@ -77,19 +85,12 @@ class Iteration(object):
         self.worker = worker
 
     def to_dict(self, start_datetime):
-        return {
-            'project_id': self.project['id'],
-            'project_description': self.project['short_description'],
-            'task_id': self.task['id'],
-            'task_step_slug': self.task['step_slug'],
-            'assignment_level': self.assignment,
-            'iteration': self.iteration,
-            'start_datetime': start_datetime,
-            'work_time': self.work_time,
-            'calendar_time': self.end_datetime - start_datetime,
-            'end_datetime': self.end_datetime,
-            'worker': self.worker
-        }
+        values = [self.project['id'], self.project['short_description'],
+                  self.task['id'], self.task['step_slug'], self.assignment,
+                  self.iteration, start_datetime, self.work_time,
+                  self.end_datetime - start_datetime, self.end_datetime,
+                  self.worker]
+        return dict(zip(DATAFRAME_COLUMNS, values))
 
 
 def project_time_row_generator(project_information,
