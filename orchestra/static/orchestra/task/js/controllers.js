@@ -13,10 +13,6 @@
     vm.taskAssignment = {};
     vm.angularDirective = '';
 
-    // We dynamically inject the team messages iframe after we retrieve
-    // the data about the task assignment. teamMessagesDirective contains
-    // the HTML snippet that we dynamically inject.
-    vm.teamMessagesDirective = '';
     vm.activate = function() {
       $http.post('/orchestra/api/interface/task_assignment_information/',
                  {'task_id': vm.taskId}).
@@ -60,13 +56,6 @@
                 '>'].join('');
           }
           vm.angularDirective = inject;
-
-          // Inject This into any task with the following directive:
-          //   <div dynamic-load="vm.teamMessagesDirective"></div>
-          vm.teamMessagesDirective = ('<website-iframe title="Team Messages" ' +
-                                      'id="team-messages"' +
-                                      'iframe-url="{{vm.taskAssignment.project.team_messages_url}}"> '+
-                                      '</website-iframe>');
         });
     };
 
