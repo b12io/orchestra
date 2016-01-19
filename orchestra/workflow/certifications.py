@@ -44,7 +44,7 @@ def migrate_certifications(source_workflow_slug,
             continue
 
         for worker_certification in source_worker_certifications.filter(
-                certification=source_certification):
+                certification=source_certification).order_by('role'):
             WorkerCertification.objects.get_or_create(
                 certification=destination_certification,
                 worker=worker_certification.worker,
