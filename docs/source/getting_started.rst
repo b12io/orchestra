@@ -40,7 +40,8 @@ project (for more details, read `the Django tutorial
 <https://docs.djangoproject.com/en/1.8/intro/tutorial01/#creating-a-project>`_
 on this topic). Start a project with
 ``django-admin startproject your_project``, replacing ``your_project`` with
-your favorite project name. From here on out, this document will assume that
+your favorite project name (but don't name it ``orchestra``, which will
+conflict with our namespace). From here on out, this document will assume that
 you stuck with ``your_project``, and you should replace it appropriately.
 
 
