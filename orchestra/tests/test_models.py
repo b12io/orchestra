@@ -1,8 +1,7 @@
-from registration.signals import user_registered
-
 from orchestra.core.errors import ModelSaveError
 from orchestra.models import Worker
 from orchestra.models import WorkerCertification
+from orchestra.signals import orchestra_user_registered
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import CertificationFactory
 from orchestra.tests.helpers.fixtures import WorkerCertificationFactory
@@ -54,7 +53,8 @@ class ModelsTestCase(OrchestraTestCase):
         self.assertFalse(Worker.objects.filter(user=user).exists())
 
         # Fake registering the user
-        user_registered.send(sender=self.__class__, user=user, request=None)
+        orchestra_user_registered.send(
+            sender=self.__class__, user=user, request=None)
 
         # Expect the worker object to be created
         self.assertTrue(Worker.objects.filter(user=user).exists(),
