@@ -91,6 +91,7 @@ def setup_orchestra(settings_module_name):
     # Orchestra Registration setings
     settings.ACCOUNT_ACTIVATION_DAYS = 7  # One-week activation window
     settings.REGISTRATION_AUTO_LOGIN = True  # Automatically log the user in.
+    settings.INCLUDE_REGISTER_URL = False
 
     # Prevent hijack buttons from displaying in admin (otherwise, hijack can't
     # be disabled by excluding the relevant URLs)

@@ -7,7 +7,7 @@ requests==2.5.1
 factory_boy==2.5.2
 coverage==3.7.1
 psycopg2==2.6
-django-registration-redux==1.2
+django-registration-redux==1.4
 djrill==1.4.0
 ipython==3.1.0
 boto==2.38.0
@@ -22,6 +22,12 @@ html5lib==0.99999
 beautifulsoup4==4.3.2
 pyOpenSSL==0.15.1
 pycrypto==2.6.1
+# Upgrade to newer google-api-python-client and remove oauth2client once they
+# release the following PRs on pypi:
+# https://github.com/google/google-api-python-client/pull/182
+# https://github.com/google/google-api-python-client/pull/183
+# https://github.com/google/google-api-python-client/pull/184
+oauth2client==1.5.2
 google-api-python-client==1.4.1
 gunicorn==19.3.0
 django-object-actions==0.5.1
