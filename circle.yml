@@ -4,6 +4,7 @@ test:
     - make coverage
   post:
     - make coverage_artifacts && cp -R example_project/coverage_artifacts $CIRCLE_ARTIFACTS/coverage
+    - make coveralls
 
 machine:
   python:
@@ -12,3 +13,4 @@ machine:
 dependencies:
   override:
     - pip install -r requirements.txt
+    - pip install coveralls
