@@ -1,6 +1,7 @@
 # Orchestra
 
-Test status [![Circle CI](https://circleci.com/gh/unlimitedlabs/orchestra.svg?style=svg)](https://circleci.com/gh/unlimitedlabs/orchestra)
+[![Circle CI](https://circleci.com/gh/unlimitedlabs/orchestra.svg?style=svg)](https://circleci.com/gh/unlimitedlabs/orchestra)
+[![Coverage Status](https://coveralls.io/repos/github/unlimitedlabs/orchestra/badge.svg?branch=master)](https://coveralls.io/github/unlimitedlabs/orchestra?branch=master)
 
 Chat with the team [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/unlimitedlabs/orchestra)
 

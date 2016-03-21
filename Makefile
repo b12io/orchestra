@@ -17,6 +17,9 @@ coverage:
 	cd example_project && \
 	  coverage run --source=../orchestra $(TEST_CMD)
 
+coveralls:
+	cd example_project && coveralls
+
 coverage_artifacts:
 	cd example_project && \
 	  coverage html -d coverage_artifacts
