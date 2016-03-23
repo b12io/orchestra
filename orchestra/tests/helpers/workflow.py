@@ -9,6 +9,10 @@ def simple_json(project_data, dependencies):
     return {'json': 'simple'}
 
 
+def machine_task_function():
+    pass
+
+
 workflow_fixtures = [
     {
         'slug': 'w1',
@@ -352,6 +356,30 @@ workflow_fixtures = [
                         'description': 'Step B',
                         'is_human': True,
                         'creation_depends_on': ['stepA'],
+                    },
+                ],
+            },
+        ],
+    },
+
+    # The following is a workflow with a single machine step.
+    {
+        'slug': 'machine_workflow',
+        'name': 'Machine workflow',
+        'versions': [
+            {
+                'slug': 'machine_workflow_version',
+                'name': 'v1',
+                'description': 'A workflow with a single machine step',
+                'steps': [
+                    {
+                        'slug': 'machine_step',
+                        'name': 'Machine step',
+                        'description': 'A step to be carried out by a machine',
+                        'is_human': False,
+                        'creation_depends_on': [],
+                        'required_certifications': [],
+                        'execution_function': {},
                     },
                 ],
             },

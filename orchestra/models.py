@@ -407,10 +407,12 @@ class TaskAssignment(models.Model):
     class Status:
         PROCESSING = 0
         SUBMITTED = 1
+        FAILED = 2
 
     STATUS_CHOICES = (
         (Status.PROCESSING, 'Processing'),
-        (Status.SUBMITTED, 'Submitted'))
+        (Status.SUBMITTED, 'Submitted'),
+        (Status.FAILED, 'Failed'))
 
     start_datetime = models.DateTimeField(default=timezone.now)
     worker = models.ForeignKey(Worker,
