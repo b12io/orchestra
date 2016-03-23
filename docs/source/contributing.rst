@@ -52,10 +52,8 @@ Some general rules to follow:
   the root directory of the repository succeeds.
 
 * Additionally, we try to maintain high `code coverage
-  <https://en.wikipedia.org/wiki/Code_coverage>`_. To verify that your changes
-  are well-covered by tests, run ``make test_coverage``, which will run the
-  tests, then print out percent coverage for each file in Orchestra. Aim for
-  100% for every new file you create!
+  <https://en.wikipedia.org/wiki/Code_coverage>`_. Aim for 100% for every new
+  file you create!
 
 * Once you submit a PR, you'll get feedback on your code, sometimes asking for
   a few rounds of changes before your PR is accepted. After each round of
