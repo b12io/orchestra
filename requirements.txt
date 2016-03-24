@@ -5,7 +5,7 @@ django-compressor==1.5
 django-jsonview==0.5.0
 requests==2.5.1
 factory_boy==2.5.2
-coverage==3.7.1
+coverage==4.0.3
 psycopg2==2.6
 django-registration-redux==1.4
 djrill==1.4.0
