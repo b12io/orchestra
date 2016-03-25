@@ -28,6 +28,7 @@ class Workflow(models.Model):
         code_directory (str):
             The full path to the location of the workflow's manifest.
     """
+    created_at = models.DateTimeField(default=timezone.now)
     slug = models.CharField(max_length=200, unique=True)
     name = models.CharField(max_length=200)
     description = models.TextField()
@@ -55,6 +56,7 @@ class WorkflowVersion(models.Model):
         workflow (orchestra.models.Workflow):
             The workflow that this is a version of.
     """
+    created_at = models.DateTimeField(default=timezone.now)
     slug = models.CharField(max_length=200)
     name = models.CharField(max_length=200)
     description = models.TextField()
@@ -84,6 +86,7 @@ class Certification(models.Model):
         workflow (orchestra.models.Workflow):
             The workflow the certification is scoped to.
     """
+    created_at = models.DateTimeField(default=timezone.now)
     slug = models.CharField(max_length=200)
     name = models.CharField(max_length=200)
     description = models.TextField()
@@ -138,6 +141,7 @@ class Step(models.Model):
             for this step (only valid for human steps).
     """
     # General fields
+    created_at = models.DateTimeField(default=timezone.now)
     slug = models.CharField(max_length=200)
     name = models.CharField(max_length=200)
     description = models.TextField()
@@ -240,6 +244,7 @@ class WorkerCertification(models.Model):
         (Role.ENTRY_LEVEL, 'Entry-level'),
         (Role.REVIEWER, 'Reviewer'))
 
+    created_at = models.DateTimeField(default=timezone.now)
     certification = models.ForeignKey(Certification)
     worker = models.ForeignKey(Worker, related_name='certifications')
     task_class = models.IntegerField(choices=TASK_CLASS_CHOICES)
