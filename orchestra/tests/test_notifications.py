@@ -20,7 +20,7 @@ class BasicNotificationsTestCase(OrchestraTestCase):
     Test modular functions in the notifications module
     """
     def setUp(self):  # noqa
-        super(BasicNotificationsTestCase, self).setUp()
+        super().setUp()
         setup_models(self)
 
     @override_settings(SLACK_INTERNAL=True)

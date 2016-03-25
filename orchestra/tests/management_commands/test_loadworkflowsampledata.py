@@ -28,9 +28,6 @@ NONEXISTENT_VERSION = 'DOESNOTEXIST'
 })
 class LoadWorkflowSampleDataTestCase(OrchestraTestCase):
 
-    def setUp(self):
-        super(LoadWorkflowSampleDataTestCase, self).setUp()
-
     def test_loadworkflowsampledata(self):
         """ Ensure that workflow sample data loads correctly. """
 

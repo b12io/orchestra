@@ -20,9 +20,6 @@ from orchestra.tests.helpers.google_apps import fake_image_get
 @override_settings(GOOGLE_APPS=True)
 class TestGoogleAppsConvenience(TestCase):
 
-    def setUp(self):
-        super(TestGoogleAppsConvenience, self).setUp()
-
     def test_get_image_mimetype(self):
         # Content type is not provided.
         url = 'http://nocontenttype.com/image.jpeg'

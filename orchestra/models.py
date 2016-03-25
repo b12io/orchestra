@@ -263,7 +263,7 @@ class WorkerCertification(models.Model):
                                      'certification ({}) for a worker without '
                                      'an entry-level certification'
                                      .format(self))
-        super(WorkerCertification, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class Project(models.Model):
@@ -449,7 +449,7 @@ class TaskAssignment(models.Model):
                 raise ModelSaveError('Worker should not be assigned '
                                      'if worker type is Machine')
 
-        super(TaskAssignment, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return '{} - {} - {}'.format(

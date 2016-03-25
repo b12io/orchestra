@@ -10,7 +10,7 @@ from orchestra.utils.machine_step_scheduler import MachineStepScheduler
 class MachineStepSchedulerTestCase(OrchestraTestCase):
 
     def setUp(self):
-        super(MachineStepSchedulerTestCase, self).setUp()
+        super().setUp()
         setup_models(self)
 
     def test_machine_step_schedule(self):

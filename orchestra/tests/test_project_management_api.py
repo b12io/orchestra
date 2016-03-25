@@ -25,7 +25,7 @@ from orchestra.utils.task_properties import current_assignment
 class ProjectManagementAPITestCase(OrchestraTestCase):
 
     def setUp(self):
-        super(ProjectManagementAPITestCase, self).setUp()
+        super().setUp()
         setup_models(self)
         self.project_admin_group = Group.objects.create(name='project_admins')
         user = (UserFactory(username='project_management',

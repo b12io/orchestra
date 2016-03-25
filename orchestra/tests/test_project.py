@@ -17,7 +17,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
     Test project module helper functions.
     """
     def setUp(self):  # noqa
-        super(BasicTaskLifeCycleTestCase, self).setUp()
+        super().setUp()
         setup_models(self)
 
     @override_settings(GOOGLE_APPS=True)

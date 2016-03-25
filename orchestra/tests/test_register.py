@@ -14,7 +14,7 @@ UserModel = get_user_model()
 class OrchestraRegistrationViewTests(OrchestraTestCase):
 
     def setUp(self):
-        super(OrchestraRegistrationViewTests, self).setUp()
+        super().setUp()
         self.client = RequestClient()
         self.url = reverse('orchestra:registration_register')
 

@@ -13,7 +13,7 @@ from pandas.util.testing import assert_frame_equal
 
 class AnalyticsTestCase(OrchestraTestCase):
     def setUp(self):  # noqa
-        super(AnalyticsTestCase, self).setUp()
+        super().setUp()
         setup_models(self)
 
     def test_work_time_df(self):

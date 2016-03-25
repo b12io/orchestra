@@ -10,7 +10,7 @@ from orchestra.tests.helpers.slack import MockSlacker
 class OrchestraTestCase(TestCase):
 
     def setUp(self):  # noqa
-        super(OrchestraTestCase, self).setUp()
+        super().setUp()
         # maxDiff prevents the test runner from suppressing the diffs on
         # assertEquals, which is nice when you have large string comparisons as
         # we do in this test to assert the expected JSON blob responses.

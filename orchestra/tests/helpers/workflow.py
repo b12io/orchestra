@@ -486,7 +486,7 @@ def assert_test_dir_v1_loaded(test_case):
             'execution_function': {
                 'module': 'v1.machine',
                 'name': 'machine_function',
-                },
+            },
             'review_policy': {},
             'user_interface': {},
         })
@@ -556,7 +556,7 @@ def assert_test_dir_v1_loaded(test_case):
                           set(Certification.objects.filter(
                               slug__in=['certification1', 'certification2'],
                               workflow__slug='test_dir',
-                              )))
+                          )))
     test_case.assertEqual(list(step3.creation_depends_on.all()), [step1])
     test_case.assertEqual(list(step3.submission_depends_on.all()), [step2])
 

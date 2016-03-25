@@ -23,9 +23,6 @@ VERSION_2 = 'test_v2'
 })
 class LoadWorkflowTestCase(OrchestraTestCase):
 
-    def setUp(self):
-        super(LoadWorkflowTestCase, self).setUp()
-
     def test_loadworkflow(self):
         """ Ensure that a workflow directory loads correctly. """
         # Verify initial DB state.

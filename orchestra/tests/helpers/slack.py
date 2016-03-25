@@ -10,7 +10,7 @@ PREEXISTING_GROUPS = [settings.SLACK_INTERNAL_NOTIFICATION_CHANNEL]
 
 class MockSlacker(MagicMock):
     def __init__(self, *args, **kwargs):
-        super(MagicMock, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.data = {
             'groups': {},
             'users': {},

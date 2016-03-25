@@ -11,7 +11,7 @@ from orchestra.utils.task_lifecycle import submit_task
 
 class ProjectPropertiesTestCase(OrchestraTestCase):
     def setUp(self):  # noqa
-        super(ProjectPropertiesTestCase, self).setUp()
+        super().setUp()
         setup_models(self)
 
     def test_completed_projects(self):

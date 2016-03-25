@@ -37,7 +37,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
     Test modular functions in the task_lifecycle
     """
     def setUp(self):  # noqa
-        super(BasicTaskLifeCycleTestCase, self).setUp()
+        super().setUp()
         setup_models(self)
 
     def test_worker_certified_for_task(self):
