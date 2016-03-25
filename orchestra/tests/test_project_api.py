@@ -25,7 +25,7 @@ from orchestra.tests.helpers.google_apps import mock_create_drive_service
 class ProjectAPITestCase(OrchestraTestCase):
 
     def setUp(self):  # noqa
-        super(ProjectAPITestCase, self).setUp()
+        super().setUp()
         setup_models(self)
         self.api_client = APIClient(enforce_csrf_checks=True)
         self.api_client.force_authenticate(user=SignedUser())
@@ -276,7 +276,7 @@ class ProjectAPITestCase(OrchestraTestCase):
 class ProjectAPIAuthTestCase(OrchestraTestCase):
 
     def setUp(self):  # noqa
-        super(ProjectAPIAuthTestCase, self).setUp()
+        super().setUp()
         setup_models(self)
         self.authentication = OrchestraProjectAPIAuthentication()
 

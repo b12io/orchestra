@@ -53,7 +53,7 @@ class ManageCertificationsTestCase(OrchestraTestCase):
                 certification=certification,
                 role=WorkerCertification.Role.REVIEWER)
 
-        super(ManageCertificationsTestCase, self).setUp()
+        super().setUp()
 
     def test_migrate_certifications(self):
         def _check_old_certifications_unchanged():

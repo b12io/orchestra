@@ -16,7 +16,7 @@ from orchestra.utils.assignment_snapshots import load_snapshots
 
 class DashboardTestCase(OrchestraTestCase):
     def setUp(self):  # noqa
-        super(DashboardTestCase, self).setUp()
+        super().setUp()
         setup_models(self)
 
     @override_settings(MACHINE_STEP_SCHEDULER=(

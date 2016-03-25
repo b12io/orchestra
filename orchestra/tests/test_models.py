@@ -12,7 +12,7 @@ from orchestra.tests.helpers.fixtures import setup_models
 class ModelsTestCase(OrchestraTestCase):
 
     def setUp(self):
-        super(ModelsTestCase, self).setUp()
+        super().setUp()
         setup_models(self)
         self.workers[0] = Worker.objects.get(user__username='test_user_1')
 

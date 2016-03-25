@@ -13,7 +13,7 @@ from orchestra.utils.task_lifecycle import create_subsequent_tasks
 
 class MachineTaskTestCase(OrchestraTestCase):
     def setUp(self):
-        super(MachineTaskTestCase, self).setUp()
+        super().setUp()
         setup_models(self)
 
         machine_workflow_version = (

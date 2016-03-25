@@ -15,9 +15,6 @@ VALID_WORKFLOW_DIR = os.path.join(TEST_WORKFLOWS_DIR, 'test_dir')
 
 class WorkflowDirectoryTestCase(OrchestraTestCase):
 
-    def setUp(self):
-        super(WorkflowDirectoryTestCase, self).setUp()
-
     def test_parse_workflow_directory(self):
         """ Ensure that workflow version directories are parsed correctly. """
 
