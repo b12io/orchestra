@@ -23,6 +23,14 @@ If you've written code that fixes an issue, `create a pull request
 <https://help.github.com/articles/creating-a-pull-request/>`_ (PR) so it's easy
 for us to incorporate your changes.
 
+Setting up for Development
+####################
+
+We have a `.editorconfig` specified in the top level providing editor defaults
+for our code style. We recommend to install an `EditorConfig
+plugin<http://editorconfig.org/#download>`_ so your editor automatically adheres to our
+style :).
+
 Development Workflow
 ####################
 
