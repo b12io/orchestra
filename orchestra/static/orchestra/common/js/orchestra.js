@@ -1,13 +1,14 @@
-(function () {
+(function() {
   'use strict';
 
   var modules = ['orchestra.routes', 'orchestra.config', 'orchestra.dashboard',
-                 'orchestra.task', 'orchestra.project_management', 'orchestra.common'];
+    'orchestra.task', 'orchestra.project_management', 'orchestra.common'
+  ];
   // Dynamically instantiate each of the angular modules from Orchestra
   // Workflow Steps
   angular.forEach(window.orchestra.angular_modules, function(module) {
     modules.push(module);
-  })
+  });
 
   angular.module('orchestra', modules);
 
@@ -23,23 +24,23 @@
   // Workflow Steps
   angular.forEach(window.orchestra.angular_modules, function(module) {
     angular.module(module, []);
-  })
+  });
 
   angular.module('orchestra').run(run);
 
   run.$inject = ['$http', '$location', '$rootScope', '$window'];
 
   /**
-  * @name run
-  * @desc Update xsrf $http headers to align with Django's defaults
-  */
+   * @name run
+   * @desc Update xsrf $http headers to align with Django's defaults
+   */
   function run($http, $location, $rootScope, $window) {
     $http.defaults.xsrfHeaderName = 'X-CSRFToken';
     $http.defaults.xsrfCookieName = 'csrftoken';
 
     // change title based on route
-    var base_title = ' | Orchestra'
-    $rootScope.$on('$routeChangeSuccess', function (event, current, previous) {
+    var base_title = ' | Orchestra';
+    $rootScope.$on('$routeChangeSuccess', function(event, current, previous) {
       $rootScope.title = current.$$route.title + base_title;
 
       // Only send page views if:

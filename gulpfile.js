@@ -25,7 +25,8 @@ var files = {
   ],
   all_scss: [],
   scripts: [
-    '!' + buildDestination + '/**'
+    '!' + buildDestination + '/**',
+    '!**/common/js/lib/**'
   ]
 };
 
@@ -42,8 +43,7 @@ for (var i = 0; i < installedApps.length; i++) {
 
 
 gulp.task('default', ['build', 'watch']);
-// TODO(joshblum): add lint after fixing errors
-gulp.task('build', ['scss', 'scripts']);
+gulp.task('build', ['scss', 'lint', 'scripts']);
 
 gulp.task('scss', function() {
   return gulp.src(files.scss)
@@ -53,9 +53,10 @@ gulp.task('scss', function() {
 
 gulp.task('lint', function() {
   return gulp.src(files.scripts)
-    .pipe(cache('scripts'))
+    .pipe(cache('lint'))
     .pipe(jshint())
     .pipe(jshint.reporter(stylish))
+    .pipe(jshint.reporter('fail'))
     .pipe(jscs())
     .pipe(jscs.reporter())
 });
@@ -76,6 +77,4 @@ gulp.task('scripts', function() {
 gulp.task('watch', function() {
   gulp.watch(files.all_scss, ['scss']);
   gulp.watch(files.scripts, ['scripts']);
-// TODO(joshblum): add lint after fixing errors
-//  gulp.watch(files.scripts, ['lint']);
 });

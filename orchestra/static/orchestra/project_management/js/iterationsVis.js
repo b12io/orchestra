@@ -22,9 +22,9 @@
               if (i > 0) {
                 iterations.push(dataService.keyFromIteration(iteration));
               }
-            })
+            });
             return iterations;
-          })
+          });
 
         iterations.exit().remove();
         iterations.enter().append('rect')
@@ -49,28 +49,30 @@
                 var snapshot = iteration.assignment.snapshots.snapshots[i];
                 $scope.data = snapshot ? snapshot.data : iteration.assignment.in_progress_task_data;
                 $scope.header = iteration.assignment.task.step_slug + ', ' +
-                                iteration.assignment.worker.username + ', iteration ' + i
-                $scope.admin_url = iteration.assignment.admin_url
+                  iteration.assignment.worker.username + ', iteration ' + i;
+                $scope.admin_url = iteration.assignment.admin_url;
               }
-            })
-          })
+            });
+          });
 
         iterations.transition().attr({
           'width': function(iterationKey) {
             var iteration = dataService.iterationFromKey(iterationKey);
-            return axis.getOffset(iteration.end_datetime) - axis.getOffset(iteration.start_datetime)},
+            return axis.getOffset(iteration.end_datetime) - axis.getOffset(iteration.start_datetime);
+          },
           'transform': function(iterationKey) {
             var iteration = dataService.iterationFromKey(iterationKey);
             return visUtils.translateString(
               (axis.getOffset(iteration.start_datetime) -
-               axis.getOffset(iteration.assignment.task.start_datetime)), 0)},
+                axis.getOffset(iteration.assignment.task.start_datetime)), 0);
+          },
           'opacity': function(iterationKey) {
             var iteration = dataService.iterationFromKey(iterationKey);
             var task = iteration.assignment.task;
             return (task.assignments.length - task.assignments.indexOf(iteration.assignment)) / task.assignments.length;
           }
-        })
+        });
       }
-    }
+    };
   });
 })();

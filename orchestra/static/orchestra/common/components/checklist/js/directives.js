@@ -1,4 +1,4 @@
-(function () {
+(function() {
   'use strict';
 
   angular
@@ -16,29 +16,25 @@
       link: function(scope, el, attr) {
         var sampleItem = {
           'title': 'Update the hero image ' +
-                   '(This is a sample item! Click on the text to edit or ' +
-                   'click to the right to expand.)',
-          'comments': [
-                        {
-                          'author': 'jane',
-                          'timestamp': new Date(new Date() - 3*60*60*1000),
-                          'text': "The hero image you've chosen doesn't fit " +
-                                  'well with the color scheme. Try something ' +
-                                  'less washed out?'
-                        },
-                        {
-                          'author': 'john',
-                          'timestamp': new Date(new Date() - 2*60*60*1000),
-                          'text': 'Sounds good! I swapped it out, what do ' +
-                                  'you think? '
-                        },
-                        {
-                          'author': '',
-                          'text': 'This is a sample checklist comment. ' +
-                                  'You can add a new comment for each new ' +
-                                  'round of iteration on your work!'
-                        }
-                      ],
+            '(This is a sample item! Click on the text to edit or ' +
+            'click to the right to expand.)',
+          'comments': [{
+            'author': 'jane',
+            'timestamp': new Date(new Date() - 3 * 60 * 60 * 1000),
+            'text': "The hero image you've chosen doesn't fit " +
+              'well with the color scheme. Try something ' +
+              'less washed out?'
+          }, {
+            'author': 'john',
+            'timestamp': new Date(new Date() - 2 * 60 * 60 * 1000),
+            'text': 'Sounds good! I swapped it out, what do ' +
+              'you think? '
+          }, {
+            'author': '',
+            'text': 'This is a sample checklist comment. ' +
+              'You can add a new comment for each new ' +
+              'round of iteration on your work!'
+          }],
           'checked': false,
           'expanded': false,
           'readonly': true,
@@ -60,7 +56,10 @@
             if (item.comments[item.comments.length - 1].text) {
               item.comments[item.comments.length - 1].author = scope.author;
               item.comments[item.comments.length - 1].timestamp = Date.now();
-              item.comments.push({'author': '', 'text': ''});
+              item.comments.push({
+                'author': '',
+                'text': ''
+              });
             }
           });
         });
@@ -80,14 +79,10 @@
         scope.preventAction = false;
         var checklistContainer = el.find('ul.checklist');
         var drake = dragula([checklistContainer.get(0)], {
-          moves: function (el, container, handle) {
-            return handle.className.indexOf('checklist-item') >= 0
-                   // Item title input only when readonly (so user can select text within input)
-                   || (handle.className.indexOf('item-title-input') >= 0
-                       && handle.className.indexOf('readonly') >= 0)
-                   // Item title container outside of input
-                   || (handle.className.indexOf('item-title') >= 0
-                       && handle.className.indexOf('item-title-input') < 0);
+          moves: function(el, container, handle) {
+            // Item title input only when readonly (so user can select text within input)
+            // Item title container outside of input
+            return handle.className.indexOf('checklist-item') >= 0 || (handle.className.indexOf('item-title-input') >= 0 && handle.className.indexOf('readonly') >= 0) || (handle.className.indexOf('item-title') >= 0 && handle.className.indexOf('item-title-input') < 0);
 
           },
           invalid: function(el, target) {
@@ -115,7 +110,7 @@
             var item = items[i];
             getItemByKey(item.getAttribute('data-key')).order = i;
           }
-        }
+        };
 
         // Retrieves checklist item based on angular object key
         var getItemByKey = function(key) {
@@ -126,18 +121,23 @@
             if (item.$$hashKey === key) {
               return item;
             }
-          };
-        }
+          }
+        };
 
         // Add new checklist item
         scope.addItem = function() {
-          scope.data.items.push({'title': '',
-                                 'comments': [{'author': scope.author, 'text': ''}],
-                                 'checked': false,
-                                 'expanded': false,
-                                 'readonly': true,
-                                 'order': scope.data.items.length});
-        }
+          scope.data.items.push({
+            'title': '',
+            'comments': [{
+              'author': scope.author,
+              'text': ''
+            }],
+            'checked': false,
+            'expanded': false,
+            'readonly': true,
+            'order': scope.data.items.length
+          });
+        };
 
         // Remove checklist item
         scope.removeItem = function(item, confirm_needed) {
@@ -153,7 +153,7 @@
               scope.preventAction = false;
             }, 0, false);
           }
-        }
+        };
 
         // Allow checklist title to be edited
         scope.editItem = function(item, $event) {
@@ -163,21 +163,25 @@
               // Set focus on input
               $event.target.focus();
             }
-            scope.data.items.forEach(function(scopeItem) {scopeItem.readonly = true})
+            scope.data.items.forEach(function(scopeItem) {
+              scopeItem.readonly = true;
+            });
           }
           item.readonly = !item.readonly;
-        }
+        };
 
         // Expand checklist item to show comments
         scope.expandItem = function(item) {
           item.expanded = !item.expanded;
-          scope.data.items.forEach(function(scopeItem) {scopeItem.readonly = true})
-        }
+          scope.data.items.forEach(function(scopeItem) {
+            scopeItem.readonly = true;
+          });
+        };
 
         // Return localized comment timestamp
         scope.getCommentTimestamp = function(comment) {
           return new Date(comment.timestamp).toLocaleString();
-        }
+        };
       },
       templateUrl: '/static/orchestra/common/components/checklist/partials/checklist.html'
     };
@@ -204,8 +208,8 @@
           // `ghost.innerHTML`.
           function escape(str) {
             return str.replace(SPACE, '&nbsp;')
-                      .replace(LESS_THAN, '&lt;')
-                      .replace(MORE_THAN, '&gt;');
+              .replace(LESS_THAN, '&lt;')
+              .replace(MORE_THAN, '&gt;');
           }
 
           str = str || elem.value || '';
@@ -214,7 +218,7 @@
           // `ghost` element.
           var elemStyle = window.getComputedStyle(elem);
           var elemCssText = 'font-family:' + elemStyle.fontFamily +
-                           ';font-size:'   + elemStyle.fontSize;
+            ';font-size:' + elemStyle.fontSize;
 
           ghost.style.cssText += elemCssText;
           ghost.innerHTML = escape(str);
@@ -224,7 +228,7 @@
           }
           elem.style.width = width;
           return width;
-        }
+        };
 
         // Helper function that:
         // 1. Copies the `font-family` and `font-size` of our `elem` onto `ghost`
@@ -252,9 +256,9 @@
           $timeout(function() {
             scope.autosizeInput(elem, ghost, minWidth);
           }, 0);
-        }
+        };
 
-        scope.setupAutosizer(el.find('.item-title input').get(0))
+        scope.setupAutosizer(el.find('.item-title input').get(0));
       },
       templateUrl: '/static/orchestra/common/components/checklist/partials/checklist-item.html'
     };

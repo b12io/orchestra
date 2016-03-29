@@ -1,7 +1,7 @@
-(function () {
+(function() {
   'use strict';
 
-  var serviceModule =  angular.module('orchestra.project_management.services');
+  var serviceModule = angular.module('orchestra.project_management.services');
 
   serviceModule.factory('visUtils', function(dataService) {
     /**
@@ -33,8 +33,8 @@
           numAssignments = task.assignments.length + 1;
         }
         return (this.params.barHeight * numAssignments +
-                this.params.lanePadding.top +
-                this.params.lanePadding.bottom);
+          this.params.lanePadding.top +
+          this.params.lanePadding.bottom);
       },
       getSvgHeight: function() {
         /**
@@ -52,7 +52,7 @@
         /**
          * Calculates the desired width of the view.
          */
-        return this.params.scaleWidth + this.params.marginRight
+        return this.params.scaleWidth + this.params.marginRight;
       },
       translateString: function(x, y) {
         /**
@@ -60,6 +60,6 @@
          */
         return 'translate(' + x + ', ' + y + ')';
       },
-    }
+    };
   });
 })();

@@ -1,4 +1,4 @@
-(function () {
+(function() {
   'use strict';
 
   angular
@@ -25,22 +25,22 @@
         }
       }
       return numTasks;
-    }
+    };
     vm.waiting = false;
 
     vm.activate = function() {
       vm.waiting = true;
       $http.get('/orchestra/api/interface/dashboard_tasks/').
-        success(function(data, status, headers, config) {
-          vm.tasks = data.tasks;
-          vm.preventNewTasks = data.preventNewTasks;
-          vm.reviewerStatus = data.reviewerStatus;
-          vm.waiting = false;
-        }).
-        error(function(data, status, headers, config) {
-          vm.waiting = false;
-        });
-    }
+      success(function(data, status, headers, config) {
+        vm.tasks = data.tasks;
+        vm.preventNewTasks = data.preventNewTasks;
+        vm.reviewerStatus = data.reviewerStatus;
+        vm.waiting = false;
+      }).
+      error(function(data, status, headers, config) {
+        vm.waiting = false;
+      });
+    };
 
     vm.newTask = function(taskType) {
       // To allow users to read the "no tasks left" message while debouncing
@@ -50,20 +50,20 @@
         // Initialize task timer to dummy value to prevent subsequent API calls
         vm.noTaskTimer = 'temp';
         $http.get('/orchestra/api/interface/new_task_assignment/' + taskType + '/').
-          success(function(data, status, headers, config) {
-            $location.path('task/' + data.id);
+        success(function(data, status, headers, config) {
+          $location.path('task/' + data.id);
+          vm.noTaskTimer = undefined;
+        }).
+        error(function(data, status, headers, config) {
+          vm.new_tasks = 0;
+          // Rate limit button-clicking
+          vm.noTaskTimer = $timeout(function() {
             vm.noTaskTimer = undefined;
-          }).
-          error(function(data, status, headers, config) {
-            vm.new_tasks = 0;
-            // Rate limit button-clicking
-            vm.noTaskTimer = $timeout(function() {
-              vm.noTaskTimer = undefined;
-              vm.new_tasks = undefined;
-            }, 15000);
-          });
+            vm.new_tasks = undefined;
+          }, 15000);
+        });
       }
-    }
+    };
 
     vm.activate();
   }

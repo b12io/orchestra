@@ -1,9 +1,9 @@
-(function () {
+(function() {
   'use strict';
 
   angular.module('orchestra.common.components', [
-      'orchestra.common.components.controllers',
-      'orchestra.common.components.directives'
+    'orchestra.common.components.controllers',
+    'orchestra.common.components.directives'
   ]);
 
   angular.module('orchestra.common.components.controllers', []);

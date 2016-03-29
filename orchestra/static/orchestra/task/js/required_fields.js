@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  var serviceModule =  angular.module('orchestra.task.services');
+  var serviceModule = angular.module('orchestra.task.services');
 
   /**
    * Service to keep track of all required fields in a task view and
@@ -11,11 +11,13 @@
     var requiredFields = {
       validators: {
         'input-checkbox': [
+
           function(elem) {
             return elem.checked;
           }
         ],
         'input-text': [
+
           function(elem) {
             return elem.value && elem.value.length > 0;
           }
@@ -37,8 +39,7 @@
          */
         if (this.fields[fieldType] === undefined) {
           this.fields[fieldType] = [field];
-        }
-        else {
+        } else {
           this.fields[fieldType].push(field);
         }
       },
@@ -49,6 +50,9 @@
          */
         var requiredFields = this;
         requiredFields.invalid = [];
+
+         /*jshint -W083 */
+        // Hide error for creating a function in a loop
         for (var fieldType in requiredFields.fields) {
           var validators = requiredFields.validators[fieldType];
           if (!validators) {
@@ -60,11 +64,11 @@
             var success = true;
             validators.forEach(function(validator) {
               success = success && validator(field);
-            })
+            });
             if (!success) {
               requiredFields.invalid.push(field);
             }
-          })
+          });
         }
         $rootScope.$broadcast('orchestra:task:validatedFields');
         return requiredFields.invalid.length === 0;
@@ -76,8 +80,7 @@
         var requiredFields = this;
         if (requiredFields.validators[fieldType] === undefined) {
           requiredFields.validators[fieldType].push(validator);
-        }
-        else {
+        } else {
           requiredFields.validators[fieldType] = [validator];
         }
       }
@@ -86,9 +89,9 @@
     orchestraService.signals.registerSignal(
       'submit.before', function() {
         if (!requiredFields.validate()) {
-          alert('One or more required fields have not been filled out.')
+          alert('One or more required fields have not been filled out.');
           return false;
-        };
+        }
       });
 
     return requiredFields;
@@ -113,8 +116,8 @@
             errorClass = field.getAttribute('type') + '-error';
           }
           if (field &&
-              field.getAttribute('type') != 'checkbox' &&
-              field.getAttribute('type') != 'text') {
+            field.getAttribute('type') != 'checkbox' &&
+            field.getAttribute('type') != 'text') {
             console.error('Unsupported required field type.');
             return;
           }
@@ -122,15 +125,14 @@
           var toggleError = function() {
             if (requiredFields.invalid.indexOf(field) >= 0) {
               elem.addClass('required-field-error ' + errorClass);
-            }
-            else {
+            } else {
               elem.removeClass('required-field-error ' + errorClass);
             }
-          }
+          };
           toggleError();
           scope.$on('orchestra:task:validatedFields', toggleError);
         }
       };
     });
 
-})()
+})();

@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  var serviceModule =  angular.module('orchestra.project_management.services');
+  var serviceModule = angular.module('orchestra.project_management.services');
 
   serviceModule.factory('assignmentsVis', function(dataService, orchestraApi, iterationsVis, visUtils) {
     /**
@@ -27,10 +27,10 @@
           .data(function(taskKey) {
             var assignments = dataService.taskFromKey(taskKey).assignments.map(function(assignment) {
               return dataService.keyFromAssignment(assignment);
-            })
-            assignments.push()
+            });
+            assignments.push();
             return assignments;
-          })
+          });
 
         assignments.exit().remove();
         var assignmentsEnter = assignments.enter().append('g')
@@ -44,16 +44,16 @@
             'cx': 0,
             'cy': 15,
             'r': 5,
-          })
+          });
 
         assignments.selectAll('.active-assignment').attr({
           'fill': function(assignmentKey) {
             var assignment = dataService.assignmentFromKey(assignmentKey);
-            return assignment.status == 'Submitted' ? 'rgb(0, 121, 191)' : 'white'
+            return assignment.status == 'Submitted' ? 'rgb(0, 121, 191)' : 'white';
           },
           'stroke': function(assignmentKey) {
             var assignment = dataService.assignmentFromKey(assignmentKey);
-            return assignment.status == 'Submitted' ? 'white' : 'rgb(0, 121, 191)'
+            return assignment.status == 'Submitted' ? 'white' : 'rgb(0, 121, 191)';
           }
         });
 
@@ -72,7 +72,7 @@
             return dataService.taskFromKey(taskKey).assignments
               .map(function(assignment) {
                 return dataService.keyFromAssignment(assignment);
-              })
+              });
           });
 
         assignmentsMeta.exit().remove();
@@ -105,8 +105,7 @@
             if (d3.event.keyCode == 13 && assignment.task.is_human) {
               if (!assignment.worker.username) {
                 assignmentsVis.assign_task(assignment.task, d3.select(this));
-              }
-              else {
+              } else {
                 assignmentsVis.reassignAssignment(assignment, d3.select(this));
               }
             }
@@ -114,7 +113,7 @@
           .each(function(assignmentKey) {
             var assignment = dataService.assignmentFromKey(assignmentKey);
             this.value = assignment.task.is_human ? assignment.worker.username : 'Machine';
-          })
+          });
       },
       assign_task: function(task, inputEl) {
         /**
@@ -133,15 +132,15 @@
           }, function(response) {
             inputEl.node().value = '';
             inputEl.node().blur();
-            var errorMessage = 'Error assigning task.'
+            var errorMessage = 'Error assigning task.';
             if (response.status === 400) {
               errorMessage = response.data.message;
             }
             alert(errorMessage);
           })
           .finally(function() {
-            assignmentsVis.addingAssignment = false
-          })
+            assignmentsVis.addingAssignment = false;
+          });
       },
       reassignAssignment: function(assignment, inputEl) {
         /**
@@ -151,14 +150,14 @@
         if (assignment.reassigning) {
           return;
         }
-        assignment.reassigning = true
+        assignment.reassigning = true;
         orchestraApi.reassignAssignment(assignment, inputEl.node().value)
           .then(function() {
             assignment.worker.username = inputEl.node().value;
             assignmentsVis.draw();
           }, function(response) {
             inputEl.node().blur();
-            var errorMessage = 'Error reassigning worker.'
+            var errorMessage = 'Error reassigning worker.';
             if (response.status === 400) {
               errorMessage = response.data.message;
             }
@@ -167,9 +166,9 @@
           .finally(function() {
             inputEl.node().blur();
             inputEl.node().value = assignment.worker.username;
-            assignment.reassigning = false
-          })
+            assignment.reassigning = false;
+          });
       },
-    }
+    };
   });
 })();

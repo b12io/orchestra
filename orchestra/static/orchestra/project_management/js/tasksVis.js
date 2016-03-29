@@ -1,10 +1,10 @@
 (function() {
   'use strict';
 
-  var serviceModule =  angular.module('orchestra.project_management.services');
+  var serviceModule = angular.module('orchestra.project_management.services');
 
   serviceModule.factory('tasksVis', function($modal, dataService, orchestraApi,
-                                              visUtils, assignmentsVis, crosshair, axis) {
+    visUtils, assignmentsVis, crosshair, axis) {
     /**
      * Service to modularize task visualization and manipulation within
      * the project management view.
@@ -24,10 +24,10 @@
         humanAudit.assignments[assignmentAudit.assignment.worker.username] = {
           'change': assignmentAudit.change,
           'snapshots': assignmentAudit.snapshots
-        }
+        };
       });
-      return humanAudit
-    }
+      return humanAudit;
+    };
 
     var _hasOneClassFrom = function(target, classes) {
       /**
@@ -36,8 +36,10 @@
       var cls;
       for (var i = 0; i < classes.length; i++) {
         cls = target.classed(classes[i]);
-        if (cls) { break; }
-      };
+        if (cls) {
+          break;
+        }
+      }
       return cls;
     };
 
@@ -50,7 +52,9 @@
          */
         var tasksVis = this;
         var taskViews = visUtils.parentContainer.selectAll('.task-view')
-                              .data(dataService.timeSortedSlugs, function(slug) {return slug});
+          .data(dataService.timeSortedSlugs, function(slug) {
+            return slug;
+          });
         taskViews.exit().remove();
         var taskViewsEnter = taskViews.enter().append('div')
           .attr('class', 'task-view');
@@ -72,7 +76,7 @@
               var task = dataService.taskFromKey(taskKey);
               return visUtils.translateString(axis.getOffset(task.start_datetime), visUtils.params.lanePadding.top);
             },
-          })
+          });
 
         tasksVis.drawRevertFlags();
 
@@ -84,7 +88,7 @@
             'height': visUtils.params.barHeight,
             'fill-opacity': 0,
             'stroke': 'black',
-          })
+          });
 
         taskViews.selectAll('.task-rect')
           .transition()
@@ -92,7 +96,7 @@
             var task = dataService.taskFromKey(slug);
             return axis.getOffset(dataService.taskEnd(task)) - axis.getOffset(task.start_datetime);
           })
-         .each(function(slug) {
+          .each(function(slug) {
             var task = dataService.taskFromKey(slug);
             tasksVis.expand(d3.select(tasksVis.parentNode));
           });
@@ -104,9 +108,9 @@
           if (!_hasOneClassFrom(target, classes)) {
             return;
           }
-          var task = dataService.taskFromKey(taskKey);
+          task = dataService.taskFromKey(taskKey);
           var expandAssignments = dataService.taskMeta(taskKey, 'expandAssignments');
-          dataService.taskMeta(taskKey, 'expandAssignments', !expandAssignments)
+          dataService.taskMeta(taskKey, 'expandAssignments', !expandAssignments);
           tasksVis.distribute();
         });
 
@@ -121,28 +125,30 @@
          */
         var tasksVis = this;
         var taskNames = d3.select('.task-names').selectAll('.task-name')
-                              .data(dataService.timeSortedSlugs, function(slug) {return slug});
+          .data(dataService.timeSortedSlugs, function(slug) {
+            return slug;
+          });
         taskNames.exit().remove();
         var taskNamesEnter = taskNames.enter().append('div')
           .attr('class', 'task-name');
         taskNamesEnter.append('span')
-          .attr('class', 'step-slug')
+          .attr('class', 'step-slug');
         var taskActionWrappers = taskNamesEnter.append('div').attr('class', 'task-action-wrapper');
         var actions = taskNames.selectAll('.task-action-wrapper').selectAll('.skip-task')
           .data(function(taskKey) {
             return dataService.taskFromKey(taskKey).status != 'Complete' ? [taskKey] : [];
           });
-        actions.exit().remove()
+        actions.exit().remove();
         actions.enter().append('button')
           .attr('class', 'skip-task task-action btn btn-danger btn-xs')
           .text('Skip task')
           .on('click', function(taskKey) {
             tasksVis.completeAndSkipTask(dataService.taskFromKey(taskKey));
-          })
+          });
         taskActionWrappers.append('a')
           .attr({
             'href': function(taskKey) {
-              return dataService.taskFromKey(taskKey).admin_url
+              return dataService.taskFromKey(taskKey).admin_url;
             },
             'target': '_blank',
             'class': 'task-action'
@@ -169,12 +175,12 @@
          */
         d3.selectAll('.task-name')
           .style('background-color', function(slug, i, j) {
-              return i % 2 == 0 ? '#eee' : 'white';
-          })
+            return i % 2 === 0 ? '#eee' : 'white';
+          });
         visUtils.parentContainer.selectAll('.task-view')
           .style('background-color', function(slug, i) {
-              return i % 2 == 0 ? '#eee' : 'white';
-          })
+            return i % 2 === 0 ? '#eee' : 'white';
+          });
       },
       drawRevertFlags: function() {
         /**
@@ -194,7 +200,7 @@
                 });
               });
             }
-          })
+          });
           if (!dataService.inProgressAssignment(task)) {
             datetimes.push({
               'datetime': new Date(dataService.taskEnd(task)),
@@ -202,7 +208,9 @@
             });
           }
           return datetimes;
-        }, function(datetime) {return datetime.datetime});
+        }, function(datetime) {
+          return datetime.datetime;
+        });
         revertGroups.exit().remove();
         var revertGroupsEnter = revertGroups.enter().append('g')
           .attr('class', 'revert-group');
@@ -211,7 +219,7 @@
           .attr({
             'class': 'revert-line',
             'stroke': 'rgb(0, 121, 191)',
-          })
+          });
 
         // Revert flags
         revertGroupsEnter.append('path')
@@ -235,7 +243,7 @@
           .on('click', function(datetimeInfo) {
             var taskId = dataService.taskFromKey(datetimeInfo.taskKey).id;
             tasksVis.revertTask(taskId, datetimeInfo.datetime);
-          })
+          });
 
         revertGroups.transition().attr({
           'transform': function(datetimeInfo) {
@@ -244,7 +252,7 @@
               axis.timeScale(datetimeInfo.datetime) - axis.getOffset(taskStartDatetime), 0
             );
           },
-        })
+        });
 
         revertGroups.selectAll('.revert-line')
           .transition()
@@ -255,12 +263,11 @@
               var task = dataService.taskFromKey(taskKey);
               if (dataService.taskMeta(taskKey, 'expandAssignments')) {
                 return (task.assignments.length + 1) * visUtils.params.barHeight + 1;
-              }
-              else {
+              } else {
                 return visUtils.params.barHeight + 1;
               }
             },
-          })
+          });
       },
       expand: function() {
         /**
@@ -273,7 +280,7 @@
           .transition()
           .attr('transform', function(taskKey) {
             var expand = dataService.taskMeta(taskKey, 'expandAssignments');
-            visUtils.translateString(0, expand ? visUtils.params.barHeight : 0)
+            visUtils.translateString(0, expand ? visUtils.params.barHeight : 0);
           });
 
         taskViews.selectAll('.assignment')
@@ -285,7 +292,7 @@
               var expand = dataService.taskMeta(taskKey, 'expandAssignments');
               return visUtils.translateString(0, expand ? (visUtils.params.barHeight * (i + 1)) : 0);
             },
-          })
+          });
 
         taskViews.selectAll('.assignment-meta')
           .transition()
@@ -301,7 +308,7 @@
               return visUtils.params.lanePadding.top + 'px';
             },
             'right': function(assignmentKey) {
-              var assignment = dataService.assignmentFromKey(assignmentKey)
+              var assignment = dataService.assignmentFromKey(assignmentKey);
               return (visUtils.getSvgWidth() - axis.getOffset(assignment.task.start_datetime) + 10) + 'px';
             },
             'display': function(assignmentKey, i) {
@@ -310,7 +317,7 @@
               var expand = dataService.taskMeta(taskKey, 'expandAssignments');
               return expand ? 'inherit' : 'none';
             },
-          })
+          });
 
         taskViews.selectAll('.active-assignment')
           .attr('display', function(assignmentKey) {
@@ -331,7 +338,7 @@
               var task = dataService.taskFromKey(taskKey);
               return visUtils.getTaskHeight(task);
             },
-          })
+          });
 
         var taskNamesWrapper = d3.selectAll('.task-names').style('margin-top', visUtils.params.scaleHeight + 'px');
         var taskNames = taskNamesWrapper.selectAll('.task-name')
@@ -342,7 +349,7 @@
               return visUtils.getTaskHeight(task) + 'px';
             },
             'padding-top': visUtils.params.lanePadding.top / 2 + 'px'
-          })
+          });
 
         this.drawRevertFlags();
         this.expand();
@@ -353,8 +360,8 @@
          * in the visualization.
          */
         if (!confirm('Are you sure you want to skip this task and mark it ' +
-                     'as complete? This might leave the project in a ' +
-                     'corrupted/unrecoverable state.')) {
+          'as complete? This might leave the project in a ' +
+          'corrupted/unrecoverable state.')) {
           return;
         }
         orchestraApi.completeAndSkipTask(task)
@@ -400,7 +407,7 @@
                     .finally(function() {
                       modalInstance.close();
                     });
-                }
+                };
               }
             });
 
@@ -416,6 +423,6 @@
             alert(errorMessage);
           });
       },
-    }
+    };
   });
 })();

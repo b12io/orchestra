@@ -1,7 +1,7 @@
-(function () {
+(function() {
   'use strict';
 
-  var serviceModule =  angular.module('orchestra.project_management.services');
+  var serviceModule = angular.module('orchestra.project_management.services');
 
   serviceModule.factory('axis', function(dataService, visUtils) {
     /**
@@ -28,7 +28,7 @@
           if (nextDatetime > minDatetime) {
             maxDatetime = nextDatetime;
           }
-        })
+        });
 
         var hourInMilliseconds = 60 * 60 * 1000;
         var numHours = Math.ceil((maxDatetime - minDatetime) / hourInMilliseconds);
@@ -36,7 +36,7 @@
 
         var hourTicks = d3.range(0, numHours + 1).map(function(hourIndex) {
           return new Date(minDatetime.getTime() + hourIndex * hourInMilliseconds);
-        })
+        });
 
         this.timeScale = d3.time.scale()
           .domain([minDatetime, maxDatetime])
@@ -44,26 +44,25 @@
 
         var xAxis = d3.svg.axis()
           .scale(this.timeScale)
-          .tickSize(10)
+          .tickSize(10);
 
         var tickSpread = 5;
         var xLabelText;
         if (this.relativeTime) {
           xAxis.tickValues(hourTicks)
-          .tickFormat(function(d, i) {
-            if (hourTicks.length < tickSpread || i % tickSpread == 0) {
-              return (d - minDatetime) / hourInMilliseconds;
-            }
-          });
-          xLabelText = 'Time (hours)'
-        }
-        else {
+            .tickFormat(function(d, i) {
+              if (hourTicks.length < tickSpread || i % tickSpread === 0) {
+                return (d - minDatetime) / hourInMilliseconds;
+              }
+            });
+          xLabelText = 'Time (hours)';
+        } else {
           xAxis.ticks(d3.time.hour, 1);
           var defaultFormat = this.timeScale.tickFormat();
           xAxis.tickFormat(function(d, i) {
-              return i % tickSpread == 0 ? defaultFormat(d) : '';
-            });
-          xLabelText = 'Time (local)'
+            return i % tickSpread === 0 ? defaultFormat(d) : '';
+          });
+          xLabelText = 'Time (local)';
         }
 
         visUtils.parentContainer.select('.x.label')
@@ -81,6 +80,6 @@
          */
         return this.timeScale(new Date(datetime));
       }
-    }
+    };
   });
 })();

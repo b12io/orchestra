@@ -1,7 +1,7 @@
-(function () {
+(function() {
   'use strict';
 
-  var serviceModule =  angular.module('orchestra.project_management.services');
+  var serviceModule = angular.module('orchestra.project_management.services');
 
   serviceModule.factory('dataService', function($rootScope, $location, orchestraApi) {
     /**
@@ -13,7 +13,9 @@
 
     return {
       setup: function(projectId) {
-        _meta = {'tasks': {}};
+        _meta = {
+          'tasks': {}
+        };
         this.projectId = projectId;
       },
       updateData: function(cb) {
@@ -27,8 +29,7 @@
             if (dataService.data.project.status === 'Aborted') {
               alert('Project is aborted.');
               $location.path('/');
-            }
-            else {
+            } else {
               $rootScope.$broadcast('orchestra:projectManagement:dataUpdate');
               if (cb) {
                 cb();
@@ -50,11 +51,13 @@
 
         var steps = {};
         this.data.steps.forEach(function(step) {
-          steps[step.slug] = step
+          steps[step.slug] = step;
         });
 
         this.data.steps = steps;
 
+         /*jshint -W083 */
+        // Hide error for creating a function in a loop
         for (var step_slug in this.data.tasks) {
           var task = this.data.tasks[step_slug];
           task.is_human = this.data.steps[task.step_slug].is_human;
@@ -62,8 +65,8 @@
             assignment.task = task;
             assignment.iterations.forEach(function(iteration, i) {
               iteration.assignment = assignment;
-            })
-          })
+            });
+          });
         }
 
         var dataService = this;
@@ -71,7 +74,7 @@
           var previousTask = dataService.data.tasks[a];
           var nextTask = dataService.data.tasks[b];
           return d3.ascending(new Date(previousTask.start_datetime),
-                              new Date(nextTask.start_datetime));
+            new Date(nextTask.start_datetime));
         });
       },
       taskFromKey: function(key) {
@@ -90,14 +93,14 @@
         /**
          * Determines whether task can be given a new assignment.
          */
-        var statuses = ['Awaiting Processing', 'Pending Review']
+        var statuses = ['Awaiting Processing', 'Pending Review'];
         return statuses.indexOf(task.status) >= 0;
       },
       inProgressAssignment: function(task) {
         /**
          * Determines whether task has a currently-processing assignment.
          */
-        var statuses = ['Processing', 'Post-review Processing', 'Reviewing']
+        var statuses = ['Processing', 'Post-review Processing', 'Reviewing'];
         return statuses.indexOf(task.status) >= 0 || this.awaitingAssignment(task);
       },
       taskMeta: function(taskKey, metaKey, value) {
@@ -110,8 +113,7 @@
         if (value !== undefined) {
           taskMeta[metaKey] = value;
           _meta.tasks[taskKey] = taskMeta;
-        }
-        else {
+        } else {
           return taskMeta[metaKey];
         }
       },
@@ -130,7 +132,7 @@
               taskEnd = lastIteration.end_datetime;
             }
           }
-        })
+        });
         return taskEnd;
       },
 
@@ -139,7 +141,7 @@
          * Returns the assignment for a given key.
          */
         return this.taskFromKey(key.taskKey)
-                  .assignments[key.assignmentIndex];
+          .assignments[key.assignmentIndex];
       },
       keyFromAssignment: function(assignment) {
         /**
@@ -149,7 +151,7 @@
         return {
           'taskKey': dataService.keyFromTask(assignment.task),
           'assignmentIndex': dataService.indexFromAssignment(assignment)
-        }
+        };
       },
       indexFromAssignment: function(assignment) {
         /**
@@ -172,8 +174,8 @@
         return {
           'assignmentKey': dataService.keyFromAssignment(iteration.assignment),
           'iterationIndex': iteration.assignment.iterations.indexOf(iteration)
-        }
+        };
       }
-    }
+    };
   });
 })();
