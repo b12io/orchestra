@@ -61,7 +61,7 @@ the project settings file::
 
 Next, edit the ``orchestra_settings.py`` file:
 
-* Add ``'simple_workflow'`` to ``settings.INSTALLED_APPS`` in the "General"
+* Add ``'simple_workflow'`` to ``settings.ORCHESTRA_WORKFLOWS`` in the "General"
   section if you want to run the demo workflow
   (:ref:`instructions below <demo-section>`), and add ``'journalism_workflow'``
   if you want to run the :doc:`journalism workflow <example_use>`.
@@ -186,7 +186,7 @@ though we walk through a more interesting example in
 We've written an interactive script to walk through this simple workflow. To
 run it:
 
-* Make sure you added ``simple_workflow`` to your ``INSTALLED_APPS`` setting
+* Make sure you added ``simple_workflow`` to your ``ORCHESTRA_WORKFLOWS`` setting
   following the previous section.
 
 * Make sure you loaded the workflow and its sample data following the previous
