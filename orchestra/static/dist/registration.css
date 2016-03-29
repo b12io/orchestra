@@ -1,0 +1,108 @@
+/**
+ * Common stylesheet for Orchestra.
+ *
+ * This partial provides common variables and mixins useful for various view and
+ * component styles.
+ */
+.disable-select {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none; }
+
+/**
+ * Base stylesheet for Orchestra.
+ *
+ * This partial styles the base Django template and serves as the foundation for
+ * each Orchestra view.
+ */
+html, body {
+  font-size: 10px; }
+
+section.wrapper {
+  margin-top: 52px; }
+
+section#main-content {
+  margin-left: 0;
+  color: #3c3c3c; }
+
+header.header {
+  background: #00598c;
+  box-shadow: 0 1px 3px black;
+  min-height: 0; }
+
+h1, h2, h3, h4, h5, h6, p {
+  margin: 0;
+  padding: 0; }
+
+a {
+  color: #0079bf;
+  text-decoration: none; }
+  a:hover, a:focus, a:visited {
+    color: #0079bf;
+    text-decoration: underline; }
+
+a.logo {
+  font-size: 2rem;
+  color: white;
+  margin: 12px 30px; }
+  a.logo:hover, a.logo:focus, a.logo:visited {
+    color: white; }
+
+#nav-options {
+  cursor: pointer;
+  font-size: 2rem;
+  color: white;
+  float: right;
+  margin: 12px 30px;
+  z-index: 1003; }
+  #nav-options .dropdown-menu a {
+    color: #0079bf; }
+    #nav-options .dropdown-menu a:hover {
+      color: #0079bf;
+      text-decoration: underline; }
+
+#hijacked-warning {
+  left: 25%;
+  width: 50%;
+  border-radius: 0 0 5px 5px; }
+  #hijacked-warning > span:last-child {
+    margin-right: 0 !important; }
+
+.section-panel {
+  margin: 1.5rem;
+  box-shadow: 0 1px 3px black;
+  background-color: white; }
+  .section-panel .section-header {
+    margin-top: 0;
+    color: white;
+    background-color: #0079bf; }
+    .section-panel .section-header h3 {
+      margin: 1.3rem 0;
+      font-size: 1.8rem; }
+    .section-panel .section-header .btn {
+      display: inline-block;
+      color: white;
+      background-color: #2ecc71; }
+      .section-panel .section-header .btn:first-child {
+        margin-left: 1.5rem; }
+      .section-panel .section-header .btn:hover:not(.disabled) {
+        border: 1px solid white; }
+      .section-panel .section-header .btn.disabled {
+        color: #cccccc;
+        background-color: rgba(46, 204, 113, 0.6); }
+  .section-panel .row:not(.section-header).padded > [class*="col-"] {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem; }
+
+/* Login/account-related pages */
+.login-wrap {
+  font-size: 1.3rem; }
+  .login-wrap .error-non-field {
+    padding: 0px 0px 10px 10px;
+    color: red; }
+  .login-wrap .error-field {
+    padding: 5px 0px 0px 10px;
+    color: red; }
