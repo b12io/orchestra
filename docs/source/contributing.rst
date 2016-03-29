@@ -33,7 +33,7 @@ style :).
 
 We recommend using a `virtualenv <https://virtualenv.pypa.io/en/latest/>`_ to
 install the required packages in ``requirements.txt``. In addition, we use
-`gulp <http://gulpjs.com/>`_ as a frontend build system.  To build the frontend
+`Gulp <http://gulpjs.com/>`_ as a frontend build system.  To build the frontend
 resources you can run ``make build_dist`` once `npm <https://www.npmjs.com/>`_
 is installed.
 
@@ -115,3 +115,18 @@ just run ``make lint``. Of course, sometimes you'll write code that will
 never make the linter happy (for example, URL strings longer than 80
 characters). In that case, just add a ``# noqa`` comment to the end of the line
 to tell the linter to ignore it. But use this sparingly!
+
+When working on frontend resources, we use `Gulp <http://gulpjs.com/>`_ as a
+frontend build system. This means that after making any changes to frontend
+resources, you must run ``make build_dist`` to include the modified resources.
+This moves resources to the ``dist`` folder, compiling scss and minifying
+javascript.
+
+So if your javascript files lives in
+``orchestra/common/static/common/js/example.js``, to include it in an HTML
+file, you would use ``{% static  'dist/orchestra/common/js/exmaple.min.js``.
+
+Similarly, for stylesheets we only compile scss files so if your file is at
+``orchestra/common/static/common/css/example.scss``, to include it in an HTML
+file you should write ``{% static 'dist/example.css' %}">`` as the static file
+path.
