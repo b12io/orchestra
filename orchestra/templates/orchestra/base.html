@@ -1,4 +1,3 @@
-{% load compress %}
 {% load staticfiles %}
 {% load hijack_tags %}
 
@@ -21,7 +20,6 @@
 
     <title data-ng-bind="title">{% block title %}{% endblock %} | Orchestra</title>
 
-    {% compress css %}
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="{% static 'orchestra/common/css/lib/bootstrap.css' %}">
     <!--external css-->
@@ -37,7 +35,6 @@
     <link rel="stylesheet" type="text/css" href="{% static 'orchestra/common/components/checklist/lib/dragula/dragula.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'dist/checklist.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'dist/iframe.css' %}">
-    {% endcompress %}
 
     {% block page_stylesheets %}
     {% endblock page_stylesheets %}
@@ -77,14 +74,12 @@
     {% block main %}
     {% endblock %}
 
-    {% compress js %}
     <!-- js placed at the end of the document so the pages load faster -->
     <script src="{% static "dist/orchestra/common/js/lib/jquery.min.js" %}"></script>
     <script src="{% static "orchestra/common/js/lib/bootstrap.min.js" %}"></script>
     <script src="{% static "orchestra/common/js/lib/jquery-ui-1.9.2.custom.min.js" %}"></script>
     <script src="{% static "orchestra/common/js/lib/jquery.ui.touch-punch.min.js" %}"></script>
     <script class="include" type="text/javascript" src="{% static "dist/orchestra/common/js/lib/jquery.dcjqaccordion.2.7.min.js" %}"></script>
-    {% endcompress %}
 
     <!--script for this page-->
     {% block page_javascript %}

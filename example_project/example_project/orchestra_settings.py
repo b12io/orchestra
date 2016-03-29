@@ -38,7 +38,6 @@ def setup_orchestra(settings_module_name):
 
     # Required Django apps
     settings.INSTALLED_APPS += (
-        'compressor',
         'django_object_actions',
         'orchestra',
         'beanstalk_dispatch',
@@ -50,11 +49,7 @@ def setup_orchestra(settings_module_name):
     settings.STATICFILES_FINDERS += (
         'django.contrib.staticfiles.finders.FileSystemFinder',
         'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-        'compressor.finders.CompressorFinder',
     )
-
-    # Allow pre-compression independent of user requests
-    settings.COMPRESS_OFFLINE = True
 
     # Add the Django admin and the Django CMS admin style to make it pretty.
     # The CMS style must be listed before the admin, so we do some processing
