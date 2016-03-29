@@ -53,10 +53,6 @@ def setup_orchestra(settings_module_name):
         'compressor.finders.CompressorFinder',
     )
 
-    settings.COMPRESS_PRECOMPILERS = (
-        ('text/x-scss', 'django_libsass.SassCompiler'),
-    )
-
     # Allow pre-compression independent of user requests
     settings.COMPRESS_OFFLINE = True
 

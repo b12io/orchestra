@@ -31,6 +31,12 @@ for our code style. We recommend to install an `EditorConfig
 plugin<http://editorconfig.org/#download>`_ so your editor automatically adheres to our
 style :).
 
+We recommend using a `virtualenv <https://virtualenv.pypa.io/en/latest/>`_ to
+install the required packages in ``requirements.txt``. In addition, we use
+`gulp <http://gulpjs.com/>`_ as a frontend build system.  To build the frontend
+resources you can run ``make build_dist`` once `npm <https://www.npmjs.com/>`_
+is installed.
+
 Development Workflow
 ####################
 

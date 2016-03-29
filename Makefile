@@ -20,5 +20,12 @@ coverage:
 coveralls:
 	cd example_project && coveralls
 
+npm_install:
+	npm install -g gulp
+	npm install
+
+build_dist: npm_install
+	gulp build
+
 build_docs:
 	cd docs && make html

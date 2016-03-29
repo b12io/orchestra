@@ -34,9 +34,9 @@
 	"angular_module": "test_dir.v2.s2.module",
 	"angular_directive": "s2",
 	"javascript_includes": [
-	  "/static/test_dir/v2/s2/js/modules.js",
-	  "/static/test_dir/v2/s2/js/controllers.js",
-	  "/static/test_dir/v2/s2/js/directives.js"
+	  "/static/dist/test_dir/v2/s2/js/modules.min.js",
+	  "/static/dist/test_dir/v2/s2/js/controllers.min.js",
+	  "/static/dist/test_dir/v2/s2/js/directives.min.js"
 	]
       }
     }

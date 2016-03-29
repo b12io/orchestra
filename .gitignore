@@ -1,6 +1,7 @@
 # Byte-compiled / optimized / DLL files
 *.py[cod]
 *~
+*.egg-info
 __pycache__/
 
 # Sqlite
@@ -26,3 +27,6 @@ example_project/staticfiles
 
 # Built documentation
 /docs/_build
+
+# Gulp
+node_modules
