@@ -33,9 +33,14 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+)
+
+# Installed orchestra workflows to be included as Django apps
+ORCHESTRA_WORKFLOWS = (
     'simple_workflow',
     'journalism_workflow',
 )
+INSTALLED_APPS += ORCHESTRA_WORKFLOWS
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',

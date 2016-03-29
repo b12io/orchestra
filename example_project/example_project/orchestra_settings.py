@@ -59,11 +59,11 @@ def setup_orchestra(settings_module_name):
     # Tasks and Workflows
     ######################
 
-    # Installed orchestra workflows
-    settings.ORCHESTRA_PATHS = (
-        ('simple_workflow.workflow', 'simple_workflow'),
-        ('journalism_workflow.workflow', 'journalism_workflow'),
+    # Installed orchestra workflows to be included as Django apps
+    settings.ORCHESTRA_WORKFLOWS = (
+        # 'workflows.workflow_app_1',
     )
+    settings.INSTALLED_APPS += settings.ORCHESTRA_WORKFLOWS
 
     # The maximum number of tasks an expert can pick up at a time.
     # Currently disabled.

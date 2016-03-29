@@ -1,4 +1,5 @@
 from django.apps import apps as django_apps
+from django.conf import settings
 from django.db import transaction
 
 from orchestra.models import Certification
@@ -9,6 +10,27 @@ from orchestra.workflow.defaults import get_default_assignment_policy
 from orchestra.workflow.defaults import get_default_review_policy
 from orchestra.workflow.directory import parse_workflow_directory
 from orchestra.core.errors import WorkflowError
+
+
+def get_workflow_version_slugs():
+    versions = {}
+    for app_name in settings.ORCHESTRA_WORKFLOWS:
+        # App label is the last part of the app name by default
+        app_label = app_name.split('.')[-1]
+        workflow_directory = django_apps.get_app_config(app_label).path
+        data = parse_workflow_directory(workflow_directory)
+        workflow_slug = data['workflow']['slug']
+        if versions.get(workflow_slug) is not None:
+            raise WorkflowError('Workflow {} present in multiple apps: {}, {}'
+                                .format(workflow_slug,
+                                        versions[workflow_slug]['app_label'],
+                                        app_label))
+        else:
+            versions[workflow_slug] = {
+                'app_label': app_label,
+                'versions': (version['slug'] for version in data['versions'])
+            }
+    return versions
 
 
 @transaction.atomic

@@ -24,5 +24,5 @@ class Command(BaseCommand):
                           version_slug=options['version_slug'],
                           force=options['force'])
         except WorkflowError as e:
-            print('An error occurred while loading the workflow: {}'.format(e),
-                  file=self.stderr)
+            self.stderr.write(
+                'An error occurred while loading the workflow: {}'.format(e))
