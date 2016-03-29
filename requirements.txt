@@ -1,7 +1,6 @@
 # TODO(dhaas): remove packages not needed by core orchestra.
 Django==1.9.4
 jsonfield==1.0.0
-django-compressor==1.5
 django-jsonview==0.5.0
 requests==2.5.1
 factory_boy==2.5.2
