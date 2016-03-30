@@ -66,7 +66,7 @@ gulp.task('scripts', function() {
     .pipe(cache('scripts'))
     .pipe(sourcemaps.init())
     .pipe(ngAnnotate())
-    .pipe(uglify())
+    .pipe(uglify({mangle: false}))
     .pipe(rename({
       suffix: '.min'
     }))
