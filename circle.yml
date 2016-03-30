@@ -11,5 +11,7 @@ machine:
 
 dependencies:
   override:
+    - npm install -g gulp
+    - npm install
     - pip install -r requirements.txt
     - pip install coveralls

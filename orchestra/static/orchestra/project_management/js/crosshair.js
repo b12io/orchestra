@@ -1,7 +1,7 @@
-(function () {
+(function() {
   'use strict';
 
-  var serviceModule =  angular.module('orchestra.project_management.services');
+  var serviceModule = angular.module('orchestra.project_management.services');
 
   serviceModule.factory('crosshair', function(visUtils, axis) {
     /**
@@ -9,8 +9,8 @@
      * aligned to the time axis.
      */
     var _vis,
-        _svg,
-        _line;
+      _svg,
+      _line;
 
     return {
       setup: function() {
@@ -36,14 +36,14 @@
          * Draws/updates crosshair container within visualization.
          */
         _svg.attr({
-            'height': visUtils.getSvgHeight(),
-            'width': 1
-          })
+          'height': visUtils.getSvgHeight(),
+          'width': 1
+        });
         _line.attr({
           'y2': function() {
-            return visUtils.getSvgHeight()
+            return visUtils.getSvgHeight();
           }
-        })
+        });
       },
       show: function() {
         /**
@@ -65,6 +65,6 @@
          */
         _svg.style('left', (visUtils.params.marginLeft + axis.timeScale(datetime)) + 'px');
       },
-    }
+    };
   });
 })();

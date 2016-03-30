@@ -1,4 +1,4 @@
-(function () {
+(function() {
   'use strict';
 
   angular
@@ -27,7 +27,9 @@
 
         scope.editor = new Quill(editorContainer, {
           modules: {
-            'toolbar': {container: toolbarContainer},
+            'toolbar': {
+              container: toolbarContainer
+            },
             // Image tooltip removed in favor of file selector dialog
             'link-tooltip': true,
           },
@@ -54,9 +56,9 @@
           // Set the focus outside the $digest block.
           // Taken from https://docs.angularjs.org/error/$rootScope/inprog?p0=$digest.
           $timeout(function() {
-                      scope.data = scope.editor.getHTML();
-                      scope.$apply();
-                    }, 0, false);
+            scope.data = scope.editor.getHTML();
+            scope.$apply();
+          }, 0, false);
         });
 
         // Upload image via the toolbar button
@@ -73,16 +75,17 @@
               uploadImage(files[i], scope.editor.getSelection());
             }
           }
-        }
-        imageSelector.onclick = function () {
+        };
+        imageSelector.onclick = function() {
           scope.fileSelector.click();
           return false;
-        }
+        };
 
         // TODO(jrbotros): move paste/drop functionality into a quilljs fork
 
         // Upload image by pasting in copied image data
         editorContainer.addEventListener('paste', pasteImage, true);
+
         function pasteImage(e) {
           if (e.clipboardData && e.clipboardData.items) {
             var copiedData = e.clipboardData.items[0];
@@ -93,12 +96,16 @@
 
         // Upload image by drag and drop
         editorContainer.addEventListener('drop', dropImage, true);
+
         function dropImage(e) {
           var files = e.dataTransfer.files;
           for (var i = files.length - 1; i >= 0; i--) {
             var file = files[i];
             var dropOffset = getDropIndexOffset(e);
-            uploadImage(file, {'start': dropOffset, 'end': dropOffset}, e);
+            uploadImage(file, {
+              'start': dropOffset,
+              'end': dropOffset
+            }, e);
           }
         }
 
@@ -118,12 +125,18 @@
             var range;
             // Standards-based way; implemented only in Firefox
             if (document.caretPositionFromPoint) {
-                var pos = document.caretPositionFromPoint(x, y);
-                return {'offset': pos.offset, 'node': pos.offsetNode};
+              var pos = document.caretPositionFromPoint(x, y);
+              return {
+                'offset': pos.offset,
+                'node': pos.offsetNode
+              };
             } else if (document.caretRangeFromPoint) {
               // Webkit
               range = document.caretRangeFromPoint(x, y);
-              return {'offset': range.startOffset, 'node': range.startContainer};
+              return {
+                'offset': range.startOffset,
+                'node': range.startContainer
+              };
             } else if (document.body.createTextRange) {
               // IE doesn't natively support retrieving the character offset, so
               // insert image at end of text
@@ -165,20 +178,20 @@
           }
           var leaves = getLeafNodes(editorContainer.getElementsByClassName('ql-editor')[0]);
           var opIndex = leaves.indexOf(caretPosition.node);
-          var contents = scope.editor.getContents()
-          contents.ops = contents.ops.slice(0, opIndex)
+          var contents = scope.editor.getContents();
+          contents.ops = contents.ops.slice(0, opIndex);
           return contents.length() + caretPosition.offset;
-         }
+        }
 
 
         // Post image data to an API endpoint that returns an image URL, then
         // adding it to the editor (replacing the given character range)
         function uploadImage(file, range, e) {
-          var uploadAPIEndpoint = '/orchestra/api/interface/upload_image/'
-          var supportedTypes = ['image/jpeg', 'image/png', 'image/gif']
+          var uploadAPIEndpoint = '/orchestra/api/interface/upload_image/';
+          var supportedTypes = ['image/jpeg', 'image/png', 'image/gif'];
 
           if (supportedTypes.indexOf(file.type) === -1) {
-            alert('Files type ' + file.type + ' not supported.')
+            alert('Files type ' + file.type + ' not supported.');
             return;
           } else if (e) {
             // Cancel default browser action only if file is actually an image
@@ -188,33 +201,37 @@
           // If nothing is selected in the editor, append the image to its end
           if (range === null) {
             var endIndex = scope.editor.getLength();
-            range = {'start': endIndex, 'end': endIndex}
+            range = {
+              'start': endIndex,
+              'end': endIndex
+            };
           }
 
           var reader = new FileReader();
           reader.onload = function(e) {
-              var rawData = e.target.result;
-              // Remove prepended image type from data string
-              var imageData = rawData.substring(rawData.indexOf(",") + 1, rawData.length)
+            var rawData = e.target.result;
+            // Remove prepended image type from data string
+            var imageData = rawData.substring(rawData.indexOf(",") + 1, rawData.length);
 
-              // Calculate data size of b64-encoded string
-              var imageSize = imageData.length * 3 / 4;
+            // Calculate data size of b64-encoded string
+            var imageSize = imageData.length * 3 / 4;
 
-              if (imageSize > scope.uploadLimitMb * Math.pow(10, 6)) {
-                alert('Files larger than ' + scope.uploadLimitMb + 'MB cannot be uploaded');
-                return;
-              }
-              // Post image data to API; response should contain the uploaded image url
-              $http.post(uploadAPIEndpoint,
-                         {'image_data': imageData,
-                          'image_type': file.type,
-                          'prefix': scope.imagePrefix})
-                   .then(function(response, status, headers, config) {
-                     // Replace selected range with new image
-                     scope.editor.deleteText(range);
-                     scope.editor.insertEmbed(range.start, 'image', response.data.url, 'user');
-                   })
-          }
+            if (imageSize > scope.uploadLimitMb * Math.pow(10, 6)) {
+              alert('Files larger than ' + scope.uploadLimitMb + 'MB cannot be uploaded');
+              return;
+            }
+            // Post image data to API; response should contain the uploaded image url
+            $http.post(uploadAPIEndpoint, {
+                'image_data': imageData,
+                'image_type': file.type,
+                'prefix': scope.imagePrefix
+              })
+              .then(function(response, status, headers, config) {
+                // Replace selected range with new image
+                scope.editor.deleteText(range);
+                scope.editor.insertEmbed(range.start, 'image', response.data.url, 'user');
+              });
+          };
           reader.readAsDataURL(file);
         }
       },

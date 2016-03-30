@@ -1,4 +1,4 @@
-(function () {
+(function() {
   'use strict';
 
   angular
@@ -12,7 +12,7 @@
     return {
       restrict: 'A',
       replace: true,
-      link: function (scope, ele, attrs) {
+      link: function(scope, ele, attrs) {
         scope.$watch(attrs.dynamicLoad, function(html) {
           ele.html(html);
           $compile(ele.contents())(scope);

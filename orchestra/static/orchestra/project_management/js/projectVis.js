@@ -1,10 +1,10 @@
-(function () {
+(function() {
   'use strict';
 
-  var serviceModule =  angular.module('orchestra.project_management.services');
+  var serviceModule = angular.module('orchestra.project_management.services');
 
   serviceModule.factory('projectVis', function($modal, $location, dataService, orchestraApi, crosshair, visUtils,
-                                               tasksVis, assignmentsVis, iterationsVis, axis) {
+    tasksVis, assignmentsVis, iterationsVis, axis) {
     /**
      * Service to coordinate and visualize the project management view.
      */
@@ -16,11 +16,14 @@
         var params = {
           'scaleHeight': 40,
           'barHeight': 30,
-          'lanePadding': {'top': 30, 'bottom': 25},
+          'lanePadding': {
+            'top': 30,
+            'bottom': 25
+          },
           'marginLeft': 200,
           'marginRight': 10,
           'scaleWidth': 1350
-        }
+        };
 
         dataService.setup(projectId);
         visUtils.setup(d3.select(parentSelector), params);
@@ -33,7 +36,7 @@
 
         var axisWrapper = visUtils.parentContainer
           .append('div')
-          .attr('class', 'axis-wrapper')
+          .attr('class', 'axis-wrapper');
 
         axisWrapper.append('svg')
           .attr({
@@ -44,7 +47,7 @@
           .style('margin-left', visUtils.params.marginLeft);
 
         axisWrapper.append('span')
-          .attr('class', 'x label')
+          .attr('class', 'x label');
 
         scope.$on('orchestra:projectManagement:dataUpdate', vis.draw);
         dataService.updateData(function() {
@@ -90,7 +93,7 @@
             $scope.header = dataService.data.project.short_description;
             $scope.admin_url = dataService.data.project.admin_url;
           }
-        })
+        });
       },
       showSlackActions: function() {
         /**
@@ -111,9 +114,9 @@
                   }
                   alert(errorMessage);
                 });
-            }
+            };
           }
-        })
+        });
       },
       endProject: function() {
         /**
@@ -130,9 +133,9 @@
                 errorMessage = response.data.message;
               }
               alert(errorMessage);
-            })
+            });
         }
       },
-    }
+    };
   });
 })();

@@ -29,9 +29,9 @@
             'id': 'iframe-' + $scope.id,
             'frameBorder': 0,
             'height': $scope.height || 400,
-          }
+          };
           for (var attr in iframeAttrs) {
-            iframe.setAttribute(attr, iframeAttrs[attr])
+            iframe.setAttribute(attr, iframeAttrs[attr]);
           }
 
           var parent = document.getElementById('iframe-wrapper-' + $scope.id);

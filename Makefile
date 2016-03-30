@@ -8,7 +8,7 @@ clean:
 	find . -name '*~' -delete
 
 lint:
-	flake8 .
+	flake8 . && gulp lint
 
 test: lint
 	cd example_project && python3 $(TEST_CMD)

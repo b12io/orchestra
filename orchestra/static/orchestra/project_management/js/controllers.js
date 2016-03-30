@@ -1,4 +1,4 @@
-(function () {
+(function() {
   'use strict';
 
   angular
@@ -6,7 +6,7 @@
     .controller('ProjectManagementController', ProjectManagementController);
 
   function ProjectManagementController($location, $scope, $routeParams, $http, $sce,
-                                       $compile, $modal, $timeout, projectVis) {
+    $compile, $modal, $timeout, projectVis) {
     var vm = this;
     $scope.activate = function() {
       projectVis.setup($scope, $routeParams.projectId, '.project-management .svg-wrapper');
