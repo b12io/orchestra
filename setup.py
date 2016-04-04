@@ -9,6 +9,7 @@ setup(
     description='A framework for building complex expert workflows.',
     author='Unlimited Labs, Inc.',
     author_email='hello@unlimitedlabs.com',
+    license='Apache 2',
     url='https://github.com/unlimitedlabs/orchestra',
     download_url=(
         'https://github.com/unlimitedlabs/orchestra/tarball/v' + version),
