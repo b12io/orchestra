@@ -8,7 +8,7 @@ from distutils.version import StrictVersion
 import os
 import re
 import shutil
-from subprocess import check_output, CalledProcessError
+from subprocess import check_output
 from tempfile import mkdtemp
 
 VERSION_RE = re.compile("__version__ = ['\"]([^'\"]+)['\"]")
@@ -239,11 +239,7 @@ def wrap_command(cmd, fake):
 
 
 def run_command(cmd):
-    try:
-        return check_output(cmd).decode()
-    except CalledProcessError as e:
-        print('Error running command! Code: {}, output: {}'
-              .format(e.returncode, e.output))
+    return check_output(cmd).decode()
 
 
 def parse_args():
