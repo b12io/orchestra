@@ -461,6 +461,44 @@ class TaskAssignment(models.Model):
             str(self.task), self.assignment_counter, str(self.worker))
 
 
+class Iteration(models.Model):
+    """
+    Iterations are the contiguous units of a worker's time on task.
+
+    Attributes:
+        start_datetime (datetime.datetime):
+            The time the task was assigned for this iteration.
+        end_datetime (datetime.datetime):
+            The time the iteration was completed. Will be None if the iteration
+            is currently in progress.
+        assignment (orchestra.models.TaskAssigment):
+            The task assignment to which the iteration belongs.
+        status (orchestra.models.Iteration.Action):
+            Represents the status of the iteration. `REQUESTED_REVIEW` means
+            that the task was moved up the review hierarchy, while
+            `PROVIDED_REVIEW` indicates that it was moved back down.
+        submitted_data (str):
+            A JSON blob containing submitted data for this iteration. Will be
+            None if the iteration is currently in progress.
+    """
+
+    class Status:
+        PROCESSING = 0
+        REQUESTED_REVIEW = 1
+        PROVIDED_REVIEW = 2
+
+    STATUS_CHOICES = (
+        (Status.PROCESSING, 'Processing'),
+        (Status.REQUESTED_REVIEW, 'Requested Review'),
+        (Status.PROVIDED_REVIEW, 'Provided Review'))
+
+    start_datetime = models.DateTimeField(default=timezone.now)
+    end_datetime = models.DateTimeField(null=True, blank=True)
+    assignment = models.ForeignKey(TaskAssignment, related_name='iterations')
+    status = models.IntegerField(choices=STATUS_CHOICES)
+    submitted_data = JSONField(default={}, blank=True)
+
+
 # Attach a post-init signal to TaskAssigment.  Every
 # TaskAssignment that gets constructed will now call
 # this post-init signal after loading from the database
