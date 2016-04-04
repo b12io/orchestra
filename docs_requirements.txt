@@ -3,5 +3,5 @@ Django==1.9.4
 sphinxcontrib-httpdomain==1.4.0
 django-registration-redux==1.4
 jsonfield==1.0.3
-python-dateutil==2.4.2
+python-dateutil==2.5.2
 slacker==0.7.0
