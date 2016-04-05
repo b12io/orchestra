@@ -17,7 +17,7 @@ var sourcemaps = require('gulp-sourcemaps');
 var sass = require('gulp-sass');
 
 // Files will be output here
-var staticBuildDestination = 'build/static';
+var staticBuildDestination = 'orchestra/static/dist/';
 
 var files = {
   scss: [
@@ -25,9 +25,6 @@ var files = {
     'orchestra/static/orchestra/common/components/iframe/css/iframe.scss',
     'orchestra/static/orchestra/common/components/quill/css/quill.scss',
     'orchestra/static/orchestra/common/css/orchestra.scss',
-    'orchestra/static/orchestra/common/css/registration.scss',
-    'orchestra/static/orchestra/dashboard/css/dashboard.scss',
-    'orchestra/static/orchestra/task/css/task.scss',
   ],
   all_scss: [],
   jslint: [
