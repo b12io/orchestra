@@ -31,9 +31,9 @@
 	"angular_module": "journalism_workflow.v1.editor.module",
 	"angular_directive": "editor",
 	"javascript_includes": [
-	  "/static/dist/journalism_workflow/v1/editor/js/modules.min.js",
-	  "/static/dist/journalism_workflow/v1/editor/js/controllers.min.js",
-	  "/static/dist/journalism_workflow/v1/editor/js/directives.min.js"
+	  "/static/journalism_workflow/v1/editor/js/modules.js",
+	  "/static/journalism_workflow/v1/editor/js/controllers.js",
+	  "/static/journalism_workflow/v1/editor/js/directives.js"
 	]
       }
     },
@@ -57,9 +57,9 @@
 	"angular_module": "journalism_workflow.v1.reporter.module",
 	"angular_directive": "reporter",
 	"javascript_includes": [
-	  "/static/dist/journalism_workflow/v1/reporter/js/modules.min.js",
-	  "/static/dist/journalism_workflow/v1/reporter/js/controllers.min.js",
-	  "/static/dist/journalism_workflow/v1/reporter/js/directives.min.js"
+	  "/static/journalism_workflow/v1/reporter/js/modules.js",
+	  "/static/journalism_workflow/v1/reporter/js/controllers.js",
+	  "/static/journalism_workflow/v1/reporter/js/directives.js"
 	]
       }
     },
@@ -83,9 +83,9 @@
 	"angular_module": "journalism_workflow.v1.photographer.module",
 	"angular_directive": "photographer",
 	"javascript_includes": [
-	  "/static/dist/journalism_workflow/v1/photographer/js/modules.min.js",
-	  "/static/dist/journalism_workflow/v1/photographer/js/controllers.min.js",
-	  "/static/dist/journalism_workflow/v1/photographer/js/directives.min.js"
+	  "/static/journalism_workflow/v1/photographer/js/modules.js",
+	  "/static/journalism_workflow/v1/photographer/js/controllers.js",
+	  "/static/journalism_workflow/v1/photographer/js/directives.js"
 	]
       }
     },
@@ -121,9 +121,9 @@
 	"angular_module": "journalism_workflow.v1.copy_editor.module",
 	"angular_directive": "copyEditor",
 	"javascript_includes": [
-	  "/static/dist/journalism_workflow/v1/copy_editor/js/modules.min.js",
-	  "/static/dist/journalism_workflow/v1/copy_editor/js/controllers.min.js",
-	  "/static/dist/journalism_workflow/v1/copy_editor/js/directives.min.js"
+	  "/static/journalism_workflow/v1/copy_editor/js/modules.js",
+	  "/static/journalism_workflow/v1/copy_editor/js/controllers.js",
+	  "/static/journalism_workflow/v1/copy_editor/js/directives.js"
 	]
       }
     }
