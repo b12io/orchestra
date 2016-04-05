@@ -499,6 +499,27 @@ class Iteration(models.Model):
     submitted_data = JSONField(default={}, blank=True)
 
 
+class TimeEntry(models.Model):
+    """
+    A time entry is a record of time worked on a given task assignment.
+
+    Attributes:
+        date (datetime.date):
+            The date the work was done.
+        time_worked (datetime.timedelta):
+            Amount of time worked.
+        assignment (orchestra.models.TaskAssignment):
+            The task assignment for which the work was done.
+        description (str): optional
+            Brief description of the work done.
+    """
+    date = models.DateField()
+    time_worked = models.DurationField()
+    assignment = models.ForeignKey(TaskAssignment,
+                                   related_name='time_entries')
+    description = models.CharField(max_length=200, null=True, blank=True)
+
+
 # Attach a post-init signal to TaskAssigment.  Every
 # TaskAssignment that gets constructed will now call
 # this post-init signal after loading from the database
