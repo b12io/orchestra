@@ -512,9 +512,9 @@ def assert_test_dir_v1_loaded(test_case):
                 'angular_module': 'test_dir.v1.s2.module',
                 'angular_directive': 's2',
                 'javascript_includes': [
-                    '/static/dist/test_dir/v1/s2/js/modules.min.js',
-                    '/static/dist/test_dir/v1/s2/js/controllers.min.js',
-                    '/static/dist/test_dir/v1/s2/js/directives.min.js',
+                    '/static/test_dir/v1/s2/js/modules.js',
+                    '/static/test_dir/v1/s2/js/controllers.js',
+                    '/static/test_dir/v1/s2/js/directives.js',
                 ],
             },
         })
@@ -546,9 +546,9 @@ def assert_test_dir_v1_loaded(test_case):
                 'angular_module': 'test_dir.v1.s3.module',
                 'angular_directive': 's3',
                 'javascript_includes': [
-                    '/static/dist/test_dir/v1/s3/js/modules.min.js',
-                    '/static/dist/test_dir/v1/s3/js/controllers.min.js',
-                    '/static/dist/test_dir/v1/s3/js/directives.min.js',
+                    '/static/test_dir/v1/s3/js/modules.js',
+                    '/static/test_dir/v1/s3/js/controllers.js',
+                    '/static/test_dir/v1/s3/js/directives.js',
                 ],
             },
         })
@@ -629,9 +629,9 @@ def assert_test_dir_v2_loaded(test_case):
                 'angular_module': 'test_dir.v2.s2.module',
                 'angular_directive': 's2',
                 'javascript_includes': [
-                    '/static/dist/test_dir/v2/s2/js/modules.min.js',
-                    '/static/dist/test_dir/v2/s2/js/controllers.min.js',
-                    '/static/dist/test_dir/v2/s2/js/directives.min.js',
+                    '/static/test_dir/v2/s2/js/modules.js',
+                    '/static/test_dir/v2/s2/js/controllers.js',
+                    '/static/test_dir/v2/s2/js/directives.js',
                 ],
             },
         })

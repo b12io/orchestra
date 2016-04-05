@@ -24,8 +24,8 @@ npm_install:
 	npm install -g gulp
 	npm install
 
-build_dist: npm_install
-	gulp build
+gulp_build: npm_install
+	gulp --gulpfile gulpfile.js --production=true build
 
 build_docs:
 	cd docs && make html

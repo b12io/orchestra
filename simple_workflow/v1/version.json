@@ -29,9 +29,9 @@
 	"angular_module": "simple_workflow.v1.rate.module",
 	"angular_directive": "rate",
 	"javascript_includes": [
-	  "/static/dist/simple_workflow/v1/rate/js/modules.min.js",
-	  "/static/dist/simple_workflow/v1/rate/js/controllers.min.js",
-	  "/static/dist/simple_workflow/v1/rate/js/directives.min.js"
+	  "/static/simple_workflow/v1/rate/js/modules.js",
+	  "/static/simple_workflow/v1/rate/js/controllers.js",
+	  "/static/simple_workflow/v1/rate/js/directives.js"
 	]
       }
     }
