@@ -15,6 +15,7 @@ from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import TaskDependencyError
 from orchestra.core.errors import TaskStatusError
 from orchestra.core.errors import WorkerCertificationError
+from orchestra.models import Iteration
 from orchestra.models import Project
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
@@ -27,6 +28,7 @@ from orchestra.utils.assignment_snapshots import empty_snapshots
 from orchestra.utils.notifications import notify_status_change
 from orchestra.utils.task_properties import assignment_history
 from orchestra.utils.task_properties import current_assignment
+from orchestra.utils.task_properties import get_latest_iteration
 from orchestra.utils.task_properties import last_snapshotted_assignment
 from orchestra.utils.task_properties import is_worker_assigned_to_task
 
@@ -192,13 +194,18 @@ def assign_task(worker_id, task_id):
         task.status = Task.Status.REVIEWING
     task.save()
 
-    (TaskAssignment.objects
+    assignment = (
+        TaskAssignment.objects
         .create(worker=worker,
                 task=task,
                 status=TaskAssignment.Status.PROCESSING,
                 assignment_counter=assignment_counter,
                 in_progress_task_data=in_progress_task_data,
                 snapshots=empty_snapshots()))
+
+    Iteration.objects.create(
+        assignment=assignment,
+        start_datetime=assignment.start_datetime)
 
     add_worker_to_project_team(worker, task.project)
     notify_status_change(task, previous_status)
@@ -964,6 +971,8 @@ def submit_task(task_id, task_data, snapshot_type, worker, work_time_seconds):
         orchestra.core.errors.TaskStatusError:
             Task has already been completed.
     """
+    submit_datetime = timezone.now()
+
     task = Task.objects.select_related('step', 'project').get(id=task_id)
     step = task.step
     if not _are_desired_steps_completed_on_project(step.submission_depends_on,
@@ -999,6 +1008,19 @@ def submit_task(task_id, task_data, snapshot_type, worker, work_time_seconds):
          'work_time_seconds': work_time_seconds
          })
 
+    # Temporarily map snapshot types onto iteration statuses
+    snapshot_type_iteration_status = {
+        TaskAssignment.SnapshotType.SUBMIT: Iteration.Status.REQUESTED_REVIEW,
+        TaskAssignment.SnapshotType.ACCEPT: Iteration.Status.REQUESTED_REVIEW,
+        TaskAssignment.SnapshotType.REJECT: Iteration.Status.PROVIDED_REVIEW,
+    }
+    # Submit latest iteration
+    latest_iteration = get_latest_iteration(assignment)
+    latest_iteration.status = snapshot_type_iteration_status[snapshot_type]
+    latest_iteration.submitted_data = assignment.in_progress_task_data
+    latest_iteration.end_datetime = submit_datetime
+    latest_iteration.save()
+
     assignment.status = TaskAssignment.Status.SUBMITTED
     assignment.save()
     previous_status = task.status
@@ -1008,11 +1030,13 @@ def submit_task(task_id, task_data, snapshot_type, worker, work_time_seconds):
     if task.status == Task.Status.REVIEWING:
         update_related_assignment_status(task,
                                          assignment.assignment_counter + 1,
-                                         assignment.in_progress_task_data)
+                                         assignment.in_progress_task_data,
+                                         submit_datetime)
     elif task.status == Task.Status.POST_REVIEW_PROCESSING:
         update_related_assignment_status(task,
                                          assignment.assignment_counter - 1,
-                                         assignment.in_progress_task_data)
+                                         assignment.in_progress_task_data,
+                                         submit_datetime)
     elif task.status == Task.Status.COMPLETE:
         create_subsequent_tasks(task.project)
 
@@ -1057,7 +1081,8 @@ def previously_completed_task_data(task):
     return prerequisites
 
 
-def update_related_assignment_status(task, assignment_counter, data):
+def update_related_assignment_status(task, assignment_counter, data,
+                                     submit_datetime):
     """
     Copy data to a specified task assignment and mark it as processing.
 
@@ -1068,6 +1093,8 @@ def update_related_assignment_status(task, assignment_counter, data):
             The index of the assignment to be updated.
         data (str):
             A JSON blob containing data to add to the assignment.
+        end_datetime (datetime.datetime):
+            The datetime when the previous task assignment was submitted.
 
     Returns:
         None
@@ -1078,6 +1105,10 @@ def update_related_assignment_status(task, assignment_counter, data):
     assignment.in_progress_task_data = data
     assignment.status = TaskAssignment.Status.PROCESSING
     assignment.save()
+
+    Iteration.objects.create(
+        assignment=assignment,
+        start_datetime=submit_datetime)
 
 
 def end_project(project_id):

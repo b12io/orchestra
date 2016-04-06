@@ -8,6 +8,7 @@ from orchestra.core.errors import ReviewPolicyError
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import TaskStatusError
 from orchestra.core.errors import WorkerCertificationError
+from orchestra.models import Iteration
 from orchestra.models import Project
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
@@ -175,12 +176,26 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
             status=Task.Status.AWAITING_PROCESSING,
             step=self.test_step)
 
+        # No iterations should be present for task
+        self.assertEqual(
+            Iteration.objects.filter(assignment__task=entry_task).count(), 0)
+
         # Assign entry-level task to entry-level worker
         entry_task = assign_task(self.workers[0].id, entry_task.id)
         self.assertTrue(is_worker_assigned_to_task(self.workers[0],
                                                    entry_task))
-        self.assertEquals(entry_task.status, Task.Status.PROCESSING)
-        self.assertEquals(entry_task.assignments.count(), 1)
+        self.assertEqual(entry_task.status, Task.Status.PROCESSING)
+
+        self.assertEqual(entry_task.assignments.count(), 1)
+        entry_assignment = entry_task.assignments.first()
+
+        # A single iteration was created for the assignment
+        self.assertEqual(entry_assignment.iterations.count(), 1)
+        self.assertEqual(
+            Iteration.objects.filter(assignment__task=entry_task).count(), 1)
+        self.assertEqual(
+            entry_assignment.iterations.first().start_datetime,
+            entry_assignment.start_datetime)
 
         # Attempt to assign task which isn't awaiting a new assignment
         invalid = (Task.Status.PROCESSING, Task.Status.ABORTED,
@@ -224,10 +239,18 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         self.assertEquals(review_task.assignments.count(), 1)
         review_task = assign_task(self.workers[3].id, review_task.id)
         self.assertEquals(review_task.assignments.count(), 2)
+
+        reviewer_assignment = current_assignment(review_task)
         self.assertEqual(
-            current_assignment(review_task).worker, self.workers[3])
+            reviewer_assignment.worker, self.workers[3])
         self.assertEqual(
-            current_assignment(review_task).in_progress_task_data, test_data)
+            reviewer_assignment.in_progress_task_data, test_data)
+        self.assertEquals(
+            reviewer_assignment.iterations.count(), 1)
+        self.assertEqual(
+            reviewer_assignment.iterations.first().start_datetime,
+            reviewer_assignment.start_datetime)
+
         self.assertEquals(
             review_task.status, Task.Status.REVIEWING)
 

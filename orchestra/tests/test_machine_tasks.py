@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 from orchestra.core.errors import MachineExecutionError
 from orchestra.machine_tasks import execute
+from orchestra.models import Iteration
 from orchestra.models import Project
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
@@ -50,9 +51,24 @@ class MachineTaskTestCase(OrchestraTestCase):
     def _assert_correct_machine_task_state(
             self, assignment_status, task_status):
         self.task.refresh_from_db()
-        self.assertEquals(
-            self.task.assignments.first().status, assignment_status)
+        assignment = self.task.assignments.first()
+        self.assertEquals(assignment.status, assignment_status)
         self.assertEquals(self.task.status, task_status)
+
+        # Check correct iteration state
+        self.assertEquals(assignment.iterations.count(), 1)
+        iteration = assignment.iterations.first()
+        if task_status == Task.Status.COMPLETE:
+            expected_status = Iteration.Status.REQUESTED_REVIEW
+            expected_data = assignment.in_progress_task_data
+            self.assertIsNotNone(iteration.end_datetime)
+        else:
+            expected_status = Iteration.Status.PROCESSING
+            expected_data = {}
+            self.assertIsNone(iteration.end_datetime)
+
+        self.assertEquals(iteration.status, expected_status)
+        self.assertEquals(iteration.submitted_data, expected_data)
 
         # Assert that machine function is called once and there is only one
         # assignment regardless of state
@@ -75,6 +91,12 @@ class MachineTaskTestCase(OrchestraTestCase):
         assignment = self.task.assignments.first()
         assignment.status = TaskAssignment.Status.PROCESSING
         assignment.save()
+
+        # Reset iteration for assignment
+        assignment.iterations.all().delete()
+        Iteration.objects.create(
+            assignment=assignment,
+            start_datetime=assignment.start_datetime)
 
         # Another machine attempts to perform task
         with self.assertRaises(MachineExecutionError):
