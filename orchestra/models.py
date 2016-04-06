@@ -495,7 +495,8 @@ class Iteration(models.Model):
     start_datetime = models.DateTimeField(default=timezone.now)
     end_datetime = models.DateTimeField(null=True, blank=True)
     assignment = models.ForeignKey(TaskAssignment, related_name='iterations')
-    status = models.IntegerField(choices=STATUS_CHOICES)
+    status = models.IntegerField(
+        choices=STATUS_CHOICES, default=Status.PROCESSING)
     submitted_data = JSONField(default={}, blank=True)
 
 

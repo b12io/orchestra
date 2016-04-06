@@ -1,4 +1,5 @@
 from copy import deepcopy
+from datetime import timedelta
 from dateutil.parser import parse
 from unittest.mock import patch
 
@@ -7,6 +8,7 @@ from django.contrib.auth.models import User
 from django.test import Client
 from django.test import override_settings
 
+from orchestra.models import Iteration
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import WorkerCertification
@@ -17,9 +19,16 @@ from orchestra.slack import create_project_slack_group
 from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.task_lifecycle import submit_task
 from orchestra.utils.task_properties import assignment_history
+from orchestra.utils.task_properties import current_assignment
+from orchestra.utils.task_properties import get_iteration_history
+from orchestra.tests.helpers.iterations import verify_iterations
 from orchestra.tests.helpers.workflow import workflow_fixtures
 from orchestra.workflow.defaults import get_default_assignment_policy
 from orchestra.workflow.defaults import get_default_review_policy
+
+BASE_DATETIME = parse('2015-10-12T00:00:00+00:00')
+ITERATION_DURATION = timedelta(hours=1)
+PICKUP_DELAY = timedelta(hours=1)
 
 
 class WorkflowFactory(factory.django.DjangoModelFactory):
@@ -223,22 +232,6 @@ def setup_models(test_case):
                 (4, test_data, TaskAssignment.Status.PROCESSING)
             ]
         },
-        'to_be_ended_1': {
-            'project_name': 'project_to_end',
-            'status': Task.Status.POST_REVIEW_PROCESSING,
-            'assignments': [
-                (5, {}, TaskAssignment.Status.SUBMITTED),
-                (6, test_data, TaskAssignment.Status.PROCESSING),
-                (7, {}, TaskAssignment.Status.SUBMITTED)
-            ]
-        },
-        'to_be_ended_2': {
-            'project_name': 'project_to_end',
-            'status': Task.Status.PROCESSING,
-            'assignments': [
-                (4, test_data, TaskAssignment.Status.SUBMITTED)
-            ]
-        },
     }
 
     # Create the objects
@@ -388,7 +381,7 @@ def _setup_projects(test_case, projects):
     test_case.projects = {}
     for name, workflow_slug in projects.items():
         test_case.projects[name] = ProjectFactory(
-            start_datetime=parse('2015-10-12T00:00:00+00:00'),
+            start_datetime=BASE_DATETIME,
             workflow_version=test_case.workflow_versions[workflow_slug])
         create_project_slack_group(test_case.projects[name])
 
@@ -399,24 +392,77 @@ def _setup_tasks(test_case, tasks):
     test_case.test_step = test_case.workflow_steps[
         test_case.test_version_slug][test_case.test_step_slug]
     for task_slug, details in tasks.items():
+        task_pickup_time = BASE_DATETIME + timedelta(hours=1)
         task = TaskFactory(
             project=test_case.projects[details['project_name']],
             step=test_case.test_step,
             status=details['status'],
-            start_datetime=parse('2015-10-12T01:00:00+00:00'),
+            start_datetime=task_pickup_time,
         )
         test_case.tasks[task_slug] = task
         for i, (user_id,
                 task_data,
                 assignment_status) in enumerate(details['assignments']):
-            TaskAssignmentFactory(
+            assignment = TaskAssignmentFactory(
                 worker=test_case.workers[user_id],
                 task=task,
                 status=assignment_status,
                 assignment_counter=i,
                 in_progress_task_data=task_data,
-                start_datetime=parse(
-                    '2015-10-12T0{}:00:00+00:00'.format(2 + i)))
+                start_datetime=_new_assignment_start_datetime(task))
+
+            # Each assignment must have at least one corresponding iteration
+            Iteration.objects.create(
+                assignment=assignment,
+                start_datetime=assignment.start_datetime,
+                end_datetime=assignment.start_datetime + ITERATION_DURATION,
+                submitted_data=assignment.in_progress_task_data,
+                status=Iteration.Status.REQUESTED_REVIEW)
+
+        cur_assignment = current_assignment(task)
+        assignments = assignment_history(task).all()
+        if cur_assignment and (
+                cur_assignment.status == TaskAssignment.Status.PROCESSING):
+            # If there's a currently processing assignment, we'll need to
+            # adjust the task's iteration sequence
+            processing_counter = cur_assignment.assignment_counter
+            if processing_counter != len(assignments) - 1:
+                # If processing assignment is not the last in the hierarchy, we
+                # need to reconstruct an iteration sequence: REQUESTED_REVIEW
+                # up to the highest assignment counter, then PROVIDED_REVIEW
+                # back down to the current assignment
+                last_iteration = assignments.last().iterations.first()
+                last_iteration.status = Iteration.Status.PROVIDED_REVIEW
+                last_iteration.save()
+
+                adjust_assignments = list(assignments)[processing_counter:-1]
+                for assignment in reversed(adjust_assignments):
+                    last_iteration = get_iteration_history(task).last()
+                    Iteration.objects.create(
+                        assignment=assignment,
+                        start_datetime=last_iteration.end_datetime,
+                        end_datetime=(
+                            last_iteration.end_datetime + ITERATION_DURATION),
+                        submitted_data=assignment.in_progress_task_data,
+                        status=Iteration.Status.PROVIDED_REVIEW)
+
+            # If there is a currently processing assignment, the task's last
+            # iteration should still be processing
+            last_iteration = get_iteration_history(task).last()
+            last_iteration.end_datetime = None
+            last_iteration.submitted_data = {}
+            last_iteration.status = Iteration.Status.PROCESSING
+            last_iteration.save()
+
+        verify_iterations(test_case, task.id)
+
+
+def _new_assignment_start_datetime(task):
+    # Each assignment is created after the previous assignment's first
+    # iteration is complete and a pickup delay elapses
+    previous_assignment_duration = (
+        task.assignments.count() * (ITERATION_DURATION + PICKUP_DELAY))
+    return task.start_datetime + previous_assignment_duration + PICKUP_DELAY
 
 
 def setup_task_history(test):
@@ -442,29 +488,8 @@ def setup_task_history(test):
     second_assignment.snapshots['snapshots'] = (
         deepcopy(third_assignment.snapshots['snapshots']) +
         second_assignment.snapshots['snapshots'])[:-1]
-
-    def fix_datetimes(snapshots, new_datetimes):
-        for snapshot, new_datetime in zip(snapshots, new_datetimes):
-            snapshot['datetime'] = new_datetime
-
-    # Explicitly set the iteration datetimes.  If we didn't, the timestamps
-    # would be `datetime.now`, which we can't test against.  The explicitly set
-    # times are predictable distance apart, so we can test the
-    # resulting latency reports.
-    fix_datetimes(
-        first_assignment.snapshots['snapshots'],
-        ['2015-10-12T02:02:00+00:00', '2015-10-12T03:05:00+00:00'])
-    fix_datetimes(
-        second_assignment.snapshots['snapshots'],
-        ['2015-10-12T03:01:00+00:00', '2015-10-12T03:07:00+00:00',
-         '2015-10-12T04:03:00+00:00', '2015-10-12T04:10:00+00:00'])
-    fix_datetimes(
-        third_assignment.snapshots['snapshots'],
-        ['2015-10-12T04:02:00+00:00', '2015-10-12T04:13:00+00:00'])
-
     first_assignment.save()
     second_assignment.save()
-    third_assignment.save()
 
     return task
 

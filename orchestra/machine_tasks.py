@@ -6,6 +6,7 @@ from django.db import transaction
 from django.utils import timezone
 
 from orchestra.core.errors import MachineExecutionError
+from orchestra.models import Iteration
 from orchestra.models import Project
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
@@ -13,6 +14,7 @@ from orchestra.models import Step
 from orchestra.utils.assignment_snapshots import empty_snapshots
 from orchestra.utils.task_lifecycle import previously_completed_task_data
 from orchestra.utils.task_lifecycle import create_subsequent_tasks
+from orchestra.utils.task_properties import get_latest_iteration
 
 logger = logging.getLogger(__name__)
 
@@ -48,6 +50,10 @@ def execute(project_id, step_slug):
         if created:
             task.status = Task.Status.PROCESSING
             task.save()
+
+            Iteration.objects.create(
+                assignment=task_assignment,
+                start_datetime=task_assignment.start_datetime)
         else:
             # Task assignment already exists
             if task_assignment.status == TaskAssignment.Status.FAILED:
@@ -73,6 +79,7 @@ def execute(project_id, step_slug):
     task_assignment.status = TaskAssignment.Status.SUBMITTED
     task_assignment.in_progress_task_data = task_data
     task_assignment.save()
+
     if task.project.status == Project.Status.ABORTED:
         # If a long-running task's project was aborted while running, we ensure
         # the aborted state on the task.
@@ -85,7 +92,13 @@ def execute(project_id, step_slug):
             {'data': task_assignment.in_progress_task_data,
              'datetime': timezone.now().isoformat(),
              'type': TaskAssignment.SnapshotType.SUBMIT,
-             'work_time_seconds': 0
-             })
+             'work_time_seconds': 0})
         task_assignment.save()
+
+        iteration = get_latest_iteration(task_assignment)
+        iteration.status = Iteration.Status.REQUESTED_REVIEW
+        iteration.submitted_data = task_data
+        iteration.end_datetime = timezone.now()
+        iteration.save()
+
         create_subsequent_tasks(project)

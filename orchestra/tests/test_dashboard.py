@@ -10,8 +10,9 @@ from orchestra.models import Step
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.fixtures import setup_task_history
-from orchestra.utils.task_lifecycle import create_subsequent_tasks
+from orchestra.tests.helpers.iterations import verify_iterations
 from orchestra.utils.assignment_snapshots import load_snapshots
+from orchestra.utils.task_lifecycle import create_subsequent_tasks
 
 
 class DashboardTestCase(OrchestraTestCase):
@@ -94,8 +95,7 @@ class DashboardTestCase(OrchestraTestCase):
         self.assertEquals(response.status_code, 200)
         returned = json.loads(response.content.decode('utf-8'))
 
-        task_id = returned['id']
-        task = Task.objects.get(id=task_id)
+        task = Task.objects.get(id=returned['id'])
         self.assertEquals(
             {'id': task.id,
              'step': task.step.slug,
@@ -110,12 +110,12 @@ class DashboardTestCase(OrchestraTestCase):
 
         # task assignment for user3 not assigned to a task
         self._verify_bad_task_assignment_information(
-            self.clients[2], {'task_id': task_id},
+            self.clients[2], {'task_id': task.id},
             'Worker is not associated with task')
 
         # task assignment is assigned to user 0
         self._verify_good_task_assignment_information(
-            self.clients[0], {'task_id': task_id},
+            self.clients[0], {'task_id': task.id},
             task.project.short_description,
             'Processing', 'Processing', False,
             False, {}, self.workers[0])
@@ -156,8 +156,7 @@ class DashboardTestCase(OrchestraTestCase):
             '/orchestra/api/interface/new_task_assignment/entry_level/'))
         self.assertEquals(response.status_code, 200)
         returned = json.loads(response.content.decode('utf-8'))
-        task_id = returned['id']
-        task = Task.objects.get(id=task_id)
+        task = Task.objects.get(id=returned['id'])
 
         # incorrect task id
         response = self.clients[0].post(
@@ -173,7 +172,7 @@ class DashboardTestCase(OrchestraTestCase):
         # user does not have a permission to save
         response = self.clients[1].post(
             '/orchestra/api/interface/save_task_assignment/',
-            json.dumps({'task_id': task_id,
+            json.dumps({'task_id': task.id,
                         'task_data': 'test'}),
             content_type='application/json')
         self.assertEquals(response.status_code, 400)
@@ -185,13 +184,13 @@ class DashboardTestCase(OrchestraTestCase):
         new_data = {'new_test_key': 'new_test_value'}
         response = self.clients[0].post(
             '/orchestra/api/interface/save_task_assignment/',
-            json.dumps({'task_id': task_id,
+            json.dumps({'task_id': task.id,
                         'task_data': new_data}),
             content_type='application/json')
         self.assertEquals(response.status_code, 200)
 
         self._verify_good_task_assignment_information(
-            self.clients[0], {'task_id': task_id},
+            self.clients[0], {'task_id': task.id},
             task.project.short_description,
             'Processing', 'Processing', False,
             False, new_data, self.workers[0])
@@ -206,13 +205,12 @@ class DashboardTestCase(OrchestraTestCase):
 
         returned = json.loads(response.content.decode('utf-8'))
 
-        task_id = returned['id']
-        task = Task.objects.get(id=task_id)
+        task = Task.objects.get(id=returned['id'])
 
         # entry level worker can't update the data
         response = self.clients[0].post(
             '/orchestra/api/interface/save_task_assignment/',
-            json.dumps({'task_id': task_id,
+            json.dumps({'task_id': task.id,
                         'task_data': new_data}),
             content_type='application/json')
         self.assertEquals(response.status_code, 400)
@@ -225,13 +223,13 @@ class DashboardTestCase(OrchestraTestCase):
         # reviewer can update the data
         response = self.clients[1].post(
             '/orchestra/api/interface/save_task_assignment/',
-            json.dumps({'task_id': task_id,
+            json.dumps({'task_id': task.id,
                         'task_data': reviewer_data}),
             content_type='application/json')
         self.assertEquals(response.status_code, 200)
 
         self._verify_good_task_assignment_information(
-            self.clients[1], {'task_id': task_id},
+            self.clients[1], {'task_id': task.id},
             task.project.short_description,
             'Processing', 'Reviewing', True,
             False, reviewer_data, self.workers[1])
@@ -242,11 +240,12 @@ class DashboardTestCase(OrchestraTestCase):
             '/orchestra/api/interface/new_task_assignment/entry_level/'))
         self.assertEquals(response.status_code, 200)
         returned = json.loads(response.content.decode('utf-8'))
-        task_id = returned['id']
-        task = Task.objects.get(id=task_id)
+        task = Task.objects.get(id=returned['id'])
+
+        verify_iterations(self, task.id)
 
         # user is not assigned to a task
-        response = self._submit_assignment(self.clients[1], task_id)
+        response = self._submit_assignment(self.clients[1], task.id)
         self.assertEquals(response.status_code, 400)
         returned = json.loads(response.content.decode('utf-8'))
         self.assertEquals(returned['message'],
@@ -261,7 +260,7 @@ class DashboardTestCase(OrchestraTestCase):
 
         # user 0 can only submit a task not accept
         response = self._submit_assignment(
-            self.clients[0], task_id, command='accept')
+            self.clients[0], task.id, command='accept')
         self.assertEquals(response.status_code, 400)
         returned = json.loads(response.content.decode('utf-8'))
         self.assertEquals(returned['message'],
@@ -269,7 +268,7 @@ class DashboardTestCase(OrchestraTestCase):
 
         # user 0 can only submit a task not reject
         response = self._submit_assignment(
-            self.clients[0], task_id, command='reject')
+            self.clients[0], task.id, command='reject')
         self.assertEquals(response.status_code, 400)
         returned = json.loads(response.content.decode('utf-8'))
         self.assertEquals(returned['message'],
@@ -277,7 +276,7 @@ class DashboardTestCase(OrchestraTestCase):
 
         # user 0 can't call illegal commands
         response = self._submit_assignment(
-            self.clients[0], task_id, command='approve')
+            self.clients[0], task.id, command='approve')
         self.assertEquals(response.status_code, 400)
         returned = json.loads(response.content.decode('utf-8'))
         self.assertEquals(returned['message'],
@@ -296,7 +295,7 @@ class DashboardTestCase(OrchestraTestCase):
         ]
         step.save()
         response = self._submit_assignment(
-            self.clients[0], task_id)
+            self.clients[0], task.id)
         self.assertEquals(response.status_code, 400)
         returned = json.loads(response.content.decode('utf-8'))
         self.assertEquals(returned['message'],
@@ -307,18 +306,21 @@ class DashboardTestCase(OrchestraTestCase):
         data = {'submit_key1': 'submit_val1'}
         # user 0 submits a task
         response = self._submit_assignment(
-            self.clients[0], task_id, data=data)
+            self.clients[0], task.id, data=data)
         self.assertEquals(response.status_code, 200)
 
         self._verify_good_task_assignment_information(
-            self.clients[0], {'task_id': task_id},
+            self.clients[0], {'task_id': task.id},
             task.project.short_description,
             'Submitted', 'Pending Review', False,
             True, data, self.workers[0], work_times_seconds=[1])
 
+        # Check that iteration has correct submitted state
+        verify_iterations(self, task.id)
+
         # user cannot resubmit a task
         response = self._submit_assignment(
-            self.clients[0], task_id)
+            self.clients[0], task.id)
         self.assertEquals(response.status_code, 400)
         returned = json.loads(response.content.decode('utf-8'))
         self.assertEquals(returned['message'],
@@ -333,21 +335,24 @@ class DashboardTestCase(OrchestraTestCase):
         self.assertEquals(response.status_code, 200)
         returned = json.loads(response.content.decode('utf-8'))
         task_id = returned['id']
-        task = Task.objects.get(id=task_id)
-        rejected_data = {'rejected_key': 'rejected_val'}
-
+        task = Task.objects.get(id=returned['id'])
+        self.assertEquals(task.assignments.count(), 2)
         self.assertEquals(task_id, self.tasks['review_task'].id)
+
+        verify_iterations(self, task.id)
+
+        rejected_data = {'rejected_key': 'rejected_val'}
 
         # user 0 can retrieve data, but should see a read-only interface
         self._verify_good_task_assignment_information(
-            self.clients[0], {'task_id': task_id},
+            self.clients[0], {'task_id': task.id},
             task.project.short_description,
             'Submitted', 'Reviewing', False,
             True, {'test_key': 'test_value'}, self.workers[0])
 
         # user 1 should be able to review the post
         self._verify_good_task_assignment_information(
-            self.clients[1], {'task_id': task_id},
+            self.clients[1], {'task_id': task.id},
             task.project.short_description,
             'Processing', 'Reviewing', True,
             False, {'test_key': 'test_value'}, self.workers[1])
@@ -365,16 +370,18 @@ class DashboardTestCase(OrchestraTestCase):
             self.clients[1], task_id, data=rejected_data, command='reject')
         self.assertEquals(response.status_code, 200)
 
+        verify_iterations(self, task.id)
+
         # user 0 should have the task back
         self._verify_good_task_assignment_information(
-            self.clients[0], {'task_id': task_id},
+            self.clients[0], {'task_id': task.id},
             task.project.short_description,
             'Processing', 'Post-review Processing', False,
             False, rejected_data, self.workers[0])
 
         # user 1 should no longer be able to modify the post
         self._verify_good_task_assignment_information(
-            self.clients[1], {'task_id': task_id},
+            self.clients[1], {'task_id': task.id},
             task.project.short_description,
             'Submitted', 'Post-review Processing', True,
             True, rejected_data, self.workers[1], work_times_seconds=[1])
@@ -384,9 +391,11 @@ class DashboardTestCase(OrchestraTestCase):
             self.clients[0], task_id, data=data)
         self.assertEquals(response.status_code, 200)
 
+        verify_iterations(self, task.id)
+
         # check if the data is saved
         self._verify_good_task_assignment_information(
-            self.clients[1], {'task_id': task_id},
+            self.clients[1], {'task_id': task.id},
             task.project.short_description,
             'Processing', 'Reviewing', True,
             False, data, self.workers[1], work_times_seconds=[1])
@@ -397,10 +406,12 @@ class DashboardTestCase(OrchestraTestCase):
             self.clients[1], task_id, data=accepted_data, command='accept')
         self.assertEquals(response.status_code, 200)
 
+        verify_iterations(self, task.id)
+
         # check if the accepted_data is saved
         # and task is pending for a second review.
         self._verify_good_task_assignment_information(
-            self.clients[1], {'task_id': task_id},
+            self.clients[1], {'task_id': task.id},
             task.project.short_description,
             'Submitted', 'Pending Review', True,
             True, accepted_data, self.workers[1], work_times_seconds=[1, 1])
@@ -419,7 +430,9 @@ class DashboardTestCase(OrchestraTestCase):
         self.assertEquals(response.status_code, 200)
         returned = json.loads(response.content.decode('utf-8'))
         self.assertEquals(returned['id'],
-                          task_id)
+                          task.id)
+
+        verify_iterations(self, task.id)
 
         rejected_data = {'rejected_key': 'rejected_val'}
 
@@ -429,9 +442,11 @@ class DashboardTestCase(OrchestraTestCase):
         self.assertEquals(response.status_code, 200)
         returned = json.loads(response.content.decode('utf-8'))
 
+        verify_iterations(self, task.id)
+
         # check if the rejected_data is saved
         self._verify_good_task_assignment_information(
-            self.clients[3], {'task_id': task_id},
+            self.clients[3], {'task_id': task.id},
             task.project.short_description,
             'Submitted', 'Post-review Processing', True,
             True, rejected_data, self.workers[3], work_times_seconds=[1])
@@ -445,8 +460,10 @@ class DashboardTestCase(OrchestraTestCase):
                                            'pending_processing')
 
         response = self._submit_assignment(
-            self.clients[1], task_id)
+            self.clients[1], task.id)
         self.assertEquals(response.status_code, 200)
+
+        verify_iterations(self, task.id)
 
         # check if client dashboards were updated
         self._check_client_dashboard_state(self.clients[0], 'pending_review')
@@ -461,9 +478,11 @@ class DashboardTestCase(OrchestraTestCase):
         self.assertEquals(response.status_code, 200)
         returned = json.loads(response.content.decode('utf-8'))
 
+        verify_iterations(self, task.id)
+
         # check if task is complete
         self._verify_good_task_assignment_information(
-            self.clients[3], {'task_id': task_id},
+            self.clients[3], {'task_id': task.id},
             task.project.short_description,
             'Submitted', 'Complete', True,
             True, accepted_data, self.workers[3], work_times_seconds=[1, 1])

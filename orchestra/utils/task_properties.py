@@ -1,3 +1,4 @@
+from orchestra.models import Iteration
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
 
@@ -35,6 +36,19 @@ def current_assignment(task):
         return assignments.reverse()[1]
     else:
         return assignments.last()
+
+
+def get_latest_iteration(assignment):
+    return assignment.iterations.order_by('start_datetime').last()
+
+
+def get_iteration_history(task, reverse=False):
+    order_expression = 'start_datetime'
+    if reverse:
+        order_expression = '-' + order_expression
+    return (
+        Iteration.objects.filter(assignment__task=task)
+        .order_by(order_expression))
 
 
 def last_snapshotted_assignment(task_id):
