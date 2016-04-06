@@ -1,6 +1,7 @@
 # Orchestra
 
 [![PyPI version](https://badge.fury.io/py/orchestra.svg)](https://badge.fury.io/py/orchestra)
+[![Documentation Status](https://readthedocs.org/projects/orchestra/badge/?version=latest)](http://orchestra.readthedocs.org/en/stable/?badge=latest)
 [![Circle CI](https://circleci.com/gh/unlimitedlabs/orchestra.svg?style=shield)](https://circleci.com/gh/unlimitedlabs/orchestra)
 [![Coverage Status](https://coveralls.io/repos/github/unlimitedlabs/orchestra/badge.svg?branch=master)](https://coveralls.io/github/unlimitedlabs/orchestra?branch=master)
 [![PyPI](https://img.shields.io/pypi/dm/orchestra.svg)](https://pypi.python.org/pypi/orchestra)
@@ -24,8 +25,6 @@ a look at some of these resources:
 
 * [Orchestra website](http://orchestra.unlimitedlabs.com)
 * [A blog post introducing Orchestra v0.1.0 to the world](http://blog.unlimitedlabs.com/post/130097884236/introducing-orchestra)
-* [Documentation on readthedocs, and "Getting Started in 5 Minutes"](http://orchestra.readthedocs.org/en/latest/)
-* [Chat with the Orchestra team](https://gitter.im/unlimitedlabs/orchestra)
 * [Subscribe to the Orchestra mailing list](https://groups.google.com/forum/#!forum/orchestra-devel)
 
 # About Unlimited Labs
