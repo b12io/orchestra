@@ -13,6 +13,7 @@ from jsonview.decorators import json_view
 from jsonview.exceptions import BadRequest
 from registration.models import RegistrationProfile
 from registration.views import RegistrationView
+from rest_framework import serializers
 
 from orchestra import signals
 from orchestra.core.errors import TaskStatusError
@@ -33,6 +34,8 @@ from orchestra.utils.task_lifecycle import get_task_overview_for_worker
 from orchestra.utils.task_lifecycle import worker_assigned_to_rejected_task
 from orchestra.utils.task_lifecycle import worker_assigned_to_max_tasks
 from orchestra.utils.task_lifecycle import worker_has_reviewer_status
+from orchestra.utils.time_tracking import save_time_entry
+from orchestra.utils.time_tracking import time_entries_for_worker
 
 import logging
 
@@ -188,6 +191,33 @@ def submit_task_assignment(request):
         raise BadRequest(e)
     except TaskAssignmentError as e:
         raise BadRequest(e)
+
+
+@json_view
+@login_required
+def time_entries(request):
+    worker = Worker.objects.get(user=request.user)
+    try:
+        if request.method == 'GET':
+            return time_entries_for_worker(worker,
+                                           task_id=request.GET.get('task-id'))
+        elif request.method == 'POST':
+            time_entry_data = json.loads(request.body.decode())
+            if 'task_id' not in time_entry_data:
+                raise BadRequest('Include task id in request data')
+            task_id = time_entry_data.pop('task_id')
+            return save_time_entry(worker, task_id, time_entry_data)
+    except Task.DoesNotExist:
+        raise BadRequest('No task for given id')
+    except TaskAssignment.DoesNotExist:
+        raise BadRequest('Worker is not assigned to this task id.')
+    except TaskStatusError as e:
+        raise BadRequest(e)
+    except serializers.ValidationError as e:
+        raise BadRequest(e)
+    except Exception as e:
+        logger.error(e, exc_info=True)
+        raise e
 
 
 # A simple status endpoint for things like health checks, etc.

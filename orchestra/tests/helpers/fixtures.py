@@ -104,6 +104,12 @@ class TaskAssignmentFactory(factory.django.DjangoModelFactory):
     snapshots = {}
 
 
+class TimeEntryFactory(factory.django.DjangoModelFactory):
+
+    class Meta:
+        model = 'orchestra.TimeEntry'
+
+
 @override_settings(SLACK_EXPERTS=True)
 def setup_models(test_case):
     """ Set up models that we'll use in multiple tests """
@@ -418,6 +424,13 @@ def _setup_tasks(test_case, tasks):
                 end_datetime=assignment.start_datetime + ITERATION_DURATION,
                 submitted_data=assignment.in_progress_task_data,
                 status=Iteration.Status.REQUESTED_REVIEW)
+
+            # Create time entry for each task.
+            TimeEntryFactory(date='2016-04-04',
+                             time_worked='00:30:00',
+                             assignment=assignment,
+                             description=(
+                                 'test description {}'.format(assignment.id)))
 
         cur_assignment = current_assignment(task)
         assignments = assignment_history(task).all()
