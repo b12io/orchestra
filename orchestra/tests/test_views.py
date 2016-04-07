@@ -5,7 +5,9 @@ from unittest.mock import patch
 from django.core.urlresolvers import reverse
 from django.test import Client as RequestClient
 from django.test import RequestFactory
+from rest_framework import serializers
 
+from orchestra.core.errors import TaskStatusError
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import Worker
@@ -42,6 +44,12 @@ class TimeEntriesViewTestCase(OrchestraTestCase):
                          'Worker is not assigned to this task id.')
         self.assertEqual(data['error'], 400)
 
+    def _verify_bad_request(self, response, message):
+        self.assertEqual(response.status_code, 400)
+        data = json.loads(response.content.decode())
+        self.assertEqual(data['message'], message)
+        self.assertEqual(data['error'], 400)
+
     def test_time_entries_get(self):
         resp = self.request_client.get(self.url)
         data = json.loads(resp.content.decode())
@@ -55,15 +63,17 @@ class TimeEntriesViewTestCase(OrchestraTestCase):
         mock_func.assert_called_with(self.worker,
                                      task_id=str(self.tasks[0].id))
 
-    @patch('orchestra.views.time_entries_for_worker')
+    @patch('orchestra.views.time_entries_for_worker',
+           side_effect=Task.DoesNotExist)
     def test_time_entries_get_task_missing(self, mock_func):
-        mock_func.side_effect = Task.DoesNotExist
         resp = self.request_client.get(self.url)
         self._verify_missing_task(resp)
 
-    @patch('orchestra.views.time_entries_for_worker')
+    @patch('orchestra.views.time_entries_for_worker',
+           side_effect=TaskAssignment.DoesNotExist)
     def test_time_entries_get_worker_not_assigned(self, mock_func):
-        pass
+        resp = self.request_client.get(self.url)
+        self._verify_worker_not_assigned(resp)
 
     @patch('orchestra.views.save_time_entry')
     def test_time_entries_post(self, mock_func):
@@ -81,10 +91,8 @@ class TimeEntriesViewTestCase(OrchestraTestCase):
         mock_func.assert_called_with(self.worker, self.tasks[0].id,
                                      self.time_entry_data)
 
-    @patch('orchestra.views.save_time_entry')
+    @patch('orchestra.views.save_time_entry', side_effect=Task.DoesNotExist)
     def test_time_entries_post_task_missing(self, mock_func):
-        mock_func.side_effect = Task.DoesNotExist
-
         # Set task id in request body.
         self.time_entry_data['task_id'] = self.tasks[0].id
         resp = self.request_client.post(self.url,
@@ -92,13 +100,34 @@ class TimeEntriesViewTestCase(OrchestraTestCase):
                                         content_type='application/json')
         self._verify_missing_task(resp)
 
-    @patch('orchestra.views.save_time_entry')
+    @patch('orchestra.views.save_time_entry',
+           side_effect=TaskAssignment.DoesNotExist)
     def test_time_entries_post_worker_not_assigned(self, mock_func):
-        mock_func.side_effect = TaskAssignment.DoesNotExist
-
         # Set task id in request body.
         self.time_entry_data['task_id'] = self.tasks[0].id
         resp = self.request_client.post(self.url,
                                         data=json.dumps(self.time_entry_data),
                                         content_type='application/json')
         self._verify_worker_not_assigned(resp)
+
+    @patch('orchestra.views.logger')
+    @patch('orchestra.views.save_time_entry',
+           side_effect=TaskStatusError('Error'))
+    def test_time_entries_post_task_complete(self, mock_func, mock_logger):
+        # Set task id in request body.
+        self.time_entry_data['task_id'] = self.tasks[0].id
+        resp = self.request_client.post(self.url,
+                                        data=json.dumps(self.time_entry_data),
+                                        content_type='application/json')
+        self._verify_bad_request(resp, 'Error')
+
+    @patch('orchestra.views.logger')
+    @patch('orchestra.views.save_time_entry',
+           side_effect=serializers.ValidationError('Error'))
+    def test_time_entries_post_data_invalid(self, mock_func, mock_logger):
+        # Set task id in request body.
+        self.time_entry_data['task_id'] = self.tasks[0].id
+        resp = self.request_client.post(self.url,
+                                        data=json.dumps(self.time_entry_data),
+                                        content_type='application/json')
+        self._verify_bad_request(resp, "['Error']")

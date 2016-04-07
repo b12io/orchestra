@@ -211,9 +211,7 @@ def time_entries(request):
         raise BadRequest('No task for given id')
     except TaskAssignment.DoesNotExist:
         raise BadRequest('Worker is not assigned to this task id.')
-    except TaskStatusError as e:
-        raise BadRequest(e)
-    except serializers.ValidationError as e:
+    except (TaskStatusError, serializers.ValidationError) as e:
         raise BadRequest(e)
     except Exception as e:
         logger.error(e, exc_info=True)
