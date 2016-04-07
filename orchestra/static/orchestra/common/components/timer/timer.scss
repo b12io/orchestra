@@ -1,0 +1,18 @@
+@import 'orchestra/static/orchestra/common/css/common';
+
+.timer {
+  display: inline-block;
+
+  .start-timer.btn {
+    color: white;
+    background-color: $light-green;
+    display: inline-block;
+  }
+
+  .time-display {
+    font-size: 30px;
+    color: white;
+    margin-left: 20px;
+    display: inline-block;
+  }
+}
