@@ -104,6 +104,12 @@ class TaskAssignmentFactory(factory.django.DjangoModelFactory):
     snapshots = {}
 
 
+class TimeEntryFactory(factory.django.DjangoModelFactory):
+
+    class Meta:
+        model = 'orchestra.TimeEntry'
+
+
 @override_settings(SLACK_EXPERTS=True)
 def setup_models(test_case):
     """ Set up models that we'll use in multiple tests """
@@ -360,13 +366,12 @@ def _setup_workers(test_case, workers):
         user = (UserFactory(username='test_user_{}'.format(user_id),
                             first_name='test_first_{}'.format(user_id),
                             last_name='test_last_{}'.format(user_id),
-                            password='test_{}'.format(user_id),
                             email='test_user_{}@test.com'.format(user_id)))
         test_case.workers[user_id] = WorkerFactory(user=user)
         test_case.clients[user_id] = Client()
         test_case.clients[user_id].login(
             username='test_user_{}'.format(user_id),
-            password='test_{}'.format(user_id))
+            password='defaultpassword')
 
         # Assign certifications
         for slug, role in certifications:
@@ -418,6 +423,13 @@ def _setup_tasks(test_case, tasks):
                 end_datetime=assignment.start_datetime + ITERATION_DURATION,
                 submitted_data=assignment.in_progress_task_data,
                 status=Iteration.Status.REQUESTED_REVIEW)
+
+            # Create time entry for each task.
+            TimeEntryFactory(date='2016-04-04',
+                             time_worked=timedelta(minutes=30),
+                             assignment=assignment,
+                             description=(
+                                 'test description {}'.format(assignment.id)))
 
         cur_assignment = current_assignment(task)
         assignments = assignment_history(task).all()

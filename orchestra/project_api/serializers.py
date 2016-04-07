@@ -1,6 +1,7 @@
 from orchestra.models import Project
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
+from orchestra.models import TimeEntry
 from orchestra.models import WorkerCertification
 from rest_framework import serializers
 
@@ -154,3 +155,9 @@ class TaskAssignmentSerializer(serializers.ModelSerializer):
         TODO(derek): maybe make a custom JSON serializer field type?
         """
         return obj.in_progress_task_data
+
+
+class TimeEntrySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = TimeEntry

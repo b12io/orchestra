@@ -8,6 +8,7 @@ from orchestra.views import save_task_assignment
 from orchestra.views import status
 from orchestra.views import submit_task_assignment
 from orchestra.views import task_assignment_information
+from orchestra.views import time_entries
 from orchestra.views import upload_image
 from orchestra.project_api.views import create_project
 from orchestra.project_api.views import workflow_types
@@ -40,6 +41,9 @@ urlpatterns = patterns(
     url(r'^interface/upload_image/$',
         upload_image,
         name='upload_image'),
+
+    url(r'^interface/time_entries/$',
+        time_entries, name='time_entries'),
 
     url(r'^interface/project_management/',
         include('orchestra.interface_api.project_management.urls',
