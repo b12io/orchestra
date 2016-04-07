@@ -1,3 +1,4 @@
+from orchestra.core.errors import TaskAssignmentError
 from orchestra.models import Iteration
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
@@ -31,11 +32,17 @@ def current_assignment(task):
             The in-progress assignment for `task`.
     """
     assignments = assignment_history(task)
-    if task.status == Task.Status.POST_REVIEW_PROCESSING:
-        # Get second-to-last assignment, since reviewer rejected
-        return assignments.reverse()[1]
-    else:
+    processing = task.assignments.filter(
+        status=TaskAssignment.Status.PROCESSING)
+    if not processing.exists():
         return assignments.last()
+    else:
+        if processing.count() > 1:
+            raise TaskAssignmentError(
+                'More than one processing assignment for task {}'.format(
+                    task.id))
+        else:
+            return processing.first()
 
 
 def get_latest_iteration(assignment):

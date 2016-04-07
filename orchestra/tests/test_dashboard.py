@@ -242,7 +242,7 @@ class DashboardTestCase(OrchestraTestCase):
         returned = json.loads(response.content.decode('utf-8'))
         task = Task.objects.get(id=returned['id'])
 
-        verify_iterations(self, task.id)
+        verify_iterations(task.id)
 
         # user is not assigned to a task
         response = self._submit_assignment(self.clients[1], task.id)
@@ -316,7 +316,7 @@ class DashboardTestCase(OrchestraTestCase):
             True, data, self.workers[0], work_times_seconds=[1])
 
         # Check that iteration has correct submitted state
-        verify_iterations(self, task.id)
+        verify_iterations(task.id)
 
         # user cannot resubmit a task
         response = self._submit_assignment(
@@ -339,7 +339,7 @@ class DashboardTestCase(OrchestraTestCase):
         self.assertEquals(task.assignments.count(), 2)
         self.assertEquals(task_id, self.tasks['review_task'].id)
 
-        verify_iterations(self, task.id)
+        verify_iterations(task.id)
 
         rejected_data = {'rejected_key': 'rejected_val'}
 
@@ -370,7 +370,7 @@ class DashboardTestCase(OrchestraTestCase):
             self.clients[1], task_id, data=rejected_data, command='reject')
         self.assertEquals(response.status_code, 200)
 
-        verify_iterations(self, task.id)
+        verify_iterations(task.id)
 
         # user 0 should have the task back
         self._verify_good_task_assignment_information(
@@ -391,7 +391,7 @@ class DashboardTestCase(OrchestraTestCase):
             self.clients[0], task_id, data=data)
         self.assertEquals(response.status_code, 200)
 
-        verify_iterations(self, task.id)
+        verify_iterations(task.id)
 
         # check if the data is saved
         self._verify_good_task_assignment_information(
@@ -406,7 +406,7 @@ class DashboardTestCase(OrchestraTestCase):
             self.clients[1], task_id, data=accepted_data, command='accept')
         self.assertEquals(response.status_code, 200)
 
-        verify_iterations(self, task.id)
+        verify_iterations(task.id)
 
         # check if the accepted_data is saved
         # and task is pending for a second review.
@@ -432,7 +432,7 @@ class DashboardTestCase(OrchestraTestCase):
         self.assertEquals(returned['id'],
                           task.id)
 
-        verify_iterations(self, task.id)
+        verify_iterations(task.id)
 
         rejected_data = {'rejected_key': 'rejected_val'}
 
@@ -442,7 +442,7 @@ class DashboardTestCase(OrchestraTestCase):
         self.assertEquals(response.status_code, 200)
         returned = json.loads(response.content.decode('utf-8'))
 
-        verify_iterations(self, task.id)
+        verify_iterations(task.id)
 
         # check if the rejected_data is saved
         self._verify_good_task_assignment_information(
@@ -463,7 +463,7 @@ class DashboardTestCase(OrchestraTestCase):
             self.clients[1], task.id)
         self.assertEquals(response.status_code, 200)
 
-        verify_iterations(self, task.id)
+        verify_iterations(task.id)
 
         # check if client dashboards were updated
         self._check_client_dashboard_state(self.clients[0], 'pending_review')
@@ -478,7 +478,7 @@ class DashboardTestCase(OrchestraTestCase):
         self.assertEquals(response.status_code, 200)
         returned = json.loads(response.content.decode('utf-8'))
 
-        verify_iterations(self, task.id)
+        verify_iterations(task.id)
 
         # check if task is complete
         self._verify_good_task_assignment_information(

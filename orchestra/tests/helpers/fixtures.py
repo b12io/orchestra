@@ -454,7 +454,7 @@ def _setup_tasks(test_case, tasks):
             last_iteration.status = Iteration.Status.PROCESSING
             last_iteration.save()
 
-        verify_iterations(test_case, task.id)
+        verify_iterations(task.id)
 
 
 def _new_assignment_start_datetime(task):
