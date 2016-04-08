@@ -93,12 +93,12 @@
 <script src="{% static "orchestra/project_management/js/projectVis.js" %}" type="text/javascript"></script>
 
 {% for js in javascript_includes %}
-  <script src="{{ js }}" type="text/javascript"></script>
+  {{ js | safe}}
 {% endfor %}
 {% endblock page_javascript%}
 
 {% block page_stylesheets %}
     {% for css in stylesheet_includes %}
-      <link href="{{ css }}" rel="stylesheet">
+      {{ css | safe }}
     {% endfor %}
 {% endblock page_stylesheets%}
