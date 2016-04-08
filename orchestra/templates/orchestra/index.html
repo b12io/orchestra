@@ -93,11 +93,13 @@
 <script src="{% static "orchestra/project_management/js/projectVis.js" %}" type="text/javascript"></script>
 
 {% for js in javascript_includes %}
+  {# NOTE(joshblum): we call `static()` in the view function to prevent whitenoise looking for a template value #}
   {{ js | safe }}
 {% endfor %}
 {% endblock page_javascript%}
 
 {% block page_stylesheets %}
+    {# NOTE(joshblum): we call `static()` in the view function to prevent whitenoise looking for a template value #}
     {% for css in stylesheet_includes %}
       {{ css | safe }}
     {% endfor %}
