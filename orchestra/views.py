@@ -55,11 +55,13 @@ def index(request):
     for step in Step.objects.filter(is_human=True):
         # Preserve js and stylesheet order while removing duplicates
         for js in step.user_interface.get('javascript_includes', []):
-            if js not in javascript_includes:
-                javascript_includes.append(static(js))
+            static_js = static(js)
+            if static_js not in javascript_includes:
+                javascript_includes.append(static_js)
         for style in step.user_interface.get('stylesheet_includes', []):
-            if style not in stylesheet_includes:
-                stylesheet_includes.append(static(style))
+            static_style = static(style)
+            if static_style not in stylesheet_includes:
+                stylesheet_includes.append(static_style)
 
         if step.user_interface.get('angular_module'):
             orchestra_arguments['angular_modules'].append(
