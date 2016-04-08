@@ -516,9 +516,24 @@ class TimeEntry(models.Model):
     """
     date = models.DateField()
     time_worked = models.DurationField()
+    # TODO(lydia): Drop null=True after a data migration to fill in workers.
+    worker = models.ForeignKey(Worker, related_name='time_entries',
+                               null=True)
     assignment = models.ForeignKey(TaskAssignment,
-                                   related_name='time_entries')
+                                   related_name='time_entries',
+                                   null=True)
     description = models.CharField(max_length=200, null=True, blank=True)
+    timer_start_time = models.DateTimeField(null=True)
+    timer_stop_time = models.DateTimeField(null=True)
+
+
+class TaskTimer(models.Model):
+    worker = models.ForeignKey(Worker, related_name='timers')
+    assignment = models.OneToOneField(TaskAssignment,
+                                      related_name='timer',
+                                      null=True)
+    start_time = models.DateTimeField(null=True)
+    stop_time = models.DateTimeField(null=True)
 
 
 # Attach a post-init signal to TaskAssigment.  Every
