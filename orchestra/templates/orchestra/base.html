@@ -75,6 +75,16 @@
     {% block main %}
     {% endblock %}
 
+    {% block static_url %}
+      <script type="text/javascript">
+        // This is a noop function that is replaced by django static file
+        // processing, but allows us to work in dev.
+        function $static(url) {
+          return url;
+        }
+      </script>
+    {% endblock %}
+
     <!-- js placed at the end of the document so the pages load faster -->
     <script src="{% static "orchestra/common/js/lib/jquery.js" %}"></script>
     <script src="{% static "orchestra/common/js/lib/bootstrap.min.js" %}"></script>

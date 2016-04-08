@@ -9,6 +9,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.templatetags.static import static
 from jsonview.decorators import json_view
 from jsonview.exceptions import BadRequest
 from registration.models import RegistrationProfile
@@ -43,6 +44,17 @@ logger = logging.getLogger(__name__)
 UserModel = get_user_model()
 
 
+# NOTE(joshblum): whitenoise is a bit over eager and tries to replace our
+# {{js/css}} with a static resource, so we don't put these script tags on the
+# page
+def _get_script_tag(script):
+    return '<script src="{}" type="text/javascript"></script>'.format(script)
+
+
+def _get_style_tag(style):
+    return '<link href="{}" rel="stylesheet">'.format(style)
+
+
 @login_required
 def index(request):
     javascript_includes = []
@@ -54,11 +66,13 @@ def index(request):
     for step in Step.objects.filter(is_human=True):
         # Preserve js and stylesheet order while removing duplicates
         for js in step.user_interface.get('javascript_includes', []):
-            if js not in javascript_includes:
-                javascript_includes.append(js)
+            static_js = _get_script_tag(static(js))
+            if static_js not in javascript_includes:
+                javascript_includes.append(static_js)
         for style in step.user_interface.get('stylesheet_includes', []):
-            if style not in stylesheet_includes:
-                stylesheet_includes.append(style)
+            static_style = _get_style_tag(static(style))
+            if static_style not in stylesheet_includes:
+                stylesheet_includes.append(static_style)
 
         if step.user_interface.get('angular_module'):
             orchestra_arguments['angular_modules'].append(

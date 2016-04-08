@@ -11,7 +11,7 @@
       scope: {
         taskcards: '='
       },
-      templateUrl: '/static/orchestra/dashboard/partials/taskcards.html'
+      templateUrl: $static('/static/orchestra/dashboard/partials/taskcards.html')
     };
   }
 })();

@@ -235,7 +235,7 @@
           reader.readAsDataURL(file);
         }
       },
-      templateUrl: '/static/orchestra/common/components/quill/partials/quill.html'
+      templateUrl: $static('/static/orchestra/common/components/quill/partials/quill.html')
     };
   }
 })();

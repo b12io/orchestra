@@ -44,7 +44,7 @@
           .on('click', function(iterationKey, i) {
             var iteration = dataService.iterationFromKey(iterationKey);
             var modalInstance = $modal.open({
-              templateUrl: '/static/orchestra/project_management/partials/data_modal.html',
+              templateUrl: $static('/static/orchestra/project_management/partials/data_modal.html'),
               controller: function($scope) {
                 var snapshot = iteration.assignment.snapshots.snapshots[i];
                 $scope.data = snapshot ? snapshot.data : iteration.assignment.in_progress_task_data;

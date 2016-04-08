@@ -259,9 +259,9 @@ asks a reporter to write an article based on it::
       "angular_module": "journalism_workflow.v1.reporter.module",
       "angular_directive": "reporter",
       "javascript_includes": [
-        "/static/journalism_workflow/v1/reporter/js/modules.js",
-        "/static/journalism_workflow/v1/reporter/js/controllers.js",
-        "/static/journalism_workflow/v1/reporter/js/directives.js"
+        "journalism_workflow/v1/reporter/js/modules.js",
+        "journalism_workflow/v1/reporter/js/controllers.js",
+        "journalism_workflow/v1/reporter/js/directives.js"
       ]
     }
   }
@@ -310,9 +310,9 @@ user interfaces with JSON that looked like this::
     "angular_module": "journalism_workflow.v1.editor.module",
     "angular_directive": "editor",
     "javascript_includes": [
-      "/static/journalism_workflow/v1/editor/js/modules.js",
-      "/static/journalism_workflow/v1/editor/js/controllers.js",
-      "/static/journalism_workflow/v1/editor/js/directives.js"
+      "journalism_workflow/v1/editor/js/modules.js",
+      "journalism_workflow/v1/editor/js/controllers.js",
+      "journalism_workflow/v1/editor/js/directives.js"
     ],
     "stylesheet_includes": []
   }

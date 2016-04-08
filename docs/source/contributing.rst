@@ -126,3 +126,10 @@ For stylesheets we only compile scss files so if your file is at
 ``orchestra/common/static/common/scss/example.scss``, to include it in an HTML
 file you should write ``{% static 'common/css/example.css' %}">`` as the static
 file path.
+
+When including angular templates, we wrap references to static files with the
+function ``$static(static_url_path)``. The ``$static`` function is defined in
+the base template, and for development simply returns the url it is given. The
+purpose is to decouple static file storage from the Django path, so if you host
+your static files on a CDN, you can simply override this function and put the
+appropriate urls.

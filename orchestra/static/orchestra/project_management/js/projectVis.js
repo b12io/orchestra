@@ -87,7 +87,7 @@
          * Displays project-level data in a modal.
          */
         var modalInstance = $modal.open({
-          templateUrl: '/static/orchestra/project_management/partials/data_modal.html',
+          templateUrl: $static('/static/orchestra/project_management/partials/data_modal.html'),
           controller: function($scope) {
             $scope.data = dataService.data.project;
             $scope.header = dataService.data.project.short_description;
@@ -101,7 +101,7 @@
          * a modal.
          */
         var modalInstance = $modal.open({
-          templateUrl: '/static/orchestra/project_management/partials/slack_modal.html',
+          templateUrl: $static('/static/orchestra/project_management/partials/slack_modal.html'),
           controller: function($scope, $log) {
             $scope.editSlackMembership = function(action, username) {
               orchestraApi.editSlackMembership(action, dataService.projectId, username)
