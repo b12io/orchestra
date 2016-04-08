@@ -9,6 +9,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.templatetags.static import static
 from jsonview.decorators import json_view
 from jsonview.exceptions import BadRequest
 from registration.models import RegistrationProfile
@@ -55,10 +56,10 @@ def index(request):
         # Preserve js and stylesheet order while removing duplicates
         for js in step.user_interface.get('javascript_includes', []):
             if js not in javascript_includes:
-                javascript_includes.append(js)
+                javascript_includes.append(static(js))
         for style in step.user_interface.get('stylesheet_includes', []):
             if style not in stylesheet_includes:
-                stylesheet_includes.append(style)
+                stylesheet_includes.append(static(style))
 
         if step.user_interface.get('angular_module'):
             orchestra_arguments['angular_modules'].append(
