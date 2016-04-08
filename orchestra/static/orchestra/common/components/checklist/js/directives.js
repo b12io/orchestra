@@ -183,7 +183,7 @@
           return new Date(comment.timestamp).toLocaleString();
         };
       },
-      templateUrl: '/static/orchestra/common/components/checklist/partials/checklist.html'
+      templateUrl: $static('/static/orchestra/common/components/checklist/partials/checklist.html')
     };
   }
 
@@ -260,7 +260,7 @@
 
         scope.setupAutosizer(el.find('.item-title input').get(0));
       },
-      templateUrl: '/static/orchestra/common/components/checklist/partials/checklist-item.html'
+      templateUrl: $static('/static/orchestra/common/components/checklist/partials/checklist-item.html')
     };
   }
 })();

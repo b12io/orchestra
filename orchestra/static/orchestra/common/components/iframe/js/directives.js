@@ -48,7 +48,7 @@
           }, true);
         });
       },
-      templateUrl: '/static/orchestra/common/components/iframe/partials/website_iframe.html'
+      templateUrl: $static('/static/orchestra/common/components/iframe/partials/website_iframe.html')
     };
   }
 })();

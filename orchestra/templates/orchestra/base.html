@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {% load staticfiles %}
 {% load hijack_tags %}
 
@@ -73,6 +74,16 @@
 
     <!-- MAIN CONTENT -->
     {% block main %}
+    {% endblock %}
+
+    {% block static_url %}
+      <script type="text/javascript">
+        // NOTE(joshblum): This is a noop function that is replaced by django static file
+        // processing, but allows us to work in dev.
+        function $static(url) {
+          return url;
+        }
+      </script>
     {% endblock %}
 
     <!-- js placed at the end of the document so the pages load faster -->

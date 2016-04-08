@@ -11,7 +11,7 @@
           var vm = this;
           vm.taskAssignment = $scope.taskAssignment;
         },
-        templateUrl: '/static/orchestra/common/components/team_messages/team_messages.html'
+        templateUrl: $static('/static/orchestra/common/components/team_messages/team_messages.html')
       };
     });
 })();

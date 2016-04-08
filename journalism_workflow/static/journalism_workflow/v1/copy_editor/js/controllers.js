@@ -1,4 +1,4 @@
-(function () {
+(function() {
   'use strict';
 
   angular
@@ -22,8 +22,8 @@
     var photos = photoAdjustStep.task.data.photos_for_caption;
     for (var i = 0; i < photos.length; i++) {
       vm.taskAssignment.task.data.photos.push({
-	src: photos[i],
-	caption: ''
+        src: photos[i],
+        caption: ''
       });
     }
   }

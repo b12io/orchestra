@@ -389,7 +389,7 @@
         orchestraApi.revertTask(taskId, datetime, true)
           .then(function(response) {
             var modalInstance = $modal.open({
-              templateUrl: '/static/orchestra/project_management/partials/revert_modal.html',
+              templateUrl: $static('/static/orchestra/project_management/partials/revert_modal.html'),
               controller: function($scope) {
                 $scope.audit = _humanizeAudit(response.data);
                 $scope.cancel = modalInstance.close;

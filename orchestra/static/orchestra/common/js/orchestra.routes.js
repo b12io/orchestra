@@ -16,25 +16,25 @@
         title: 'Dashboard',
         controller: 'DashboardController',
         controllerAs: 'vm',
-        templateUrl: '/static/orchestra/dashboard/partials/dashboard.html'
+        templateUrl: $static('/static/orchestra/dashboard/partials/dashboard.html')
       })
       .when('/performance/', {
         title: 'Performance',
         controller: 'PerformanceController',
         controllerAs: 'vm',
-        templateUrl: '/static/orchestra/dashboard/partials/performance.html'
+        templateUrl: $static('/static/orchestra/dashboard/partials/performance.html')
       })
       .when('/task/:taskId', {
         title: 'Task',
         controller: 'TaskController',
         controllerAs: 'vm',
-        templateUrl: '/static/orchestra/task/partials/task.html'
+        templateUrl: $static('/static/orchestra/task/partials/task.html')
       })
       .when('/project/:projectId', {
         title: 'Project',
         controller: 'ProjectManagementController',
         controllerAs: 'vm',
-        templateUrl: '/static/orchestra/project_management/partials/project_management.html'
+        templateUrl: $static('/static/orchestra/project_management/partials/project_management.html')
       })
       .otherwise('/');
   }
