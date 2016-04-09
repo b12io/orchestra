@@ -15,6 +15,7 @@ from jsonview.exceptions import BadRequest
 from registration.models import RegistrationProfile
 from registration.views import RegistrationView
 from rest_framework import serializers
+from rest_framework import status as http_status
 
 from orchestra import signals
 from orchestra.core.errors import TaskStatusError
@@ -282,3 +283,42 @@ class OrchestraRegistrationView(RegistrationView):
                                                user=new_user,
                                                request=self.request)
         return new_user
+
+
+def error_handler(request, error_code, context):
+    context.update({
+        'contact_us': settings.ORCHESTRA_NOTIFICATIONS_FROM_EMAIL,
+        'err_title': error_code,
+    })
+    return render(request,
+                  'orchestra/error.html',
+                  context=context,
+                  status=error_code)
+
+
+def bad_request(request):
+    error_code = http_status.HTTP_400_BAD_REQUEST
+    return error_handler(request, error_code, context={
+        'page_title': '400 Bad Request',
+    })
+
+
+def permission_denied(request):
+    error_code = http_status.HTTP_403_PERMISSION_DENIED
+    return error_handler(request, error_code, context={
+        'page_title': '403 Permission Denied',
+    })
+
+
+def page_not_found(request):
+    error_code = http_status.HTTP_404_NOT_FOUND
+    return error_handler(request, error_code, context={
+        'page_title': '404 Page Not Found',
+    })
+
+
+def server_error(request):
+    error_code = http_status.HTTP_500_INTERNAL_SERVER_ERROR
+    return error_handler(request, error_code, context={
+        'page_title': '500 Server Error',
+    })

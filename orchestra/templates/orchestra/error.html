@@ -1,0 +1,17 @@
+{% extends "orchestra/base.html" %}
+
+{% block title %} {{ page_title }} {% endblock %}
+
+{% block main %}
+
+<div class="error-page">
+    <h1 class="error-display"> {{ err_title }} </h1>
+    <p class="error-text">
+        Looks like an error :/
+    </p>
+    <p class="error-text">
+      Head back <a href="{% url "orchestra:index" %}"> home</a> or <a href="mailto:{{ contact_us }}"> email us </a> if this is a bug.
+    </p>
+</div>
+
+{% endblock %}
