@@ -40,4 +40,4 @@ sphinx-autobuild==0.5.2
 sphinxcontrib-httpdomain==1.4.0
 
 # Journalism Workflow requirements
-Pillow==2.9.0
+Pillow==3.2.0
