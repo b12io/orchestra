@@ -11,7 +11,6 @@ djrill==2.0
 ipython==4.1.2
 boto==2.38.0
 moto==0.4.1
-raven==5.3.1
 flake8==2.5.4
 djangorestframework==3.3.3
 djangorestframework-httpsignature==1.0.0
