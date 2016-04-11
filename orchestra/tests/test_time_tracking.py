@@ -134,14 +134,17 @@ class TimeTrackingTestCase(OrchestraTestCase):
         timer = TaskTimer(worker=self.worker, assignment=self.assignment)
         timer.save()
         with self.assertRaisesRegex(TaskStatusError, 'Task already completed'):
-            new_timer = _get_timer_object(self.worker, self.task.id)
+            _get_timer_object(self.worker, self.task.id)
 
     def test_get_time_object_missing_task(self):
         with self.assertRaises(Task.DoesNotExist):
-            new_timer = _get_timer_object(self.worker, '111')
+            _get_timer_object(self.worker, '111')
 
     def test_get_time_object_worker_not_assigned(self):
-        pass
+        # Find task that worker is not assigned to.
+        task = Task.objects.all().exclude(id__in=[t.id for t in self.tasks])[0]
+        with self.assertRaises(TaskAssignment.DoesNotExist):
+            _get_timer_object(self.worker, task.id)
 
     def test_start_timer(self):
         start_timer(self.worker, self.task.id)
