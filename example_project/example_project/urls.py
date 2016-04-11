@@ -5,9 +5,18 @@ Registers all of the orchestra URLs so orchestra is usable when
 `example_project` gets run. Additional URLs for other apps should be installed
 here as well.
 """
-from django.conf.urls import include, url
+from django.conf.urls import include
+from django.conf.urls import url
+from django.conf.urls import (
+    handler400, handler403, handler404, handler500
+)
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
+
+handler400 = 'orchestra.views.bad_request'  # noqa
+handler403 = 'orchestra.views.permission_denied'  # noqa
+handler404 = 'orchestra.views.page_not_found'  # noqa
+handler500 = 'orchestra.views.server_error'  # noqa
 
 urlpatterns = [
 

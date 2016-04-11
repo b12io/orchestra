@@ -50,7 +50,6 @@ gulp.task('scss', function() {
   return gulp.src(files.scss, {
       base: './'
     })
-    .pipe(cache('scss'))
     .pipe(gulpif(!argv.production, sourcemaps.init()))
     .pipe(sass())
     .pipe(gulpif(!argv.production, sourcemaps.write()))
