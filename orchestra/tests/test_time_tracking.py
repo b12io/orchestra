@@ -99,11 +99,10 @@ class TimeTrackingTestCase(OrchestraTestCase):
             save_time_entry(self.worker, task.id, self.time_entry_data)
 
     def test_save_time_entry_task_complete(self):
-        task = self.tasks[0]
-        task.status = Task.Status.COMPLETE
-        task.save()
+        self.task.status = Task.Status.COMPLETE
+        self.task.save()
         with self.assertRaisesRegex(TaskStatusError, 'Task already completed'):
-            save_time_entry(self.worker, task.id, self.time_entry_data)
+            save_time_entry(self.worker, self.task.id, self.time_entry_data)
 
     def test_save_time_entry_data_invalid(self):
         # Make time entry data invalid.
@@ -113,82 +112,88 @@ class TimeTrackingTestCase(OrchestraTestCase):
                             self.time_entry_data)
 
     def test_get_timer_object_created(self):
-        task = self.tasks[0]
         with self.assertRaises(TaskTimer.DoesNotExist):
             self.assignment.timer
-        timer = _get_timer_object(self.worker, task.id)
+        timer = _get_timer_object(self.worker, self.task.id)
         # Timer object is attached to TaskAssignment.
         self.assignment = (self.task.assignments.filter(worker=self.worker)
                            .first())
         self.assertEqual(timer, self.assignment.timer)
 
     def test_get_timer_object_not_created(self):
-        task = self.tasks[0]
         timer = TaskTimer(worker=self.worker, assignment=self.assignment)
         timer.save()
-        new_timer = _get_timer_object(self.worker, task.id)
+        new_timer = _get_timer_object(self.worker, self.task.id)
 
         # Function should return the already created timer object.
         self.assertEqual(new_timer, timer)
 
     def test_get_time_object_task_completed(self):
-        pass
+        self.task.status = Task.Status.COMPLETE
+        self.task.save()
+        timer = TaskTimer(worker=self.worker, assignment=self.assignment)
+        timer.save()
+        with self.assertRaisesRegex(TaskStatusError, 'Task already completed'):
+            new_timer = _get_timer_object(self.worker, self.task.id)
 
     def test_get_time_object_missing_task(self):
-        pass
+        with self.assertRaises(Task.DoesNotExist):
+            new_timer = _get_timer_object(self.worker, '111')
 
     def test_get_time_object_worker_not_assigned(self):
         pass
 
     def test_start_timer(self):
-        task = self.tasks[0]
-        start_timer(self.worker, task.id)
+        start_timer(self.worker, self.task.id)
         timer = self.assignment.timer
         self.assertEqual(timer.start_time, self.time)
 
     def test_start_timer_already_running(self):
-        task = self.tasks[0]
         timer = TaskTimer(worker=self.worker,
                           assignment=self.assignment,
                           start_time=self.time)
         timer.save()
         with self.assertRaisesRegex(TimerError, 'Timer has already started'):
-            start_timer(self.worker, task.id)
+            start_timer(self.worker, self.task.id)
 
     def test_stop_timer(self):
-        task = self.tasks[0]
         timer = TaskTimer(worker=self.worker,
                           assignment=self.assignment,
                           start_time=self.time)
         timer.save()
         start_time = self.time
         self.time = self.time + datetime.timedelta(hours=1)
-        time_worked = stop_timer(self.worker, task.id)
-        time_entry = self.assignment.time_entries.filter(
-            timer_stop_time=self.time)[0]
+        time_entry = stop_timer(self.worker, self.task.id)
+
+        # Time entry object is created correctly.
         self.assertEqual(time_entry.date, start_time.date())
         self.assertEqual(time_entry.timer_start_time, start_time)
         self.assertEqual(time_entry.time_worked, datetime.timedelta(hours=1))
-        self.assertEqual(time_worked, time_entry.time_worked)
+
         # Timer object should be reset.
         timer.refresh_from_db()
         self.assertIsNone(timer.start_time)
         self.assertIsNone(timer.stop_time)
 
     def test_stop_timer_not_running(self):
-        task = self.tasks[0]
         timer = TaskTimer(worker=self.worker,
                           assignment=self.assignment)
         timer.save()
         with self.assertRaisesRegex(TimerError, 'Timer not started'):
-            stop_timer(self.worker, task.id)
+            stop_timer(self.worker, self.task.id)
 
-    def get_timer_current_duration(self, worker, task_id):
-        task = self.tasks[0]
+    def test_get_timer_current_duration(self):
         timer = TaskTimer(worker=self.worker,
                           assignment=self.assignment,
                           start_time=self.time)
         timer.save()
         self.time = self.time + datetime.timedelta(hours=1)
-        duration = get_timer_current_duration(self.worker, task.id)
+        duration = get_timer_current_duration(self.worker, self.task.id)
         self.assertEqual(duration, datetime.timedelta(hours=1))
+
+    def test_get_timer_current_duration_no_start_time(self):
+        timer = TaskTimer(worker=self.worker,
+                          assignment=self.assignment)
+        timer.save()
+        duration = get_timer_current_duration(self.worker, self.task.id)
+        self.assertIsNone(duration)
