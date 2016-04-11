@@ -14,6 +14,8 @@ from jsonview.decorators import json_view
 from jsonview.exceptions import BadRequest
 from registration.models import RegistrationProfile
 from registration.views import RegistrationView
+from rest_framework import generics
+from rest_framework import permissions
 from rest_framework import serializers
 from rest_framework import status as http_status
 
@@ -27,6 +29,7 @@ from orchestra.core.errors import IllegalTaskSubmission
 from orchestra.models import Iteration
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
+from orchestra.models import TimeEntry
 from orchestra.models import Worker
 from orchestra.models import Step
 from orchestra.project_api.serializers import TaskTimerSerializer
@@ -376,3 +379,38 @@ def server_error(request):
     return error_handler(request, error_code, context={
         'page_title': '500 Server Error',
     })
+
+
+class IsAssociatedWorker(permissions.BasePermission):
+    """
+    Permission for objects with `worker` field. Checks if request.user matches
+    worker on object.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        worker = Worker.objects.get(user=request.user)
+        return obj.worker == worker
+
+
+class TimeEntryList(generics.ListCreateAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = TimeEntrySerializer
+
+    def get_queryset(self):
+        """
+        Return time entries for current user, filtering on assignment id
+        if provided.
+        """
+        # TODO(lydia): Add time filter to queryset.
+        worker = Worker.objects.get(user=self.request.user)
+        queryset = TimeEntry.objects.filter(worker=worker)
+        assignment_id = self.request.query_params.get('assignment', None)
+        if assignment_id is not None:
+            queryset = queryset.filter(assignment__id=assignment_id)
+        return queryset
+
+
+class TimeEntryDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (permissions.IsAuthenticated, IsAssociatedWorker)
+    queryset = TimeEntry.objects.all()
+    serializer_class = TimeEntrySerializer

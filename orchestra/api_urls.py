@@ -13,6 +13,8 @@ from orchestra.views import submit_task_assignment
 from orchestra.views import task_assignment_information
 from orchestra.views import time_entries
 from orchestra.views import upload_image
+from orchestra.views import TimeEntryList
+from orchestra.views import TimeEntryDetail
 from orchestra.project_api.views import create_project
 from orchestra.project_api.views import workflow_types
 from orchestra.project_api.views import project_details_url
@@ -46,7 +48,10 @@ urlpatterns = patterns(
         name='upload_image'),
 
     url(r'^interface/time_entries/$',
-        time_entries, name='time_entries'),
+        TimeEntryList.as_view(), name='time_entries'),
+
+    url(r'^interface/time_entries/(?P<pk>[0-9]+)/$',
+        TimeEntryDetail.as_view(), name='time_entry'),
 
     url(r'^interface/timer/start/$', start_timer, name='start_timer'),
     url(r'^interface/timer/stop/$', stop_timer, name='stop_timer'),
