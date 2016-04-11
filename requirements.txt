@@ -27,7 +27,6 @@ pycrypto==2.6.1
 oauth2client==1.5.2
 google-api-python-client==1.4.1
 gunicorn==19.3.0
-django-object-actions==0.5.1
 slacker==0.9.9
 pandas==0.18.0
 python-dateutil==2.5.2

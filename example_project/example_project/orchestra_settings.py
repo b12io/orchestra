@@ -38,7 +38,6 @@ def setup_orchestra(settings_module_name):
 
     # Required Django apps
     settings.INSTALLED_APPS += (
-        'django_object_actions',
         'orchestra',
         'beanstalk_dispatch',
         'registration',
