@@ -24,7 +24,7 @@ class Service(object):
         credentials = ServiceAccountCredentials.from_p12_keyfile(
             google_service_email,
             google_p12_path,
-            'https://www.googleapis.com/auth/drive')
+            scopes=['https://www.googleapis.com/auth/drive'])
         http_auth = credentials.authorize(Http())
         return build('drive', 'v2', http=http_auth)
 
