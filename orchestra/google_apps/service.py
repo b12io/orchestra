@@ -2,7 +2,7 @@ from apiclient import errors
 from apiclient.http import MediaFileUpload
 from apiclient.discovery import build
 from httplib2 import Http
-from oauth2client.client import SignedJwtAssertionCredentials
+from oauth2client.service_account import ServiceAccountCredentials
 
 import logging
 import re
@@ -14,19 +14,17 @@ _image_mimetype_regex = re.compile('(image/(?:jpg|jpeg|gif|png))',
 
 
 class Service(object):
+
     def __init__(self, google_p12_path, google_service_email):
         self._service = self._create_drive_service(google_p12_path,
                                                    google_service_email)
 
     def _create_drive_service(self, google_p12_path,
                               google_service_email):
-        with open(google_p12_path, 'rb') as f:
-            private_key = f.read()
-
-        credentials = SignedJwtAssertionCredentials(
+        credentials = ServiceAccountCredentials.from_p12_keyfile(
             google_service_email,
-            private_key,
-            'https://www.googleapis.com/auth/drive')
+            google_p12_path,
+            scopes=['https://www.googleapis.com/auth/drive'])
         http_auth = credentials.authorize(Http())
         return build('drive', 'v2', http=http_auth)
 

@@ -18,13 +18,7 @@ lxml==3.6.0
 beautifulsoup4==4.3.2
 pyOpenSSL==0.15.1
 pycrypto==2.6.1
-# Upgrade to newer google-api-python-client and remove oauth2client once they
-# release the following PRs on pypi:
-# https://github.com/google/google-api-python-client/pull/182
-# https://github.com/google/google-api-python-client/pull/183
-# https://github.com/google/google-api-python-client/pull/184
-oauth2client==1.5.2
-google-api-python-client==1.4.1
+google-api-python-client==1.5.0
 slacker==0.9.9
 pandas==0.18.0
 python-dateutil==2.5.2
