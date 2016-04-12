@@ -1,6 +1,7 @@
 from orchestra.models import Project
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
+from orchestra.models import TaskTimer
 from orchestra.models import TimeEntry
 from orchestra.models import WorkerCertification
 from rest_framework import serializers
@@ -161,3 +162,9 @@ class TimeEntrySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TimeEntry
+
+
+class TaskTimerSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = TaskTimer
