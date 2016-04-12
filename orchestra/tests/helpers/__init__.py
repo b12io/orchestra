@@ -2,12 +2,13 @@ import json
 from unittest.mock import patch
 
 from django.test import TestCase
+from django.test import TransactionTestCase
 
 from orchestra.tests.helpers.notifications import MockMail
 from orchestra.tests.helpers.slack import MockSlacker
 
 
-class OrchestraTestCase(TestCase):
+class OrchestraTestHelpersMixin(object):
 
     def setUp(self):  # noqa
         super().setUp()
@@ -73,3 +74,17 @@ class OrchestraTestCase(TestCase):
     def assertModelInstanceNotExists(self, model_class, lookup_attributes):
         with self.assertRaises(model_class.DoesNotExist):
             model_class.objects.get(**lookup_attributes)
+
+
+class OrchestraTestCase(OrchestraTestHelpersMixin, TestCase):
+    # NOTE(lydia): Mixin should go before TestCase because when mixin calls
+    # super().setUp(), it looks to the base of mixin (which is Object - doesn't
+    # have setUp() defined, then to the right for setUp() (which is defined
+    # in TestCase)
+    pass
+
+
+class OrchestraTransactionTestCase(OrchestraTestHelpersMixin,
+                                   TransactionTestCase):
+    # NOTE(lydia): See note above about multiple inheritance ordering.
+    pass

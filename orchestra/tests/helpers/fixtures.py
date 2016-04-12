@@ -428,6 +428,7 @@ def _setup_tasks(test_case, tasks):
             TimeEntryFactory(date='2016-04-04',
                              time_worked=timedelta(minutes=30),
                              assignment=assignment,
+                             worker=test_case.workers[user_id],
                              description=(
                                  'test description {}'.format(assignment.id)))
 
