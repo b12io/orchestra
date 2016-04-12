@@ -540,7 +540,7 @@ class TaskTimer(models.Model):
     """
     A task timer is an object used to implement a work timer. It must be
     associated with a worker, and can optionally be associated with a specific
-    TaskAssignment.
+    TaskAssignment. A worker can only have one task timer object associated.
 
     Attributes:
         worker (orchestra.models.Worker):
@@ -552,10 +552,10 @@ class TaskTimer(models.Model):
         stop_time (datetime.datetime): optional
             Server timestamp for timer stop.
     """
-    worker = models.ForeignKey(Worker, related_name='timers')
-    assignment = models.OneToOneField(TaskAssignment,
-                                      related_name='timer',
-                                      null=True)
+    worker = models.OneToOneField(Worker, related_name='timer')
+    assignment = models.ForeignKey(TaskAssignment,
+                                   related_name='timers',
+                                   null=True)
     start_time = models.DateTimeField(null=True)
     stop_time = models.DateTimeField(null=True)
 
