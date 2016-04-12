@@ -94,7 +94,6 @@ def _get_timer_object(worker):
 
 
 def _reset_timer(timer):
-    print('hi')
     timer.assignment = None
     timer.start_time = None
     timer.stop_time = None

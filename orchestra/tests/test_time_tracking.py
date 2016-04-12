@@ -169,10 +169,9 @@ class TaskTimerTests(OrchestraTransactionTestCase):
         self.assertEqual(timer.assignment, self.assignment)
 
     def test_start_timer_worker_not_assigned(self):
-        # Find task that worker is not assigned to.
-        task = Task.objects.all().exclude(id__in=[t.id for t in self.tasks])[0]
-        assignment = task.assignments.first()
-        print(task.assignments)
+        # Find task assignment that worker is not assigned to.
+        assignment = (TaskAssignment.objects.exclude(worker=self.worker)
+                      .first())
         with self.assertRaises(TaskAssignment.DoesNotExist):
             start_timer(self.worker, assignment_id=assignment.id)
 
@@ -215,8 +214,7 @@ class TaskTimerTests(OrchestraTransactionTestCase):
             stop_timer(self.worker)
 
         # Verify that transaction rolled back.
-        timer = self.worker.timer
-        self.assertEqual(TimeEntry.objects.count(), time_entries_count)
+        timer.refresh_from_db()
         self.assertIsNone(timer.stop_time)
         self.assertEqual(TimeEntry.objects.count(), time_entries_count)
 
