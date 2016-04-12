@@ -575,7 +575,7 @@ class PayRate(models.Model):
         start_datetime (datetime.datetime):
             The beginning of the time period of the pay rate.
         end_datetime (datetime.datetime):
-            The end of the time period of the pay rate, 
+            The end of the time period of the pay rate,
             or None if it's the current period.
     """
     worker = models.ForeignKey(Worker, related_name='pay_rates')
