@@ -283,7 +283,7 @@ def get_timer(request):
     try:
         if request.method == 'GET':
             duration = time_tracking.get_timer_current_duration(worker)
-            return duration
+            return str(duration)
     except Exception as e:
         logger.error(e, exc_info=True)
         raise e
