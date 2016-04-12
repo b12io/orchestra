@@ -2,7 +2,6 @@ import datetime
 
 from unittest.mock import patch
 
-# from django.test import TransactionTestCase
 from django.utils import timezone
 from rest_framework import serializers
 
