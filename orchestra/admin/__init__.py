@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from orchestra.models import Certification
+from orchestra.models import PayRate
 from orchestra.models import Project
 from orchestra.models import Step
 from orchestra.models import Task
@@ -13,6 +14,7 @@ from orchestra.models import WorkflowVersion
 
 admin.site.register(Certification)
 admin.site.register(Project)
+admin.site.register(PayRate)
 admin.site.register(Step)
 admin.site.register(Task)
 admin.site.register(TaskAssignment)

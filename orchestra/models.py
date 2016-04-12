@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from djmoney.models.fields import MoneyField
 from django.utils import timezone
 from jsonfield import JSONField
 
@@ -557,6 +558,35 @@ class TaskTimer(models.Model):
                                       null=True)
     start_time = models.DateTimeField(null=True)
     stop_time = models.DateTimeField(null=True)
+
+
+class PayRate(models.Model):
+    """
+    A PayRate object tracks how much a worker is paid over time.
+
+    Attributes:
+        worker (orchestra.models.Worker):
+            The worker who is being paid.
+        hourly_rate (djmoney.models.fields.MoneyPatched):
+            The amount of money the worker receives per hour.
+        hourly_multiplier (decimal.Decimal):
+            Any multiplier that gets applied to a worker's pay
+            (e.g., fees imposed by a payment gateway).
+        start_datetime (datetime.datetime):
+            The beginning of the time period of the pay rate.
+        end_datetime (datetime.datetime):
+            The end of the time period of the pay rate, 
+            or None if it's the current period.
+    """
+    worker = models.ForeignKey(Worker, related_name='pay_rates')
+    hourly_rate = MoneyField(max_digits=10, decimal_places=2, default_currency='USD')
+    multiplier = models.DecimalField(max_digits=6, decimal_places=4)
+    start_datetime = models.DateTimeField(default=timezone.now)
+    end_datetime = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return '{} ({} - {})'.format(
+            self.worker, self.start_datetime, self.end_datetime or 'now')
 
 
 # Attach a post-init signal to TaskAssigment.  Every
