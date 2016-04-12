@@ -9,7 +9,7 @@
 
   function ArticleWritingController($scope, orchestraService) {
     var vm = $scope;
-    var editorStep = orchestraService.taskUtils.findPrerequisite(
+    var editorStep = orchestraService.taskUtils.prerequisiteData(
       vm.taskAssignment, 'article_planning');
     vm.who = editorStep.task.data.who;
     vm.what = editorStep.task.data.what;
@@ -17,7 +17,7 @@
     vm.where = editorStep.task.data.where;
     vm.notes = editorStep.task.data.notes;
 
-    var documentCreationStep = orchestraService.taskUtils.findPrerequisite(
+    var documentCreationStep = orchestraService.taskUtils.prerequisiteData(
       vm.taskAssignment, 'document_creation');
     vm.articleURL = documentCreationStep.task.data.articleURL;
   }

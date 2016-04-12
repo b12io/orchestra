@@ -347,8 +347,9 @@ but here are a couple of things to keep in mind:
 
   to ensure that the task data is passed to the controller.
   ``orchestraService`` has useful convenience functions for dealing with the
-  task data like ``orchestraService.taskUtils.findPrerequisite($scope.taskAssignment, step_slug)``,
-  which will get the taskAssignment for the previous step called ``step_slug``.
+  task data like ``orchestraService.taskUtils.prerequisiteData($scope.taskAssignment, stepSlug, dataKey)``,
+  which will get the taskAssignment for the previous step called ``step_slug``
+  (and optionally the data specified by ``data_key``).
 
 And of course, please refer to `the newsroom workflow step interfaces <https://github.com/unlimitedlabs/orchestra/tree/stable/journalism_workflow/static/journalism_workflow>`_
 as examples.

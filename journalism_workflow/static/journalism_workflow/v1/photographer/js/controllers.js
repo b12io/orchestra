@@ -9,7 +9,7 @@
 
   function ImageUploadController($scope, orchestraService) {
     var vm = $scope;
-    var editorStep = orchestraService.taskUtils.findPrerequisite(
+    var editorStep = orchestraService.taskUtils.prerequisiteData(
       vm.taskAssignment, 'article_planning');
     vm.who = editorStep.task.data.who;
     vm.what = editorStep.task.data.what;

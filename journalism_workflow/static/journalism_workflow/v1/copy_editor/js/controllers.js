@@ -11,13 +11,13 @@
     var vm = $scope;
 
     // Store the article text document URL for easier summary later
-    var documentCreationStep = orchestraService.taskUtils.findPrerequisite(
+    var documentCreationStep = orchestraService.taskUtils.prerequisiteData(
       vm.taskAssignment, 'document_creation')
     vm.taskAssignment.task.data.articleDocument = documentCreationStep.task.data.articleURL;
 
     // Set up the photos for captioning
     vm.taskAssignment.task.data.photos = [];
-    var photoAdjustStep = orchestraService.taskUtils.findPrerequisite(
+    var photoAdjustStep = orchestraService.taskUtils.prerequisiteData(
       vm.taskAssignment, 'photo_adjustment');
     var photos = photoAdjustStep.task.data.photos_for_caption;
     for (var i = 0; i < photos.length; i++) {

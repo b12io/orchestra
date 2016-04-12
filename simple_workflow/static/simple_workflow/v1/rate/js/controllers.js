@@ -9,7 +9,7 @@
 
   function ImageRatingController($scope, orchestraService) {
     var vm = $scope;
-    var crawlStep = orchestraService.taskUtils.findPrerequisite(
+    var crawlStep = orchestraService.taskUtils.prerequisiteData(
       vm.taskAssignment, 'crawl');
     if (crawlStep.task.data.status !== 'success') {
       vm.imageURL = "http://media.giphy.com/media/2vA33ikUb0Qz6/giphy.gif";
