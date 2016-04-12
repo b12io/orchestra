@@ -579,8 +579,9 @@ class PayRate(models.Model):
             or None if it's the current period.
     """
     worker = models.ForeignKey(Worker, related_name='pay_rates')
-    hourly_rate = MoneyField(max_digits=10, decimal_places=2, default_currency='USD')
-    multiplier = models.DecimalField(max_digits=6, decimal_places=4)
+    hourly_rate = MoneyField(
+        max_digits=10, decimal_places=2, default_currency='USD')
+    hourly_multiplier = models.DecimalField(max_digits=6, decimal_places=4)
     start_datetime = models.DateTimeField(default=timezone.now)
     end_datetime = models.DateTimeField(null=True, blank=True)
 
