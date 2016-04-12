@@ -16,11 +16,17 @@ admin.site.register(Project)
 admin.site.register(Step)
 admin.site.register(Task)
 admin.site.register(TaskAssignment)
-admin.site.register(TimeEntry)
 admin.site.register(Worker)
 admin.site.register(WorkerCertification)
 admin.site.register(Workflow)
 admin.site.register(WorkflowVersion)
+
+
+@admin.register(TimeEntry)
+class TimeEntryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'date', 'worker', 'time_worked', 'assignment')
+    search_fields = ('id', 'worker')
+
 
 admin.site.site_header = 'Orchestra'
 admin.site.site_title = 'Orchestra'

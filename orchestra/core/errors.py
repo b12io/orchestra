@@ -56,3 +56,7 @@ class SnapshotsError(Exception):
 
 class WorkflowError(Exception):
     pass
+
+
+class TimerError(Exception):
+    pass

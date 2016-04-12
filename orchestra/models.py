@@ -509,16 +509,54 @@ class TimeEntry(models.Model):
             The date the work was done.
         time_worked (datetime.timedelta):
             Amount of time worked.
-        assignment (orchestra.models.TaskAssignment):
+        worker (orchestra.models.Worker):
+            The worker for whom the timer is tracking work.
+        assignment (orchestra.models.TaskAssignment): optional
             The task assignment for which the work was done.
         description (str): optional
             Brief description of the work done.
+        timer_start_time (datetime.datetime): optional
+            Server timestamp for timer start (not null if TimeEntry is
+            created using work timer)
+        timer_stop_time (datetime.datetime): optional
+            Server timestamp for timer stop (not null if TimeEntry is
+            created using work timer)
     """
     date = models.DateField()
     time_worked = models.DurationField()
+    # TODO(lydia): Drop null=True after a data migration to fill in workers.
+    worker = models.ForeignKey(Worker, related_name='time_entries',
+                               null=True)
     assignment = models.ForeignKey(TaskAssignment,
-                                   related_name='time_entries')
+                                   related_name='time_entries',
+                                   null=True)
     description = models.CharField(max_length=200, null=True, blank=True)
+    timer_start_time = models.DateTimeField(null=True)
+    timer_stop_time = models.DateTimeField(null=True)
+
+
+class TaskTimer(models.Model):
+    """
+    A task timer is an object used to implement a work timer. It must be
+    associated with a worker, and can optionally be associated with a specific
+    TaskAssignment.
+
+    Attributes:
+        worker (orchestra.models.Worker):
+            The worker for whom the timer is tracking work.
+        assignment (orchestra.models.TaskAssignment): optional
+            The task assignment for which the timer is tracking work.
+        start_time (datetime.datetime): optional
+            Server timestamp for timer start.
+        stop_time (datetime.datetime): optional
+            Server timestamp for timer stop.
+    """
+    worker = models.ForeignKey(Worker, related_name='timers')
+    assignment = models.OneToOneField(TaskAssignment,
+                                      related_name='timer',
+                                      null=True)
+    start_time = models.DateTimeField(null=True)
+    stop_time = models.DateTimeField(null=True)
 
 
 # Attach a post-init signal to TaskAssigment.  Every
