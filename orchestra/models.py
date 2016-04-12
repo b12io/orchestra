@@ -534,6 +534,7 @@ class TimeEntry(models.Model):
     description = models.CharField(max_length=200, null=True, blank=True)
     timer_start_time = models.DateTimeField(null=True)
     timer_stop_time = models.DateTimeField(null=True)
+    is_deleted = models.BooleanField(default=False)
 
 
 class TaskTimer(models.Model):
