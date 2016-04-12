@@ -23,6 +23,7 @@ slacker==0.9.9
 pandas==0.18.0
 python-dateutil==2.5.2
 django-hijack==2.0.8
+django-money==0.7.6
 
 # Documentation requirements
 Sphinx==1.4
