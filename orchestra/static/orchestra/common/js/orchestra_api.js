@@ -35,12 +35,12 @@ serviceModule.factory('orchestraApi', function($http) {
       });
     },
 
-    revertTask: function(taskId, datetime, fake) {
+    revertTask: function(taskId, iterationId, revertBefore, commit) {
       return $http.post(getApiUrl('revert_task'), {
         'task_id': taskId,
-        // Provide seconds rather than milliseconds to the API
-        'revert_datetime': datetime.getTime() / 1000,
-        'fake': fake || false
+        'iteration_id': iterationId,
+        'revert_before': revertBefore || false,
+        'commit': commit || false
       });
     },
 

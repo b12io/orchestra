@@ -18,7 +18,6 @@ from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.fixtures import StepFactory
 from orchestra.tests.helpers.fixtures import TaskAssignmentFactory
 from orchestra.tests.helpers.fixtures import TaskFactory
-from orchestra.utils.assignment_snapshots import empty_snapshots
 from orchestra.utils.task_lifecycle import _check_worker_allowed_new_assignment
 from orchestra.utils.task_lifecycle import _worker_certified_for_task
 from orchestra.utils.task_lifecycle import assign_task
@@ -221,8 +220,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
             worker=self.workers[1],
             task=review_task,
             status=TaskAssignment.Status.SUBMITTED,
-            in_progress_task_data=test_data,
-            snapshots=empty_snapshots())
+            in_progress_task_data=test_data)
 
         with self.assertRaises(TaskAssignmentError):
             assign_task(self.workers[1].id, review_task.id)
@@ -278,7 +276,6 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
             'task_id': task.id,
             'is_reviewer': False,
             'is_read_only': True,
-            'work_times_seconds': [],
             'worker': {
                 'username': self.workers[0].user.username,
                 'first_name': self.workers[0].user.first_name,
@@ -309,8 +306,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
             TaskAssignment.objects.create(worker=self.workers[0],
                                           task=task,
                                           status=0,
-                                          in_progress_task_data={},
-                                          snapshots=empty_snapshots())
+                                          in_progress_task_data={})
 
         human_step = self.workflow_steps[workflow_version.slug]['step4']
         task = Task.objects.create(project=project,
@@ -322,52 +318,35 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         with self.assertRaises(ModelSaveError):
             TaskAssignment.objects.create(task=task,
                                           status=0,
-                                          in_progress_task_data={},
-                                          snapshots=empty_snapshots())
+                                          in_progress_task_data={})
 
     def test_illegal_get_next_task_status(self):
         task = self.tasks['awaiting_processing']
-        illegal_statuses = [Task.Status.AWAITING_PROCESSING,
-                            Task.Status.PENDING_REVIEW,
-                            Task.Status.COMPLETE]
+        illegal_statuses = [
+            Task.Status.AWAITING_PROCESSING,
+            Task.Status.PENDING_REVIEW,
+            Task.Status.COMPLETE
+        ]
 
-        snapshot_types = [TaskAssignment.SnapshotType.SUBMIT,
-                          TaskAssignment.SnapshotType.ACCEPT,
-                          TaskAssignment.SnapshotType.REJECT]
+        iteration_statuses = [
+            Iteration.Status.REQUESTED_REVIEW,
+            Iteration.Status.PROVIDED_REVIEW
+        ]
 
         for status in illegal_statuses:
-            for snapshot_type in snapshot_types:
+            for iteration_status in iteration_statuses:
                 with self.assertRaises(IllegalTaskSubmission):
-                    task.status = Task.Status.REVIEWING
-                    get_next_task_status(task,
-                                         TaskAssignment.SnapshotType.SUBMIT)
+                    task.status = status
+                    get_next_task_status(task, iteration_status)
 
-        # Entry level-related statuses cannot be accepted or rejected
+        # Entry level-related statuses cannot be rejected
         with self.assertRaises(IllegalTaskSubmission):
             task.status = Task.Status.PROCESSING
-            get_next_task_status(task,
-                                 TaskAssignment.SnapshotType.ACCEPT)
-
-        with self.assertRaises(IllegalTaskSubmission):
-            task.status = Task.Status.PROCESSING
-            get_next_task_status(task,
-                                 TaskAssignment.SnapshotType.REJECT)
-
-        with self.assertRaises(IllegalTaskSubmission):
-            task.status = Task.Status.PROCESSING
-            get_next_task_status(task,
-                                 TaskAssignment.SnapshotType.ACCEPT)
+            get_next_task_status(task, Iteration.Status.PROVIDED_REVIEW)
 
         with self.assertRaises(IllegalTaskSubmission):
             task.status = Task.Status.POST_REVIEW_PROCESSING
-            get_next_task_status(task,
-                                 TaskAssignment.SnapshotType.REJECT)
-
-        # Reviewer related statuses cannot be submitted
-        with self.assertRaises(IllegalTaskSubmission):
-            task.status = Task.Status.REVIEWING
-            get_next_task_status(task,
-                                 TaskAssignment.SnapshotType.SUBMIT)
+            get_next_task_status(task, Iteration.Status.PROVIDED_REVIEW)
 
     def test_sampled_get_next_task_status(self):
         task = self.tasks['awaiting_processing']
@@ -380,7 +359,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         complete_count = 0
         for i in range(0, 1000):
             next_status = get_next_task_status(
-                task, TaskAssignment.SnapshotType.SUBMIT)
+                task, Iteration.Status.REQUESTED_REVIEW)
             complete_count += next_status == Task.Status.COMPLETE
         self.assertTrue(complete_count > 400)
         self.assertTrue(complete_count < 600)
@@ -394,7 +373,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         step.save()
         with self.assertRaises(ReviewPolicyError):
             get_next_task_status(task,
-                                 TaskAssignment.SnapshotType.SUBMIT)
+                                 Iteration.Status.REQUESTED_REVIEW)
 
         step.review_policy = {'policy': 'sampled_review',
                               'rate': 1,
@@ -402,7 +381,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         step.save()
         self.assertEquals(
             get_next_task_status(task,
-                                 TaskAssignment.SnapshotType.SUBMIT),
+                                 Iteration.Status.REQUESTED_REVIEW),
             Task.Status.PENDING_REVIEW)
 
         step.review_policy = {'policy': 'sampled_review',
@@ -411,13 +390,13 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         step.save()
         self.assertEquals(
             get_next_task_status(task,
-                                 TaskAssignment.SnapshotType.SUBMIT),
+                                 Iteration.Status.REQUESTED_REVIEW),
             Task.Status.COMPLETE)
 
         task.status = Task.Status.POST_REVIEW_PROCESSING
         self.assertEquals(
             get_next_task_status(task,
-                                 TaskAssignment.SnapshotType.SUBMIT),
+                                 Iteration.Status.REQUESTED_REVIEW),
             Task.Status.REVIEWING)
 
         task = self.tasks['review_task']
@@ -429,7 +408,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         step.save()
         self.assertEquals(
             get_next_task_status(task,
-                                 TaskAssignment.SnapshotType.ACCEPT),
+                                 Iteration.Status.REQUESTED_REVIEW),
             Task.Status.COMPLETE)
 
         step.review_policy = {'policy': 'sampled_review',
@@ -438,16 +417,16 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         step.save()
         self.assertEquals(
             get_next_task_status(task,
-                                 TaskAssignment.SnapshotType.ACCEPT),
+                                 Iteration.Status.REQUESTED_REVIEW),
             Task.Status.PENDING_REVIEW)
 
         # after max reviews done a task goes to state complete
-        TaskAssignment.objects.create(worker=self.workers[1],
-                                      task=task,
-                                      status=TaskAssignment.Status.SUBMITTED,
-                                      assignment_counter=1,
-                                      in_progress_task_data={},
-                                      snapshots=empty_snapshots())
+        TaskAssignment.objects.create(
+            worker=self.workers[1],
+            task=task,
+            status=TaskAssignment.Status.SUBMITTED,
+            assignment_counter=1,
+            in_progress_task_data={})
         task.save()
         step.review_policy = {'policy': 'sampled_review',
                               'rate': 1,
@@ -455,7 +434,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         step.save()
         self.assertEquals(
             get_next_task_status(task,
-                                 TaskAssignment.SnapshotType.ACCEPT),
+                                 Iteration.Status.REQUESTED_REVIEW),
             Task.Status.COMPLETE)
 
     def test_preassign_workers(self):
@@ -471,8 +450,8 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         with patch('orchestra.utils.task_lifecycle._is_review_needed',
                    return_value=False):
             initial_task = submit_task(initial_task.id, {},
-                                       TaskAssignment.SnapshotType.SUBMIT,
-                                       self.workers[0], 0)
+                                       Iteration.Status.REQUESTED_REVIEW,
+                                       self.workers[0])
         self.assertEquals(project.tasks.count(), 2)
         related_task = project.tasks.exclude(id=initial_task.id).first()
         # Worker 0 not certified for related tasks, so should not have been
@@ -493,8 +472,8 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         with patch('orchestra.utils.task_lifecycle._is_review_needed',
                    return_value=False):
             initial_task = submit_task(initial_task.id, {},
-                                       TaskAssignment.SnapshotType.SUBMIT,
-                                       self.workers[4], 0)
+                                       Iteration.Status.REQUESTED_REVIEW,
+                                       self.workers[4])
         self.assertEquals(project.tasks.count(), 2)
         related_task = project.tasks.exclude(id=initial_task.id).first()
         # Worker 4 is certified for related task and should have been assigned

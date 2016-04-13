@@ -1,25 +1,29 @@
 import json
-import time
-from datetime import timedelta
 
-from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
 from django.test import Client
 
+from orchestra.core.errors import InvalidRevertError
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import Project
+from orchestra.project_api.serializers import IterationSerializer
+from orchestra.project_api.serializers import TaskSerializer
+from orchestra.project_api.serializers import TaskAssignmentSerializer
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_complete_task
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.fixtures import UserFactory
 from orchestra.tests.helpers.fixtures import WorkerFactory
-from orchestra.utils.assignment_snapshots import empty_snapshots
+from orchestra.tests.helpers.iterations import verify_iterations
+from orchestra.utils.revert import RevertChange
 from orchestra.utils.task_lifecycle import create_subsequent_tasks
 from orchestra.utils.task_properties import assignment_history
 from orchestra.utils.task_properties import current_assignment
+from orchestra.utils.task_properties import get_iteration_history
+from orchestra.utils.task_properties import get_latest_iteration
 
 
 class ProjectManagementAPITestCase(OrchestraTestCase):
@@ -106,11 +110,17 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
                 'last_name': assignment.worker.user.last_name,
                 'id': assignment.worker.id,
             },
-            'snapshots': empty_snapshots(),
             'iterations': [
                 {
-                    'start_datetime': '2015-10-12T01:00:00',
-                    'end_datetime': '2015-10-12T02:00:00',
+                    'id': assignment.iterations.first().id,
+                    'admin_url': settings.ORCHESTRA_URL + reverse(
+                        'admin:orchestra_iteration_change',
+                        args=(assignment.iterations.first().id,)),
+                    'assignment': assignment.id,
+                    'start_datetime': '2015-10-12T02:00:00Z',
+                    'end_datetime': '2015-10-12T03:00:00Z',
+                    'status': 'Requested Review',
+                    'submitted_data': {}
                 }
             ],
             'in_progress_task_data': {},
@@ -199,154 +209,6 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
         second_review_assignment.refresh_from_db()
         self.assertEquals(second_review_assignment.worker, self.workers[3])
 
-    def test_revert_task_api(self):
-        # Microseconds are truncated when manually saving models
-        test_start = timezone.now().replace(microsecond=0)
-        times = {
-            'awaiting_pickup': test_start,
-            'entry_pickup': test_start + timedelta(hours=1),
-            'entry_submit': test_start + timedelta(hours=2),
-            'reviewer_pickup': test_start + timedelta(hours=3),
-            'reviewer_reject': test_start + timedelta(hours=4),
-            'entry_resubmit': test_start + timedelta(hours=5),
-            'reviewer_accept': test_start + timedelta(hours=6),
-        }
-
-        # Revert past end of task should have no effect
-        self._test_reverted_task(
-            times,
-            datetime=times['reviewer_accept'] + timedelta(hours=0.5),
-            status=Task.Status.COMPLETE,
-            num_assignments=2,
-            num_snapshots_per_assignment=[2, 2],
-            latest_data={'test': 'reviewer_accept'})
-
-        # Revert before reviewer acceptance but retain latest data
-        self._test_reverted_task(
-            times,
-            datetime=times['reviewer_accept'],
-            status=Task.Status.REVIEWING,
-            num_assignments=2,
-            num_snapshots_per_assignment=[2, 1],
-            latest_data={'test': 'reviewer_accept'})
-        self._test_reverted_task(
-            times,
-            datetime=times['reviewer_accept'] - timedelta(hours=0.5),
-            status=Task.Status.REVIEWING,
-            num_assignments=2,
-            num_snapshots_per_assignment=[2, 1],
-            latest_data={'test': 'reviewer_accept'})
-
-        # Revert before entry resubmission but retain latest data
-        self._test_reverted_task(
-            times,
-            datetime=times['entry_resubmit'],
-            status=Task.Status.POST_REVIEW_PROCESSING,
-            num_assignments=2,
-            num_snapshots_per_assignment=[1, 1],
-            latest_data={'test': 'entry_resubmit'})
-        self._test_reverted_task(
-            times,
-            datetime=times['entry_resubmit'] - timedelta(hours=0.5),
-            status=Task.Status.POST_REVIEW_PROCESSING,
-            num_assignments=2,
-            num_snapshots_per_assignment=[1, 1],
-            latest_data={'test': 'entry_resubmit'})
-
-        # Revert before reviewer rejection but retain latest data
-        self._test_reverted_task(
-            times,
-            datetime=times['reviewer_reject'],
-            status=Task.Status.REVIEWING,
-            num_assignments=2,
-            num_snapshots_per_assignment=[1, 0],
-            latest_data={'test': 'reviewer_reject'})
-        self._test_reverted_task(
-            times,
-            datetime=times['reviewer_reject'] - timedelta(hours=0.5),
-            status=Task.Status.REVIEWING,
-            num_assignments=2,
-            num_snapshots_per_assignment=[1, 0],
-            latest_data={'test': 'reviewer_reject'})
-
-        # Revert before reviewer pickup but retain latest data
-        self._test_reverted_task(
-            times,
-            datetime=times['reviewer_pickup'],
-            status=Task.Status.PENDING_REVIEW,
-            num_assignments=1,
-            num_snapshots_per_assignment=[1],
-            latest_data={'test': 'entry_submit'})
-        self._test_reverted_task(
-            times,
-            datetime=times['reviewer_pickup'] - timedelta(hours=0.5),
-            status=Task.Status.PENDING_REVIEW,
-            num_assignments=1,
-            num_snapshots_per_assignment=[1],
-            latest_data={'test': 'entry_submit'})
-
-        # Revert before entry submission but retain latest data
-        self._test_reverted_task(
-            times,
-            datetime=times['entry_submit'],
-            status=Task.Status.PROCESSING,
-            num_assignments=1,
-            num_snapshots_per_assignment=[0],
-            latest_data={'test': 'entry_submit'})
-        self._test_reverted_task(
-            times,
-            datetime=times['entry_submit'] - timedelta(hours=0.5),
-            status=Task.Status.PROCESSING,
-            num_assignments=1,
-            num_snapshots_per_assignment=[0],
-            latest_data={'test': 'entry_submit'})
-
-        # Revert before entry submission but retain latest data
-        self._test_reverted_task(
-            times,
-            datetime=times['entry_pickup'],
-            status=Task.Status.AWAITING_PROCESSING,
-            num_assignments=0,
-            num_snapshots_per_assignment=[],
-            latest_data={})
-        self._test_reverted_task(
-            times,
-            datetime=times['entry_pickup'] - timedelta(hours=0.5),
-            status=Task.Status.AWAITING_PROCESSING,
-            num_assignments=0,
-            num_snapshots_per_assignment=[],
-            latest_data={})
-
-        task = setup_complete_task(self, times)
-        datetime = times['awaiting_pickup']
-        response = self.api_client.post(
-            reverse('orchestra:orchestra:project_management:revert_task'),
-            json.dumps({
-                'task_id': task.id,
-                # Convert datetime to timestamp
-                'revert_datetime': time.mktime(datetime.timetuple()),
-                'fake': False
-            }),
-            content_type='application/json')
-        self.assertEquals(response.status_code, 200)
-        with self.assertRaises(Task.DoesNotExist):
-            Task.objects.get(id=task.id)
-
-        task = setup_complete_task(self, times)
-        datetime = times['awaiting_pickup'] - timedelta(hours=0.5)
-        response = self.api_client.post(
-            reverse('orchestra:orchestra:project_management:revert_task'),
-            json.dumps({
-                'task_id': task.id,
-                # Convert datetime to timestamp
-                'revert_datetime': time.mktime(datetime.timetuple()),
-                'fake': False
-            }),
-            content_type='application/json')
-        self.assertEquals(response.status_code, 200)
-        with self.assertRaises(Task.DoesNotExist):
-            Task.objects.get(id=task.id)
-
     def test_complete_and_skip_task_api(self):
         task = self.tasks['project_management_task']
         response = self.api_client.post(
@@ -384,78 +246,280 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
         for task in Task.objects.filter(project=project):
             self.assertEquals(task.status, Task.Status.ABORTED)
 
-    def _test_audit(self, audit, num_assignments,
-                    num_snapshots_per_assignment, deleted=False):
-        if deleted:
-            self.assertEquals(audit['change'], 'deleted')
-        if num_assignments == 2 and num_snapshots_per_assignment == [2, 2]:
-            self.assertEquals(audit['change'], 'unchanged')
-        else:
-            self.assertEquals(audit['change'], 'reverted')
-        for i, assignment in enumerate(audit['assignments']):
-            try:
-                num_snapshots = num_snapshots_per_assignment[i]
-            except IndexError:
-                num_snapshots = 0
-            if i > num_assignments - 1:
-                assignment['change'] == 'deleted'
-            if num_snapshots == 2:
-                assignment['change'] == 'unchanged'
-            else:
-                assignment['change'] == 'reverted'
-            for j, snapshot in enumerate(assignment['snapshots']):
-                if j > num_snapshots - 1:
-                    self.assertEquals(snapshot['change'], 'deleted')
-                else:
-                    self.assertEquals(snapshot['change'], 'unchanged')
+    def test_invalid_revert_aborted_task(self):
+        task = setup_complete_task(self)
+        task.status = Task.Status.ABORTED
+        task.save()
 
-    def _test_reverted_task(self, times, datetime, status, num_assignments,
-                            num_snapshots_per_assignment, latest_data):
-        task = setup_complete_task(self, times)
-        response = self.api_client.post(
+        with self.assertRaises(InvalidRevertError):
+            self._revert_task(
+                task, task.assignments.first().iterations.first(),
+                revert_before=False, commit=True)
+
+        task.delete()
+
+    def test_invalid_revert_before(self):
+        task = setup_complete_task(self)
+        task.status = Task.Status.ABORTED
+        task.save()
+
+        # Ensure reviewer assignment has more than one iteration
+        reviewer_assignment = assignment_history(task).last()
+        self.assertGreater(reviewer_assignment.iterations.count(), 1)
+
+        # Attempt to revert before an iteration that isn't the assignment's
+        # first
+        with self.assertRaises(InvalidRevertError):
+            self._revert_task(
+                task, get_latest_iteration(reviewer_assignment),
+                revert_before=True, commit=True)
+
+        task.delete()
+
+    def test_revert_second_review(self):
+        task = setup_complete_task(self)
+        reverted_status = Task.Status.REVIEWING
+
+        expected_audit = self._expected_audit(
+            task,
+            reverted_status=reverted_status,
+            assignment_changes=(
+                RevertChange.UNCHANGED.value, RevertChange.REVERTED.value),
+            iteration_changes=(
+                (RevertChange.UNCHANGED.value, RevertChange.UNCHANGED.value),
+                (RevertChange.UNCHANGED.value, RevertChange.REVERTED.value)
+            ))
+
+        self._test_reverted_task(
+            task,
+            iteration=get_iteration_history(task).all()[3],
+            num_iterations=4,
+            task_status=reverted_status,
+            latest_data={'test': 'reviewer_accept'},
+            expected_audit=expected_audit)
+
+        task.delete()
+
+    def test_revert_post_review_processing(self):
+        task = setup_complete_task(self)
+        reverted_status = Task.Status.POST_REVIEW_PROCESSING
+
+        expected_audit = self._expected_audit(
+            task,
+            reverted_status=reverted_status,
+            assignment_changes=(
+                RevertChange.REVERTED.value, RevertChange.REVERTED.value),
+            iteration_changes=(
+                (RevertChange.UNCHANGED.value, RevertChange.REVERTED.value),
+                (RevertChange.UNCHANGED.value, RevertChange.DELETED.value)
+            ))
+
+        self._test_reverted_task(
+            task,
+            iteration=get_iteration_history(task).all()[2],
+            num_iterations=3,
+            task_status=reverted_status,
+            latest_data={'test': 'entry_resubmit'},
+            expected_audit=expected_audit)
+
+        task.delete()
+
+    def test_revert_first_review(self):
+        task = setup_complete_task(self)
+        reverted_status = Task.Status.REVIEWING
+
+        expected_audit = self._expected_audit(
+            task,
+            reverted_status=reverted_status,
+            assignment_changes=(
+                RevertChange.REVERTED.value, RevertChange.REVERTED.value),
+            iteration_changes=(
+                (RevertChange.UNCHANGED.value, RevertChange.DELETED.value),
+                (RevertChange.REVERTED.value, RevertChange.DELETED.value)
+            ))
+
+        self._test_reverted_task(
+            task,
+            iteration=get_iteration_history(task).all()[1],
+            num_iterations=2,
+            task_status=reverted_status,
+            latest_data={'test': 'reviewer_accept'},
+            expected_audit=expected_audit)
+
+        task.delete()
+
+    def test_revert_pending_review(self):
+        task = setup_complete_task(self)
+        reverted_status = Task.Status.PENDING_REVIEW
+
+        expected_audit = self._expected_audit(
+            task,
+            reverted_status=reverted_status,
+            assignment_changes=(
+                RevertChange.REVERTED.value, RevertChange.DELETED.value),
+            iteration_changes=(
+                (RevertChange.UNCHANGED.value, RevertChange.DELETED.value),
+                (RevertChange.DELETED.value, RevertChange.DELETED.value)
+            ))
+
+        self._test_reverted_task(
+            task,
+            iteration=get_iteration_history(task).all()[1],
+            num_iterations=1,
+            task_status=reverted_status,
+            latest_data={'test': 'entry_resubmit'},
+            expected_audit=expected_audit,
+            revert_before=True)
+
+        task.delete()
+
+    def test_revert_processing(self):
+        task = setup_complete_task(self)
+        reverted_status = Task.Status.PROCESSING
+
+        expected_audit = self._expected_audit(
+            task,
+            reverted_status=reverted_status,
+            assignment_changes=(
+                RevertChange.REVERTED.value, RevertChange.DELETED.value),
+            iteration_changes=(
+                (RevertChange.REVERTED.value, RevertChange.DELETED.value),
+                (RevertChange.DELETED.value, RevertChange.DELETED.value)
+            ))
+
+        self._test_reverted_task(
+            task,
+            iteration=get_iteration_history(task).all()[0],
+            num_iterations=1,
+            task_status=reverted_status,
+            latest_data={'test': 'entry_resubmit'},
+            expected_audit=expected_audit)
+
+        task.delete()
+
+    def test_revert_awaiting_processing(self):
+        task = setup_complete_task(self)
+        reverted_status = Task.Status.AWAITING_PROCESSING
+
+        expected_audit = self._expected_audit(
+            task,
+            reverted_status=reverted_status,
+            assignment_changes=(
+                RevertChange.DELETED.value, RevertChange.DELETED.value),
+            iteration_changes=(
+                (RevertChange.DELETED.value, RevertChange.DELETED.value),
+                (RevertChange.DELETED.value, RevertChange.DELETED.value)
+            ))
+
+        self._test_reverted_task(
+            task,
+            iteration=get_iteration_history(task).all()[0],
+            num_iterations=0,
+            task_status=reverted_status,
+            latest_data={'test': 'entry_resubmit'},
+            expected_audit=expected_audit,
+            revert_before=True)
+
+        task.delete()
+
+    def _revert_task(self, task, iteration, revert_before, commit):
+        return self.api_client.post(
             reverse('orchestra:orchestra:project_management:revert_task'),
             json.dumps({
                 'task_id': task.id,
                 # Convert datetime to timestamp
-                'revert_datetime': time.mktime(datetime.timetuple()),
-                'fake': True
+                'iteration_id': iteration.id,
+                'revert_before': revert_before,
+                'commit': commit,
             }),
             content_type='application/json')
+
+    def _test_reverted_task(self, task, iteration, num_iterations,
+                            task_status, latest_data, expected_audit,
+                            revert_before=False):
+        response = self._revert_task(
+            task, iteration, revert_before=revert_before, commit=False)
         self.assertEquals(response.status_code, 200)
         task.refresh_from_db()
+        fake_audit = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(fake_audit, expected_audit)
+
         self.assertEquals(task.status, Task.Status.COMPLETE)
         self.assertEquals(task.assignments.count(), 2)
         for assignment in task.assignments.all():
-            self.assertEquals(
-                len(assignment.snapshots['snapshots']), 2)
+            self.assertEquals(assignment.iterations.count(), 2)
 
-        response = self.api_client.post(
-            reverse('orchestra:orchestra:project_management:revert_task'),
-            json.dumps({
-                'task_id': task.id,
-                # Convert datetime to timestamp
-                'revert_datetime': time.mktime(datetime.timetuple()),
-                'fake': False
-            }),
-            content_type='application/json')
-        self.assertEquals(response.status_code, 200)
-        audit = json.loads(response.content.decode('utf-8'))
-        self._test_audit(audit, num_assignments, num_snapshots_per_assignment)
-
+        response = self._revert_task(
+            task, iteration, revert_before=revert_before, commit=True)
+        self.assertEqual(response.status_code, 200)
         task.refresh_from_db()
-        self.assertEquals(task.status, status)
+        audit = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(audit, fake_audit)
+        task.refresh_from_db()
+        self.assertEqual(task.status, task_status)
+        self.assertEqual(
+            get_iteration_history(task).count(), num_iterations)
 
-        assignments = assignment_history(task)
-        self.assertEquals(task.assignments.count(), num_assignments)
-        self.assertEquals(
-            len(num_snapshots_per_assignment), num_assignments)
-        for i, num_snapshots in enumerate(num_snapshots_per_assignment):
-            self.assertEquals(
-                len(assignments[i].snapshots['snapshots']), num_snapshots)
+        verify_iterations(task.id)
 
-        if num_assignments:
+        if num_iterations:
             self.assertEquals(
                 current_assignment(task).in_progress_task_data,
                 latest_data)
 
-        task.delete()
+        verify_iterations(task.id)
+
+    def _expected_audit(self, complete_task, reverted_status=None,
+                        assignment_changes=None, iteration_changes=None):
+        assignments = assignment_history(complete_task)
+        iterations = get_iteration_history(complete_task)
+        audit = {
+            'task': TaskSerializer(complete_task).data,
+            'assignments': [
+                {
+                    'assignment': (
+                        TaskAssignmentSerializer(assignments.first()).data),
+                    'change': 0,
+                    'iterations': [
+                        {
+                            'change': 0,
+                            'iteration': (
+                                IterationSerializer(iterations.all()[0]).data)
+                        },
+                        {
+                            'change': 0,
+                            'iteration': (
+                                IterationSerializer(iterations.all()[2]).data)
+                        }
+                    ]
+                },
+                {
+                    'assignment': (
+                        TaskAssignmentSerializer(assignments.last()).data),
+                    'change': 0,
+                    'iterations': [
+                        {
+                            'change': 0,
+                            'iteration': (
+                                IterationSerializer(iterations.all()[1]).data)
+                        },
+                        {
+                            'change': 0,
+                            'iteration': (
+                                IterationSerializer(iterations.all()[3]).data)
+                        }
+                    ]
+                }
+            ],
+        }
+        if reverted_status is not None:
+            audit['reverted_status'] = reverted_status
+        if assignment_changes is not None:
+            for i, assignment_change in enumerate(assignment_changes):
+                audit['assignments'][i]['change'] = assignment_change
+        if iteration_changes is not None:
+            for i, changes_per_assignment in enumerate(iteration_changes):
+                for j, iteration_change in enumerate(changes_per_assignment):
+                    audit['assignments'][i][
+                        'iterations'][j]['change'] = iteration_change
+        return audit

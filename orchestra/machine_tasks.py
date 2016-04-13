@@ -11,7 +11,6 @@ from orchestra.models import Project
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import Step
-from orchestra.utils.assignment_snapshots import empty_snapshots
 from orchestra.utils.task_lifecycle import previously_completed_task_data
 from orchestra.utils.task_lifecycle import create_subsequent_tasks
 from orchestra.utils.task_properties import get_latest_iteration
@@ -45,8 +44,7 @@ def execute(project_id, step_slug):
             task=task,
             defaults={
                 'status': TaskAssignment.Status.PROCESSING,
-                'in_progress_task_data': {},
-                'snapshots': empty_snapshots()})
+                'in_progress_task_data': {}})
         if created:
             task.status = Task.Status.PROCESSING
             task.save()
@@ -88,12 +86,6 @@ def execute(project_id, step_slug):
     else:
         task.status = Task.Status.COMPLETE
         task.save()
-        task_assignment.snapshots['snapshots'].append(
-            {'data': task_assignment.in_progress_task_data,
-             'datetime': timezone.now().isoformat(),
-             'type': TaskAssignment.SnapshotType.SUBMIT,
-             'work_time_seconds': 0})
-        task_assignment.save()
 
         iteration = get_latest_iteration(task_assignment)
         iteration.status = Iteration.Status.REQUESTED_REVIEW

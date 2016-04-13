@@ -86,14 +86,11 @@ def _verify_iteration_data(iterations):
     function should be run each time an iteration is added.
     """
     for iteration in iterations:
-        assignment = iteration.assignment
-        siblings = assignment.iterations.order_by('start_datetime')
         if iteration.status == Iteration.Status.PROCESSING:
             # Iterations should not have data until submitted
             assert iteration.submitted_data == {}
-        elif iteration == siblings.last():
-            # Last iteration for an assignment should have its latest data
-            assert iteration.submitted_data == assignment.in_progress_task_data
+        # NOTE(jrbotros): Last iteration for an assignment will normally
+        # have its latest data, unless the task has been reverted
 
 
 def _verify_iteration_datetimes(iterations):

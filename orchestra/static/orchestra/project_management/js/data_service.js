@@ -61,6 +61,15 @@
         for (var step_slug in this.data.tasks) {
           var task = this.data.tasks[step_slug];
           task.is_human = this.data.steps[task.step_slug].is_human;
+          if (!task.assignments.length) {
+            // TODO(jrbotros): create the empty assignment in a saner way
+            task.assignments.push({
+              iterations: [],
+              start_datetime: task.start_datetime,
+              status: 'Processing',
+              worker: {id: null, username: null},
+            });
+          }
           task.assignments.forEach(function(assignment) {
             assignment.task = task;
             assignment.iterations.forEach(function(iteration, i) {

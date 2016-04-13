@@ -16,7 +16,6 @@ from orchestra.project_api.api import get_workflow_steps
 from orchestra.project_api.api import MalformedDependencyException
 from orchestra.project_api.auth import OrchestraProjectAPIAuthentication
 from orchestra.project_api.auth import SignedUser
-from orchestra.utils.assignment_snapshots import empty_snapshots
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.google_apps import mock_create_drive_service
@@ -67,6 +66,7 @@ class ProjectAPITestCase(OrchestraTestCase):
             'task',
             'short_description',
             'start_datetime',
+            'end_datetime'
         )
 
         def delete_keys(obj):
@@ -85,6 +85,8 @@ class ProjectAPITestCase(OrchestraTestCase):
 
         delete_keys(returned)
         del returned['tasks']['step1']['project']
+        del (returned['tasks']['step1']['assignments'][0]
+                     ['iterations'][0]['assignment'])
 
         expected = {
             'project': {
@@ -98,7 +100,6 @@ class ProjectAPITestCase(OrchestraTestCase):
             'tasks': {
                 'step1': {
                     'assignments': [{
-                        'snapshots': empty_snapshots(),
                         'status': 'Submitted',
                         'in_progress_task_data': {'test_key': 'test_value'},
                         'worker': {
@@ -106,6 +107,10 @@ class ProjectAPITestCase(OrchestraTestCase):
                             'first_name': self.workers[0].user.first_name,
                             'last_name': self.workers[0].user.last_name,
                         },
+                        'iterations': [{
+                            'status': 'Requested Review',
+                            'submitted_data': {'test_key': 'test_value'},
+                        }],
                     }],
                     'latest_data': {
                         'test_key': 'test_value'

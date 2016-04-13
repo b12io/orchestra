@@ -5,7 +5,6 @@ from importlib import import_module
 from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
-from django.utils.dateparse import parse_datetime
 
 from orchestra.core.errors import AssignmentPolicyError
 from orchestra.core.errors import IllegalTaskSubmission
@@ -23,15 +22,11 @@ from orchestra.models import TaskAssignment
 from orchestra.models import TimeEntry
 from orchestra.models import Worker
 from orchestra.models import WorkerCertification
-from orchestra.project_api.serializers import TaskSerializer
-from orchestra.project_api.serializers import TaskAssignmentSerializer
 from orchestra.slack import add_worker_to_project_team
-from orchestra.utils.assignment_snapshots import empty_snapshots
 from orchestra.utils.notifications import notify_status_change
 from orchestra.utils.task_properties import assignment_history
 from orchestra.utils.task_properties import current_assignment
 from orchestra.utils.task_properties import get_latest_iteration
-from orchestra.utils.task_properties import last_snapshotted_assignment
 from orchestra.utils.task_properties import is_worker_assigned_to_task
 
 import logging
@@ -202,8 +197,7 @@ def assign_task(worker_id, task_id):
                 task=task,
                 status=TaskAssignment.Status.PROCESSING,
                 assignment_counter=assignment_counter,
-                in_progress_task_data=in_progress_task_data,
-                snapshots=empty_snapshots()))
+                in_progress_task_data=in_progress_task_data))
 
     Iteration.objects.create(
         assignment=assignment,
@@ -276,234 +270,6 @@ def complete_and_skip_task(task_id):
         assignment.status = TaskAssignment.Status.SUBMITTED
         assignment.save()
     create_subsequent_tasks(task.project)
-    return task
-
-
-@transaction.atomic
-def revert_task_to_datetime(task_id, revert_datetime, fake=False):
-    """
-    Reverts a task to its state immediately before the specified
-    datetime.
-
-    Args:
-        task_id (int):
-            The ID of the task to be reverted.
-        revert_datetime (datetime.datetime):
-            The datetime before which to revert the task.
-        fake (bool):
-            Determines whether the revert is actually carried out;
-            otherwise, an audit trail is passively generated.
-
-    Returns:
-        audit (dict):
-            An audit trail for the revert, e.g.,
-
-            {
-                'task': {...},
-                'change': 'reverted'
-                'assignments': [
-                    {
-                        # worker_0 assignment
-                        'assignment': {...},
-                        'change': 'reverted',
-                        'snapshots': [
-                            {
-                                'snapshot': {...},
-                                'change': 'unchanged'
-                            }
-                            {
-                                'snapshot': {...},
-                                'change': 'deleted'
-                            },
-                        ]
-                    },
-                    {
-                        # worker_1 assignment
-                        'assignment': {...},
-                        'change': 'deleted',
-                        'snapshots': [
-                            {
-                                'snapshot': {...},
-                                'change': 'deleted'
-                            },
-                            {
-                                'snapshot': {...},
-                                'change': 'deleted'
-                            }
-                        ]
-                    }
-                ],
-            }
-    """
-    task = Task.objects.get(id=task_id)
-    audit = {
-        'task': TaskSerializer(task).data,
-        'change': 'unchanged',
-        'assignments': []
-    }
-    reverted = False
-
-    for assignment in assignment_history(task).all():
-        assignment_audit = _revert_assignment_to_datetime(
-            assignment, revert_datetime, fake)
-        audit['assignments'].append(assignment_audit)
-        if assignment_audit['change'] != 'unchanged':
-            reverted = True
-
-    # Delete task if it starts after revert_datetime
-    if task.start_datetime >= revert_datetime:
-        audit['change'] = 'deleted'
-        if not fake:
-            task.delete()
-    elif reverted:
-        audit['change'] = 'reverted'
-        if not fake:
-            _revert_task_status(task)
-
-    return audit
-
-
-def _revert_assignment_to_datetime(assignment, revert_datetime, fake=False):
-    """
-    Reverts an assignment to its state immediately before the specified
-    datetime.
-
-    Args:
-        assignment (orchestra.models.TaskAssignment):
-            The assignment to be reverted.
-        revert_datetime (datetime.datetime):
-            The datetime before which to revert the assignment.
-        fake (bool):
-            Determines whether the revert is actually carried out;
-            otherwise, an audit trail is passively generated.
-
-    Returns:
-        audit (dict):
-            An audit trail for the revert, e.g.,
-
-            {
-                'assignment': {...},
-                'change': 'reverted',
-                'snapshots': [
-                    {
-                        'snapshot': {...},
-                        'change': 'deleted'
-                    },
-                    {
-                        'snapshot': {},
-                        'change': 'unchanged'
-                    }
-                ]
-            }
-    """
-    audit = {
-        'assignment': TaskAssignmentSerializer(assignment).data,
-        'change': 'unchanged',
-        'snapshots': [{'snapshot': snapshot, 'change': 'unchanged'}
-                      for snapshot in assignment.snapshots['snapshots']],
-    }
-    # Revert assignment to datetime by removing snapshots
-    gt_idx = None
-    snapshots = assignment.snapshots['snapshots']
-    for i, snapshot in enumerate(snapshots):
-        if parse_datetime(snapshot['datetime']) >= revert_datetime:
-            gt_idx = i
-            break
-    if gt_idx is not None:
-        # Revert to before this snapshot
-        audit['change'] = 'reverted'
-        for i, _ in enumerate(audit['snapshots']):
-            if i >= gt_idx:
-                audit['snapshots'][i]['change'] = 'deleted'
-        if not fake:
-            assignment.snapshots['snapshots'] = snapshots[:gt_idx]
-            # Reset assignment data to the oldest deleted snapshot. When
-            # we determine which assignment is processing in
-            # _revert_task_status, we'll revert all other assignments
-            # to their latest submitted snapshot data.
-            assignment.in_progress_task_data = snapshots[gt_idx]['data']
-            assignment.save()
-
-    if assignment.start_datetime >= revert_datetime:
-        audit['change'] = 'deleted'
-        if not fake:
-            # Delete assignments created after the revert datetime.
-            assignment.delete()
-
-    return audit
-
-
-def _revert_task_status(task):
-    """
-    Reverts the status of an otherwise-reverted task.
-
-    Args:
-        task (orchestra.models.Task):
-            The task with status to revert.
-
-    Returns:
-        task (orchestra.models.Task):
-            The task with reverted status.
-    """
-    assignments = assignment_history(task)
-    num_assignments = assignments.count()
-
-    reverted_status = None
-    current_assignment_counter = None
-    previous_assignment_counter = None
-    if num_assignments == 0:
-        # No assignment is present
-        reverted_status = Task.Status.AWAITING_PROCESSING
-    else:
-        assignment = last_snapshotted_assignment(task.id)
-        if not assignment:
-            # Task has an assignment but no snapshots
-            reverted_status = Task.Status.PROCESSING
-            current_assignment_counter = 0
-        else:
-            latest_counter = assignment.assignment_counter
-            snapshot = assignment.snapshots['snapshots'][-1]
-            if snapshot['type'] == TaskAssignment.SnapshotType.REJECT:
-                # Task was last rejected back to previous worker
-                reverted_status = Task.Status.POST_REVIEW_PROCESSING
-                current_assignment_counter = latest_counter - 1
-                previous_assignment_counter = latest_counter
-
-            elif (snapshot['type'] in (TaskAssignment.SnapshotType.SUBMIT,
-                                       TaskAssignment.SnapshotType.ACCEPT)):
-                if latest_counter == num_assignments - 1:
-                    # Task was last submitted and no higher-level
-                    # assignments are present (reverted tasks will never end
-                    # in a completed state)
-                    reverted_status = Task.Status.PENDING_REVIEW
-                else:
-                    reverted_status = Task.Status.REVIEWING
-                    previous_assignment_counter = latest_counter
-                    current_assignment_counter = latest_counter + 1
-
-    if current_assignment_counter is not None:
-        current_assignment = task.assignments.get(
-            assignment_counter=current_assignment_counter)
-        current_assignment.status = TaskAssignment.Status.PROCESSING
-        current_assignment.save()
-
-    if previous_assignment_counter is not None:
-        previous_assignment = task.assignments.get(
-            assignment_counter=previous_assignment_counter)
-        previous_assignment.status = TaskAssignment.Status.SUBMITTED
-        previous_assignment.save()
-
-    # TODO(jrbotros): The revert methos should "peel off" snapshots,
-    # rather than deleting them in bulk and recalculating the assignment
-    # and task statuses; this logic needs to be cleaned up.
-    for assignment in task.assignments.all():
-        if assignment.status == TaskAssignment.Status.SUBMITTED:
-            latest_snapshot = assignment.snapshots['snapshots'][-1]
-            assignment.in_progress_task_data = latest_snapshot['data']
-            assignment.save()
-
-    task.status = reverted_status
-    task.save()
     return task
 
 
@@ -584,9 +350,6 @@ def get_task_assignment_details(task_assignment):
             task_assignment.assignment_counter > 0),
         'is_read_only': (
             task_assignment.status != TaskAssignment.Status.PROCESSING),
-        'work_times_seconds': [
-            snapshot['work_time_seconds']
-            for snapshot in task_assignment.snapshots['snapshots']]
     }
 
 
@@ -737,7 +500,7 @@ def _is_review_needed(task):
         raise ReviewPolicyError('Review policy incorrectly specified.')
 
 
-def get_next_task_status(task, snapshot_type):
+def get_next_task_status(task, iteration_status):
     """
     Given current task status and snapshot type provide new task status.
     If the second level reviewer rejects a task then initial reviewer
@@ -746,39 +509,42 @@ def get_next_task_status(task, snapshot_type):
     Args:
         task (orchestra.models.Task):
             The specified task object.
-        task_status (orchestra.models.TaskAssignment.SnapshotType):
-            The action to take upon task submission (e.g., SUBMIT,
-            ACCEPT, REJECT).
+        iteration_status (orchestra.models.Iteration.Status):
+            The action taken upon task submission (i.e., REQUESTED_REVIEW
+            or PROVIDED_REVIEW).
 
     Returns:
         next_status (orchestra.models.Task.Status):
-            The next status of `task`, once the `snapshot_type` action
+            The next status of `task`, once the `iteration_status` action
             has been completed.
 
     Raises:
         orchestra.core.errors.IllegalTaskSubmission:
-            The `snapshot_type` action cannot be taken for the task in
+            The `iteration_status` action cannot be taken for the task in
             its current status.
     """
-    if snapshot_type == TaskAssignment.SnapshotType.SUBMIT:
-        if task.status == Task.Status.PROCESSING:
+    # Task with one of these statuses cannot be submitted
+    illegal_statuses = [Task.Status.AWAITING_PROCESSING,
+                        Task.Status.PENDING_REVIEW,
+                        Task.Status.COMPLETE]
+
+    if task.status in illegal_statuses:
+        raise IllegalTaskSubmission('Task has illegal status for submit.')
+    elif iteration_status == Iteration.Status.REQUESTED_REVIEW:
+        if task.status in (Task.Status.PROCESSING, Task.Status.REVIEWING):
             if _is_review_needed(task):
                 return Task.Status.PENDING_REVIEW
-            return Task.Status.COMPLETE
+            else:
+                return Task.Status.COMPLETE
         elif task.status == Task.Status.POST_REVIEW_PROCESSING:
             return Task.Status.REVIEWING
-        raise IllegalTaskSubmission('Worker can only submit a task.')
-    elif snapshot_type == TaskAssignment.SnapshotType.REJECT:
+        else:
+            raise IllegalTaskSubmission('Task not in submittable state.')
+    elif iteration_status == Iteration.Status.PROVIDED_REVIEW:
         if task.status == Task.Status.REVIEWING:
             return Task.Status.POST_REVIEW_PROCESSING
-        raise IllegalTaskSubmission('Only reviewer can reject the task.')
-    elif snapshot_type == TaskAssignment.SnapshotType.ACCEPT:
-        if task.status == Task.Status.REVIEWING:
-            if _is_review_needed(task):
-                return Task.Status.PENDING_REVIEW
-            return Task.Status.COMPLETE
-        raise IllegalTaskSubmission('Only reviewer can accept the task.')
-    raise IllegalTaskSubmission('Unknown task state.')
+        else:
+            raise IllegalTaskSubmission('Task not in rejectable state.')
 
 
 def _check_worker_allowed_new_assignment(worker, task_status):
@@ -939,7 +705,8 @@ def _are_desired_steps_completed_on_project(desired_steps,
 
 
 @transaction.atomic
-def submit_task(task_id, task_data, snapshot_type, worker, work_time_seconds):
+def submit_task(task_id, task_data, iteration_status, worker,
+                work_time_seconds=0):
     """
     Returns a dict mapping task prerequisites onto their
     latest task assignment information.  The dict is of the form:
@@ -950,14 +717,11 @@ def submit_task(task_id, task_data, snapshot_type, worker, work_time_seconds):
             The ID of the task to submit.
         task_data (str):
             A JSON blob of task data to submit.
-        snapshot_type (orchestra.models.TaskAssignment.SnapshotType):
-            The action to take upon task submission (e.g., SUBMIT,
-            ACCEPT, REJECT).
+        iteration_status (orchestra.models.Iteration.Status):
+            The action taken upon task submission (i.e., REQUESTED_REVIEW
+            or PROVIDED_REVIEW).
         worker (orchestra.models.Worker):
             The worker submitting the task.
-        work_time_seconds (int):
-            The time taken by the worker on the latest iteration of
-            their task assignment.
 
     Returns:
         task (orchestra.models.Task):
@@ -1000,15 +764,9 @@ def submit_task(task_id, task_data, snapshot_type, worker, work_time_seconds):
     if assignment.status != TaskAssignment.Status.PROCESSING:
         raise IllegalTaskSubmission('Worker is not allowed to submit')
 
-    next_status = get_next_task_status(task, snapshot_type)
+    next_status = get_next_task_status(task, iteration_status)
 
     assignment.in_progress_task_data = task_data
-    assignment.snapshots['snapshots'].append(
-        {'data': assignment.in_progress_task_data,
-         'datetime': timezone.now().isoformat(),
-         'type': snapshot_type,
-         'work_time_seconds': work_time_seconds
-         })
 
     # TODO(jrbotros): remove when time entry interface is added
     TimeEntry.objects.create(
@@ -1017,15 +775,9 @@ def submit_task(task_id, task_data, snapshot_type, worker, work_time_seconds):
         worker=assignment.worker,
         assignment=assignment)
 
-    # Temporarily map snapshot types onto iteration statuses
-    snapshot_type_iteration_status = {
-        TaskAssignment.SnapshotType.SUBMIT: Iteration.Status.REQUESTED_REVIEW,
-        TaskAssignment.SnapshotType.ACCEPT: Iteration.Status.REQUESTED_REVIEW,
-        TaskAssignment.SnapshotType.REJECT: Iteration.Status.PROVIDED_REVIEW,
-    }
     # Submit latest iteration
     latest_iteration = get_latest_iteration(assignment)
-    latest_iteration.status = snapshot_type_iteration_status[snapshot_type]
+    latest_iteration.status = iteration_status
     latest_iteration.submitted_data = assignment.in_progress_task_data
     latest_iteration.end_datetime = submit_datetime
     latest_iteration.save()

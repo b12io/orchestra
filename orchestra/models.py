@@ -5,7 +5,6 @@ from django.utils import timezone
 from jsonfield import JSONField
 
 from orchestra.core.errors import ModelSaveError
-from orchestra.utils.assignment_snapshots import load_snapshots
 
 # TODO(marcua): Convert ManyToManyFields to django-hstore referencefields or
 # wait for django-postgres ArrayFields in Django 1.8.
@@ -391,9 +390,6 @@ class TaskAssignment(models.Model):
         in_progress_task_data (str):
             A JSON blob containing the worker's input data for the task
             assignment.
-        snapshots (str):
-            A JSON blob containing saved snapshots of previous data from
-            the task assignment.
 
     Constraints:
         `task` and `assignment_counter` are taken to be unique_together.
@@ -404,11 +400,6 @@ class TaskAssignment(models.Model):
     class Meta:
         app_label = 'orchestra'
         unique_together = ('task', 'assignment_counter')
-
-    class SnapshotType:
-        SUBMIT = 0
-        ACCEPT = 1
-        REJECT = 2
 
     class Status:
         PROCESSING = 0
@@ -434,16 +425,6 @@ class TaskAssignment(models.Model):
     # Opaque field that stores current state of task as per the Step's
     # description
     in_progress_task_data = JSONField(default={}, blank=True)
-
-    # When a worker submits, accepts, or rejects a task, we snapshot their
-    # in_workflow_task_data along with the date in the following format:
-    # {'snapshots': [
-    #   {'data': snapshotted_task_data,
-    #    'datetime': ISO 8601 datetime in UTC time,
-    #    'work_time_seconds': integer seconds,
-    #    'type': value from SnapshotType}]
-    #  '__version': 1}
-    snapshots = JSONField(default={}, blank=True)
 
     def save(self, *args, **kwargs):
         if self.task.step.is_human:
@@ -591,15 +572,3 @@ class PayRate(models.Model):
     def __str__(self):
         return '{} ({} - {})'.format(
             self.worker, self.start_datetime, self.end_datetime or 'now')
-
-
-# Attach a post-init signal to TaskAssigment.  Every
-# TaskAssignment that gets constructed will now call
-# this post-init signal after loading from the database
-# (or memory).  We run `load_snapshots` after loading from
-# the database so that we can migrate old JSON task assignment
-# snapshots.
-def task_assignment_post_init(sender, instance, **kwargs):
-    instance.snapshots = load_snapshots(instance.snapshots)
-models.signals.post_init.connect(
-    task_assignment_post_init, sender=TaskAssignment)

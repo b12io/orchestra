@@ -1,7 +1,5 @@
 import json
-from datetime import datetime
 
-import pytz
 import slacker
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
@@ -13,10 +11,10 @@ from orchestra.core.errors import WorkerCertificationError
 from orchestra.models import Task
 from orchestra.models import Project
 from orchestra.models import Worker
+from orchestra.utils.revert import revert_task_to_iteration
 from orchestra.utils.task_lifecycle import complete_and_skip_task
 from orchestra.utils.task_lifecycle import create_subsequent_tasks
 from orchestra.utils.task_lifecycle import reassign_assignment
-from orchestra.utils.task_lifecycle import revert_task_to_datetime
 from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.task_lifecycle import end_project
 
@@ -65,14 +63,9 @@ def reassign_assignment_api(request):
 def revert_task_api(request):
     body = json.loads(request.body.decode())
     try:
-        revert_datetime = datetime.utcfromtimestamp(body['revert_datetime'])
-        revert_datetime = pytz.utc.localize(revert_datetime)
-    except:
-        raise BadRequest('Invalid timestamp provided.')
-
-    try:
-        audit = revert_task_to_datetime(
-            body['task_id'], revert_datetime, body['fake'])
+        audit = revert_task_to_iteration(
+            body['task_id'], body['iteration_id'],
+            body.get('revert_before'), body.get('commit'))
     except Task.DoesNotExist as e:
         raise BadRequest(e)
     return audit

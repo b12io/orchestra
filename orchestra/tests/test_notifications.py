@@ -3,8 +3,8 @@ from unittest.mock import patch
 from django.conf import settings
 from django.test import override_settings
 
+from orchestra.models import Iteration
 from orchestra.models import Task
-from orchestra.models import TaskAssignment
 from orchestra.slack import _project_slack_group_name
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_models
@@ -67,8 +67,8 @@ class BasicNotificationsTestCase(OrchestraTestCase):
         with patch('orchestra.utils.task_lifecycle._is_review_needed',
                    return_value=True):
             # Entry-level worker submits task
-            task = submit_task(task.id, {}, TaskAssignment.SnapshotType.SUBMIT,
-                               self.workers[0], 0)
+            task = submit_task(task.id, {}, Iteration.Status.REQUESTED_REVIEW,
+                               self.workers[0])
 
         self.assertEquals(task.status, Task.Status.PENDING_REVIEW)
         # Notification should be sent to entry-level worker
@@ -94,8 +94,8 @@ class BasicNotificationsTestCase(OrchestraTestCase):
         self.assertEquals(len(experts_slack_messages), 0)
 
         # Reviewer rejects task
-        task = submit_task(task.id, {}, TaskAssignment.SnapshotType.REJECT,
-                           self.workers[1], 0)
+        task = submit_task(task.id, {}, Iteration.Status.PROVIDED_REVIEW,
+                           self.workers[1])
         self.assertEquals(task.status, Task.Status.POST_REVIEW_PROCESSING)
         # Notification should be sent to original worker
         self.assertEquals(len(self.mail.inbox), 1)
@@ -110,8 +110,8 @@ class BasicNotificationsTestCase(OrchestraTestCase):
         self.assertEquals(len(experts_slack_messages), 0)
 
         # Entry-level worker resubmits task
-        task = submit_task(task.id, {}, TaskAssignment.SnapshotType.SUBMIT,
-                           self.workers[0], 0)
+        task = submit_task(task.id, {}, Iteration.Status.REQUESTED_REVIEW,
+                           self.workers[0])
         self.assertEquals(task.status, Task.Status.REVIEWING)
         # Notification should be sent to reviewer
         self.assertEquals(len(self.mail.inbox), 1)
@@ -128,8 +128,8 @@ class BasicNotificationsTestCase(OrchestraTestCase):
         # First reviewer accepts task
         with patch('orchestra.utils.task_lifecycle._is_review_needed',
                    return_value=True):
-            task = submit_task(task.id, {}, TaskAssignment.SnapshotType.ACCEPT,
-                               self.workers[1], 0)
+            task = submit_task(task.id, {}, Iteration.Status.REQUESTED_REVIEW,
+                               self.workers[1])
         self.assertEquals(task.status, Task.Status.PENDING_REVIEW)
         # Notification should be sent to first reviewer
         self.assertEquals(len(self.mail.inbox), 1)
@@ -154,8 +154,8 @@ class BasicNotificationsTestCase(OrchestraTestCase):
         self.assertEquals(len(experts_slack_messages), 0)
 
         # Second reviewer rejects task
-        task = submit_task(task.id, {}, TaskAssignment.SnapshotType.REJECT,
-                           self.workers[3], 0)
+        task = submit_task(task.id, {}, Iteration.Status.PROVIDED_REVIEW,
+                           self.workers[3])
         self.assertEquals(task.status, Task.Status.POST_REVIEW_PROCESSING)
         # Notification should be sent to first reviewer
         self.assertEquals(len(self.mail.inbox), 1)
@@ -170,8 +170,8 @@ class BasicNotificationsTestCase(OrchestraTestCase):
         self.assertEquals(len(experts_slack_messages), 0)
 
         # First reviewer resubmits task
-        task = submit_task(task.id, {}, TaskAssignment.SnapshotType.SUBMIT,
-                           self.workers[1], 0)
+        task = submit_task(task.id, {}, Iteration.Status.REQUESTED_REVIEW,
+                           self.workers[1])
         self.assertEquals(task.status, Task.Status.REVIEWING)
         # Notification should be sent to second reviewer
         self.assertEquals(len(self.mail.inbox), 1)
@@ -188,8 +188,8 @@ class BasicNotificationsTestCase(OrchestraTestCase):
         # Second reviewer accepts task; task is complete
         with patch('orchestra.utils.task_lifecycle._is_review_needed',
                    return_value=False):
-            task = submit_task(task.id, {}, TaskAssignment.SnapshotType.ACCEPT,
-                               self.workers[3], 0)
+            task = submit_task(task.id, {}, Iteration.Status.REQUESTED_REVIEW,
+                               self.workers[3])
         self.assertEquals(task.status, Task.Status.COMPLETE)
 
         # Notification should be sent to all workers on task

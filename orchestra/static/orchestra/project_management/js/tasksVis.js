@@ -23,7 +23,7 @@
       audit.assignments.forEach(function(assignmentAudit) {
         humanAudit.assignments[assignmentAudit.assignment.worker.username] = {
           'change': assignmentAudit.change,
-          'snapshots': assignmentAudit.snapshots
+          'iterations': assignmentAudit.iterations
         };
       });
       return humanAudit;
@@ -193,20 +193,29 @@
           var datetimes = [];
           task.assignments.forEach(function(assignment) {
             if (assignment.iterations) {
-              assignment.iterations.forEach(function(iteration) {
-                datetimes.push({
-                  'datetime': new Date(iteration.start_datetime),
-                  'taskKey': task.step_slug
-                });
+              assignment.iterations.forEach(function(iteration, i) {
+                if (i === 0) {
+                  // If iteration is the first of its assignment, we can
+                  // revert to before it was created.
+                  datetimes.push({
+                    'datetime': new Date(iteration.start_datetime),
+                    'taskKey': task.step_slug,
+                    'iterationId': iteration.id,
+                    'revertBefore': true
+                  });
+                }
+                if (iteration.status !== 'Processing') {
+                  // If iteration isn't processing, we can revert to it
+                  datetimes.push({
+                    'datetime': new Date(iteration.end_datetime),
+                    'taskKey': task.step_slug,
+                    'iterationId': iteration.id,
+                    'revertBefore': false
+                  });
+                }
               });
             }
           });
-          if (!dataService.inProgressAssignment(task)) {
-            datetimes.push({
-              'datetime': new Date(dataService.taskEnd(task)),
-              'taskKey': task.step_slug
-            });
-          }
           return datetimes;
         }, function(datetime) {
           return datetime.datetime;
@@ -242,7 +251,7 @@
           })
           .on('click', function(datetimeInfo) {
             var taskId = dataService.taskFromKey(datetimeInfo.taskKey).id;
-            tasksVis.revertTask(taskId, datetimeInfo.datetime);
+            tasksVis.revertTask(taskId, datetimeInfo.iterationId, datetimeInfo.revertBefore);
           });
 
         revertGroups.transition().attr({
@@ -375,7 +384,7 @@
             alert(errorMessage);
           });
       },
-      revertTask: function(taskId, datetime) {
+      revertTask: function(taskId, iterationId, revertBefore) {
         /**
          * Displays a modal containing the audit trail of items to be reverted.
          * Handles the promise returned by orchestraApi.revertTask in the
@@ -386,7 +395,7 @@
           return;
         }
         tasksVis.reverting = true;
-        orchestraApi.revertTask(taskId, datetime, true)
+        orchestraApi.revertTask(taskId, iterationId, revertBefore, false)
           .then(function(response) {
             var modalInstance = $modal.open({
               templateUrl: $static('/static/orchestra/project_management/partials/revert_modal.html'),
@@ -394,7 +403,7 @@
                 $scope.audit = _humanizeAudit(response.data);
                 $scope.cancel = modalInstance.close;
                 $scope.confirmRevert = function() {
-                  orchestraApi.revertTask(taskId, datetime, false)
+                  orchestraApi.revertTask(taskId, iterationId, revertBefore, true)
                     .then(function() {
                       dataService.updateData();
                     }, function(response) {
