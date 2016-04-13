@@ -190,7 +190,7 @@ class TimerEndpointTests(EndpointTests):
 
     @patch('orchestra.views.time_tracking.start_timer',
            side_effect=TimerError('test'))
-    def test_start_timer_timer_already_running(self, mock_start):
+    def test_start_timer_timer_error(self, mock_start):
         resp = self.request_client.post(
             reverse('orchestra:orchestra:start_timer'),
             data=json.dumps({'assignment': '11'}),
@@ -214,7 +214,7 @@ class TimerEndpointTests(EndpointTests):
 
     @patch('orchestra.views.time_tracking.stop_timer',
            side_effect=TimerError('test'))
-    def test_stop_timer_timer_not_running(self, mock_stop):
+    def test_stop_timer_timer_error(self, mock_stop):
         resp = self.request_client.post(
             reverse('orchestra:orchestra:stop_timer'),
             data=json.dumps({}),
