@@ -49,9 +49,7 @@ urlpatterns = patterns(
         time_entries, name='time_entries'),
 
     url(r'^interface/timer/start/$', start_timer, name='start_timer'),
-
     url(r'^interface/timer/stop/$', stop_timer, name='stop_timer'),
-
     url(r'^interface/timer/$', get_timer, name='get_timer'),
 
     url(r'^interface/project_management/',

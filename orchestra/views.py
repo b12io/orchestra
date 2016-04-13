@@ -233,7 +233,7 @@ def time_entries(request):
     except (TaskStatusError, serializers.ValidationError) as e:
         raise BadRequest(e)
     except Exception as e:
-        logger.error(e, exc_info=True)
+        logger.exception(e)
         raise e
 
 
@@ -256,7 +256,7 @@ def start_timer(request):
     except TimerError as e:
         raise BadRequest(e)
     except Exception as e:
-        logger.error(e, exc_info=True)
+        logger.exception(e)
         raise e
 
 
@@ -272,7 +272,7 @@ def stop_timer(request):
     except TimerError as e:
         raise BadRequest(e)
     except Exception as e:
-        logger.error(e, exc_info=True)
+        logger.exception(e)
         raise e
 
 
