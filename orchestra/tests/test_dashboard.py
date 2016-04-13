@@ -1,17 +1,12 @@
 import json
 
-from copy import deepcopy
-from datetime import datetime
 from django.test import override_settings
-from django.utils import timezone
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import Step
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_models
-from orchestra.tests.helpers.fixtures import setup_task_history
 from orchestra.tests.helpers.iterations import verify_iterations
-from orchestra.utils.assignment_snapshots import load_snapshots
 from orchestra.utils.task_lifecycle import create_subsequent_tasks
 
 
@@ -258,21 +253,13 @@ class DashboardTestCase(OrchestraTestCase):
         self.assertEquals(returned['message'],
                           'No task for given id')
 
-        # user 0 can only submit a task not accept
-        response = self._submit_assignment(
-            self.clients[0], task.id, command='accept')
-        self.assertEquals(response.status_code, 400)
-        returned = json.loads(response.content.decode('utf-8'))
-        self.assertEquals(returned['message'],
-                          'Only reviewer can accept the task.')
-
         # user 0 can only submit a task not reject
         response = self._submit_assignment(
             self.clients[0], task.id, command='reject')
         self.assertEquals(response.status_code, 400)
         returned = json.loads(response.content.decode('utf-8'))
         self.assertEquals(returned['message'],
-                          'Only reviewer can reject the task.')
+                          'Task not in rejectable state.')
 
         # user 0 can't call illegal commands
         response = self._submit_assignment(
@@ -313,7 +300,7 @@ class DashboardTestCase(OrchestraTestCase):
             self.clients[0], {'task_id': task.id},
             task.project.short_description,
             'Submitted', 'Pending Review', False,
-            True, data, self.workers[0], work_times_seconds=[1])
+            True, data, self.workers[0])
 
         # Check that iteration has correct submitted state
         verify_iterations(task.id)
@@ -357,14 +344,6 @@ class DashboardTestCase(OrchestraTestCase):
             'Processing', 'Reviewing', True,
             False, {'test_key': 'test_value'}, self.workers[1])
 
-        # user 1 can't submit a task
-        response = self._submit_assignment(
-            self.clients[1], task_id, data=data)
-        self.assertEquals(response.status_code, 400)
-        returned = json.loads(response.content.decode('utf-8'))
-        self.assertEquals(returned['message'],
-                          'Worker can only submit a task.')
-
         # user 1 rejects a task
         response = self._submit_assignment(
             self.clients[1], task_id, data=rejected_data, command='reject')
@@ -384,7 +363,7 @@ class DashboardTestCase(OrchestraTestCase):
             self.clients[1], {'task_id': task.id},
             task.project.short_description,
             'Submitted', 'Post-review Processing', True,
-            True, rejected_data, self.workers[1], work_times_seconds=[1])
+            True, rejected_data, self.workers[1])
 
         # user 0 submits an updated data
         response = self._submit_assignment(
@@ -398,7 +377,7 @@ class DashboardTestCase(OrchestraTestCase):
             self.clients[1], {'task_id': task.id},
             task.project.short_description,
             'Processing', 'Reviewing', True,
-            False, data, self.workers[1], work_times_seconds=[1])
+            False, data, self.workers[1])
 
         accepted_data = {'accepted_key': 'accepted_val'}
         # user 1 accepts a task
@@ -414,7 +393,7 @@ class DashboardTestCase(OrchestraTestCase):
             self.clients[1], {'task_id': task.id},
             task.project.short_description,
             'Submitted', 'Pending Review', True,
-            True, accepted_data, self.workers[1], work_times_seconds=[1, 1])
+            True, accepted_data, self.workers[1])
 
         # make sure a task can't be submitted twice
         response = self._submit_assignment(
@@ -449,7 +428,7 @@ class DashboardTestCase(OrchestraTestCase):
             self.clients[3], {'task_id': task.id},
             task.project.short_description,
             'Submitted', 'Post-review Processing', True,
-            True, rejected_data, self.workers[3], work_times_seconds=[1])
+            True, rejected_data, self.workers[3])
 
         # check client dashboards
         self._check_client_dashboard_state(self.clients[0], 'pending_review')
@@ -485,7 +464,7 @@ class DashboardTestCase(OrchestraTestCase):
             self.clients[3], {'task_id': task.id},
             task.project.short_description,
             'Submitted', 'Complete', True,
-            True, accepted_data, self.workers[3], work_times_seconds=[1, 1])
+            True, accepted_data, self.workers[3])
 
         # check that reviewer cannot reaccept task
         response = self._submit_assignment(
@@ -494,57 +473,6 @@ class DashboardTestCase(OrchestraTestCase):
         returned = json.loads(response.content.decode('utf-8'))
         self.assertEquals(returned['message'],
                           'Task already completed')
-
-    def test_assignment_snapshot_upgrades(self):
-        good_snapshots = {
-            'snapshots': [{
-                'data': {},
-                'datetime': timezone.now().isoformat(),
-                'type': TaskAssignment.SnapshotType.SUBMIT,
-                'work_time_seconds': 1
-            }],
-            '__version': 2}
-        old_snapshots = {
-            'snapshots': [
-                {
-                    'data': {},
-                    # timezone-naive
-                    'datetime': datetime.utcnow().isoformat(),
-                    'type': TaskAssignment.SnapshotType.SUBMIT,
-                }, {
-                    'data': {},
-                    'datetime': timezone.now().isoformat(),
-                    'type': TaskAssignment.SnapshotType.SUBMIT,
-                    'work_time_seconds': 1
-                }]}
-        upgraded_snapshots = deepcopy(old_snapshots)
-        upgraded_snapshots['__version'] = 2
-        upgraded_snapshots['snapshots'][0]['work_time_seconds'] = 0
-        upgraded_snapshots['snapshots'][0]['datetime'] += '+00:00'
-
-        self.assertEquals(load_snapshots(good_snapshots), good_snapshots)
-        self.assertEquals(load_snapshots(old_snapshots), upgraded_snapshots)
-
-    def test_task_timing(self):
-        """
-        Ensure that timing information is properly recorded across
-        submissions/rejections/acceptances.
-        """
-        task = setup_task_history(self)
-
-        self._verify_good_task_assignment_information(
-            self.clients[6], {'task_id': task.id},
-            task.project.short_description,
-            'Submitted', 'Complete', False,
-            True, {'test': 'test'}, self.workers[6],
-            work_times_seconds=[36, 38, 35])
-
-        self._verify_good_task_assignment_information(
-            self.clients[7], {'task_id': task.id},
-            task.project.short_description,
-            'Submitted', 'Complete', True,
-            True, {'test': 'test'}, self.workers[7],
-            work_times_seconds=[36, 38])
 
     def _verify_bad_task_assignment_information(
             self, client, post_data, error_message):
@@ -560,9 +488,7 @@ class DashboardTestCase(OrchestraTestCase):
     def _verify_good_task_assignment_information(
             self, client, post_data, project_description,
             assignment_status, task_status, is_reviewer,
-            is_read_only, task_data, worker, work_times_seconds=None):
-        if work_times_seconds is None:
-            work_times_seconds = []
+            is_read_only, task_data, worker):
         response = client.post(
             '/orchestra/api/interface/task_assignment_information/',
             json.dumps(post_data),
@@ -588,7 +514,6 @@ class DashboardTestCase(OrchestraTestCase):
             'step': {'slug': 'step1', 'name': 'The first step'},
             'is_reviewer': is_reviewer,
             'is_read_only': is_read_only,
-            'work_times_seconds': work_times_seconds,
             'worker': {
                 'username': worker.user.username,
                 'first_name': worker.user.first_name,

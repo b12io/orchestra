@@ -1,3 +1,4 @@
+from orchestra.models import Iteration
 from orchestra.models import Project
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
@@ -115,13 +116,13 @@ class TaskAssignmentSerializer(serializers.ModelSerializer):
             'task',
             'status',
             'in_progress_task_data',
-            'snapshots',
+            'iterations',
         )
 
     worker = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
     in_progress_task_data = serializers.SerializerMethodField()
-    snapshots = serializers.SerializerMethodField()
+    iterations = serializers.SerializerMethodField()
 
     def get_worker(self, obj):
         if not obj.worker:
@@ -141,12 +142,10 @@ class TaskAssignmentSerializer(serializers.ModelSerializer):
     def get_status(self, obj):
         return dict(TaskAssignment.STATUS_CHOICES).get(obj.status, None)
 
-    def get_snapshots(self, obj):
-        """
-        This function exists to automatically deserialize the JSON blob from
-        the `snapshots` JSONField
-        """
-        return obj.snapshots
+    def get_iterations(self, obj):
+        iterations = IterationSerializer(
+            obj.iterations.order_by('start_datetime'), many=True)
+        return iterations.data
 
     def get_in_progress_task_data(self, obj):
         """
@@ -168,3 +167,31 @@ class TaskTimerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TaskTimer
+
+
+class IterationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Iteration
+
+        fields = (
+            'id',
+            'start_datetime',
+            'end_datetime',
+            'status',
+            'assignment',
+            'submitted_data',
+        )
+
+    status = serializers.SerializerMethodField()
+    submitted_data = serializers.SerializerMethodField()
+
+    def get_status(self, obj):
+        return dict(Iteration.STATUS_CHOICES).get(obj.status, None)
+
+    def get_submitted_data(self, obj):
+        """
+        This function exists to automatically deserialize the JSON blob from
+        the `in_progress_task_data` JSONField
+        """
+        return obj.submitted_data

@@ -1,4 +1,3 @@
-from copy import deepcopy
 from datetime import timedelta
 from dateutil.parser import parse
 from unittest.mock import patch
@@ -7,6 +6,7 @@ import factory
 from django.contrib.auth.models import User
 from django.test import Client
 from django.test import override_settings
+from django.utils import timezone
 
 from orchestra.models import Iteration
 from orchestra.models import Task
@@ -101,7 +101,6 @@ class TaskAssignmentFactory(factory.django.DjangoModelFactory):
         model = 'orchestra.TaskAssignment'
 
     status = TaskAssignment.Status.PROCESSING
-    snapshots = {}
 
 
 class TimeEntryFactory(factory.django.DjangoModelFactory):
@@ -478,36 +477,19 @@ def _new_assignment_start_datetime(task):
     return task.start_datetime + previous_assignment_duration + PICKUP_DELAY
 
 
-def setup_task_history(test):
-    task = test.tasks['rejected_review']
+def setup_complete_task(test_case):
+    # Microseconds are truncated when manually saving models
+    test_start = timezone.now().replace(microsecond=0)
+    times = {
+        'awaiting_pickup': test_start,
+        'entry_pickup': test_start + timedelta(hours=1),
+        'entry_submit': test_start + timedelta(hours=2),
+        'reviewer_pickup': test_start + timedelta(hours=3),
+        'reviewer_reject': test_start + timedelta(hours=4),
+        'entry_resubmit': test_start + timedelta(hours=5),
+        'reviewer_accept': test_start + timedelta(hours=6),
+    }
 
-    test._submit_assignment(
-        test.clients[6], task.id, seconds=35)
-    test._submit_assignment(
-        test.clients[7], task.id, command='reject', seconds=36)
-    test._submit_assignment(
-        test.clients[6], task.id, seconds=37)
-    test._submit_assignment(
-        test.clients[7], task.id, command='accept', seconds=38)
-
-    # Fill out the snapshots for all assignments
-    assignments = assignment_history(task)
-    first_assignment = assignments[0]
-    second_assignment = assignments[1]
-    third_assignment = assignments[2]
-
-    first_assignment.snapshots['snapshots'] = deepcopy(
-        second_assignment.snapshots['snapshots'])
-    second_assignment.snapshots['snapshots'] = (
-        deepcopy(third_assignment.snapshots['snapshots']) +
-        second_assignment.snapshots['snapshots'])[:-1]
-    first_assignment.save()
-    second_assignment.save()
-
-    return task
-
-
-def setup_complete_task(test_case, times):
     task = TaskFactory(
         project=test_case.projects['empty_project'],
         status=Task.Status.AWAITING_PROCESSING,
@@ -520,31 +502,22 @@ def setup_complete_task(test_case, times):
     }
 
     assign_task(workers['entry'].id, task.id)
-    entry_assignment = task.assignments.get(worker=workers['entry'])
-    # Modify assignment with correct datetime
-    entry_assignment.start_datetime = times['entry_pickup']
-    entry_assignment.save()
 
     task.refresh_from_db()
     test_case.assertEquals(task.status, Task.Status.PROCESSING)
 
     submit_task(
         task.id, {'test': 'entry_submit'},
-        TaskAssignment.SnapshotType.SUBMIT,
-        workers['entry'], 0)
+        Iteration.Status.REQUESTED_REVIEW,
+        workers['entry'])
 
     task.refresh_from_db()
     test_case.assertEquals(task.status, Task.Status.PENDING_REVIEW)
 
-    # Modify snapshot with correct datetime
-    entry_assignment.refresh_from_db()
-    (entry_assignment.snapshots
-        ['snapshots'][0]['datetime']) = times['entry_submit']
-    entry_assignment.save()
-
     assign_task(workers['reviewer'].id, task.id)
     reviewer_assignment = task.assignments.get(
         worker=workers['reviewer'])
+
     # Modify assignment with correct datetime
     reviewer_assignment.start_datetime = times['reviewer_pickup']
     reviewer_assignment.save()
@@ -554,26 +527,16 @@ def setup_complete_task(test_case, times):
 
     submit_task(
         task.id, {'test': 'reviewer_reject'},
-        TaskAssignment.SnapshotType.REJECT,
-        workers['reviewer'], 0)
-    # Modify snapshot with correct datetime
-    reviewer_assignment.refresh_from_db()
-    (reviewer_assignment.snapshots
-        ['snapshots'][0]['datetime']) = times['reviewer_reject']
-    reviewer_assignment.save()
+        Iteration.Status.PROVIDED_REVIEW,
+        workers['reviewer'])
 
     task.refresh_from_db()
     test_case.assertEquals(task.status, Task.Status.POST_REVIEW_PROCESSING)
 
     submit_task(
         task.id, {'test': 'entry_resubmit'},
-        TaskAssignment.SnapshotType.SUBMIT,
-        workers['entry'], 0)
-    # Modify snapshot with correct datetime
-    entry_assignment.refresh_from_db()
-    (entry_assignment.snapshots
-        ['snapshots'][1]['datetime']) = times['entry_resubmit']
-    entry_assignment.save()
+        Iteration.Status.REQUESTED_REVIEW,
+        workers['entry'])
 
     task.refresh_from_db()
     test_case.assertEquals(task.status, Task.Status.REVIEWING)
@@ -582,14 +545,8 @@ def setup_complete_task(test_case, times):
                return_value=False):
         submit_task(
             task.id, {'test': 'reviewer_accept'},
-            TaskAssignment.SnapshotType.ACCEPT,
-            workers['reviewer'], 0)
-
-    # Modify snapshot with correct datetime
-    reviewer_assignment.refresh_from_db()
-    (reviewer_assignment.snapshots
-        ['snapshots'][1]['datetime']) = times['reviewer_accept']
-    reviewer_assignment.save()
+            Iteration.Status.REQUESTED_REVIEW,
+            workers['reviewer'])
 
     task.refresh_from_db()
     test_case.assertEquals(task.status, Task.Status.COMPLETE)
@@ -597,5 +554,29 @@ def setup_complete_task(test_case, times):
     for assignment in task.assignments.all():
         test_case.assertEquals(
             assignment.status, TaskAssignment.Status.SUBMITTED)
-        test_case.assertEquals(len(assignment.snapshots['snapshots']), 2)
+        test_case.assertEquals(assignment.iterations.count(), 2)
+
+    # Modify assignments with correct datetime
+    new_datetime_labels = ('entry_pickup', 'reviewer_pickup')
+    for i, assignment in enumerate(assignment_history(task).all()):
+        assignment.start_datetime = times[new_datetime_labels[i]]
+        assignment.save()
+
+    # Modify iterations with correct datetime
+    new_datetime_labels = (
+        ('entry_pickup', 'entry_submit'),
+        ('reviewer_pickup', 'reviewer_reject'),
+        ('reviewer_reject', 'entry_resubmit'),
+        ('entry_resubmit', 'reviewer_accept')
+    )
+    new_datetimes = [
+        (times[start_label], times[end_label])
+        for start_label, end_label in new_datetime_labels]
+
+    for i, iteration in enumerate(get_iteration_history(task)):
+        iteration.start_datetime, iteration.end_datetime = new_datetimes[i]
+        iteration.save()
+
+    verify_iterations(task.id)
+
     return task

@@ -34,6 +34,10 @@ class SlugUniquenessError(Exception):
     pass
 
 
+class InvalidRevertError(Exception):
+    pass
+
+
 class TaskAssignmentError(Exception):
     pass
 
@@ -47,10 +51,6 @@ class TaskStatusError(Exception):
 
 
 class WorkerCertificationError(Exception):
-    pass
-
-
-class SnapshotsError(Exception):
     pass
 
 

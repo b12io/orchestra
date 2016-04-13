@@ -78,20 +78,17 @@ All requests must be signed using `HTTP signatures <http://tools.ietf.org/html/d
                   "assignments": [
                       {
                           "id": 558,
-                          "snapshots": {
-                              "__version": 1,
-                              "snapshots": [
-                                  {
-                                      "work_time_seconds": 3660,
-                                      "datetime": "2015-09-23T20:16:15.821171",
-                                      "data": {
-                                          "sample_data_item": "sample_data_value_old",
-                                          "__version": 1
-                                      },
-                                      "type": 0
-                                  }
-                              ]
-                          },
+                          "iterations": [
+                              {
+                                  "id": 92134,
+                                  "start_datetime": "2015-09-20T12:02:14.214553",
+                                  "end_datetime": "2015-09-23T20:16:15.821171",
+                                  "submitted_data": {
+                                      "sample_data_item": "sample_data_value_old",
+                                  },
+                                  "status": 'Requested Review'
+                              }
+                          ],
                           "worker": "sample_worker_username",
                           "task": 456,
                           "in_progress_task_data": {

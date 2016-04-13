@@ -98,7 +98,7 @@ def snapshots_to_iterations(apps, schema_editor):
         try:
             verify_iterations(task.id)
         except AssertionError:
-            logger.error('Iterations invalid for task {}.')
+            logger.error('Iterations invalid for task {}.'.format(task.id))
 
 
 class Migration(migrations.Migration):

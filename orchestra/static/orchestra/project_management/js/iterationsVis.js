@@ -19,9 +19,7 @@
           .data(function(assignmentKey) {
             var iterations = [];
             dataService.assignmentFromKey(assignmentKey).iterations.forEach(function(iteration, i) {
-              if (i > 0) {
                 iterations.push(dataService.keyFromIteration(iteration));
-              }
             });
             return iterations;
           });
@@ -46,8 +44,7 @@
             var modalInstance = $modal.open({
               templateUrl: $static('/static/orchestra/project_management/partials/data_modal.html'),
               controller: function($scope) {
-                var snapshot = iteration.assignment.snapshots.snapshots[i];
-                $scope.data = snapshot ? snapshot.data : iteration.assignment.in_progress_task_data;
+                $scope.data = Object.keys(iteration.submitted_data) ? iteration.submitted_data : iteration.assignment.in_progress_task_data;
                 $scope.header = iteration.assignment.task.step_slug + ', ' +
                   iteration.assignment.worker.username + ', iteration ' + i;
                 $scope.admin_url = iteration.assignment.admin_url;

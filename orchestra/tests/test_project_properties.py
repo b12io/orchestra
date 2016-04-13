@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
+from orchestra.models import Iteration
 from orchestra.models import Project
-from orchestra.models import TaskAssignment
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.utils.project_properties import completed_projects
@@ -21,8 +21,8 @@ class ProjectPropertiesTestCase(OrchestraTestCase):
         with patch('orchestra.utils.task_lifecycle._is_review_needed',
                    return_value=False):
             initial_task = submit_task(initial_task.id, {},
-                                       TaskAssignment.SnapshotType.SUBMIT,
-                                       self.workers[6], 0)
+                                       Iteration.Status.REQUESTED_REVIEW,
+                                       self.workers[6])
         self.assertEquals(completed_projects(projects).count(), 0)
 
         next_task = assign_task(
@@ -31,8 +31,8 @@ class ProjectPropertiesTestCase(OrchestraTestCase):
         with patch('orchestra.utils.task_lifecycle._is_review_needed',
                    return_value=False):
             initial_task = submit_task(next_task.id, {},
-                                       TaskAssignment.SnapshotType.SUBMIT,
-                                       self.workers[6], 0)
+                                       Iteration.Status.REQUESTED_REVIEW,
+                                       self.workers[6])
         self.assertEquals(completed_projects(projects).count(), 0)
 
         next_task = assign_task(
@@ -42,6 +42,6 @@ class ProjectPropertiesTestCase(OrchestraTestCase):
         with patch('orchestra.utils.task_lifecycle._is_review_needed',
                    return_value=False):
             initial_task = submit_task(next_task.id, {},
-                                       TaskAssignment.SnapshotType.SUBMIT,
-                                       self.workers[6], 0)
+                                       Iteration.Status.REQUESTED_REVIEW,
+                                       self.workers[6])
         self.assertEquals(completed_projects(projects).count(), 1)

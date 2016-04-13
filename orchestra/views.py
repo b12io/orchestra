@@ -24,6 +24,7 @@ from orchestra.core.errors import WorkerCertificationError
 from orchestra.core.errors import NoTaskAvailable
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import IllegalTaskSubmission
+from orchestra.models import Iteration
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import Worker
@@ -184,23 +185,20 @@ def submit_task_assignment(request):
     assignment_information = json.loads(request.body.decode())
     worker = Worker.objects.get(user=request.user)
     command_type = assignment_information['command_type']
-    work_time_seconds = assignment_information['work_time_seconds']
 
-    if command_type == 'accept':
-        snapshot_type = TaskAssignment.SnapshotType.ACCEPT
+    if command_type in ('submit', 'accept'):
+        iteration_status = Iteration.Status.REQUESTED_REVIEW
     elif command_type == 'reject':
-        snapshot_type = TaskAssignment.SnapshotType.REJECT
-    elif command_type == 'submit':
-        snapshot_type = TaskAssignment.SnapshotType.SUBMIT
+        iteration_status = Iteration.Status.PROVIDED_REVIEW
     else:
         raise BadRequest('Illegal command')
 
     try:
         submit_task(assignment_information['task_id'],
                     assignment_information['task_data'],
-                    snapshot_type,
+                    iteration_status,
                     worker,
-                    work_time_seconds)
+                    assignment_information.get('work_time_seconds'))
         return {}
     except TaskStatusError:
         raise BadRequest('Task already completed')
