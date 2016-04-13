@@ -46,6 +46,9 @@ from orchestra.utils.task_lifecycle import worker_assigned_to_max_tasks
 from orchestra.utils.task_lifecycle import worker_has_reviewer_status
 from orchestra.utils.time_tracking import save_time_entry
 from orchestra.utils.time_tracking import time_entries_for_worker
+from orchestra.utils.view_helpers import IsAssociatedWorker
+from orchestra.utils.view_helpers import MarkDeletedDestroyMixin
+from orchestra.utils.view_helpers import NotDeletedFilterBackend
 
 import logging
 
@@ -381,20 +384,10 @@ def server_error(request):
     })
 
 
-class IsAssociatedWorker(permissions.BasePermission):
-    """
-    Permission for objects with `worker` field. Checks if request.user matches
-    worker on object.
-    """
-
-    def has_object_permission(self, request, view, obj):
-        worker = Worker.objects.get(user=request.user)
-        return obj.worker == worker
-
-
 class TimeEntryList(generics.ListCreateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = TimeEntrySerializer
+    filter_backends = (NotDeletedFilterBackend,)
 
     def get_queryset(self):
         """
@@ -403,14 +396,15 @@ class TimeEntryList(generics.ListCreateAPIView):
         """
         # TODO(lydia): Add time filter to queryset.
         worker = Worker.objects.get(user=self.request.user)
-        queryset = TimeEntry.objects.filter(worker=worker)
+        queryset = TimeEntry.objects.filter(worker=worker)#, is_deleted=False)
         assignment_id = self.request.query_params.get('assignment', None)
         if assignment_id is not None:
             queryset = queryset.filter(assignment__id=assignment_id)
         return queryset
 
 
-class TimeEntryDetail(generics.RetrieveUpdateDestroyAPIView):
+class TimeEntryDetail(MarkDeletedDestroyMixin,
+                      generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (permissions.IsAuthenticated, IsAssociatedWorker)
     queryset = TimeEntry.objects.all()
     serializer_class = TimeEntrySerializer
