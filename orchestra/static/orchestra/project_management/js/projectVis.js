@@ -3,7 +3,7 @@
 
   var serviceModule = angular.module('orchestra.project_management.services');
 
-  serviceModule.factory('projectVis', function($modal, $location, dataService, orchestraApi, crosshair, visUtils,
+  serviceModule.factory('projectVis', function($uibModal, $location, dataService, orchestraApi, crosshair, visUtils,
     tasksVis, assignmentsVis, iterationsVis, axis) {
     /**
      * Service to coordinate and visualize the project management view.
@@ -86,7 +86,7 @@
         /**
          * Displays project-level data in a modal.
          */
-        var modalInstance = $modal.open({
+        var modalInstance = $uibModal.open({
           templateUrl: $static('/static/orchestra/project_management/partials/data_modal.html'),
           controller: function($scope) {
             $scope.data = dataService.data.project;
@@ -100,7 +100,7 @@
          * Displays options to add/remove Slack users to the project group in
          * a modal.
          */
-        var modalInstance = $modal.open({
+        var modalInstance = $uibModal.open({
           templateUrl: $static('/static/orchestra/project_management/partials/slack_modal.html'),
           controller: function($scope, $log) {
             $scope.editSlackMembership = function(action, username) {
