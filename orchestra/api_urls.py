@@ -3,9 +3,12 @@ from django.conf.urls import patterns
 from django.conf.urls import url
 
 from orchestra.views import dashboard_tasks
+from orchestra.views import get_timer
 from orchestra.views import new_task_assignment
 from orchestra.views import save_task_assignment
+from orchestra.views import start_timer
 from orchestra.views import status
+from orchestra.views import stop_timer
 from orchestra.views import submit_task_assignment
 from orchestra.views import task_assignment_information
 from orchestra.views import time_entries
@@ -44,6 +47,10 @@ urlpatterns = patterns(
 
     url(r'^interface/time_entries/$',
         time_entries, name='time_entries'),
+
+    url(r'^interface/timer/start/$', start_timer, name='start_timer'),
+    url(r'^interface/timer/stop/$', stop_timer, name='stop_timer'),
+    url(r'^interface/timer/$', get_timer, name='get_timer'),
 
     url(r'^interface/project_management/',
         include('orchestra.interface_api.project_management.urls',

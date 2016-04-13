@@ -19,6 +19,7 @@ from rest_framework import status as http_status
 
 from orchestra import signals
 from orchestra.core.errors import TaskStatusError
+from orchestra.core.errors import TimerError
 from orchestra.core.errors import WorkerCertificationError
 from orchestra.core.errors import NoTaskAvailable
 from orchestra.core.errors import TaskAssignmentError
@@ -27,7 +28,10 @@ from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import Worker
 from orchestra.models import Step
+from orchestra.project_api.serializers import TaskTimerSerializer
+from orchestra.project_api.serializers import TimeEntrySerializer
 from orchestra.utils.s3 import upload_editor_image
+from orchestra.utils import time_tracking
 from orchestra.utils.task_lifecycle import save_task
 from orchestra.utils.task_lifecycle import submit_task
 from orchestra.utils.task_lifecycle import tasks_assigned_to_worker
@@ -228,6 +232,58 @@ def time_entries(request):
         raise BadRequest('Worker is not assigned to this task id.')
     except (TaskStatusError, serializers.ValidationError) as e:
         raise BadRequest(e)
+    except Exception as e:
+        logger.exception(e)
+        raise e
+
+
+@json_view
+@login_required
+def start_timer(request):
+    worker = Worker.objects.get(user=request.user)
+    try:
+        if request.method == 'POST':
+            time_entry_data = json.loads(request.body.decode())
+            assignment_id = None
+            if 'assignment' in time_entry_data:
+                assignment_id = time_entry_data['assignment']
+            timer = time_tracking.start_timer(worker,
+                                              assignment_id=assignment_id)
+            serializer = TaskTimerSerializer(timer)
+            return serializer.data
+    except TaskAssignment.DoesNotExist:
+        raise BadRequest('Worker is not assigned to this task id.')
+    except TimerError as e:
+        raise BadRequest(e)
+    except Exception as e:
+        logger.exception(e)
+        raise e
+
+
+@json_view
+@login_required
+def stop_timer(request):
+    worker = Worker.objects.get(user=request.user)
+    try:
+        if request.method == 'POST':
+            time_entry = time_tracking.stop_timer(worker)
+            serializer = TimeEntrySerializer(time_entry)
+            return serializer.data
+    except TimerError as e:
+        raise BadRequest(e)
+    except Exception as e:
+        logger.exception(e)
+        raise e
+
+
+@json_view
+@login_required
+def get_timer(request):
+    worker = Worker.objects.get(user=request.user)
+    try:
+        if request.method == 'GET':
+            duration = time_tracking.get_timer_current_duration(worker)
+            return str(duration)
     except Exception as e:
         logger.error(e, exc_info=True)
         raise e
