@@ -16,7 +16,6 @@ from registration.models import RegistrationProfile
 from registration.views import RegistrationView
 from rest_framework import generics
 from rest_framework import permissions
-from rest_framework import serializers
 from rest_framework import status as http_status
 
 from orchestra import signals
@@ -44,8 +43,6 @@ from orchestra.utils.task_lifecycle import get_task_overview_for_worker
 from orchestra.utils.task_lifecycle import worker_assigned_to_rejected_task
 from orchestra.utils.task_lifecycle import worker_assigned_to_max_tasks
 from orchestra.utils.task_lifecycle import worker_has_reviewer_status
-from orchestra.utils.time_tracking import save_time_entry
-from orchestra.utils.time_tracking import time_entries_for_worker
 from orchestra.utils.view_helpers import IsAssociatedWorker
 from orchestra.utils.view_helpers import MarkDeletedDestroyMixin
 from orchestra.utils.view_helpers import NotDeletedFilterBackend
@@ -218,31 +215,6 @@ def submit_task_assignment(request):
 
 @json_view
 @login_required
-def time_entries(request):
-    worker = Worker.objects.get(user=request.user)
-    try:
-        if request.method == 'GET':
-            return time_entries_for_worker(worker,
-                                           task_id=request.GET.get('task-id'))
-        elif request.method == 'POST':
-            time_entry_data = json.loads(request.body.decode())
-            if 'task_id' not in time_entry_data:
-                raise BadRequest('Include task id in request data')
-            task_id = time_entry_data.pop('task_id')
-            return save_time_entry(worker, task_id, time_entry_data)
-    except Task.DoesNotExist:
-        raise BadRequest('No task for given id')
-    except TaskAssignment.DoesNotExist:
-        raise BadRequest('Worker is not assigned to this task id.')
-    except (TaskStatusError, serializers.ValidationError) as e:
-        raise BadRequest(e)
-    except Exception as e:
-        logger.exception(e)
-        raise e
-
-
-@json_view
-@login_required
 def start_timer(request):
     worker = Worker.objects.get(user=request.user)
     try:
@@ -396,11 +368,21 @@ class TimeEntryList(generics.ListCreateAPIView):
         """
         # TODO(lydia): Add time filter to queryset.
         worker = Worker.objects.get(user=self.request.user)
-        queryset = TimeEntry.objects.filter(worker=worker)#, is_deleted=False)
+        queryset = TimeEntry.objects.filter(worker=worker)
         assignment_id = self.request.query_params.get('assignment', None)
         if assignment_id is not None:
             queryset = queryset.filter(assignment__id=assignment_id)
         return queryset
+
+    def perform_create(self, serializer):
+        """
+        Overwrite perform_create so that user can only create time entries
+        for him or herself.
+        """
+        # TODO(lydia): Is there a way to prevent workers from creating
+        # time entries for completed TaskAssignments?
+        worker = Worker.objects.get(user=self.request.user)
+        serializer.save(worker=worker)
 
 
 class TimeEntryDetail(MarkDeletedDestroyMixin,

@@ -11,7 +11,6 @@ from orchestra.views import status
 from orchestra.views import stop_timer
 from orchestra.views import submit_task_assignment
 from orchestra.views import task_assignment_information
-from orchestra.views import time_entries
 from orchestra.views import upload_image
 from orchestra.views import TimeEntryList
 from orchestra.views import TimeEntryDetail

@@ -6,9 +6,7 @@ from unittest.mock import patch
 from django.core.urlresolvers import reverse
 from django.test import Client as RequestClient
 from django.utils import timezone
-from rest_framework import serializers
 
-from orchestra.core.errors import TaskStatusError
 from orchestra.core.errors import TimerError
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
@@ -32,7 +30,7 @@ class EndpointTests(OrchestraTestCase):
         self.assertEqual(data['error'], 400)
 
 
-class TimeEntriesViewTestCase(EndpointTests):
+class TimeEntriesEndpointTests(EndpointTests):
 
     def setUp(self):
         super().setUp()
@@ -75,82 +73,91 @@ class TimeEntriesViewTestCase(EndpointTests):
         self.assertEqual(len(data), self.tasks.count())
         self._verify_time_entries(data)
 
-    @patch('orchestra.views.time_entries_for_worker')
-    def test_time_entries_get_task_id(self, mock_func):
-        mock_func.return_value = [self.time_entry_data]
-        self.request_client.get(self.url,
-                                data={'task-id': self.task.id})
-        mock_func.assert_called_with(self.worker,
-                                     task_id=str(self.task.id))
+    def test_time_entries_get_assignment_id(self):
+        resp = self.request_client.get(self.url,
+                                       data={'assignment': self.assignment.id})
+        data = json.loads(resp.content.decode())
+        self.assertEqual(len(data), 1)
+        self._verify_time_entries(data)
 
-    @patch('orchestra.views.time_entries_for_worker',
-           side_effect=Task.DoesNotExist)
-    def test_time_entries_get_task_missing(self, mock_func):
-        resp = self.request_client.get(self.url)
-        self._verify_missing_task(resp)
+    def test_time_entries_assignment_missing(self):
+        resp = self.request_client.get(self.url, data={'assignment': '111'})
+        data = json.loads(resp.content.decode())
+        self.assertEqual(len(data), 0)
 
-    @patch('orchestra.views.time_entries_for_worker',
-           side_effect=TaskAssignment.DoesNotExist)
-    def test_time_entries_get_worker_not_assigned(self, mock_func):
-        resp = self.request_client.get(self.url)
-        self._verify_worker_not_assigned(resp)
-
-    @patch('orchestra.views.save_time_entry')
-    def test_time_entries_post(self, mock_func):
-        mock_func.return_value = self.time_entry_data
-
-        # Set task id in request body.
-        self.time_entry_data['task_id'] = self.tasks[0].id
-        self.request_client.post(self.url,
-                                 data=json.dumps(self.time_entry_data),
-                                 content_type='application/json')
-
-        # Remove task_id from dictionary so we can compare with mock_func
-        # call.
-        self.time_entry_data.pop('task_id')
-        mock_func.assert_called_with(self.worker, self.tasks[0].id,
-                                     self.time_entry_data)
-
-    @patch('orchestra.views.save_time_entry', side_effect=Task.DoesNotExist)
-    def test_time_entries_post_task_missing(self, mock_func):
-        # Set task id in request body.
-        self.time_entry_data['task_id'] = self.tasks[0].id
+    def test_time_entries_post(self):
         resp = self.request_client.post(self.url,
                                         data=json.dumps(self.time_entry_data),
                                         content_type='application/json')
-        self._verify_missing_task(resp)
+        data = json.loads(resp.content.decode())
+        time_entry = TimeEntry.objects.get(id=data['id'])
+        self.assertEqual(time_entry.worker, self.worker)
+        self.assertIsNone(time_entry.assignment)
+        self.assertIsNone(time_entry.timer_start_time)
+        self.assertIsNone(time_entry.timer_stop_time)
+        self.assertFalse(time_entry.is_deleted)
+        self.assertEqual(time_entry.description, 'test description')
+        self.assertEqual(time_entry.date, datetime.date(2016, 5, 1))
+        self.assertEqual(time_entry.time_worked,
+                         datetime.timedelta(minutes=30))
 
-    @patch('orchestra.views.save_time_entry',
-           side_effect=TaskAssignment.DoesNotExist)
-    def test_time_entries_post_worker_not_assigned(self, mock_func):
-        # Set task id in request body.
-        self.time_entry_data['task_id'] = self.tasks[0].id
+    def test_time_entries_post_invalid_data(self):
+        self.time_entry_data['date'] = 'hi'  # Invalid date.
         resp = self.request_client.post(self.url,
                                         data=json.dumps(self.time_entry_data),
                                         content_type='application/json')
-        self._verify_worker_not_assigned(resp)
+        self.assertEqual(resp.status_code, 400)
 
-    @patch('orchestra.views.logger')
-    @patch('orchestra.views.save_time_entry',
-           side_effect=TaskStatusError('Error'))
-    def test_time_entries_post_task_complete(self, mock_func, mock_logger):
-        # Set task id in request body.
-        self.time_entry_data['task_id'] = self.tasks[0].id
+    def test_time_entries_post_cannot_set_worker(self):
+        """
+        Worker is a read-only field and writes to it will be ignored by the
+        serializer.
+        """
+        worker = Worker.objects.exclude(id=self.worker.id).first()
+        self.time_entry_data['worker'] = worker.id
         resp = self.request_client.post(self.url,
                                         data=json.dumps(self.time_entry_data),
                                         content_type='application/json')
-        self._verify_bad_request(resp, 'Error')
+        data = json.loads(resp.content.decode())
+        time_entry = TimeEntry.objects.get(id=data['id'])
+        self.assertNotEqual(time_entry.worker, worker)
+        self.assertEqual(time_entry.worker, self.worker)
 
-    @patch('orchestra.views.logger')
-    @patch('orchestra.views.save_time_entry',
-           side_effect=serializers.ValidationError('Error'))
-    def test_time_entries_post_data_invalid(self, mock_func, mock_logger):
-        # Set task id in request body.
-        self.time_entry_data['task_id'] = self.tasks[0].id
-        resp = self.request_client.post(self.url,
-                                        data=json.dumps(self.time_entry_data),
-                                        content_type='application/json')
-        self._verify_bad_request(resp, "['Error']")
+    def test_time_entry_delete(self):
+        """
+        Delete should mark instance as deleted, not delete instance.
+        """
+        time_entry = TimeEntry.objects.filter(worker=self.worker).first()
+        self.request_client.delete(
+            reverse('orchestra:orchestra:time_entry',
+                    kwargs={'pk': time_entry.id}))
+        time_entry.refresh_from_db()
+        self.assertTrue(time_entry.is_deleted)
+
+    def test_time_entry_update(self):
+        time_entry = TimeEntry.objects.filter(worker=self.worker).first()
+        serializer = TimeEntrySerializer(time_entry)
+        data = serializer.data
+        data['time_worked'] = '10:00:00'  # Update time worked.
+        self.request_client.put(
+            reverse('orchestra:orchestra:time_entry',
+                    kwargs={'pk': time_entry.id}),
+            data=json.dumps(data),
+            content_type='application/json')
+        time_entry.refresh_from_db()
+        self.assertEqual(time_entry.time_worked, datetime.timedelta(hours=10))
+
+    def test_time_entry_update_invalid_data(self):
+        time_entry = TimeEntry.objects.filter(worker=self.worker).first()
+        serializer = TimeEntrySerializer(time_entry)
+        data = serializer.data
+        data['date'] = '2'  # Invalid date.
+        resp = self.request_client.put(
+            reverse('orchestra:orchestra:time_entry',
+                    kwargs={'pk': time_entry.id}),
+            data=json.dumps(data),
+            content_type='application/json')
+        self.assertEqual(resp.status_code, 400)
 
 
 class TimerEndpointTests(EndpointTests):

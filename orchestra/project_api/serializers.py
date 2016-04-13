@@ -159,6 +159,8 @@ class TaskAssignmentSerializer(serializers.ModelSerializer):
 
 class TimeEntrySerializer(serializers.ModelSerializer):
 
+    worker = serializers.ReadOnlyField(source='worker.id')
+
     class Meta:
         model = TimeEntry
 
