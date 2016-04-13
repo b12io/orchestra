@@ -595,4 +595,5 @@ class DashboardTestCase(OrchestraTestCase):
                 'last_name': worker.user.last_name,
             }
         }
+
         self.assertEquals(returned, expected)
