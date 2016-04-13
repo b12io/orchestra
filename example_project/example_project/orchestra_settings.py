@@ -107,7 +107,10 @@ def setup_orchestra(settings_module_name):
 
     # Don't authenticate users without a view explicitly calling for it
     settings.REST_FRAMEWORK = {
-        'DEFAULT_AUTHENTICATION_CLASSES': (),
+        'DEFAULT_AUTHENTICATION_CLASSES': (
+            'rest_framework.authentication.BasicAuthentication',
+            'rest_framework.authentication.SessionAuthentication',
+        ),
     }
 
     # Machine Step Scheduling
