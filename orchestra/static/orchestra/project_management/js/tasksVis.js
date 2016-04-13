@@ -3,7 +3,7 @@
 
   var serviceModule = angular.module('orchestra.project_management.services');
 
-  serviceModule.factory('tasksVis', function($modal, dataService, orchestraApi,
+  serviceModule.factory('tasksVis', function($uibModal, dataService, orchestraApi,
     visUtils, assignmentsVis, crosshair, axis) {
     /**
      * Service to modularize task visualization and manipulation within
@@ -397,7 +397,7 @@
         tasksVis.reverting = true;
         orchestraApi.revertTask(taskId, iterationId, revertBefore, false)
           .then(function(response) {
-            var modalInstance = $modal.open({
+            var modalInstance = $uibModal.open({
               templateUrl: $static('/static/orchestra/project_management/partials/revert_modal.html'),
               controller: function($scope) {
                 $scope.audit = _humanizeAudit(response.data);

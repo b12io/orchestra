@@ -6,7 +6,7 @@
     .controller('TaskController', TaskController);
 
   function TaskController($location, $scope, $routeParams, $http, $rootScope,
-    $modal, $timeout, autoSaveTask, orchestraService,
+    $uibModal, $timeout, autoSaveTask, orchestraService,
     requiredFields) {
     var vm = this;
     vm.taskId = $routeParams.taskId;
@@ -92,7 +92,7 @@
     };
 
     vm.submitTask = function(command) {
-      var modalInstance = $modal.open({
+      var modalInstance = $uibModal.open({
         templateUrl: 'submit_task_modal.html',
         controller: 'SubmitModalInstanceCtrl',
         size: 'sm',

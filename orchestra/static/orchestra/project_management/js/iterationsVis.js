@@ -3,7 +3,7 @@
 
   var serviceModule = angular.module('orchestra.project_management.services');
 
-  serviceModule.factory('iterationsVis', function($modal, dataService, visUtils, axis) {
+  serviceModule.factory('iterationsVis', function($uibModal, dataService, visUtils, axis) {
     /**
      * Service to modularize iteration visualization and manipulation within
      * the project management view.
@@ -41,7 +41,7 @@
           })
           .on('click', function(iterationKey, i) {
             var iteration = dataService.iterationFromKey(iterationKey);
-            var modalInstance = $modal.open({
+            var modalInstance = $uibModal.open({
               templateUrl: $static('/static/orchestra/project_management/partials/data_modal.html'),
               controller: function($scope) {
                 $scope.data = Object.keys(iteration.submitted_data) ? iteration.submitted_data : iteration.assignment.in_progress_task_data;
