@@ -1,4 +1,5 @@
 import random
+from datetime import timedelta
 from importlib import import_module
 
 from django.conf import settings
@@ -19,6 +20,7 @@ from orchestra.models import Iteration
 from orchestra.models import Project
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
+from orchestra.models import TimeEntry
 from orchestra.models import Worker
 from orchestra.models import WorkerCertification
 from orchestra.project_api.serializers import TaskSerializer
@@ -1007,6 +1009,13 @@ def submit_task(task_id, task_data, snapshot_type, worker, work_time_seconds):
          'type': snapshot_type,
          'work_time_seconds': work_time_seconds
          })
+
+    # TODO(jrbotros): remove when time entry interface is added
+    TimeEntry.objects.create(
+        date=timezone.now().date(),
+        time_worked=timedelta(seconds=work_time_seconds),
+        worker=assignment.worker,
+        assignment=assignment)
 
     # Temporarily map snapshot types onto iteration statuses
     snapshot_type_iteration_status = {
