@@ -522,6 +522,8 @@ class TimeEntry(models.Model):
         timer_stop_time (datetime.datetime): optional
             Server timestamp for timer stop (not null if TimeEntry is
             created using work timer)
+        is_deleted (boolean):
+            If value is True, TimeEntry is deleted. Default is False.
     """
     date = models.DateField()
     time_worked = models.DurationField()
