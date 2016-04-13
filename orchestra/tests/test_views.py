@@ -75,12 +75,13 @@ class TimeEntriesViewTestCase(EndpointTests):
         self.assertEqual(len(data), self.tasks.count())
         self._verify_time_entries(data)
 
-    def test_time_entries_get_assignment_id(self):
-        resp = self.request_client.get(self.url,
-                                       data={'assignment': self.assignment.id})
-        data = json.loads(resp.content.decode())
-        self.assertEqual(len(data), 1)
-        self._verify_time_entries(data)
+    @patch('orchestra.views.time_entries_for_worker')
+    def test_time_entries_get_task_id(self, mock_func):
+        mock_func.return_value = [self.time_entry_data]
+        self.request_client.get(self.url,
+                                data={'task-id': self.task.id})
+        mock_func.assert_called_with(self.worker,
+                                     task_id=str(self.task.id))
 
     @patch('orchestra.views.time_entries_for_worker',
            side_effect=Task.DoesNotExist)
