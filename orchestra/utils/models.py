@@ -9,6 +9,13 @@ class DeleteMixin(object):
         self.save()
 
 
+class BaseModelManager(models.Manager):
+
+    def get_queryset(self):
+        return (super(BaseModelManager, self).get_queryset()
+                .filter(is_deleted=False))
+
+
 class BaseModel(DeleteMixin, models.Model):
     """
     Abstract base class models which defines created_at and is_deleted fields.
@@ -19,6 +26,8 @@ class BaseModel(DeleteMixin, models.Model):
         is_deleted (boolean):
             If value is True, mdoel is deleted. Default is False.
     """
+    objects = BaseModelManager()
+
     created_at = models.DateTimeField(default=timezone.now)
     is_deleted = models.BooleanField(default=False)
 
