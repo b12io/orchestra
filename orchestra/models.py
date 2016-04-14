@@ -5,6 +5,7 @@ from django.utils import timezone
 from jsonfield import JSONField
 
 from orchestra.core.errors import ModelSaveError
+from orchestra.utils.models import BaseModel
 
 # TODO(marcua): Convert ManyToManyFields to django-hstore referencefields or
 # wait for django-postgres ArrayFields in Django 1.8.
@@ -443,7 +444,7 @@ class TaskAssignment(models.Model):
             str(self.task), self.assignment_counter, str(self.worker))
 
 
-class Iteration(models.Model):
+class Iteration(BaseModel):
     """
     Iterations are the contiguous units of a worker's time on task.
 
