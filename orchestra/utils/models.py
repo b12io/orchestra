@@ -3,14 +3,21 @@ from django.utils import timezone
 
 
 class DeleteMixin(object):
-
+    """
+    Overrides delete and sets `is_deleted=True` instead of deleting object.
+    Intended to be used with models that have an `is_deleted` field.
+    """
     def delete(self, *args, **kwargs):
         self.is_deleted = True
         self.save()
 
 
 class BaseModelManager(models.Manager):
-
+    """
+    Model manager intended to be used with models with an `is_deleted` field.
+    Overrides the initial QuerySet to filter for objects where `is_deleted`
+    is false.
+    """
     def get_queryset(self):
         return (super(BaseModelManager, self).get_queryset()
                 .filter(is_deleted=False))
