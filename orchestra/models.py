@@ -370,7 +370,7 @@ class Task(models.Model):
         app_label = 'orchestra'
 
 
-class TaskAssignment(models.Model):
+class TaskAssignment(BaseModel):
     """
     A task assignment is a worker's assignment for a given task.
 
@@ -412,7 +412,6 @@ class TaskAssignment(models.Model):
         (Status.SUBMITTED, 'Submitted'),
         (Status.FAILED, 'Failed'))
 
-    start_datetime = models.DateTimeField(default=timezone.now)
     worker = models.ForeignKey(Worker,
                                null=True,
                                blank=True)
@@ -426,6 +425,14 @@ class TaskAssignment(models.Model):
     # Opaque field that stores current state of task as per the Step's
     # description
     in_progress_task_data = JSONField(default={}, blank=True)
+
+    @property
+    def start_datetime(self):
+        return self.created_at
+
+    @start_datetime.setter
+    def start_datetime(self, value):
+        self.created_at = value
 
     def save(self, *args, **kwargs):
         if self.task.step.is_human:
