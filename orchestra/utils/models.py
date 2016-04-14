@@ -17,7 +17,7 @@ class BaseModel(DeleteMixin, models.Model):
         created_at (datetime.datetime):
             Datetime at which the model is created.
         is_deleted (boolean):
-            If value is True, TimeEntry is deleted. Default is False.
+            If value is True, mdoel is deleted. Default is False.
     """
     created_at = models.DateTimeField(default=timezone.now)
     is_deleted = models.BooleanField(default=False)
