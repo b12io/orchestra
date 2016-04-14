@@ -41,8 +41,6 @@ def setup_orchestra(settings_module_name):
         'orchestra',
         'beanstalk_dispatch',
         'registration',
-        'hijack',
-        'compat'
     )
 
     settings.STATICFILES_FINDERS += (
@@ -83,10 +81,6 @@ def setup_orchestra(settings_module_name):
     settings.REGISTRATION_AUTO_LOGIN = True  # Automatically log the user in.
     settings.INCLUDE_REGISTER_URL = False
 
-    # Prevent hijack buttons from displaying in admin (otherwise, hijack can't
-    # be disabled by excluding the relevant URLs)
-    settings.SHOW_HIJACKUSER_IN_ADMIN = False
-
     # API Authentication
     #####################
 
@@ -112,6 +106,16 @@ def setup_orchestra(settings_module_name):
             'rest_framework.authentication.SessionAuthentication',
         ),
     }
+
+    # Hijack settings
+    settings.INSTALLED_APPS += (
+        'hijack',
+        'compat',
+        'hijack_admin',
+    )
+
+    # Optionally toggle this to enable user hijack functionality.
+    settings.HIJACK_ALLOW_GET_REQUESTS = True
 
     # Machine Step Scheduling
     ##########################

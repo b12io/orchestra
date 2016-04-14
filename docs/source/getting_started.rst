@@ -136,6 +136,11 @@ with proper certifications. To load them, run::
 
     python manage.py loadworkflowsampledata <WORKFLOW_SLUG>/<WORKFLOW_VERSION>
 
+
+If you would like to load all of the workflows, then run::
+
+    python manage.py loadallworkflows
+
 The example workflows we currently release with Orchestra are:
 
 * A :ref:`simple demo workflow <demo-section>` with one human and one machine
@@ -151,6 +156,12 @@ In addition, you can use the Orchestra admin
 of your own at any time once Orchestra is running. If you haven't created an
 admin account for your Django project, you can load a sample one (username:
 ``admin``, password: ``admin``) with ``python manage.py loaddata demo_admin``.
+
+We provide the option to use the third-party package `django-hijack
+<https://github.com/arteria/django-hijack>`_ to act on behalf of users. To
+enable this setting, ensure that the following setting is set
+``HIJACK_ALLOW_GET_REQUESTS = True``, in addition to including the urls
+referenced above.
 
 Now Orchestra should be ready to go! If you're confused about any of the above,
 check out our barebones `example project <https://github.com/unlimitedlabs/orchestra/tree/stable/example_project>`_.
