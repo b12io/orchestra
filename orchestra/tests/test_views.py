@@ -131,8 +131,7 @@ class TimeEntriesEndpointTests(EndpointTests):
         self.request_client.delete(
             reverse('orchestra:orchestra:time_entry',
                     kwargs={'pk': time_entry.id}))
-        time_entry.refresh_from_db()
-        self.assertTrue(time_entry.is_deleted)
+        self.assertFalse(TimeEntry.objects.filter(id=time_entry.id).exists())
 
     def test_time_entry_update(self):
         time_entry = TimeEntry.objects.filter(worker=self.worker).first()

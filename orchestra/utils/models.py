@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import CASCADE
 from django.utils import timezone
 
 
@@ -8,6 +9,27 @@ class DeleteMixin(object):
     Intended to be used with models that have an `is_deleted` field.
     """
     def delete(self, *args, **kwargs):
+        # Implement cascading deletes.
+        # NOTE(lydia): This ignores any other constraints passed to on_delete.
+        fields = self._meta.get_fields(include_hidden=True)
+        for field in fields:
+            # Pass on fields that are not many-to-one relationships.
+            if not ((field.one_to_many or field.one_to_one) and
+                    field.auto_created):
+                continue
+
+            # Check if foreign key is set up with on_delete=CASCADE.
+            if field.on_delete != CASCADE:
+                continue
+
+            # Query for all related objects and delete them.
+            query_args = {field.field.name: self.id}
+            related_objs = field.related_model.objects.filter(
+                **query_args)
+            for obj in related_objs:
+                obj.delete()
+
+        # Mark current object as deleted.
         self.is_deleted = True
         self.save()
 

@@ -44,8 +44,6 @@ from orchestra.utils.task_lifecycle import worker_assigned_to_rejected_task
 from orchestra.utils.task_lifecycle import worker_assigned_to_max_tasks
 from orchestra.utils.task_lifecycle import worker_has_reviewer_status
 from orchestra.utils.view_helpers import IsAssociatedWorker
-from orchestra.utils.view_helpers import MarkDeletedDestroyMixin
-from orchestra.utils.view_helpers import NotDeletedFilterBackend
 
 import logging
 
@@ -359,7 +357,6 @@ def server_error(request):
 class TimeEntryList(generics.ListCreateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = TimeEntrySerializer
-    filter_backends = (NotDeletedFilterBackend,)
 
     def get_queryset(self):
         """
@@ -385,8 +382,7 @@ class TimeEntryList(generics.ListCreateAPIView):
         serializer.save(worker=worker)
 
 
-class TimeEntryDetail(MarkDeletedDestroyMixin,
-                      generics.RetrieveUpdateDestroyAPIView):
+class TimeEntryDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (permissions.IsAuthenticated, IsAssociatedWorker)
     queryset = TimeEntry.objects.all()
     serializer_class = TimeEntrySerializer

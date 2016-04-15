@@ -370,7 +370,7 @@ class Task(models.Model):
         app_label = 'orchestra'
 
 
-class TaskAssignment(models.Model):
+class TaskAssignment(BaseModel):
     """
     A task assignment is a worker's assignment for a given task.
 
@@ -483,7 +483,7 @@ class Iteration(BaseModel):
     submitted_data = JSONField(default={}, blank=True)
 
 
-class TimeEntry(models.Model):
+class TimeEntry(BaseModel):
     """
     A time entry is a record of time worked on a given task assignment.
 
@@ -504,8 +504,6 @@ class TimeEntry(models.Model):
         timer_stop_time (datetime.datetime): optional
             Server timestamp for timer stop (not null if TimeEntry is
             created using work timer)
-        is_deleted (boolean):
-            If value is True, TimeEntry is deleted. Default is False.
     """
     date = models.DateField()
     time_worked = models.DurationField()
@@ -518,7 +516,6 @@ class TimeEntry(models.Model):
     description = models.CharField(max_length=200, null=True, blank=True)
     timer_start_time = models.DateTimeField(null=True)
     timer_stop_time = models.DateTimeField(null=True)
-    is_deleted = models.BooleanField(default=False)
 
 
 class TaskTimer(models.Model):
