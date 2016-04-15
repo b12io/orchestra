@@ -1,0 +1,86 @@
+.timecard-view {
+  position: absolute;
+  top: 100px;
+  // width: 80%;
+  // max-width: 900px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.4rem;
+
+  h1 {
+    // font-size: 2em;
+    display: inline-block;
+  }
+
+  .btn-add-entry {
+    vertical-align: top;
+    float: right;
+  }
+
+  .remove-entry {
+    color: red;
+    cursor: pointer;
+  }
+
+  .description {
+    width: 300px;
+  }
+
+  .date-group {
+    padding: $panel-padding 0;
+  }
+
+  .date-label {
+    color: $dark-green;
+    font-size: 2em;
+  }
+
+  .date-duration {
+    float: right;
+    display: inline-block;
+    vertical-align: bottom
+  }
+
+  .date-picker {
+    color: $main-blue;
+    margin-right: 3px;
+  }
+
+  .entry-row {
+    background-color: white;
+    padding: $panel-padding;
+    border: 1px solid transparent;
+    box-sizing: border-box;
+    input {
+      display: inline-block;
+      &:read-only {
+        background: transparent;
+      }
+    }
+    .form-cell {
+      &:not(:last-of-type) {
+        padding-right: 10px;
+      }
+    }
+    &:hover, &.editing {
+      input {
+        &:read-only {
+          background: white;
+        }
+      }
+    }
+    &:not(:last-child) {
+      border-bottom: 1px solid $light-gray;
+    }
+  }
+
+  .time-input {
+    width: 55px;
+  }
+
+  .show-description {
+    font-size: 1rem;
+    color: $main-blue;
+    cursor: pointer;
+  }
+}

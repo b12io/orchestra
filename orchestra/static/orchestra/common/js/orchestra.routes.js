@@ -36,6 +36,12 @@
         controllerAs: 'vm',
         templateUrl: $static('/static/orchestra/project_management/partials/project_management.html')
       })
+      .when('/timecard/:taskId?', {
+        title: 'Timecard',
+        controller: 'TimecardController',
+        controllerAs: 'vm',
+        templateUrl: '/static/orchestra/timecard/partials/timecard.html'
+      })
       .otherwise('/');
   }
 })();

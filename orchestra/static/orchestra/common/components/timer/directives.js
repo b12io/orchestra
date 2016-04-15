@@ -1,67 +1,105 @@
 (function() {
-  'use strict';
+  // 'use strict';
 
   angular
     .module('orchestra.common.components.directives')
-    .directive('workTimer', workTimer);
+    .directive('workTimer', function() {
+      return {
+        restrict: 'E',
+        scope: {
+          taskId: '=taskId',
+        },
+        link: function(scope, el, attr) {
+        },
+        controller: workTimerController,
+        bindToController: true,
+        controllerAs: 'workTimer',
+        templateUrl: '/static/orchestra/common/components/timer/timer.html'
+      };
+    });
 
-  function workTimer() {
-    return {
-      restrict: 'E',
-      scope: {
-        taskId: '=taskId',
-      },
-      link: function(scope, el, attr) {
-      },
-      controller: workTimerController,
-      controllerAs: 'vm',
-      templateUrl: '/static/orchestra/common/components/timer/timer.html'
+  function workTimerController($http, $location, $scope, $timeout, timecardService) {
+    // var workTimer = this;
+    workTimer = this;
+
+    workTimer.popoverTemplate = '/static/orchestra/common/components/timer/popover.html';
+    workTimer.timecardService = timecardService;
+
+    var resetTimer = function() {
+      workTimer.timerRunning = false;
+      workTimer.workDescription = '';
+      workTimer.timeElapsed = moment.duration();
     };
-  }
 
-  function makeTwoDigits(i) {
-    if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
-    return i;
-  }
-  
-  function prettyDisplayTime(milliseconds) {
-    var hours = Math.floor(milliseconds / 1000 / 60 / 60);
-    milliseconds = milliseconds - hours * 1000 * 3600;
-    var mins = Math.floor(milliseconds / 1000 / 60);
-    milliseconds = milliseconds - mins * 1000 * 60;
-    var secs = Math.round(milliseconds / 1000);
-    mins = makeTwoDigits(mins);
-    secs = makeTwoDigits(secs);
-    return hours + ":" + mins + ":" + secs;
-  }
-
-  function workTimerController($scope, $timeout) {
-    var vm = this;
-    vm.taskId = $scope.taskId;
-    vm.displayTime = '';
-    vm.timerRunning = false;
-
-    var startTime = null;
-    var timerPromise = null;
-
-    vm.startTimer = function() {
-      function updateTime() {
-        var today = new Date();
-        var diff = today - startTime;
-        vm.displayTime = prettyDisplayTime(diff);
-        if (vm.timerRunning) {
-          timerPromise = $timeout(updateTime, 500);
-        }
+    workTimer.toggleTimer = function() {
+      if (workTimer.toggledOn) {
+        workTimer.startTimer();
       }
+      else {
+        workTimer.stopTimer();
+      }
+    };
 
-      startTime = new Date();
-      vm.timerRunning = true;
-      updateTime();
-    }
+    var getInitialTimer = function() {
+      var getTimerUrl = '/orchestra/api/interface/timer/';
+      $http.get(getTimerUrl)
+      .then(function(response) {
+        if (response.data) {
+          workTimer.startTime = moment().subtract(moment.duration(response.data));
+          workTimer.toggledOn = true;
+          workTimer.timerRunning = true;
+          workTimer.updateTime();
+        }
+      }, function() {
+        alert('Could not get timer.');
+      });
+    };
 
-    vm.stopTimer = function() {
-      $timeout.cancel(timerPromise);
-      vm.timerRunning = false;
-    }
+    workTimer.updateTime = function() {
+      var currentTime = moment();
+      workTimer.timeElapsed = moment.duration(currentTime - workTimer.startTime);
+      if (workTimer.timerRunning) {
+        workTimer.timerPromise = $timeout(workTimer.updateTime, 500);
+      }
+    };
+
+    workTimer.startTimer = function() {
+      var startTimerUrl = '/orchestra/api/interface/timer/start/';
+      $http.post(startTimerUrl, {
+        // assignment: workTimer.assignment,
+      })
+      .then(function(response) {
+        console.log(response.data);
+        workTimer.toggledOn = true;
+        workTimer.startTime = moment();
+        workTimer.timerRunning = true ;
+        workTimer.updateTime();
+      }, function() {
+        alert('Could not start timer');
+      });
+    };
+
+    workTimer.stopTimer = function() {
+      var stopTimerUrl = '/orchestra/api/interface/timer/stop/';
+      $timeout.cancel(workTimer.timerPromise);
+      $http.post(stopTimerUrl, {
+        description: workTimer.workDescription,
+      })
+      .then(function(response) {
+        console.log(response.data);
+        workTimer.toggledOn = false;
+        timecardService.createEntry(response.data);
+        resetTimer();
+      }, function() {
+          alert('Could not stop timer');
+      });
+    };
+
+    workTimer.viewTimecard = function() {
+      $location.path('/timecard');
+    };
+
+    resetTimer();
+    getInitialTimer();
   }
 })();

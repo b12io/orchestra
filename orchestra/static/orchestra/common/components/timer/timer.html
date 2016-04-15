@@ -1,5 +1,13 @@
 <div class="timer">
-  <a ng-if="!vm.timerRunning" class="start-timer btn" ng-click="vm.startTimer()">Start Timer</a>
-  <a ng-if="vm.timerRunning" class="start-timer btn" ng-click="vm.stopTimer()">Stop Timer</a>
-  <div class="time-display">{{vm.displayTime}}</div>
+  <div class="popover-toggle" ng-class="{active: workTimer.timerRunning}"
+    uib-popover-template="workTimer.popoverTemplate"
+    popover-placement="bottom">
+    <i class="fa fa-clock-o"></i>
+    <span ng-if="workTimer.timerRunning">
+      <span ng-if="workTimer.timeElapsed.get('hours')">
+        {{ workTimer.timeElapsed.get('hours') }}h
+      </span>
+      {{ workTimer.timeElapsed.get('minutes') }}m
+    </span>
+  </div>
 </div>
