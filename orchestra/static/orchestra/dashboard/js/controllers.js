@@ -5,9 +5,11 @@
     .module('orchestra.dashboard.controllers')
     .controller('DashboardController', DashboardController);
 
-  DashboardController.$inject = ['$scope', '$http', '$location', '$timeout'];
+  DashboardController.$inject = ['$scope', '$http', '$location', '$timeout',
+                                'orchestraTasks'];
 
-  function DashboardController($scope, $http, $location, $timeout) {
+  function DashboardController($scope, $http, $location, $timeout,
+                               orchestraTasks) {
     var vm = this;
 
     vm.tasks = {
@@ -18,19 +20,13 @@
     };
     vm.new_tasks = undefined;
     vm.numActiveTasks = function() {
-      var numTasks = 0;
-      for (var taskType in vm.tasks) {
-        if (taskType != 'complete') {
-          numTasks += vm.tasks[taskType].length;
-        }
-      }
-      return numTasks;
+      return orchestraTasks.numActiveTasks(vm.tasks);
     };
     vm.waiting = false;
 
     vm.activate = function() {
       vm.waiting = true;
-      $http.get('/orchestra/api/interface/dashboard_tasks/').
+      orchestraTasks.getTasks().
       success(function(data, status, headers, config) {
         vm.tasks = data.tasks;
         vm.preventNewTasks = data.preventNewTasks;
@@ -49,7 +45,7 @@
       if (!vm.noTaskTimer) {
         // Initialize task timer to dummy value to prevent subsequent API calls
         vm.noTaskTimer = 'temp';
-        $http.get('/orchestra/api/interface/new_task_assignment/' + taskType + '/').
+        orchestraTasks.newTask(taskType).
         success(function(data, status, headers, config) {
           $location.path('task/' + data.id);
           vm.noTaskTimer = undefined;
