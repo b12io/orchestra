@@ -6,7 +6,7 @@ factory_boy==2.6.1
 coverage==4.0.3
 psycopg2==2.6.1
 django-registration-redux==1.4
-djrill==2.0
+djrill==2.1.0
 ipython==4.1.2
 boto==2.39.0
 moto==0.4.23
