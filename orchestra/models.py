@@ -427,14 +427,6 @@ class TaskAssignment(BaseModel):
     # description
     in_progress_task_data = JSONField(default={}, blank=True)
 
-    @property
-    def start_datetime(self):
-        return self.created_at
-
-    @start_datetime.setter
-    def start_datetime(self, value):
-        self.created_at = value
-
     def save(self, *args, **kwargs):
         if self.task.step.is_human:
             if self.worker is None:
