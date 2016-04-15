@@ -1,4 +1,3 @@
-from rest_framework import filters
 from rest_framework import permissions
 
 from orchestra.models import Worker
