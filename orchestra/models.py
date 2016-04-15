@@ -412,6 +412,7 @@ class TaskAssignment(BaseModel):
         (Status.SUBMITTED, 'Submitted'),
         (Status.FAILED, 'Failed'))
 
+    start_datetime = models.DateTimeField(default=timezone.now)
     worker = models.ForeignKey(Worker,
                                null=True,
                                blank=True)
