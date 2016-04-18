@@ -14,6 +14,7 @@ from jsonview.decorators import json_view
 from jsonview.exceptions import BadRequest
 from registration.models import RegistrationProfile
 from registration.views import RegistrationView
+from rest_framework import filters
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status as http_status
@@ -25,6 +26,7 @@ from orchestra.core.errors import WorkerCertificationError
 from orchestra.core.errors import NoTaskAvailable
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import IllegalTaskSubmission
+from orchestra.filters import TimeEntryFilter
 from orchestra.models import Iteration
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
@@ -357,6 +359,8 @@ def server_error(request):
 class TimeEntryList(generics.ListCreateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = TimeEntrySerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_class = TimeEntryFilter
 
     def get_queryset(self):
         """
