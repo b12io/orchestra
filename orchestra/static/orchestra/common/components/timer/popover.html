@@ -6,12 +6,14 @@
   </div>
   <div class="past-entries" ng-if="workTimer.timecardService.entries">
     <h1>Past entries</h1>
-    <div class="flex-row" ng-repeat="entry in workTimer.timecardService.entries | orderBy:'date':'true' | orderBy:'timer_start_time':true | limitTo:'3'">
-      <span>
-        <input class="form-control" type="text" ng-model="entry.description" ng-model-options="{debounce: 1000}" ng-change="workTimer.timecardService.updateEntry(entry)" placeholder="What did you work on?">
-      </span>
-      <span>{{workTimer.timecardService.humanizeDuration(entry.time_worked)}}</span>
-    </div>
+    <span ng-repeat="dateEntries in workTimer.timecardService.entriesByDate | toArray | orderBy:workTimer.timecardService.datetimeFromKey:'true' | limitTo:'1'">
+      <div class="flex-row" ng-repeat="entry in dateEntries | orderBy:'-timer_start_time' | limitTo:'3' | orderBy:'timer_start_time'">
+        <span>
+          <input class="form-control" type="text" ng-model="entry.description" ng-model-options="{debounce: 1000}" ng-change="workTimer.timecardService.saveEntry(entry)" placeholder="What did you work on?">
+        </span>
+        <span>{{workTimer.timecardService.humanizeDuration(entry.time_worked)}}</span>
+      </div>
+    </span>
     <a class="pull-right" ng-click="workTimer.viewTimecard()">View all</a>
   </div>
 </div>

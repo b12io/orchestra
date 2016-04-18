@@ -7,6 +7,25 @@
       timecardService = {
         entries: [],
         entriesByDate: {},
+        addEntryForDate: function(entry, date) {
+          var service = this;
+
+          var dateISO = date.toISOString();
+          if (service.entriesByDate[dateISO] === undefined) {
+            service.entriesByDate[dateISO] = [];
+          }
+          service.entriesByDate[dateISO].push(entry);
+        },
+        removeEntryForDate: function(entry, date) {
+          var service = this;
+
+          var dateISO = date.toISOString();
+          var index = service.entriesByDate[dateISO].indexOf(entry);
+          service.entriesByDate[dateISO].splice(index, 1);
+          if (!service.entriesByDate[dateISO].length) {
+            delete service.entriesByDate[dateISO];
+          }
+        },
         getDateSum: function(date) {
           if (moment.isMoment(date)) {
             date = date.toISOString();
@@ -20,17 +39,14 @@
           return service.humanizeDuration(totalDuration);
         },
         convertEntry: function(entryData) {
+          var service = this;
+
           // Don't alter original data
           var data = angular.copy(entryData);
 
           // Convert datetimes to moments for easy manipulation
           data.time_worked = moment.duration(data.time_worked);
-
-          data.time_worked_edit = {};
-          var units = ['hours', 'minutes', 'seconds'];
-          units.forEach(function(unit) {
-            data.time_worked_edit[unit] = data.time_worked.get(unit);
-          });
+          data.time_worked_edit = service.timeByUnits(data.time_worked);
 
           if (data.date) {
             data.date = moment(data.date);
@@ -43,44 +59,72 @@
           }
           return data;
         },
+        timeByUnits: function(duration) {
+          var units = ['hours', 'minutes'];
+          var unitized = {};
+          units.forEach(function(unit) {
+            unitized[unit] = duration.get(unit);
+          });
+          return unitized;
+        },
         addEntry: function(entryData) {
           var service = this;
-          var convertedData = service.convertEntry(entryData);
-          if (!convertedData.date) {
+
+          var entry = service.convertEntry(entryData);
+          if (!entry.date) {
             console.error('Time entry without a date specified:', entry);
             return;
           }
-          var dateKey = convertedData.date.toISOString();
-          if (!service.entriesByDate[dateKey]) {
-            service.entriesByDate[dateKey] = [];
-          }
-          service.entries.push(convertedData);
-          service.entriesByDate[dateKey].push(convertedData);
+          service.entries.push(entry);
+          service.addEntryForDate(entry, entry.date);
+
+          return entry;
         },
-        createEntry: function() {
+        createEntry: function(date) {
           var timeEntryUrl = '/orchestra/api/interface/time_entries/';
           var service = this;
+          date = date || moment();
           $http.post(timeEntryUrl, {
-            date: moment().format('YYYY-MM-DD'),
+            date: date.format('YYYY-MM-DD'),
             // time_worked: service.durationStamp(moment.duration()),
-            time_worked: service.durationStamp(moment.duration({minutes: Math.random() * 10})),
+            time_worked: service.durationStamp(moment.duration()),
 
             // Add fake timer start time to keep list ordered
             timer_start_time: moment().toISOString()
           })
           .then(function(response) {
-            service.addEntry(response.data);
+            var entry = service.addEntry(response.data);
+            entry.editing = true;
           }, function() {
             alert('Could not add new time entry.');
           });
         },
-        updateEntry: function(entryData) {
-          var data = angular.copy(entryData);
-
+        updateDate: function(entry, newDate) {
           var service = this;
+
+          service.removeEntryForDate(entry, entry.date);
+          service.addEntryForDate(entry, newDate);
+          entry.date = newDate;
+          entry.editing = false;
+
+          service.saveEntry(entry);
+        },
+        updateDuration: function(entry) {
+          var service = this;
+          if (!angular.equals(entry.time_worked_edit, service.timeByUnits(entry.time_worked))) {
+            entry.time_worked = moment.duration(entry.time_worked_edit);
+          }
+          service.saveEntry(entry);
+        },
+        saveEntry: function(entry) {
+          var service = this;
+
+          var data = angular.copy(entry);
+
           if (data.date) {
             data.date = data.date.format('YYYY-MM-DD');
           }
+
           if (data.timer_start_time) {
             data.timer_start_time = data.timer_start_time.toISOString();
           }
@@ -97,10 +141,17 @@
             });
         },
         deleteEntry: function(entry) {
+          var service = this;
+
+          var timeEntryUrl = '/orchestra/api/interface/time_entries/' + entry.id + '/';
           if (confirm('Are you sure you want to delete this entry?')) {
-            var service = this;
-            var index = service.data.indexOf(entry);
-            service.data.splice(index, 1);
+            $http.delete(timeEntryUrl)
+            .then(function(response) {
+              service.removeEntryForDate(entry, entry.date);
+              service.entries.splice(service.entries.indexOf(entry), 1);
+            }, function() {
+              alert('Could not delete entry.');
+            });
           }
         },
         getAllEntries: function() {
@@ -115,6 +166,9 @@
           }, function() {
             alert('Could not retrieve time entries');
           });
+        },
+        datetimeFromKey: function(dateEntries) {
+          return moment(dateEntries.$key);
         },
         durationStamp: function(duration) {
           if (!duration) {
@@ -146,7 +200,7 @@
     // Taken from https://github.com/petebacondarwin/angular-toArrayFilter
     angular.module('orchestra.common')
       .filter('toArray', function () {
-        return function (obj, addKey) {
+        return function(obj, addKey) {
           if (!angular.isObject(obj)) return obj;
           if ( addKey === false ) {
             return Object.keys(obj).map(function(key) {

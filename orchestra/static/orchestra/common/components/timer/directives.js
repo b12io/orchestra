@@ -2,7 +2,7 @@
   // 'use strict';
 
   angular
-    .module('orchestra.common.components.directives')
+    .module('orchestra.common')
     .directive('workTimer', function() {
       return {
         restrict: 'E',
@@ -88,7 +88,7 @@
       .then(function(response) {
         console.log(response.data);
         workTimer.toggledOn = false;
-        timecardService.createEntry(response.data);
+        timecardService.addEntry(response.data);
         resetTimer();
       }, function() {
           alert('Could not stop timer');

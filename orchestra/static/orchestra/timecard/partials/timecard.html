@@ -1,21 +1,73 @@
 <div class="timecard-view" ng-click="vm.editEntry()">
-  <h1>Timecard</h1>
-  <button ng-click="vm.timecardService.createEntry()" class="btn btn-primary btn-add-entry">
-    Add new entry
-  </button>
   <div class="entries">
-    <div class="date-group" ng-repeat="dateEntries in vm.timecardService.entriesByDate | toArray">
-      <span class="date-label">{{ vm.prettyDate(dateEntries.$key) }}</span>
-      <span class="date-duration">{{ vm.timecardService.getDateSum(dateEntries.$key) }}</span>
-      <div class="entry-row" ng-repeat="entry in dateEntries | orderBy:'timer_start_time'">
-        <!-- <i ng-click="vm.timecardService.deleteEntry(entry)" class="fa fa-times-circle pull-right"></i> -->
-        <form novalidate name="entryForm" class="form-inline">
-          <input class="description form-control" type="text" ng-model="entry.description" ng-model-options="{debounce: 1000}" ng-change="vm.timecardService.updateEntry(entry)" placeholder="What did you work on?">
-          <span class="date-group" entry="entry" pikaday>
-            <i class="fa fa-calendar-o date-picker"></i><span>{{ entry.date.format('MMMM D') }}</span>
-          </span>
-          {{ vm.timecardService.humanizeDuration(entry.time_worked) }}
-        </form>
+    <div class="date-group" ng-repeat="dateEntries in vm.timecardService.entriesByDate | toArray | orderBy:vm.timecardService.datetimeFromKey:'true'">
+      <h2>
+        <span class="date-label">{{ vm.prettyDate(dateEntries.$key) }}</span>
+        <i ng-click="vm.timecardService.createEntry(entry.date)" class="fa fa-plus btn-add-entry"></i>
+        <span class="date-duration">{{ vm.timecardService.getDateSum(dateEntries.$key) }}</span>
+        <span ng-show="$index === 0" class="today">{{ vm.getFromNow(dateEntries.$key) }}</span>
+      </h2>
+      <div class="date-entries">
+        <div class="entry-row" ng-mouseenter="entry.hover = true" ng-mouseleave="entry.hover = false" ng-repeat="entry in dateEntries | orderBy:'timer_start_time'">
+          <div class="edit-cancel-handle" ng-show="entry.editing" ng-click="entry.editing = false">
+            Finished editing
+          </div>
+          <form novalidate name="entryForm" class="form-inline">
+            <div class="description">
+              <span ng-hide="entry.editing">
+                <span ng-show="entry.description">
+                  {{ entry.description }}
+                </span>
+                <span ng-hide="entry.description">
+                  <em>No description</em>
+                </span>
+              </span>
+              <input ng-show="entry.editing"
+                     class="form-control"
+                     type="text"
+                     ng-model="entry.description"
+                     ng-model-options="{debounce: 1000}"
+                     ng-change="vm.timecardService.saveEntry(entry)"
+                     placeholder="What did you work on?">
+            </div>
+            <div class="edit-tools disable-select">
+              <i ng-click="vm.timecardService.deleteEntry(entry)" class="fa fa-times-circle"></i>
+              <i class="fa fa-pencil-square-o" ng-class="{active: entry.editing}" ng-click="entry.editing = !entry.editing"></i>
+            </div>
+            <div class="edit-time" ng-show="entry.editing">
+              <label>
+                <input class="form-control"
+                       type="number"
+                       ng-model="entry.time_worked_edit.hours"
+                       digits="2"
+                       ng-change="vm.timecardService.updateDuration(entry)"
+                       ng-model-options="{debounce: 500}"
+                       enforce-integers>
+                <span ng-hide="entry.editing">{{ entry.time_worked.get('hours') }}</span>
+                h
+              </label>
+              <label>
+                <input class="form-control"
+                       type="number"
+                       ng-model="entry.time_worked_edit.minutes"
+                       digits="2"
+                       ng-change="vm.timecardService.updateDuration(entry)"
+                       ng-model-options="{debounce: 500}"
+                       enforce-integers>
+                m
+              </label>
+            </div>
+            <div class="edit-time" ng-hide="entry.editing">
+              {{ vm.timecardService.humanizeDuration(entry.time_worked) }}
+            </div>
+            <div class="edit-date" ng-show="entry.editing">
+              <label>Move to date</label>
+              <span class="date-picker" entry="entry" pikaday>
+                <i class="fa fa-calendar-o"></i>{{ entry.date.format('MMMM D') }}
+              </span>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>

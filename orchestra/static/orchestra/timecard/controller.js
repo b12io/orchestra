@@ -13,5 +13,9 @@
         // TODO(jrbotros): fix groupby with custom comparator
         return moment(dateString).format('MMMM D');
       };
+
+      vm.timeEqual = function(entry) {
+        return angular.equals(entry.time_worked_edit, timecardService.timeByUnits(entry.time_worked));
+      };
     });
 })();
