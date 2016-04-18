@@ -25,6 +25,7 @@ python-dateutil==2.5.2
 django-hijack==2.1.0
 django-hijack-admin==2.1.0
 django-money==0.7.6
+django-filter==0.13.0
 
 # Documentation requirements
 Sphinx==1.4.1
