@@ -1,7 +1,6 @@
 from django.test.utils import override_settings
 from unittest.mock import patch
 from orchestra.tests.helpers import OrchestraTestCase
-from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.utils.machine_step_scheduler import (
     AsynchronousMachineStepScheduler)
 from orchestra.utils.machine_step_scheduler import MachineStepScheduler
@@ -11,7 +10,6 @@ class MachineStepSchedulerTestCase(OrchestraTestCase):
 
     def setUp(self):
         super().setUp()
-        setup_models(self)
 
     def test_machine_step_schedule(self):
         scheduler = MachineStepScheduler()

@@ -112,12 +112,14 @@ class MachineTaskTestCase(OrchestraTestCase):
         self._assert_correct_machine_task_state(
             TaskAssignment.Status.SUBMITTED, Task.Status.COMPLETE)
 
-    def test_marking_failed_task_assignment(self):
+    @patch('orchestra.machine_tasks.logger')
+    def test_marking_failed_task_assignment(self, mock_logger):
         self.machine_function_mock.side_effect = Exception('Function failed.')
         self._reset_task()
         execute(self.project.id, self.step.slug)
         self._assert_correct_machine_task_state(
             TaskAssignment.Status.FAILED, Task.Status.PROCESSING)
+        mock_logger.exception.assert_called_with('Machine task has failed')
         self.machine_function_mock.side_effect = None
 
     def test_reassigning_failed_task_assignment(self):
