@@ -6,7 +6,7 @@ from orchestra.models import TimeEntry
 
 
 class TimeEntryFilter(filters.FilterSet):
-    min_date= django_filters.DateFilter(name="date", lookup_type='gte')
+    min_date = django_filters.DateFilter(name="date", lookup_type='gte')
     max_date = django_filters.DateFilter(name="date", lookup_type='lte')
 
     class Meta:
