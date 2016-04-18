@@ -65,7 +65,6 @@ class TimeEntriesEndpointTests(EndpointTests):
         for time_entry in data:
             serializer = TimeEntrySerializer(data=time_entry)
             self.assertTrue(serializer.is_valid())
-            self.assertEqual(time_entry['worker'], self.worker.id)
 
     def test_time_entries_get(self):
         resp = self.request_client.get(self.url)
