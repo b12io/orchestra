@@ -67,3 +67,33 @@ serviceModule.factory('orchestraService', function() {
   };
   return orchestraService;
 });
+
+serviceModule.factory('orchestraTasks', function($http) {
+
+  var newTask = function(taskType) {
+    return $http.get('/orchestra/api/interface/new_task_assignment/' +
+                     taskType + '/');
+  }
+
+  var getTasks = function() {
+    return $http.get('/orchestra/api/interface/dashboard_tasks/');
+  }
+
+  var numActiveTasks = function(tasks) {
+    var numTasks = 0;
+    for (var taskType in tasks) {
+      if (taskType != 'complete') {
+        numTasks += tasks[taskType].length;
+      }
+    }
+    return numTasks;
+  };
+
+  var service = {
+    newTask: newTask,
+    getTasks: getTasks,
+    numActiveTasks: numActiveTasks,
+  }
+
+  return service;
+});

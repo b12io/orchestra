@@ -6,6 +6,8 @@
     'orchestra.dashboard.directives'
   ]);
 
-  angular.module('orchestra.dashboard.controllers', []);
+  angular.module('orchestra.dashboard.controllers', [
+    'orchestra.common.services'
+  ]);
   angular.module('orchestra.dashboard.directives', []);
 })();
