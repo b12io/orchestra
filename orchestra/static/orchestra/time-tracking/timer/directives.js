@@ -1,5 +1,5 @@
 (function() {
-  // 'use strict';
+  'use strict';
 
   angular
     .module('orchestra.common')
@@ -14,15 +14,14 @@
         controller: workTimerController,
         bindToController: true,
         controllerAs: 'workTimer',
-        templateUrl: '/static/orchestra/common/components/timer/timer.html'
+        templateUrl: '/static/orchestra/time-tracking/timer/timer.html'
       };
     });
 
   function workTimerController($http, $location, $scope, $timeout, timecardService) {
-    // var workTimer = this;
-    workTimer = this;
+    var workTimer = this;
 
-    workTimer.popoverTemplate = '/static/orchestra/common/components/timer/popover.html';
+    workTimer.popoverTemplate = '/static/orchestra/time-tracking/timer/popover.html';
     workTimer.timecardService = timecardService;
 
     var resetTimer = function() {
