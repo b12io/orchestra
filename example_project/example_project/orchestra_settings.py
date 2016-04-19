@@ -206,7 +206,7 @@ def install_context_processors(settings):
         raise ValueError(
             "Expected settings.TEMPLATES to contain a single DjangoTemplates "
             "entry with `['OPTIONS']['context_processors']` in which to "
-            "place orchestra context processor.s  If your template "
+            "place orchestra context processors. If your template "
             "setup is more complex, please manually add "
             "'orchestra.context_processors.third_party_scripts' and "
             "'orchestra.context_processors.google_analytics' to "
