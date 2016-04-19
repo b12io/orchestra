@@ -1,0 +1,19 @@
+<div class="timer-popover">
+  <div class="flex-row">
+    <input ng-model="workTimer.toggledOn" ng-change="workTimer.toggleTimer()" class="tgl tgl-ios" id="timer-toggle" type="checkbox">
+    <label class="tgl-btn" for="timer-toggle" id="timer-toggle-button"></label>
+    <div class="time-display">{{workTimer.timecardService.durationStamp(workTimer.timeElapsed)}}</div>
+  </div>
+  <div class="past-entries" ng-if="workTimer.timecardService.entries">
+    <h1>Past entries</h1>
+    <span ng-repeat="dateEntries in workTimer.timecardService.entriesByDate | toArray | orderBy:workTimer.timecardService.datetimeFromKey:'true' | limitTo:'1'">
+      <div class="flex-row" ng-repeat="entry in dateEntries | orderBy:'-timer_start_time' | limitTo:'3' | orderBy:'timer_start_time'">
+        <span>
+          <input class="form-control" type="text" ng-model="entry.description" ng-model-options="{debounce: 1000}" ng-change="workTimer.timecardService.saveEntry(entry)" placeholder="What did you work on?">
+        </span>
+        <span>{{workTimer.timecardService.humanizeDuration(entry.time_worked)}}</span>
+      </div>
+    </span>
+    <a class="pull-right" ng-click="workTimer.viewTimecard()">View all</a>
+  </div>
+</div>

@@ -242,7 +242,9 @@ def stop_timer(request):
     worker = Worker.objects.get(user=request.user)
     try:
         if request.method == 'POST':
+            time_entry_data = json.loads(request.body.decode())
             time_entry = time_tracking.stop_timer(worker)
+            time_entry.description = time_entry_data.get('description')
             serializer = TimeEntrySerializer(time_entry)
             return serializer.data
     except TimerError as e:
@@ -259,7 +261,8 @@ def get_timer(request):
     try:
         if request.method == 'GET':
             duration = time_tracking.get_timer_current_duration(worker)
-            return str(duration)
+            if duration is not None:
+                return str(duration)
     except Exception as e:
         logger.error(e, exc_info=True)
         raise e
