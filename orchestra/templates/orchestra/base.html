@@ -97,7 +97,9 @@
     {% endblock page_javascript %}
 
     {% with template_name=ORCHESTRA_THIRD_PARTY_SCRIPTS_TEMPLATE %}
-      {% include template_name %}
+      {% if template_name %}
+        {% include template_name %}
+      {% endif %}
     {% endwith %}
 
   </body>
