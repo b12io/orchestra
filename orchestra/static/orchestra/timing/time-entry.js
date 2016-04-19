@@ -86,9 +86,6 @@
         $http.post(createUrl, {
           date: date.format('YYYY-MM-DD'),
           time_worked: moment.duration().stamp(),
-
-          // Add fake timer start time to keep ordered correctly
-          timer_start_time: moment().toISOString()
         })
         .then(function(response) {
           entry.initWithData(response.data);

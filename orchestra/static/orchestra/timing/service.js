@@ -2,13 +2,14 @@
   'use strict';
 
   angular.module('orchestra.timing')
-    .factory('timingService', function($http, TimeEntry) {
+    .factory('timeEntries', function($http, TimeEntry) {
       /**
        * Manage time tracking data for an Orchestra user.
        */
-      var timingService = {
+      var timeEntries = {
         apiUrl: '/orchestra/api/interface/time_entries/',
         entries: [],
+        entriesByDate: {},
 
         /**
          * Get worker time entries for the provided date range (inclusive).
@@ -107,7 +108,7 @@
       // Default filtered view is the past week of time entries
       var maxDate = moment().startOf('day');
       var minDate = maxDate.clone().subtract(7, 'days');
-      timingService.getEntriesForDates(minDate, maxDate);
-      return timingService;
+      timeEntries.getEntriesForDates(minDate, maxDate);
+      return timeEntries;
     });
 })();
