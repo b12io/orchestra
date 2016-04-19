@@ -184,8 +184,10 @@ def setup_orchestra(settings_module_name):
     settings.SLACK_EXPERTS_API_KEY = ''
     settings.SLACK_INTERNAL_NOTIFICATION_CHANNEL = '#orchestra-tasks'
 
-    # Optionally add a path for a template to support third party scripts (such as Google Analytics)
-    settings.ORCHESTRA_THIRD_PARTY_SCRIPTS_TEMPLATE = 'orchestra/third_party_scripts.html'
+    # Optionally add a path for a template to support third party scripts
+    # (such as Google Analytics)
+    settings.ORCHESTRA_THIRD_PARTY_SCRIPTS_TEMPLATE = (
+        'orchestra/third_party_scripts.html')
 
     # Optionally configure a google analytics key to learn about your users.
     settings.GOOGLE_ANALYTICS_KEY = ''
