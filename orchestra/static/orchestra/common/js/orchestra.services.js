@@ -73,11 +73,11 @@ serviceModule.factory('orchestraTasks', function($http) {
   var newTask = function(taskType) {
     return $http.get('/orchestra/api/interface/new_task_assignment/' +
                      taskType + '/');
-  }
+  };
 
   var getTasks = function() {
     return $http.get('/orchestra/api/interface/dashboard_tasks/');
-  }
+  };
 
   var numActiveTasks = function(tasks) {
     var numTasks = 0;
@@ -93,7 +93,7 @@ serviceModule.factory('orchestraTasks', function($http) {
     newTask: newTask,
     getTasks: getTasks,
     numActiveTasks: numActiveTasks,
-  }
+  };
 
   return service;
 });
