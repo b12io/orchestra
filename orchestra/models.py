@@ -1,7 +1,8 @@
 from django.contrib.auth.models import User
 from django.db import models
-from djmoney.models.fields import MoneyField
+from django.db.models import Q
 from django.utils import timezone
+from djmoney.models.fields import MoneyField
 from jsonfield import JSONField
 
 from orchestra.core.errors import ModelSaveError
@@ -554,19 +555,47 @@ class PayRate(models.Model):
         hourly_multiplier (decimal.Decimal):
             Any multiplier that gets applied to a worker's pay
             (e.g., fees imposed by a payment gateway).
-        start_datetime (datetime.datetime):
-            The beginning of the time period of the pay rate.
-        end_datetime (datetime.datetime):
-            The end of the time period of the pay rate,
+        start_date (datetime.date):
+            The beginning of the time period of the pay rate (inclusive).
+        end_date (datetime.date):
+            The end of the time period of the pay rate (inclusive),
             or None if it's the current period.
     """
     worker = models.ForeignKey(Worker, related_name='pay_rates')
     hourly_rate = MoneyField(
         max_digits=10, decimal_places=2, default_currency='USD')
     hourly_multiplier = models.DecimalField(max_digits=6, decimal_places=4)
-    start_datetime = models.DateTimeField(default=timezone.now)
-    end_datetime = models.DateTimeField(null=True, blank=True)
+    start_date = models.DateField(default=timezone.now)
+    end_date = models.DateField(null=True, blank=True)
 
     def __str__(self):
         return '{} ({} - {})'.format(
-            self.worker, self.start_datetime, self.end_datetime or 'now')
+            self.worker, self.start_date, self.end_date or 'now')
+
+    def save(self, *args, **kwargs):
+        if self.end_date and self.end_date < self.start_date:
+            raise ModelSaveError('end_date must be greater than '
+                                 'start_date')
+
+        if self.end_date is None:
+            # If end_date is None, need to check that no other PayRates have
+            # end_date is None, nor do they overlap.
+            if PayRate.objects.exclude(id=self.id).filter(
+                    (Q(end_date__gte=self.start_date) |
+                     Q(end_date__isnull=True)),
+                    worker=self.worker).exists():
+                raise ModelSaveError(
+                    'Date range overlaps with existing PayRate entry')
+        else:
+            # If end_date is not None, need to check if other PayRates overlap.
+            if (PayRate.objects.exclude(id=self.id).filter(
+                    start_date__lte=self.end_date,
+                    end_date__isnull=True,
+                    worker=self.worker).exists() or
+                PayRate.objects.exclude(id=self.id).filter(
+                    (Q(start_date__lte=self.end_date) &
+                     Q(end_date__gte=self.start_date)),
+                    worker=self.worker).exists()):
+                raise ModelSaveError(
+                    'Date range overlaps with existing PayRate entry')
+        super().save(*args, **kwargs)
