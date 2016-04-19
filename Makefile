@@ -8,7 +8,7 @@ clean:
 	find . -name '*~' -delete
 
 lint:
-	flake8 . && gulp lint
+	flake8 . && gulp lint --production
 
 test: lint
 	cd example_project && python3 $(TEST_CMD)
@@ -25,7 +25,7 @@ npm_install:
 	npm install
 
 gulp_build: npm_install
-	gulp --gulpfile gulpfile.js --production=true build
+	gulp build --production
 
 build_docs:
 	cd docs && make html
