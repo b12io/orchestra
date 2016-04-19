@@ -1,4 +1,9 @@
+import datetime
+
+from dateutil.parser import parse
+
 from orchestra.core.errors import ModelSaveError
+from orchestra.models import PayRate
 from orchestra.models import Worker
 from orchestra.models import WorkerCertification
 from orchestra.signals import orchestra_user_registered
@@ -15,6 +20,7 @@ class ModelsTestCase(OrchestraTestCase):
         super().setUp()
         setup_models(self)
         self.workers[0] = Worker.objects.get(user__username='test_user_1')
+        self.worker = self.workers[0]
 
     def test_certification_roles(self):
         """ Ensure that workers can be certified at multiple roles. """
@@ -59,3 +65,68 @@ class ModelsTestCase(OrchestraTestCase):
         # Expect the worker object to be created
         self.assertTrue(Worker.objects.filter(user=user).exists(),
                         'Worker not autocreated on User registration')
+
+    def test_pay_rate_creation(self):
+        """
+        Ensure that PayRates are created with valid ranges and do not
+        overlap with existing entries.
+        """
+        start_stop_dates = [
+            (('2016-01-01', '2016-01-03'), ('2016-01-02', None), False),
+            (('2016-01-01', None), ('2016-02-01', None), False),
+            (('2016-01-01', None), ('2015-12-01', '2016-01-01'), False),
+            (('2016-01-01', '2016-01-10'), ('2016-01-03', '2016-01-08'),
+             False),
+            (('2016-01-01', '2016-01-10'), ('2015-12-30', '2016-01-03'),
+             False),
+            (('2016-01-01', '2016-01-10'), ('2016-01-03', '2016-01-18'),
+             False),
+            (('2016-01-01', '2016-01-10'), ('2015-12-30', '2016-01-18'),
+             False),
+            (('2016-01-01', '2016-01-10'), ('2016-01-30', None), True),
+            (('2016-01-01', '2016-01-10'), ('2016-01-30', '2016-02-18'), True),
+            (('2016-03-02', None), ('2016-01-01', '2016-03-01'), True)
+        ]
+
+        def _parse_date(date):
+            if date:
+                start_date = parse(date).date()
+            else:
+                start_date = None
+            return start_date
+
+        def _verify_failure(saved, new, success):
+            start_date_saved = _parse_date(saved[0])
+            end_date_saved = _parse_date(saved[1])
+            PayRate.objects.create(worker=self.worker,
+                                   hourly_rate=10,
+                                   hourly_multiplier=1.2,
+                                   start_date=start_date_saved,
+                                   end_date=end_date_saved)
+            start_date_new = _parse_date(new[0])
+            end_date_new = _parse_date(new[1])
+            payrate = PayRate(worker=self.worker,
+                              hourly_rate=10,
+                              hourly_multiplier=1.2,
+                              start_date=start_date_new,
+                              end_date=end_date_new)
+            if success:
+                payrate.save()
+            else:
+                with self.assertRaises(ModelSaveError):
+                    payrate.save()
+            PayRate.objects.all().delete()
+
+        for saved, new, success in start_stop_dates:
+            _verify_failure(saved, new, success)
+
+    def test_pay_rate_update(self):
+        """ Verify that we don't detect overlap collision with itself. """
+        payrate = PayRate.objects.create(
+            worker=self.worker,
+            hourly_rate=10,
+            hourly_multiplier=1.2,
+            start_date=datetime.date(2016, 1, 1),
+            end_date=None)
+        payrate.end_date = datetime.date(2016, 3, 1)
+        payrate.save()
