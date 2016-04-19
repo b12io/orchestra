@@ -96,7 +96,9 @@
     {% block page_javascript %}
     {% endblock page_javascript %}
 
-    {% include 'orchestra/analytics.html' %}
+    {% with template_name=ORCHESTRA_THIRD_PARTY_SCRIPTS_TEMPLATE %}
+      {% include template_name %}
+    {% endwith %}
 
   </body>
 </html>
