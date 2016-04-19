@@ -2,7 +2,7 @@
   'use strict';
 
   angular
-    .module('orchestra.common')
+    .module('orchestra.timing')
     .directive('workTimer', function() {
       return {
         restrict: 'E',
@@ -14,14 +14,14 @@
         controller: workTimerController,
         bindToController: true,
         controllerAs: 'workTimer',
-        templateUrl: '/static/orchestra/time-tracking/timer/timer.html'
+        templateUrl: '/static/orchestra/timing/timer/timer.html'
       };
     });
 
   function workTimerController($http, $location, $scope, $timeout, timecardService) {
     var workTimer = this;
 
-    workTimer.popoverTemplate = '/static/orchestra/time-tracking/timer/popover.html';
+    workTimer.popoverTemplate = '/static/orchestra/timing/timer/popover.html';
     workTimer.timecardService = timecardService;
 
     var resetTimer = function() {

@@ -41,13 +41,13 @@ class TaskTimerTests(OrchestraTransactionTestCase):
         self.addCleanup(patcher.stop)
         patcher.start()
 
-    def testget_timer_object_created(self):
+    def test_get_timer_object_created(self):
         with self.assertRaises(TaskTimer.DoesNotExist):
             self.worker.timer
         timer = get_timer_object(self.worker)
         self.assertEqual(timer, self.worker.timer)
 
-    def testget_timer_object_not_created(self):
+    def test_get_timer_object_not_created(self):
         timer = TaskTimer(worker=self.worker)
         timer.save()
         new_timer = get_timer_object(self.worker)

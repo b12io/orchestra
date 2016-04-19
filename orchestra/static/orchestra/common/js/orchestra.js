@@ -2,7 +2,7 @@
   'use strict';
 
   var modules = ['orchestra.routes', 'orchestra.config', 'orchestra.dashboard',
-    'orchestra.task', 'orchestra.project_management', 'orchestra.common',
+    'orchestra.task', 'orchestra.project_management', 'orchestra.common'
   ];
   // Dynamically instantiate each of the angular modules from Orchestra
   // Workflow Steps
@@ -19,6 +19,7 @@
   angular.module('orchestra.task', []);
   angular.module('orchestra.project_management', []);
   angular.module('orchestra.analytics', []);
+  angular.module('orchestra.timing', []);
 
   // Dynamically instantiate each of the angular modules from Orchestra
   // Workflow Steps
