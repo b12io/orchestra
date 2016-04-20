@@ -11,13 +11,14 @@
         },
         bindToController: true,
         controllerAs: 'workTimer',
-        templateUrl: '/static/orchestra/timing/timer/timer.html',
+        templateUrl: $static('/static/orchestra/timing/timer/timer.html'),
         controller: function($http, $location, $scope, $timeout, timeEntries) {
           var workTimer = this;
 
-          workTimer.popoverTemplate = '/static/orchestra/timing/timer/popover.html';
+          workTimer.popoverTemplate = $static('/static/orchestra/timing/timer/popover.html');
 
           var resetTimer = function() {
+            workTimer.toggledOn = false;
             workTimer.timerRunning = false;
             workTimer.description = undefined;
             workTimer.timeElapsed = moment.duration();
@@ -63,10 +64,9 @@
               // TODO(jrbotros): add current assignment here
             })
             .then(function(response) {
-              console.log(response.data);
+              workTimer.timerRunning = true ;
               workTimer.toggledOn = true;
               workTimer.startTime = moment();
-              workTimer.timerRunning = true ;
               workTimer.updateTime();
             }, function() {
               alert('Could not start timer');
@@ -78,8 +78,6 @@
             $timeout.cancel(workTimer.timerPromise);
             $http.post(stopTimerUrl)
             .then(function(response) {
-              console.log(response.data);
-              workTimer.toggledOn = false;
               timeEntries.addEntry(response.data);
               resetTimer();
             }, function() {

@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('orchestra', '0040_timeentry_created_at'),
+        ('orchestra', '0041_alter_payrate_fields'),
     ]
 
     operations = [
