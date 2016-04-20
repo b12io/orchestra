@@ -101,7 +101,8 @@
         moveToDate: function(entry, newDate) {
           this.removeEntryFromDate(entry, entry.date);
           this.addEntryToDate(entry, newDate);
-          entry.updateDate(newDate);
+          entry.date = newDate;
+          entry.save();
         },
       };
 

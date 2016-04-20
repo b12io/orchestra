@@ -5,4 +5,5 @@
     <div class="time-display">{{ workTimer.timeElapsed.stamp() }}</div>
   </div>
   <input class="form-control" type="text" ng-model="workTimer.description" ng-model-options="{debounce: 1000}" ng-change="workTimer.updateDescription()" placeholder="What did you work on?">
+  <a class="pull-right" ng-click="workTimer.viewTimecard()">View timecard</a>
 </div>
