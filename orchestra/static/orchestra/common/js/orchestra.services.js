@@ -30,7 +30,7 @@ serviceModule.factory('orchestraService', function() {
         if (currentStep.prerequisites.hasOwnProperty(desiredStep)) {
           var taskData = currentStep.prerequisites[desiredStep].task.data;
           if (taskData && dataKey) {
-            return taskInfo[dataKey];
+            return taskData[dataKey];
           }
           else {
             return taskData;
