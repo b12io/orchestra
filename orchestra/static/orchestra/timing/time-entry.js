@@ -70,9 +70,8 @@
         }
         entry.date = moment(entry.date).startOf('day');
 
-        // Convert time worked to a moment duration and provide editable copy
+        // Convert time worked to a moment duration
         this.time_worked = moment.duration(data.time_worked);
-        this.time_worked_edit = this.time_worked.componentize();
       };
 
       /**
@@ -89,7 +88,6 @@
         })
         .then(function(response) {
           entry.initWithData(response.data);
-          entry.editing = true;
         }, function(entry) {
           alert('Could not add new time entry.');
         });
@@ -129,21 +127,6 @@
           .catch(function() {
             alert('Could not update time entry.');
           });
-      };
-
-      /**
-       * Helpers to update specific TimeEntry fields.
-       */
-      TimeEntry.prototype.updateDate = function(newDate) {
-        this.date = newDate;
-        this.editing = false;
-        this.save();
-      };
-      TimeEntry.prototype.updateDuration = function(components) {
-        if (!angular.equals(components, this.time_worked.componentize())) {
-          this.time_worked = moment.duration(components);
-        }
-        this.save();
       };
 
       return TimeEntry;

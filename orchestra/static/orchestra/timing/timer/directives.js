@@ -95,6 +95,10 @@
             });
           };
 
+          workTimer.viewTimecard = function() {
+            $location.path('/timecard');
+          };
+
           resetTimer();
           getInitialTimer();
         }

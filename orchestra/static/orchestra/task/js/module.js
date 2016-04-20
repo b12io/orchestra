@@ -9,6 +9,6 @@
     ]);
 
   angular.module('orchestra.task.controllers', ['orchestra.timing']);
-  angular.module('orchestra.task.directives', ['ui.bootstrap', 'angular-capitalize-filter']);
+  angular.module('orchestra.task.directives', ['ui.bootstrap', 'orchestra.common']);
   angular.module('orchestra.task.services', []);
 })();
