@@ -229,8 +229,14 @@ class TimerEndpointTests(EndpointTests):
     @patch('orchestra.views.time_tracking.get_timer_current_duration',
            return_value=datetime.timedelta(hours=1))
     def test_get_timer(self, mock_get):
+        timer = TaskTimer(
+            worker=self.worker,
+            start_time=timezone.now())
+        timer.save()
         resp = self.request_client.get(
             reverse('orchestra:orchestra:get_timer'))
         mock_get.assert_called_with(self.worker)
         data = json.loads(resp.content.decode())
-        self.assertEqual(data, '1:00:00')
+        expected = TaskTimerSerializer(timer).data
+        expected['time_worked'] = '1:00:00'
+        self.assertEqual(data, expected)
