@@ -1,0 +1,8 @@
+<div class="timer-popover">
+  <div class="flex-row">
+    <input ng-model="workTimer.toggledOn" ng-change="workTimer.toggleTimer()" class="tgl tgl-ios" id="timer-toggle" type="checkbox">
+    <label class="tgl-btn" for="timer-toggle" id="timer-toggle-button"></label>
+    <div class="time-display">{{ workTimer.timeElapsed.stamp() }}</div>
+  </div>
+  <input class="form-control" type="text" ng-model="workTimer.description" ng-model-options="{debounce: 1000}" ng-change="workTimer.updateDescription()" placeholder="What did you work on?">
+</div>
