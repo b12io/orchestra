@@ -601,3 +601,106 @@ a.logo {
 .error-text {
   font-size: 2rem;
   margin-bottom: .5rem; }
+
+.timecard-view {
+  position: absolute;
+  top: 100px;
+  width: 80%;
+  max-width: 600px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.4rem; }
+  .timecard-view .timecard-header {
+    padding: 1.5rem; }
+  .timecard-view .description {
+    width: 300px;
+    display: inline-block; }
+    .timecard-view .description input {
+      width: 100%; }
+  .timecard-view .edit-tools {
+    float: left; }
+    .timecard-view .edit-tools i {
+      margin-right: 5px;
+      cursor: pointer; }
+      .timecard-view .edit-tools i.active {
+        color: #0079bf; }
+  .timecard-view .date-group {
+    position: relative;
+    padding: 0 0.75rem;
+    margin: 0.75rem 0;
+    background-color: white; }
+    .timecard-view .date-group h2 {
+      position: relative;
+      font-size: 1.3em;
+      padding: 1.5rem;
+      border-bottom: 1px solid #cccccc; }
+      .timecard-view .date-group h2 .date-label {
+        color: #27ae60;
+        text-transform: uppercase;
+        margin-right: 5px; }
+      .timecard-view .date-group h2 .btn-add-entry {
+        cursor: pointer;
+        position: relative; }
+        .timecard-view .date-group h2 .btn-add-entry:hover::after {
+          content: 'New entry';
+          position: absolute;
+          top: 50%;
+          right: 0px;
+          padding: 5px;
+          transform: translate(100%, -50%);
+          text-transform: uppercase;
+          font-weight: bold;
+          font-size: 0.6em;
+          font-family: "Ruda", sans-serif; }
+      .timecard-view .date-group h2 .date-duration {
+        float: right;
+        display: inline-block;
+        vertical-align: bottom; }
+    .timecard-view .date-group .date-entries {
+      padding: 0 1.5rem; }
+  .timecard-view .edit-cancel-handle {
+    cursor: pointer;
+    display: inline-block; }
+    .timecard-view .edit-cancel-handle:hover {
+      text-decoration: underline; }
+  .timecard-view .entry-row {
+    position: relative;
+    overflow: visible;
+    background-color: white;
+    padding: 0.75rem;
+    border: 1px solid transparent;
+    box-sizing: border-box;
+    overflow: auto; }
+    .timecard-view .entry-row .edit-date {
+      margin-top: 1.5rem;
+      display: inline-block; }
+      .timecard-view .entry-row .edit-date .date-picker {
+        cursor: pointer; }
+        .timecard-view .entry-row .edit-date .date-picker i {
+          margin-right: 3px;
+          color: #0079bf; }
+      .timecard-view .entry-row .edit-date label {
+        font-size: 0.8em;
+        font-weight: bold;
+        text-transform: uppercase;
+        margin-right: 5px; }
+    .timecard-view .entry-row .edit-time {
+      float: right; }
+      .timecard-view .entry-row .edit-time input {
+        width: 60px; }
+    .timecard-view .entry-row input {
+      display: inline-block; }
+      .timecard-view .entry-row input:read-only {
+        background: transparent; }
+    .timecard-view .entry-row .form-cell:not(:last-of-type) {
+      padding-right: 10px; }
+    .timecard-view .entry-row:hover input:read-only, .timecard-view .entry-row.editing input:read-only {
+      background: white; }
+    .timecard-view .entry-row:not(:last-child) {
+      border-bottom: 1px solid #cccccc; }
+  .timecard-view .time-input {
+    width: 55px; }
+  .timecard-view .show-description {
+    font-size: 1rem;
+    color: #0079bf;
+    cursor: pointer; }
