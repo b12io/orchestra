@@ -107,7 +107,7 @@ def dashboard_tasks(request):
     prevent_new_tasks = (worker_assigned_to_rejected_task(worker) or
                          worker_assigned_to_max_tasks(worker))
     return {'tasks': tasks,
-            'preventNewTasks': prevent_new_tasks,
+            'preventNew': prevent_new_tasks,
             'reviewerStatus': worker_has_reviewer_status(worker)}
 
 
