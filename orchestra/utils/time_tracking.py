@@ -7,7 +7,7 @@ from orchestra.models import TaskTimer
 from orchestra.models import TimeEntry
 
 
-def _get_timer_object(worker):
+def get_timer_object(worker):
     """
     Returns TaskTimer object associated with worker, creates one if does not
     exist.
@@ -23,6 +23,7 @@ def _reset_timer(timer):
     timer.assignment = None
     timer.start_time = None
     timer.stop_time = None
+    timer.description = None
     timer.save()
 
 
@@ -46,7 +47,7 @@ def start_timer(worker, assignment_id=None):
         orchestra.core.errors.TimerError:
             Timer has already started.
     """
-    timer = _get_timer_object(worker)
+    timer = get_timer_object(worker)
 
     # Attach assignment if provided.
     if assignment_id:
@@ -81,7 +82,7 @@ def stop_timer(worker):
         orchestra.core.errors.TimerError:
             Timer has not started.
     """
-    timer = _get_timer_object(worker)
+    timer = get_timer_object(worker)
     if timer.start_time is None:
         raise TimerError('Timer not started')
     timer.stop_time = timezone.now()
@@ -94,12 +95,19 @@ def stop_timer(worker):
         time_worked=timer.stop_time - timer.start_time,
         assignment=timer.assignment,
         timer_start_time=timer.start_time,
-        timer_stop_time=timer.stop_time)
+        timer_stop_time=timer.stop_time,
+        description=timer.description)
 
     # Reset timer
     _reset_timer(timer)
 
     return time_entry
+
+
+def update_timer_description(worker, description):
+    timer = get_timer_object(worker)
+    timer.description = description
+    timer.save()
 
 
 def get_timer_current_duration(worker):
@@ -114,7 +122,7 @@ def get_timer_current_duration(worker):
         (datetime.timedelta)
             time interval since start of timer
     """
-    timer = _get_timer_object(worker)
+    timer = get_timer_object(worker)
     if timer.start_time is None:
         return None
     return timezone.now() - timer.start_time
