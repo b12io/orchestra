@@ -19,6 +19,8 @@ $panel-margin: 3rem;
 $panel-padding: 1.5rem;
 $panel-button-margin: 1.5rem;
 
+$main-font-stack: 'Ruda', sans-serif;
+
 @mixin vendor-prefix($name, $argument) {
   -webkit-#{$name}: #{$argument};
   -ms-#{$name}: #{$argument};
