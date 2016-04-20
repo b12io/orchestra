@@ -437,6 +437,7 @@ def tasks_assigned_to_worker(worker):
         .order_by('-task__project__priority',
                   '-task__project__start_datetime')[:20])
 
+    # TODO(jrbotros): convert this to a filterable list
     task_assignments_overview = {
         'returned': (
             active_task_assignments

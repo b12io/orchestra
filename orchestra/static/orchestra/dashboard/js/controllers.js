@@ -12,31 +12,10 @@
                                orchestraTasks) {
     var vm = this;
 
-    vm.tasks = {
-      'pending': [],
-      'returned': [],
-      'in_progress': [],
-      'completed': []
-    };
-    vm.new_tasks = undefined;
-    vm.numActiveTasks = function() {
-      return orchestraTasks.numActiveTasks(vm.tasks);
-    };
-    vm.waiting = false;
+    // Surface service to interpolator
+    vm.orchestraTasks = orchestraTasks;
 
-    vm.activate = function() {
-      vm.waiting = true;
-      orchestraTasks.getTasks().
-      success(function(data, status, headers, config) {
-        vm.tasks = data.tasks;
-        vm.preventNewTasks = data.preventNewTasks;
-        vm.reviewerStatus = data.reviewerStatus;
-        vm.waiting = false;
-      }).
-      error(function(data, status, headers, config) {
-        vm.waiting = false;
-      });
-    };
+    vm.waiting = false;
 
     vm.newTask = function(taskType) {
       // To allow users to read the "no tasks left" message while debouncing
@@ -45,22 +24,24 @@
       if (!vm.noTaskTimer) {
         // Initialize task timer to dummy value to prevent subsequent API calls
         vm.noTaskTimer = 'temp';
-        orchestraTasks.newTask(taskType).
-        success(function(data, status, headers, config) {
-          $location.path('task/' + data.id);
-          vm.noTaskTimer = undefined;
-        }).
-        error(function(data, status, headers, config) {
-          vm.new_tasks = 0;
-          // Rate limit button-clicking
-          vm.noTaskTimer = $timeout(function() {
+        orchestraTasks.newTask(taskType)
+          .then(function(response) {
+            $location.path('task/' + data.id);
             vm.noTaskTimer = undefined;
-            vm.new_tasks = undefined;
-          }, 15000);
-        });
+          }, function(response) {
+            vm.new_tasks = 0;
+            // Rate limit button-clicking
+            vm.noTaskTimer = $timeout(function() {
+              vm.noTaskTimer = undefined;
+              vm.new_tasks = undefined;
+            }, 15000);
+          });
       }
     };
 
-    vm.activate();
+    vm.waiting = true;
+    orchestraTasks.updateTasks().finally(function() {
+      vm.waiting = false;
+    });
   }
 })();
