@@ -69,31 +69,44 @@ serviceModule.factory('orchestraService', function() {
 });
 
 serviceModule.factory('orchestraTasks', function($http) {
+  return {
+    tasks: {
+      'pending': [],
+      'returned': [],
+      'in_progress': [],
+      'completed': []
+    },
+    preventNew: false,
+    reviewerStatus: false,
+    newTask: function(taskType) {
+      var service = this;
 
-  var newTask = function(taskType) {
-    return $http.get('/orchestra/api/interface/new_task_assignment/' +
-                     taskType + '/');
-  };
+      return $http.get('/orchestra/api/interface/new_task_assignment/' + taskType + '/')
+        .then(function(response) {
+          service.tasks.in_progress.push(response.data);
+        });
+    },
+    updateTasks: function() {
+      var service = this;
 
-  var getTasks = function() {
-    return $http.get('/orchestra/api/interface/dashboard_tasks/');
-  };
-
-  var numActiveTasks = function(tasks) {
-    var numTasks = 0;
-    for (var taskType in tasks) {
-      if (taskType != 'complete') {
-        numTasks += tasks[taskType].length;
+      return $http.get('/orchestra/api/interface/dashboard_tasks/')
+        .then(function(response) {
+          service.tasks = response.data.tasks;
+          service.preventNew = response.data.preventNew;
+          service.reviewerStatus = response.data.reviewerStatus;
+        });
+    },
+    tasksForType: function(taskType) {
+      return this.tasks[taskType];
+    },
+    numActiveTasks: function() {
+      var numTasks = 0;
+      for (var taskType in this.tasks) {
+        if (taskType != 'complete') {
+          numTasks += this.tasksForType(taskType).length;
+        }
       }
+      return numTasks;
     }
-    return numTasks;
   };
-
-  var service = {
-    newTask: newTask,
-    getTasks: getTasks,
-    numActiveTasks: numActiveTasks,
-  };
-
-  return service;
 });
