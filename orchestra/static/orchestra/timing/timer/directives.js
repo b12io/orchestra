@@ -37,7 +37,7 @@
             var getTimerUrl = '/orchestra/api/interface/timer/';
             $http.get(getTimerUrl)
             .then(function(response) {
-              if (response.data) {
+              if (response.data.time_worked) {
                 var workTime = moment.duration(response.data.time_worked);
                 workTimer.startTime = moment().subtract(workTime);
                 workTimer.toggledOn = true;
