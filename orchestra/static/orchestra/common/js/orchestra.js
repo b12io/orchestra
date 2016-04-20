@@ -16,8 +16,8 @@
   angular.module('orchestra.timing', []);
   angular.module('orchestra.routes', ['ngRoute']);
   angular.module('orchestra.config', []);
-  angular.module('orchestra.dashboard', []);
-  angular.module('orchestra.task', []);
+  angular.module('orchestra.dashboard', ['orchestra.timing']);
+  angular.module('orchestra.task', ['orchestra.timing']);
   angular.module('orchestra.project_management', []);
   angular.module('orchestra.analytics', []);
 

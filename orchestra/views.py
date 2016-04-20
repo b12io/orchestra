@@ -258,8 +258,26 @@ def get_timer(request):
     worker = Worker.objects.get(user=request.user)
     try:
         if request.method == 'GET':
-            duration = time_tracking.get_timer_current_duration(worker)
-            return str(duration)
+            timer = time_tracking.get_timer_object(worker)
+            time_worked = time_tracking.get_timer_current_duration(worker)
+            data = TaskTimerSerializer(timer).data
+            if time_worked:
+                data['time_worked'] = str(time_worked)
+            return data
+    except Exception as e:
+        logger.error(e, exc_info=True)
+        raise e
+
+
+@json_view
+@login_required
+def update_timer_description(request):
+    worker = Worker.objects.get(user=request.user)
+    try:
+        if request.method == 'POST':
+            data = json.loads(request.body.decode())
+            time_tracking.update_timer_description(
+                worker, data.get('description'))
     except Exception as e:
         logger.error(e, exc_info=True)
         raise e
