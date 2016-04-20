@@ -534,6 +534,8 @@ class TaskTimer(models.Model):
             Server timestamp for timer start.
         stop_time (datetime.datetime): optional
             Server timestamp for timer stop.
+        description (str): optional
+            Description of currently ongoing work.
     """
     worker = models.OneToOneField(Worker, related_name='timer')
     assignment = models.ForeignKey(TaskAssignment,
@@ -541,6 +543,7 @@ class TaskTimer(models.Model):
                                    null=True)
     start_time = models.DateTimeField(null=True)
     stop_time = models.DateTimeField(null=True)
+    description = models.CharField(max_length=200, null=True, blank=True)
 
 
 class PayRate(models.Model):
