@@ -23,15 +23,21 @@ serviceModule.factory('orchestraService', function() {
     },
   };
   var taskUtils = {
-    findPrerequisite: function(parent_step, desired_slug) {
-      var stepsToTraverse = [parent_step];
+    prerequisiteData: function(parentStep, desiredStep, dataKey) {
+      var stepsToTraverse = [parentStep];
       while (stepsToTraverse.length) {
         var currentStep = stepsToTraverse.pop();
-        if (currentStep.prerequisites[desired_slug]) {
-          return currentStep.prerequisites[desired_slug];
+        if (currentStep.prerequisites.hasOwnProperty(desiredStep)) {
+          var taskData = currentStep.prerequisites[desiredStep].task.data;
+          if (taskData && dataKey) {
+            return taskInfo[dataKey];
+          }
+          else {
+            return taskData;
+          }
         }
-        for (var step_slug in currentStep.prerequisites) {
-          stepsToTraverse.push(currentStep.prerequisites[step_slug]);
+        for (var step in currentStep.prerequisites) {
+          stepsToTraverse.push(currentStep.prerequisites[step]);
         }
       }
     },
