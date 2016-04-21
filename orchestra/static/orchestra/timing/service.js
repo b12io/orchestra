@@ -10,18 +10,19 @@
         apiUrl: '/orchestra/api/interface/time_entries/',
         entries: [],
         entriesByDate: {},
+        data: null,
 
         /**
          * Get worker time entries for the provided date range (inclusive).
          */
-        getEntriesForDates: function(minDate, maxDate) {
+        updateEntries: function(minDate, maxDate) {
           var service = this;
 
           // Remove time component from dates
           minDate = minDate.startOf('day');
           maxDate = maxDate.startOf('day');
 
-          $http.get(service.apiUrl, {
+          service.data = $http.get(service.apiUrl, {
             params: {
               min_date: minDate.format('YYYY-MM-DD'),
               max_date: maxDate.format('YYYY-MM-DD'),
@@ -109,7 +110,7 @@
       // Default filtered view is the past week of time entries
       var maxDate = moment().startOf('day');
       var minDate = maxDate.clone().subtract(6, 'days');
-      timeEntries.getEntriesForDates(minDate, maxDate);
+      timeEntries.updateEntries(minDate, maxDate);
       return timeEntries;
     });
 })();

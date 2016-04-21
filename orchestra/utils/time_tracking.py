@@ -104,9 +104,14 @@ def stop_timer(worker):
     return time_entry
 
 
-def update_timer_description(worker, description):
+def update_timer(worker, description, assignment_id):
     timer = get_timer_object(worker)
     timer.description = description
+    if assignment_id is None:
+        timer.assignment = None
+    else:
+        timer.assignment = TaskAssignment.objects.get(
+            id=assignment_id, worker=worker)
     timer.save()
 
 

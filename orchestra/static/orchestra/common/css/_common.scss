@@ -37,3 +37,17 @@ $main-font-stack: 'Ruda', sans-serif;
   -ms-user-select: none;
   user-select: none;
 }
+
+%no-padding {
+  padding-left: 0;
+  padding-right: 0;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.row.no-padding {
+  @extend %no-padding;
+  > [class *= "col-"] {
+    @extend %no-padding;
+  }
+}

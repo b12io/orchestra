@@ -15,6 +15,11 @@
     // Surface service to interpolator
     vm.orchestraTasks = orchestraTasks;
 
+    vm.waiting = true;
+    orchestraTasks.data.finally(function() {
+      vm.waiting = false;
+    });
+
     vm.waiting = false;
 
     vm.newTask = function(taskType) {
@@ -38,10 +43,5 @@
           });
       }
     };
-
-    vm.waiting = true;
-    orchestraTasks.updateTasks().finally(function() {
-      vm.waiting = false;
-    });
   }
 })();

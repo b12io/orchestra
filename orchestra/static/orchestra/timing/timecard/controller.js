@@ -1,5 +1,5 @@
 (function() {
-  'use strict';
+  // 'use strict';
 
   angular.module('orchestra.timing')
     .controller('TimecardController', function($routeParams, $scope, orchestraTasks, timeEntries) {
@@ -34,7 +34,7 @@
         }
         entry.description = entry.editData.description;
         entry.time_worked = moment.duration(entry.editData.timeWorked);
-        entry.assignment = entry.editData.assignment.id;
+        entry.assignment = entry.editData.task.assignment_id;
         entry.save();
         entry.editing = false;
         entry.editData = vm.initialEditData(entry);
@@ -51,18 +51,12 @@
           // Time worked should only include hours and minutes, and should be
           // rounded up to the minute
           timeWorked: entry.time_worked.roundMinute().componentize(),
-          assignment: orchestraTasks.tasksById[entry.assignment]
+          task: orchestraTasks.tasksByAssignmentId[entry.assignment]
         };
       };
 
       vm.entryUnchanged = function(entry) {
         return angular.equals(entry.editData, vm.initialEditData(entry));
-      };
-
-      vm.getTaskDescription = function(task) {
-        if (task) {
-          return task.detail + ' (' + task.step + ')';
-        }
       };
 
       vm.editingEntries = function() {

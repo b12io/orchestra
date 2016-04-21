@@ -3,7 +3,7 @@
 
   angular
     .module('orchestra.timing')
-    .directive('workTimer', function() {
+    .directive('workTimer', function($rootScope) {
       return {
         restrict: 'E',
         bindToController: true,
@@ -19,6 +19,7 @@
             workTimer.timerRunning = false;
             workTimer.description = undefined;
             workTimer.timeElapsed = moment.duration();
+            workTimer.task = undefined;
           };
 
           workTimer.toggleTimer = function() {
@@ -40,6 +41,17 @@
                 workTimer.toggledOn = true;
                 workTimer.timerRunning = true;
                 workTimer.description = response.data.description;
+                if (Object.keys(orchestraTasks.tasksByAssignmentId)) {
+                  orchestraTasks.data.then(function() {
+                    workTimer.task = orchestraTasks.tasksByAssignmentId[response.data.assignment];
+                  });
+                }
+                else {
+                  $rootScope.$on('orchestraTasks:update', function() {
+                    console.log('asdgdgsa');
+                    workTimer.task = orchestraTasks.tasksByAssignmentId[response.data.assignment];
+                  });
+                }
                 workTimer.updateTime();
               }
             }, function() {
@@ -57,10 +69,12 @@
 
           workTimer.startTimer = function() {
             var startTimerUrl = '/orchestra/api/interface/timer/start/';
+            var assignment_id = workTimer.task ? workTimer.task.assignment_id : null;
             $http.post(startTimerUrl, {
-              // TODO(jrbotros): add current assignment here
+              assignment: assignment_id,
             })
             .then(function(response) {
+              workTimer.task = orchestraTasks.currentTask;
               workTimer.timerRunning = true ;
               workTimer.toggledOn = true;
               workTimer.startTime = moment();
@@ -77,20 +91,34 @@
             .then(function(response) {
               timeEntries.addEntry(response.data);
               resetTimer();
+              if (!response.data.description) {
+                if (confirm("You didn't enter a description for this time entry. Would you like to view your timecard and edit it there?")) {
+                  workTimer.viewTimecard();
+                }
+              }
             }, function() {
                 alert('Could not stop timer');
             });
           };
 
-          workTimer.updateDescription = function() {
-            var url = '/orchestra/api/interface/timer/description/';
-            $http.post(url, {
-              description: workTimer.description,
-            })
+          workTimer.updateTimer = function() {
+            var url = '/orchestra/api/interface/timer/update/';
+            var assignment_id = workTimer.task ? workTimer.task.assignment_id : null;
+            var data = {
+              assignment: assignment_id,
+              description: workTimer.description
+            };
+            $http.post(url, data)
             .catch(function() {
                 alert('Could not update timer description');
             });
           };
+
+          $scope.$watch('workTimer.task', function(newVal, oldVal) {
+            if (newVal !== oldVal && workTimer.timerRunning) {
+              workTimer.updateTimer();
+            }
+          });
 
           workTimer.viewTimecard = function() {
             $location.path('/timecard');
