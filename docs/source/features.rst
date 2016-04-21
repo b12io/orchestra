@@ -4,11 +4,6 @@ Feature Walkthrough
 
 Below, we'll walk through the various features in Orchestra.
 
-**********************
-Google Drive Utilities
-**********************
-Coming soon...
-
 *************
 Time Tracking
 *************
@@ -24,8 +19,8 @@ The navigation bar in the task dashboard and task pages has a timer icon.
 
 .. image:: ../static/img/time_tracking/timer_icon.png
 
-When clicked on, a dropdown appears that allows the worker to toggle a timer
-to track their work time.
+If you click on the timer icon, a dropdown appears that allows the worker
+to toggle a timer to track their work time.
 
 .. image:: ../static/img/time_tracking/timer_dropdown.png
 
@@ -33,7 +28,7 @@ The worker can optionally add a description and specify the task they are
 working on.
 
 When the timer is stopped, a time entry is automatically created for the
-amount of time tracked. A worker can go to the timecard page to edit and
+amount of time worked. A worker can go to the timecard page to edit and
 manually add time entries.
 
 Timecard
@@ -47,7 +42,7 @@ by date.
 The time to the right of the date shows the total time worked that day.
 
 A time entry can be manually added (versus automatically added by stopping the
-timer), by clicking the plus icon next to each date.
+timer) by clicking the plus icon next to each date.
 
 .. image:: ../static/img/time_tracking/timecard_add_entry.png
 
