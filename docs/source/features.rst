@@ -21,8 +21,13 @@ Timer
 ===========
 
 The navigation bar in the task dashboard and task pages has a timer icon.
+
+.. image:: ../static/img/time_tracking/timer_icon.png
+
 When clicked on, a dropdown appears that allows the worker to toggle a timer
 to track their work time.
+
+.. image:: ../static/img/time_tracking/timer_dropdown.png
 
 The worker can optionally add a description and specify the task they are
 working on.
@@ -37,6 +42,7 @@ Timecard
 The timecard page contains a list of time entries for the past week, grouped
 by date.
 
+.. image:: ../static/img/time_tracking/timecard.png
 
 Data Models
 ===========
