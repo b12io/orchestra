@@ -15,13 +15,6 @@
         }
       };
 
-      vm.humanizeDuration = function(duration) {
-        if (duration === undefined) {
-          duration = moment.duration();
-        }
-        return duration.get('hours') + 'h ' + duration.get('minutes') + 'm';
-      };
-
       vm.prettyDate = function(dateString) {
         // TODO(jrbotros): fix groupby with custom comparator
         if (dateString) {
@@ -35,6 +28,10 @@
       };
 
       vm.saveChanges = function(entry) {
+        if (vm.entryUnchanged(entry)) {
+          vm.cancelChanges();
+          return;
+        }
         entry.description = entry.editData.description;
         entry.time_worked = moment.duration(entry.editData.timeWorked);
         entry.assignment = entry.editData.assignment.id;
@@ -51,7 +48,9 @@
       vm.initialEditData = function(entry) {
         return {
           description: entry.description,
-          timeWorked: entry.time_worked.componentize(),
+          // Time worked should only include hours and minutes, and should be
+          // rounded up to the minute
+          timeWorked: entry.time_worked.roundMinute().componentize(),
           assignment: orchestraTasks.tasksById[entry.assignment]
         };
       };
