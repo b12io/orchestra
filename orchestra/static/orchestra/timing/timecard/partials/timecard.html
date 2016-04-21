@@ -7,64 +7,99 @@
         <span class="date-duration">{{ vm.humanizeDuration(vm.timeEntries.timeWorkedForDate(dateEntries.$key)) }}</span>
       </h2>
       <div class="date-entries">
-        <div ng-if="!dateEntries.length" class="entry-row">
-          <em>No entries for this date</em>
+        <div class="entry-row" ng-if="!dateEntries.length">
+          <div class="row">
+            <div class="col-xs-12">
+              <em>No entries for this date</em>
+            </div>
+          </div>
         </div>
-        <div class="entry-row" ng-mouseenter="entry.hover = true" ng-mouseleave="entry.hover = false" ng-repeat="entry in dateEntries | orderBy:'timer_start_time'">
-          <form novalidate name="entryForm" class="form-inline">
-            <div class="description">
-              <span ng-hide="entry.editing">
+        <div class="entry-row" ng-class="{'gray-stripe': $index % 2}" ng-repeat="entry in dateEntries | orderBy:'timer_start_time'">
+          <form class="container-fluid" novalidate name="entryForm" class="form-inline">
+            <div class="row">
+              <div class="col-xs-2 edit-tools disable-select">
+                <i ng-click="vm.timeEntries.deleteEntry(entry)" class="fa fa-times-circle"></i>
+                <i class="fa fa-pencil-square-o" ng-class="{active: entry.editing}" ng-click="vm.editEntry(entry)"></i>
+              </div>
+
+              <!-- Readonly view for description and time worked -->
+              <div class="col-xs-6 description" ng-if="!entry.editing">
                 <span ng-show="entry.description">
                   {{ entry.description }}
                 </span>
                 <span ng-hide="entry.description">
                   <em>No description</em>
                 </span>
-              </span>
-              <input ng-show="entry.editing"
-                     class="form-control"
-                     type="text"
-                     ng-model="entry.description_edit"
-                     placeholder="What did you work on?">
-            </div>
-            <div class="edit-tools disable-select">
-              <i ng-click="vm.timeEntries.deleteEntry(entry)" class="fa fa-times-circle"></i>
-              <i class="fa fa-pencil-square-o" ng-class="{active: entry.editing}" ng-click="vm.editEntry(entry)"></i>
-            </div>
-            <div class="edit-time" ng-show="entry.editing">
-              <label>
-                <input class="form-control"
-                       type="number"
-                       ng-model="entry.time_worked_edit.hours"
-                       digits="2"
-                       enforce-integers>
-                <span ng-hide="entry.editing">{{ entry.time_worked.get('hours') }}</span>
-                h
-              </label>
-              <label>
-                <input class="form-control"
-                       type="number"
-                       ng-model="entry.time_worked_edit.minutes"
-                       digits="2"
-                       enforce-integers>
-                m
-              </label>
-            </div>
-            <div class="edit-time" ng-hide="entry.editing">
-              {{ vm.humanizeDuration(entry.time_worked) }}
-            </div>
-            <div class="edit-date" ng-show="entry.editing">
-              <label>Move to date</label>
-              <span class="date-picker" entry="entry" pikaday>
-                <i class="fa fa-calendar-o"></i>{{ entry.date.format('MMMM D') }}
-              </span>
-            </div>
-            <div class="edit-options pull-right">
-              <div class="edit-cancel-handle" ng-show="entry.editing" ng-click="vm.cancelChanges(entry)">
-                Cancel
               </div>
-              <div class="btn btn-primary edit-save-handle" ng-show="entry.editing" ng-click="vm.saveChanges(entry)">
-                Save changes
+              <div class="col-xs-4 edit-time" ng-if="!entry.editing">
+                {{ vm.humanizeDuration(entry.time_worked) }}
+              </div>
+              <div class="col-xs-12" ng-if="!entry.editing">
+                <em class="pull-right">{{ vm.getTaskDescription(vm.orchestraTasks.tasksById[entry.assignment]) || 'Unassigned' }}</em>
+              </div>
+
+              <!-- Editable view for description and time worked -->
+              <div class="col-xs-6" ng-if="entry.editing">
+                <input class="form-control"
+                       type="text"
+                       ng-model="entry.editData.description"
+                       placeholder="What did you work on?">
+              </div>
+              <div class="col-xs-4 edit-time" ng-if="entry.editing">
+                <div class="time-component">
+                  <input class="form-control"
+                         type="number"
+                         ng-model="entry.editData.timeWorked.hours"
+                         min="0"
+                         max="23"
+                         enforce-integers>
+                  <label>hours</label>
+                </div>
+                <div class="time-component">
+                  <input class="form-control"
+                         type="number"
+                         ng-model="entry.editData.timeWorked.minutes"
+                         min="0"
+                         max="59"
+                         enforce-integers>
+                  <label>minutes</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="row" ng-if="entry.editing">
+              <div class="col-xs-4">
+                <div class="edit-date">
+                  <label class="edit-label">Move to date</label>
+                  <span class="date-picker" entry="entry" pikaday>
+                    <i class="fa fa-calendar-o"></i>{{ entry.date.format('MMMM D') }}
+                  </span>
+                </div>
+              </div>
+              <div class="col-xs-8">
+                <div class="edit-task">
+                  <label class="edit-label">Select task</label>
+                  <ui-select ng-model="entry.editData.assignment">
+                      <ui-select-match>
+                          <span ng-bind="vm.getTaskDescription($select.selected)"></span>
+                      </ui-select-match>
+                      <ui-select-choices repeat="item in (vm.orchestraTasks.allTasks() | filter: $select.search) track by item.id">
+                          <span ng-bind="vm.getTaskDescription(item)"></span>
+                      </ui-select-choices>
+                  </ui-select>
+                </div>
+              </div>
+            </div>
+            <div class="row" ng-if="entry.editing">
+              <div class="col-xs-12">
+                <div class="edit-options pull-right">
+                  <div class="edit-cancel-handle" ng-click="vm.cancelChanges(entry)">
+                    Cancel
+                  </div>
+                  <div class="btn btn-primary btn-sm edit-save-handle" ng-disabled="vm.entryUnchanged(entry)" ng-click="vm.saveChanges(entry)">
+                    Save changes
+                  </div>
+                </div>
               </div>
             </div>
           </form>

@@ -26,12 +26,11 @@
       // Modified from stackoverflow.com/a/14425022
        return {
          scope: {
-           digits: '=?',
+           max: '=?',
+           min: '=?'
          },
          require: 'ngModel',
          link: function(scope, element, attrs, modelCtrl) {
-           scope.digits = scope.digits || 2;
-
            modelCtrl.$parsers.unshift(function(inputValue) {
              if (inputValue === undefined || inputValue === null) {
                modelCtrl.$setViewValue(0);
@@ -46,12 +45,11 @@
                transformedInput = transformedInput.substring(1);
              }
 
-             // Truncate to correct number of digits
-             transformedInput = transformedInput.substring(0, scope.digits);
-
              // Convert to integer
              if (transformedInput.length) {
                transformedInput = parseInt(transformedInput, 10);
+               transformedInput = Math.min(transformedInput, scope.max);
+               transformedInput = Math.max(transformedInput, scope.min);
              }
              else {
                transformedInput = 0;

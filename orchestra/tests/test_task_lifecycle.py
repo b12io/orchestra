@@ -274,6 +274,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
             'task': {'data': {'test_key': 'test_value'},
                      'status': 'Pending Review'},
             'task_id': task.id,
+            'assignment_id': task.assignments.get(worker=self.workers[0]).id,
             'is_reviewer': False,
             'is_read_only': True,
             'worker': {

@@ -6,7 +6,7 @@
     .controller('TaskController', TaskController);
 
   function TaskController($location, $scope, $routeParams, $http, $rootScope,
-    $uibModal, $timeout, autoSaveTask, orchestraService,
+    $uibModal, $timeout, autoSaveTask, orchestraService, orchestraTasks,
     requiredFields) {
     var vm = this;
     vm.taskId = $routeParams.taskId;
@@ -22,6 +22,11 @@
         vm.project = data.project;
         vm.is_read_only = data.is_read_only;
         vm.work_times_seconds = data.work_times_seconds;
+
+        orchestraTasks.currentTask = vm.taskAssignment;
+        $scope.$on('$locationChangeStart', function() {
+          orchestraTasks.currentTask = undefined;
+        });
 
         if (!vm.is_read_only) {
           requiredFields.setup(vm);
