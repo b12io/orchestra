@@ -27,10 +27,5 @@ django-hijack-admin==2.1.0
 django-money==0.7.6
 django-filter==0.13.0
 
-# Documentation requirements
-Sphinx==1.4.1
-sphinx-autobuild==0.6.0
-sphinxcontrib-httpdomain==1.4.0
-
 # Journalism Workflow requirements
 Pillow==3.2.0
