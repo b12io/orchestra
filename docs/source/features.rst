@@ -18,7 +18,7 @@ provide both a timer widget that workers can turn on to track time, and a
 timecard page where workers can update and manually create time entries.
 
 Timer
-===========
+=====
 
 The navigation bar in the task dashboard and task pages has a timer icon.
 
@@ -37,15 +37,26 @@ amount of time tracked. A worker can go to the timecard page to edit and
 manually add time entries.
 
 Timecard
-===========
+========
 
 The timecard page contains a list of time entries for the past week, grouped
 by date.
 
 .. image:: ../static/img/time_tracking/timecard.png
 
-Data Models
-===========
+The time to the right of the date shows the total time worked that day.
 
-TimeEntry
-Timer
+Quirks
+======
+
+- Time entries automatically created when the timer is stopped have the date
+  set to the current UTC timestamp date. This means that the date might be
+  different than the date in the worker's time zone. In general, handling time
+  entries across multiple time zones is difficult, and we are still working on
+  a better user experience.
+- Time entries automatically created when the timer is stopped have the work
+  time set to the hours/minutes/seconds displayed in the timer. However, the
+  timecard page only shows hours:minutes for time entries for readability.
+  Time entries are rounded up to the minute, and the sum for the day reflects
+  the sum of the *rounded* times, **not** the rounding of the sum of unrounded
+  times.
