@@ -125,20 +125,20 @@
     .module('orchestra.task.controllers')
     .controller('SubmitModalInstanceCtrl', SubmitModalInstanceCtrl);
 
-  SubmitModalInstanceCtrl.$inject = ['$scope', '$modalInstance', 'command', 'work_times_seconds'];
+  SubmitModalInstanceCtrl.$inject = ['$scope', '$uibModalInstance', 'command', 'work_times_seconds'];
 
-  function SubmitModalInstanceCtrl($scope, $modalInstance, command, workTimesSeconds) {
+  function SubmitModalInstanceCtrl($scope, $uibModalInstance, command, workTimesSeconds) {
     $scope.command = command;
     $scope.currentIterationHours = null;
     $scope.currentIterationMinutes = null;
     $scope.workTimesSeconds = workTimesSeconds;
 
     $scope.submit = function() {
-      $modalInstance.close($scope.totalSeconds());
+      $uibModalInstance.close($scope.totalSeconds());
     };
 
     $scope.cancel = function() {
-      $modalInstance.dismiss('cancel');
+      $uibModalInstance.dismiss('cancel');
     };
 
     $scope.totalSeconds = function() {
