@@ -46,6 +46,14 @@ by date.
 
 The time to the right of the date shows the total time worked that day.
 
+A time entry can be manually added (versus automatically added by stopping the
+timer), by clicking the plus icon next to each date.
+
+.. image:: ../static/img/time_tracking/timecard_add_entry.png
+
+Each time entry can be edited by clicking the pencil icon, or deleted by
+clicking the x icon.
+
 Quirks
 ======
 
@@ -55,7 +63,7 @@ Quirks
   entries across multiple time zones is difficult, and we are still working on
   a better user experience.
 - Time entries automatically created when the timer is stopped have the work
-  time set to the hours/minutes/seconds displayed in the timer. However, the
+  time set to the hours:minutes:seconds displayed in the timer. However, the
   timecard page only shows hours:minutes for time entries for readability.
   Time entries are rounded up to the minute, and the sum for the day reflects
   the sum of the *rounded* times, **not** the rounding of the sum of unrounded
