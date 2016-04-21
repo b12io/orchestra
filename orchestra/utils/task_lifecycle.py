@@ -337,6 +337,7 @@ def get_task_assignment_details(task_assignment):
                    for attr in ('username', 'first_name', 'last_name')}
 
     return {
+        'assignment_id': task_assignment.id,
         'task': {
             'data': task_assignment.in_progress_task_data,
             'status': (dict(Task.STATUS_CHOICES)
