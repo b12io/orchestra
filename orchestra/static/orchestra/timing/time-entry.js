@@ -25,12 +25,39 @@
   moment.duration.fn.componentize = function(units) {
     var duration = this;
 
-    units = units || ['hours', 'minutes', 'seconds'];
+    units = units || ['h', 'm'];
+
     var components = {};
     units.forEach(function(unit) {
       components[unit] = duration.get(unit);
     });
     return components;
+  };
+
+  /**
+   * Rounds the duration to the next minute without affecting original data.
+   */
+  moment.duration.fn.roundMinute = function() {
+    var duration = this;
+    return moment.duration({
+      hours: duration.get('hours'),
+      minutes: duration.get('minutes') + 1
+    });
+  };
+
+  /**
+   * Rounds up the units provided and returns a human-readable duration.
+   */
+  moment.duration.fn.humanizeUnits = function(units) {
+    var duration = this;
+
+    var components = duration.componentize(units);
+    var durationString = '';
+    for (var unit in components) {
+      durationString += components[unit] + unit + ' ';
+    }
+
+    return durationString;
   };
 
   /**

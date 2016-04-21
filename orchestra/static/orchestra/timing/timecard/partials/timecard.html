@@ -4,7 +4,7 @@
       <h2>
         <span class="date-label">{{ vm.prettyDate(dateEntries.$key) }}</span>
         <i ng-click="vm.timeEntries.createEntry(vm.datetimeFromKey(dateEntries))" class="fa fa-plus btn-add-entry"></i>
-        <span class="date-duration">{{ vm.humanizeDuration(vm.timeEntries.timeWorkedForDate(dateEntries.$key)) }}</span>
+        <span class="date-duration">{{ vm.timeEntries.timeWorkedForDate(dateEntries.$key).humanizeUnits() }}</span>
       </h2>
       <div class="date-entries">
         <div class="entry-row" ng-if="!dateEntries.length">
@@ -32,7 +32,7 @@
                 </span>
               </div>
               <div class="col-xs-4 edit-time" ng-if="!entry.editing">
-                {{ vm.humanizeDuration(entry.time_worked) }}
+                {{ entry.time_worked.roundMinute().humanizeUnits() }}
               </div>
               <div class="col-xs-12" ng-if="!entry.editing">
                 <em class="pull-right">{{ vm.getTaskDescription(vm.orchestraTasks.tasksById[entry.assignment]) || 'Unassigned' }}</em>
@@ -49,7 +49,7 @@
                 <div class="time-component">
                   <input class="form-control"
                          type="number"
-                         ng-model="entry.editData.timeWorked.hours"
+                         ng-model="entry.editData.timeWorked.h"
                          min="0"
                          max="23"
                          enforce-integers>
@@ -58,7 +58,7 @@
                 <div class="time-component">
                   <input class="form-control"
                          type="number"
-                         ng-model="entry.editData.timeWorked.minutes"
+                         ng-model="entry.editData.timeWorked.m"
                          min="0"
                          max="59"
                          enforce-integers>
