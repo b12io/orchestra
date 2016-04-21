@@ -1,5 +1,5 @@
 (function() {
-  // 'use strict';
+  'use strict';
 
   angular.module('orchestra.timing')
     .controller('TimecardController', function($routeParams, $scope, orchestraTasks, timeEntries) {
@@ -46,14 +46,30 @@
       };
 
       vm.initialEditData = function(entry) {
-        return {
+        var data = {
           description: entry.description,
           // Time worked should only include hours and minutes, and should be
           // rounded up to the minute
           timeWorked: entry.time_worked.roundMinute().componentize(),
           task: orchestraTasks.tasksByAssignmentId[entry.assignment]
         };
+        // Don't set task if tasks haven't loaded yet
+        if (orchestraTasks.tasksByAssignmentId) {
+          data.task = orchestraTasks.tasksByAssignmentId[entry.assignment];
+        }
       };
+
+      // When tasks load, add correct task to any entry being edited
+      orchestraTasks.data.then(function() {
+        timeEntries.data.then(function() {
+          timeEntries.entries.forEach(function(entry) {
+            if (entry.editData) {
+              entry.editData.task = orchestraTasks.tasksByAssignmentId[entry.assignment];
+            }
+          });
+        });
+      });
+
 
       vm.entryUnchanged = function(entry) {
         return angular.equals(entry.editData, vm.initialEditData(entry));

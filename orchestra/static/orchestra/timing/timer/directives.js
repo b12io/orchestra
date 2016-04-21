@@ -41,17 +41,9 @@
                 workTimer.toggledOn = true;
                 workTimer.timerRunning = true;
                 workTimer.description = response.data.description;
-                if (Object.keys(orchestraTasks.tasksByAssignmentId)) {
-                  orchestraTasks.data.then(function() {
-                    workTimer.task = orchestraTasks.tasksByAssignmentId[response.data.assignment];
-                  });
-                }
-                else {
-                  $rootScope.$on('orchestraTasks:update', function() {
-                    console.log('asdgdgsa');
-                    workTimer.task = orchestraTasks.tasksByAssignmentId[response.data.assignment];
-                  });
-                }
+                orchestraTasks.data.then(function() {
+                  workTimer.task = orchestraTasks.tasksByAssignmentId[response.data.assignment];
+                });
                 workTimer.updateTime();
               }
             }, function() {
