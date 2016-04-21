@@ -610,13 +610,15 @@ a.logo {
   left: 50%;
   transform: translateX(-50%);
   font-size: 1.4rem; }
+  .timecard-view .flex-row {
+    display: flex;
+    padding: 5px 0;
+    justify-content: space-between;
+    align-content: center; }
+    .timecard-view .flex-row:not(:last-of-type) {
+      margin-bottom: 10px; }
   .timecard-view .timecard-header {
     padding: 1.5rem; }
-  .timecard-view .description {
-    width: 300px;
-    display: inline-block; }
-    .timecard-view .description input {
-      width: 100%; }
   .timecard-view .edit-tools {
     float: left; }
     .timecard-view .edit-tools i {
@@ -626,7 +628,7 @@ a.logo {
         color: #0079bf; }
   .timecard-view .date-group {
     position: relative;
-    padding: 0 0.75rem;
+    padding: 0.75rem;
     margin: 0.75rem 0;
     background-color: white; }
     .timecard-view .date-group h2 {
@@ -658,46 +660,51 @@ a.logo {
         vertical-align: bottom; }
     .timecard-view .date-group .date-entries {
       padding: 0 1.5rem; }
-  .timecard-view .edit-cancel-handle {
-    cursor: pointer;
-    display: inline-block; }
-    .timecard-view .edit-cancel-handle:hover {
-      text-decoration: underline; }
   .timecard-view .entry-row {
     position: relative;
-    overflow: visible;
     background-color: white;
-    padding: 0.75rem;
-    border: 1px solid transparent;
     box-sizing: border-box;
-    overflow: auto; }
-    .timecard-view .entry-row .edit-date {
-      margin-top: 1.5rem;
-      display: inline-block; }
-      .timecard-view .entry-row .edit-date .date-picker {
-        cursor: pointer; }
-        .timecard-view .entry-row .edit-date .date-picker i {
-          margin-right: 3px;
-          color: #0079bf; }
-      .timecard-view .entry-row .edit-date label {
-        font-size: 0.8em;
-        font-weight: bold;
-        text-transform: uppercase;
-        margin-right: 5px; }
+    padding: 1.5rem 0; }
+    .timecard-view .entry-row.gray-stripe {
+      background-color: rgba(204, 204, 204, 0.5); }
+    .timecard-view .entry-row .row {
+      padding: 5px 0; }
+    .timecard-view .entry-row .description input {
+      width: 100%; }
+    .timecard-view .entry-row .edit-date .date-picker {
+      cursor: pointer; }
+      .timecard-view .entry-row .edit-date .date-picker i {
+        margin-right: 3px;
+        color: #0079bf; }
+    .timecard-view .entry-row .edit-label {
+      display: block;
+      font-size: 0.8em;
+      font-weight: bold;
+      text-transform: uppercase;
+      margin-right: 5px; }
     .timecard-view .entry-row .edit-time {
+      text-align: right; }
+      .timecard-view .entry-row .edit-time label {
+        margin: 0; }
+      .timecard-view .entry-row .edit-time .time-component {
+        display: inline-block;
+        text-align: center; }
+    .timecard-view .entry-row .edit-task {
+      float: left;
+      width: 300px; }
+      .timecard-view .entry-row .edit-task .ui-select-bootstrap > .ui-select-choices {
+        width: auto; }
+    .timecard-view .entry-row .edit-options {
       float: right; }
-      .timecard-view .entry-row .edit-time input {
-        width: 60px; }
-    .timecard-view .entry-row input {
-      display: inline-block; }
-      .timecard-view .entry-row input:read-only {
-        background: transparent; }
+      .timecard-view .entry-row .edit-options .edit-cancel-handle {
+        cursor: pointer;
+        display: inline-block; }
+        .timecard-view .entry-row .edit-options .edit-cancel-handle:hover {
+          text-decoration: underline; }
     .timecard-view .entry-row .form-cell:not(:last-of-type) {
       padding-right: 10px; }
     .timecard-view .entry-row:hover input:read-only, .timecard-view .entry-row.editing input:read-only {
       background: white; }
-    .timecard-view .entry-row:not(:last-child) {
-      border-bottom: 1px solid #cccccc; }
   .timecard-view .time-input {
     width: 55px; }
   .timecard-view .show-description {

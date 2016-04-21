@@ -2,10 +2,11 @@
   'use strict';
 
   angular.module('orchestra.timing')
-    .controller('TimecardController', function($routeParams, $scope, timeEntries) {
+    .controller('TimecardController', function($routeParams, $scope, orchestraTasks, timeEntries) {
       var vm = this;
       vm.taskId = $routeParams.taskId;
 
+      vm.orchestraTasks = orchestraTasks;
       vm.timeEntries = timeEntries;
 
       vm.datetimeFromKey = function(entries) {
@@ -15,6 +16,9 @@
       };
 
       vm.humanizeDuration = function(duration) {
+        if (duration === undefined) {
+          duration = moment.duration();
+        }
         return duration.get('hours') + 'h ' + duration.get('minutes') + 'm';
       };
 
@@ -26,26 +30,83 @@
       };
 
       vm.editEntry = function(entry) {
-        vm.resetEntry(entry);
+        entry.editData = vm.initialEditData(entry);
         entry.editing = !entry.editing;
       };
 
       vm.saveChanges = function(entry) {
-        entry.description = entry.description_edit;
-        entry.time_worked = moment.duration(entry.time_worked_edit);
+        entry.description = entry.editData.description;
+        entry.time_worked = moment.duration(entry.editData.timeWorked);
+        entry.assignment = entry.editData.assignment.id;
         entry.save();
         entry.editing = false;
-        vm.resetEntry(entry);
+        entry.editData = vm.initialEditData(entry);
       };
 
       vm.cancelChanges = function(entry) {
         entry.editing = false;
-        vm.resetEntry(entry);
+        entry.editData = vm.initialEditData(entry);
       };
 
-      vm.resetEntry = function(entry) {
-        entry.description_edit = entry.description;
-        entry.time_worked_edit = entry.time_worked.componentize();
+      vm.initialEditData = function(entry) {
+        return {
+          description: entry.description,
+          timeWorked: entry.time_worked.componentize(),
+          assignment: orchestraTasks.tasksById[entry.assignment]
+        };
       };
+
+      vm.entryUnchanged = function(entry) {
+        return angular.equals(entry.editData, vm.initialEditData(entry));
+      };
+
+      vm.getTaskDescription = function(task) {
+        if (task) {
+          return task.detail + ' (' + task.step + ')';
+        }
+      };
+
+      vm.editingEntries = function() {
+        for (var i = 0; i < timeEntries.entries.length; i++) {
+          if (timeEntries.entries[i].editing === true) {
+            return true;
+          }
+        }
+        return false;
+      };
+
+      vm.resetEntries = function() {
+        timeEntries.entries.forEach(function(entry) {
+          delete entry.editing;
+          delete entry.editData;
+        });
+      };
+
+      var warningString = "Your latest changes haven't been saved.";
+      var defaultPrompt = 'Are you sure you want to leave the page?';
+
+      var beforeUnloadListener = function(event) {
+        if (vm.editingEntries()) {
+          event.returnValue = warningString;
+        }
+      };
+
+      // Browser close or reload
+      window.addEventListener('beforeunload', beforeUnloadListener);
+
+      // Angular location change
+      $scope.$on('$locationChangeStart', function(e) {
+        if (vm.editingEntries()) {
+          if (confirm(warningString + '\n' + defaultPrompt)) {
+            vm.resetEntries();
+
+            // Disable confirm dialog if navigating away from view.
+            window.removeEventListener('beforeunload', beforeUnloadListener);
+          }
+          else {
+            e.preventDefault();
+          }
+        }
+      });
     });
 })();
