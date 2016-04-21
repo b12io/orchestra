@@ -108,7 +108,7 @@
 
       // Default filtered view is the past week of time entries
       var maxDate = moment().startOf('day');
-      var minDate = maxDate.clone().subtract(7, 'days');
+      var minDate = maxDate.clone().subtract(6, 'days');
       timeEntries.getEntriesForDates(minDate, maxDate);
       return timeEntries;
     });
