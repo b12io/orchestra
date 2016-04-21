@@ -505,6 +505,7 @@ class DashboardTestCase(OrchestraTestCase):
             'status': assignment_status,
             'task': {'data': task_data, 'status': task_status},
             'task_id': task.id,
+            'assignment_id': task.assignments.get(worker=worker).id,
             'workflow': {
                 'slug': 'w1', 'name': 'Workflow One',
             },

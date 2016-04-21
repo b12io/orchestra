@@ -6,13 +6,10 @@
     .directive('workTimer', function() {
       return {
         restrict: 'E',
-        scope: {
-          taskId: '=taskId',
-        },
         bindToController: true,
         controllerAs: 'workTimer',
         templateUrl: $static('/static/orchestra/timing/timer/timer.html'),
-        controller: function($http, $location, $scope, $timeout, timeEntries) {
+        controller: function($http, $location, $scope, $timeout, orchestraTasks, timeEntries) {
           var workTimer = this;
 
           workTimer.popoverTemplate = $static('/static/orchestra/timing/timer/popover.html');
