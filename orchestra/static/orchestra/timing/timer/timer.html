@@ -4,10 +4,12 @@
     popover-placement="bottom">
     <i class="fa fa-clock-o"></i>
     <span ng-if="workTimer.timerRunning">
-      <span ng-if="workTimer.timeElapsed.get('hours')">
-        {{ workTimer.timeElapsed.get('hours') }}h
+      <span ng-if="workTimer.timeElapsed.get('hours') === 0">
+        {{ workTimer.timeElapsed.roundMinute().humanizeUnits(['m']) }}
       </span>
-      {{ workTimer.timeElapsed.get('minutes') }}m
+      <span ng-if="workTimer.timeElapsed.get('hours')">
+        {{ workTimer.timeElapsed.roundMinute().humanizeUnits() }}
+      </span>
     </span>
   </div>
 </div>
