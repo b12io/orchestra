@@ -40,8 +40,8 @@
   moment.duration.fn.roundMinute = function() {
     var duration = this;
     return moment.duration({
-      hours: duration.get('hours'),
-      minutes: duration.get('minutes') + 1
+      h: duration.get('h'),
+      m: duration.get('s') ? duration.get('m') + 1 : duration.get('m')
     });
   };
 
