@@ -52,7 +52,7 @@
           var entries = this.entriesByDate[this.keyForDate(date)];
           var totalDuration = moment.duration();
           entries.forEach(function(entry) {
-            totalDuration.add(entry.time_worked);
+            totalDuration.add(entry.time_worked.roundMinute());
           });
           return totalDuration;
         },
