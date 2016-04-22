@@ -56,8 +56,8 @@ def notify_status_change(task, previous_status=None):
             'message': 'Congratulations! The task you worked on is complete.',
             'recipient_list': [assignment.worker.user.email
                                for assignment in task_assignments
-                               if assignment.worker
-                               and assignment.worker.user.email]
+                               if assignment.worker and
+                               assignment.worker.user.email]
         }
     # Notify reviewer when task pending update is ready for re-review, but not
     # for a task moving from PENDING_REVIEW to REVIEWING
@@ -79,8 +79,8 @@ def notify_status_change(task, previous_status=None):
                         'has been done in error.'),
             'recipient_list': [assignment.worker.user.email
                                for assignment in task_assignments
-                               if assignment.worker
-                               and assignment.worker.user.email]
+                               if assignment.worker and
+                               assignment.worker.user.email]
         }
 
     _notify_internal_slack_status_change(task, current_worker)
