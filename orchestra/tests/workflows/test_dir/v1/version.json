@@ -28,7 +28,7 @@
                 "policy": "no_review"
             },
             "user_interface": {
-                "angular_module": "test_dir.v1.s2.module",
+                "angular_module": "test_dir.v1.s2",
                 "angular_directive": "s2",
                 "javascript_includes": [
                     "test_dir/v1/s2/js/modules.js",
@@ -59,7 +59,7 @@
                 "max_reviews": 1
             },
             "user_interface": {
-                "angular_module": "test_dir.v1.s3.module",
+                "angular_module": "test_dir.v1.s3",
                 "angular_directive": "s3",
                 "javascript_includes": [
                     "test_dir/v1/s3/js/modules.js",

@@ -2,7 +2,7 @@
   'use strict';
 
   angular
-    .module('orchestra.common.components.directives')
+    .module('orchestra.common')
     .directive('orchestraQuill', ['$http', '$timeout', orchestraQuill]);
 
   function orchestraQuill($http, $timeout) {

@@ -2,7 +2,7 @@
   'use strict';
 
   angular
-    .module('orchestra.dashboard.controllers')
+    .module('orchestra.dashboard')
     .controller('DashboardController', DashboardController);
 
   DashboardController.$inject = ['$scope', '$http', '$location', '$timeout',

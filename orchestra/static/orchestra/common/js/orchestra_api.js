@@ -1,4 +1,4 @@
-var serviceModule = angular.module('orchestra.common.services');
+var serviceModule = angular.module('orchestra.common');
 
 serviceModule.factory('orchestraApi', function($http) {
   var projectManagementBase = '/orchestra/api/interface/project_management/';

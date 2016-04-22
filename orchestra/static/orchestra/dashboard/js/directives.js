@@ -2,7 +2,7 @@
   'use strict';
 
   angular
-    .module('orchestra.dashboard.directives')
+    .module('orchestra.dashboard')
     .directive('taskcards', taskcards);
 
   function taskcards() {

@@ -2,7 +2,7 @@
   'use strict';
 
   angular
-    .module('orchestra.task.directives')
+    .module('orchestra.task')
     .directive('dynamicLoad', dynamicLoad);
 
 

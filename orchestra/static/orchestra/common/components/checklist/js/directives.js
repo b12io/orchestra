@@ -2,7 +2,7 @@
   'use strict';
 
   angular
-    .module('orchestra.common.components.directives')
+    .module('orchestra.common')
     .directive('orchestraChecklist', ['$http', '$timeout', '$compile', 'orchestraService', orchestraChecklist]);
 
   function orchestraChecklist($http, $timeout, $compile, orchestraService) {
@@ -188,7 +188,7 @@
   }
 
   angular
-    .module('orchestra.common.components.directives')
+    .module('orchestra.common')
     .directive('orchestraChecklistItem', ['$http', '$timeout', '$compile', 'orchestraService', orchestraChecklistItem]);
 
   function orchestraChecklistItem($http, $timeout, $compile, orchestraService) {

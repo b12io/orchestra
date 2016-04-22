@@ -51,7 +51,7 @@ workflow_fixtures = [
                         'user_interface': {
                             'javascript_includes': ['/path/to/some.js'],
                             'stylesheet_includes': ['/path/to/some.css'],
-                            'angular_module': 'step1.module',
+                            'angular_module': 'step1',
                             'angular_directive': 'step1_directive',
                         },
                     },
@@ -74,7 +74,7 @@ workflow_fixtures = [
                         'user_interface': {
                             'javascript_includes': ['/path/to/some.js'],
                             'stylesheet_includes': ['/path/to/some.css'],
-                            'angular_module': 'step2.module',
+                            'angular_module': 'step2',
                             'angular_directive': 'step2_directive',
                         },
                     },
@@ -94,7 +94,7 @@ workflow_fixtures = [
                         'user_interface': {
                             'javascript_includes': ['/path/to/some.js'],
                             'stylesheet_includes': ['/path/to/some.css'],
-                            'angular_module': 'step3.module',
+                            'angular_module': 'step3',
                             'angular_directive': 'step3_directive',
                         },
                     },
@@ -127,7 +127,7 @@ workflow_fixtures = [
                         'user_interface': {
                             'javascript_includes': ['/path/to/some.js'],
                             'stylesheet_includes': ['/path/to/some.css'],
-                            'angular_module': 'step4.module',
+                            'angular_module': 'step4',
                             'angular_directive': 'step4_directive',
                         },
                     },
@@ -183,7 +183,7 @@ workflow_fixtures = [
                         'user_interface': {
                             'javascript_includes': ['/path/to/some.js'],
                             'stylesheet_includes': ['/path/to/some.css'],
-                            'angular_module': 'step1.module',
+                            'angular_module': 'step1',
                             'angular_directive': 'step1_directive',
                         },
                     },
@@ -207,7 +207,7 @@ workflow_fixtures = [
                         'user_interface': {
                             'javascript_includes': ['/path/to/some.js'],
                             'stylesheet_includes': ['/path/to/some.css'],
-                            'angular_module': 'step2.module',
+                            'angular_module': 'step2',
                             'angular_directive': 'step2_directive',
                         },
                     },
@@ -509,7 +509,7 @@ def assert_test_dir_v1_loaded(test_case):
                 'policy': 'no_review',
             },
             'user_interface': {
-                'angular_module': 'test_dir.v1.s2.module',
+                'angular_module': 'test_dir.v1.s2',
                 'angular_directive': 's2',
                 'javascript_includes': [
                     'test_dir/v1/s2/js/modules.js',
@@ -543,7 +543,7 @@ def assert_test_dir_v1_loaded(test_case):
                 'max_reviews': 1,
             },
             'user_interface': {
-                'angular_module': 'test_dir.v1.s3.module',
+                'angular_module': 'test_dir.v1.s3',
                 'angular_directive': 's3',
                 'javascript_includes': [
                     'test_dir/v1/s3/js/modules.js',
@@ -626,7 +626,7 @@ def assert_test_dir_v2_loaded(test_case):
                 'policy': 'no_review',
             },
             'user_interface': {
-                'angular_module': 'test_dir.v2.s2.module',
+                'angular_module': 'test_dir.v2.s2',
                 'angular_directive': 's2',
                 'javascript_includes': [
                     'test_dir/v2/s2/js/modules.js',

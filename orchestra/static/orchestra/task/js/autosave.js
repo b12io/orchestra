@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  var serviceModule = angular.module('orchestra.task.services');
+  var serviceModule = angular.module('orchestra.task');
 
   serviceModule.factory('autoSaveTask', function($rootScope, $timeout, $http, orchestraService) {
     return {

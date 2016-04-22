@@ -2,7 +2,7 @@
   'use strict';
 
   angular
-    .module('journalism_workflow.v1.copy_editor.controllers')
+    .module('journalism_workflow.v1.copy_editor')
     .controller('CopyEditorController', CopyEditorController);
 
   CopyEditorController.$inject = ['$scope', 'orchestraService'];

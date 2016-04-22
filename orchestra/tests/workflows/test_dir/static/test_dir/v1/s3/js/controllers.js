@@ -2,7 +2,7 @@
   'use strict';
 
   angular
-    .module('test_dir.v1.s3.controllers')
+    .module('test_dir.v1.s3')
     .controller('S3Controller', S3Controller)
 
   S3Controller.$inject = ['$scope', 'orchestraService'];

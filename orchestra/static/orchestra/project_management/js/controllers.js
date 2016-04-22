@@ -2,7 +2,7 @@
   'use strict';
 
   angular
-    .module('orchestra.project_management.controllers')
+    .module('orchestra.project_management')
     .controller('ProjectManagementController', ProjectManagementController);
 
   function ProjectManagementController($location, $scope, $routeParams, $http, $sce,

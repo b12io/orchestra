@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  var serviceModule = angular.module('orchestra.project_management.services');
+  var serviceModule = angular.module('orchestra.project_management');
 
   serviceModule.factory('crosshair', function(visUtils, axis) {
     /**

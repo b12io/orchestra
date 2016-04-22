@@ -2,7 +2,7 @@
   'use strict';
 
   angular
-    .module('orchestra.common.components.directives')
+    .module('orchestra.common')
     .directive('orchestraProjectFolder', function() {
       return {
         restrict: 'E',

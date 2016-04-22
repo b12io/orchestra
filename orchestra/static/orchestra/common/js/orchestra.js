@@ -13,13 +13,13 @@
 
   angular.module('orchestra', modules);
 
+  angular.module('orchestra.common', []);
   angular.module('orchestra.routes', ['ngRoute']);
   angular.module('orchestra.config', []);
-  angular.module('orchestra.common', []);
   angular.module('orchestra.timing', ['ui.select', 'ngSanitize', 'orchestra.common']);
   angular.module('orchestra.dashboard', ['orchestra.timing']);
   angular.module('orchestra.task', ['orchestra.timing']);
-  angular.module('orchestra.project_management', []);
+  angular.module('orchestra.project_management', ['orchestra.common']);
   angular.module('orchestra.analytics', []);
 
   // Dynamically instantiate each of the angular modules from Orchestra

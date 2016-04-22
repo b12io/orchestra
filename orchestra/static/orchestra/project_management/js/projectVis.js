@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  var serviceModule = angular.module('orchestra.project_management.services');
+  var serviceModule = angular.module('orchestra.project_management');
 
   serviceModule.factory('projectVis', function($uibModal, $location, dataService, orchestraApi, crosshair, visUtils,
     tasksVis, assignmentsVis, iterationsVis, axis) {

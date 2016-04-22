@@ -2,7 +2,7 @@
   'use strict';
 
   angular
-    .module('test_dir.v1.s2.controllers')
+    .module('test_dir.v1.s2')
     .controller('S2Controller', S2Controller)
 
   S2Controller.$inject = ['$scope', 'orchestraService'];

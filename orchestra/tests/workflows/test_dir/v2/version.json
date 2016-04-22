@@ -29,7 +29,7 @@
                 "policy": "no_review"
             },
             "user_interface": {
-                "angular_module": "test_dir.v2.s2.module",
+                "angular_module": "test_dir.v2.s2",
                 "angular_directive": "s2",
                 "javascript_includes": [
                     "test_dir/v2/s2/js/modules.js",

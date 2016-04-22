@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  angular.module('journalism_workflow.v1.editor.directives').directive(
+  angular.module('journalism_workflow.v1.editor').directive(
     'editor', function() {
       return {
         restrict: 'E',

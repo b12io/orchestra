@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  angular.module('test_dir.v1.s3.directives').directive(
+  angular.module('test_dir.v1.s3').directive(
     's3', function() {
       return {
         restrict: 'E',

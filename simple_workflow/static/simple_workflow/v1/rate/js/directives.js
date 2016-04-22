@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  angular.module('simple_workflow.v1.rate.directives').directive(
+  angular.module('simple_workflow.v1.rate').directive(
     'rate', function() {
       return {
         restrict: 'E',

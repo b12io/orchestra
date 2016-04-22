@@ -2,7 +2,7 @@
   'use strict';
 
   angular
-    .module('simple_workflow.v1.rate.controllers')
+    .module('simple_workflow.v1.rate')
     .controller('ImageRatingController', ImageRatingController);
 
   ImageRatingController.$inject = ['$scope', 'orchestraService'];
