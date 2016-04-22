@@ -132,10 +132,13 @@ def new_task_assignment(request, task_type):
         raise BadRequest('No task')
 
     task = task_assignment.task
-    return {'id': task.id,
-            'step': task.step.slug,
-            'project': task.project.workflow_version.slug,
-            'detail': task.project.short_description}
+    return {
+        'id': task.id,
+        'assignment_id': task_assignment.id,
+        'step': task.step.slug,
+        'project': task.project.workflow_version.slug,
+        'detail': task.project.short_description
+    }
 
 
 @json_view
@@ -271,13 +274,13 @@ def get_timer(request):
 
 @json_view
 @login_required
-def update_timer_description(request):
+def update_timer(request):
     worker = Worker.objects.get(user=request.user)
     try:
         if request.method == 'POST':
             data = json.loads(request.body.decode())
-            time_tracking.update_timer_description(
-                worker, data.get('description'))
+            time_tracking.update_timer(
+                worker, data.get('description'), data.get('assignment'))
     except Exception as e:
         logger.error(e, exc_info=True)
         raise e
