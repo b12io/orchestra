@@ -34,8 +34,9 @@ manually add time entries.
 Timecard
 ========
 
-The timecard page contains a list of time entries for the past week, grouped
-by date.
+The timecard page by default shows a list of time entries for the current
+work week, starting on Monday, grouped by date. You can use the date range
+pickers at the top to change the entries shown.
 
 .. image:: ../static/img/time_tracking/timecard.png
 
