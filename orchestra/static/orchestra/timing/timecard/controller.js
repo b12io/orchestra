@@ -1,16 +1,17 @@
 (function() {
-  'use strict';
+  // 'use strict';
 
   angular.module('orchestra.timing')
     .controller('TimecardController', function($routeParams, $scope, orchestraTasks, timeEntries) {
-      var vm = this;
+      // var vm = this;
+      vm = this;
       vm.taskId = $routeParams.taskId;
 
       vm.orchestraTasks = orchestraTasks;
       vm.timeEntries = timeEntries;
 
-      vm.weekStart = moment().startOf('isoweek').toDate();
-      vm.weekEnd = moment().endOf('isoweek').toDate();
+      vm.weekStart = moment().startOf('isoweek');
+      vm.weekEnd = moment().endOf('isoweek');
 
       vm.dataLoading = true;
       orchestraTasks.data.then(function() {
@@ -58,7 +59,7 @@
 
       vm.addEntry = function(date) {
         vm.timeEntries.createEntry(date).then(function(entry) {
-          entry.editing = true;
+          vm.editEntry();
         });
       };
 

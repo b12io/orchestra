@@ -2,7 +2,7 @@
   <span class="edit-label">
     Date range
   </span>
-  <date-picker date="vm.minDate" max-date="vm.maxDate"></date-picker> – <date-picker date="vm.maxDate" min-date="vm.minDate" max-date="vm.weekEnd"></date-picker>
+  <date-picker date="vm.minDate" max-date="vm.maxDate.toDate()"></date-picker> – <date-picker date="vm.maxDate" min-date="vm.minDate.toDate()" max-date="vm.weekEnd.toDate()"></date-picker>
   <div class="entries">
     <div class="date-group" ng-repeat="dateEntries in vm.timeEntries.entriesByDate | toArray | orderBy:vm.datetimeFromKey:'true'">
       <div class="container-fluid">
@@ -91,7 +91,7 @@
                     <div class="col-xs-4">
                       <div class="edit-date">
                         <label class="edit-label">Move to date</label>
-                        <date-picker date="entry.editData.date" min-date="vm.weekStart" max-date="vm.weekEnd"></date-picker>
+                        <date-picker date="entry.editData.date" max-date="vm.weekEnd.toDate()"></date-picker>
                       </div>
                     </div>
                     <div class="col-xs-8">
