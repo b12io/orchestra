@@ -35,7 +35,7 @@
                 {{ entry.time_worked.roundMinute().humanizeUnits() }}
               </div>
               <div class="col-xs-12" ng-if="!entry.editing">
-                <em class="pull-right">{{ vm.getTaskDescription(vm.orchestraTasks.tasksById[entry.assignment]) || 'Unassigned' }}</em>
+                <em class="pull-right">{{ vm.orchestraTasks.getDescription(vm.orchestraTasks.tasksByAssignmentId[entry.assignment]) || 'Unassigned' }}</em>
               </div>
 
               <!-- Editable view for description and time worked -->
@@ -78,15 +78,7 @@
               </div>
               <div class="col-xs-8">
                 <div class="edit-task">
-                  <label class="edit-label">Select task</label>
-                  <ui-select ng-model="entry.editData.assignment">
-                      <ui-select-match>
-                          <span ng-bind="vm.getTaskDescription($select.selected)"></span>
-                      </ui-select-match>
-                      <ui-select-choices repeat="item in (vm.orchestraTasks.allTasks() | filter: $select.search) track by item.id">
-                          <span ng-bind="vm.getTaskDescription(item)"></span>
-                      </ui-select-choices>
-                  </ui-select>
+                  <task-select task="entry.editData.task"></task-select>
                 </div>
               </div>
             </div>

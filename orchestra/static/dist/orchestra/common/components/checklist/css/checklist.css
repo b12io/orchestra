@@ -12,6 +12,12 @@
   -ms-user-select: none;
   user-select: none; }
 
+.row.no-padding, .row.no-padding > [class*="col-"] {
+  padding-left: 0;
+  padding-right: 0;
+  margin-left: 0;
+  margin-right: 0; }
+
 .checklist-wrapper {
   width: 100%;
   padding: 15px; }

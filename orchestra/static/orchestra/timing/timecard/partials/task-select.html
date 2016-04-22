@@ -1,0 +1,9 @@
+<label class="edit-label">Select task</label>
+<ui-select ng-model="taskSelect.task">
+    <ui-select-match>
+        <span ng-bind="taskSelect.orchestraTasks.getDescription($select.selected)"></span>
+    </ui-select-match>
+    <ui-select-choices repeat="item in (taskSelect.orchestraTasks.allTasks() | filter: $select.search) track by item.id">
+        <span ng-bind="taskSelect.orchestraTasks.getDescription(item)"></span>
+    </ui-select-choices>
+</ui-select>
