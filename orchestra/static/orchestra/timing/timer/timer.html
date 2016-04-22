@@ -1,4 +1,4 @@
-<div class="timer">
+<div class="timer" ng-if="!vm.dataLoading">
   <div class="popover-toggle" ng-class="{active: workTimer.timerRunning}"
     uib-popover-template="workTimer.popoverTemplate"
     popover-placement="bottom">

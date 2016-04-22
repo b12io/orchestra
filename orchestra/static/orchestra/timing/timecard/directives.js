@@ -17,19 +17,26 @@
         }
       };
     })
-    .directive('pikaday', function(timeEntries) {
+    .directive('datePicker', function(timeEntries) {
       return {
         scope: {
-          entry: '=',
+          date: '=',
+          minDate: '=?',
+          maxDate: '=?',
+          callback: '=?'
         },
-        retrict: 'A',
+        retrict: 'E',
+        templateUrl: $static('/static/orchestra/timing/timecard/partials/date-picker.html'),
         link: function(scope, elem, attrs) {
           var picker = new Pikaday({
             field: elem.get(0),
-            minDate: moment().subtract(1, 'week').toDate(),
-            maxDate: moment().toDate(),
+            minDate: scope.minDate,
+            maxDate: scope.maxDate,
             onSelect: function(date) {
-              timeEntries.moveToDate(scope.entry, this.getMoment());
+              scope.date = this.getMoment();
+              if (typeof scope.callback === 'function') {
+                scope.callback(date);
+              }
               scope.$apply();
             }
           });

@@ -20,7 +20,12 @@
   </div>
   <div class="row no-padding">
     <div class="col-xs-12">
-      <a class="pull-right" ng-click="workTimer.viewTimecard()">View timecard</a>
+      <a ng-show="workTimer.timeEntries.invalidEntries().length" ng-click="workTimer.viewTimecard()">
+        Fix {{ workTimer.timeEntries.invalidEntries().length }} invalid entr<span ng-if="workTimer.timeEntries.invalidEntries().length === 1">y</span><span ng-if="workTimer.timeEntries.invalidEntries().length !== 1">ies</span>
+      </a>
+      <a ng-hide="workTimer.timeEntries.invalidEntries().length" ng-click="workTimer.viewTimecard()">
+        View timecard
+      </a>
     </div>
   </div>
 </div>
