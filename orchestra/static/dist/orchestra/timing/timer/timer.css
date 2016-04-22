@@ -19,10 +19,9 @@
   margin-right: 0; }
 
 .timer {
-  position: relative;
-  display: inline-block;
   font-size: 18px; }
   .timer .popover-toggle {
+    line-height: 52px;
     cursor: pointer;
     color: white;
     font-size: 1.4em; }

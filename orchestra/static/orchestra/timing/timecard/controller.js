@@ -1,16 +1,17 @@
 (function() {
-  'use strict';
+  // 'use strict';
 
   angular.module('orchestra.timing')
     .controller('TimecardController', function($routeParams, $scope, orchestraTasks, timeEntries) {
-      var vm = this;
+      // var vm = this;
+      vm = this;
       vm.taskId = $routeParams.taskId;
 
       vm.orchestraTasks = orchestraTasks;
       vm.timeEntries = timeEntries;
 
-      vm.weekStart = moment().startOf('isoweek').toDate();
-      vm.weekEnd = moment().endOf('isoweek').toDate();
+      vm.weekStart = moment().startOf('isoweek');
+      vm.weekEnd = moment().endOf('isoweek');
 
       vm.dataLoading = true;
       orchestraTasks.data.then(function() {
@@ -29,13 +30,6 @@
 
           timeEntries.entries.forEach(function(entry) {
             entry.editData = vm.initialEditData(entry);
-            $scope.$watch(function() {
-              return entry.editData.date;
-            }, function(newVal, oldVal) {
-              if (newVal !== oldVal) {
-                timeEntries.moveToDate(entry, newVal);
-              }
-            });
           });
         });
       });
@@ -63,9 +57,17 @@
         }
       };
 
+      vm.addEntry = function(date) {
+        vm.timeEntries.createEntry(date).then(function(entry) {
+          vm.editEntry();
+        });
+      };
+
       vm.editEntry = function(entry) {
-        entry.editData = vm.initialEditData(entry);
-        entry.editing = !entry.editing;
+        if (!entry.editing) {
+          entry.editData = vm.initialEditData(entry);
+          entry.editing = true;
+        }
       };
 
       vm.saveChanges = function(entry) {
@@ -74,7 +76,16 @@
           return;
         }
         entry.description = entry.editData.description;
-        entry.time_worked = moment.duration(entry.editData.timeWorked);
+
+        // Only truncate seconds worked if the user has changed things
+        if (!angular.equals(entry.editData.timeWorked, entry.time_worked.componentize())) {
+          entry.time_worked = moment.duration(entry.editData.timeWorked);
+        }
+
+        if (!entry.editData.date.isSame(entry.date)) {
+          timeEntries.moveToDate(entry, entry.editData.date);
+        }
+
         entry.assignment = null;
         if (entry.editData.task) {
           entry.assignment = entry.editData.task.assignment_id;

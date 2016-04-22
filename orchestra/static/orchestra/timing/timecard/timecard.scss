@@ -2,7 +2,7 @@
   position: absolute;
   top: 100px;
   width: 80%;
-  max-width: 600px;
+  max-width: 750px;
   left: 50%;
   transform: translateX(-50%);
   font-size: 1.4rem;
@@ -15,6 +15,10 @@
     }
   }
 
+  .incomplete {
+    color: red;
+  }
+
   .edit-label {
     display: block;
     font-size: 0.8em;
@@ -22,7 +26,7 @@
     text-transform: uppercase;
     margin-right: 5px;
   }
-  
+
   .timecard-header {
     padding: $panel-padding;
   }
@@ -38,32 +42,30 @@
     }
   }
 
+  .day-name {
+    display: block;
+    padding-right: $panel-padding;
+    text-align: right;
+    font-size: 1.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+
   .date-group {
     position: relative;
     padding: $panel-padding / 2;
     margin: $panel-padding / 2 0;
-    background-color: white;
     h2 {
       position: relative;
-      font-size: 1.3em;
+      font-size: 1.8rem;
       padding: $panel-padding;
       border-bottom: 1px solid $light-gray;
+      background-color: white;
 
       .date-label {
         color: $dark-green;
         text-transform: uppercase;
         margin-right: 5px;
-      }
-
-      .day-name {
-        position: absolute;
-        top: 50%;
-        left: -2 * $panel-padding;
-        transform: translate(-100%, -50%);
-        display: block;
-        font-size: 0.8em;
-        font-weight: bold;
-        text-transform: uppercase;
       }
 
       .btn-add-entry {
@@ -90,9 +92,6 @@
         vertical-align: bottom
       }
     }
-    .date-entries {
-      padding: 0 $panel-padding;
-    }
   }
 
   .entry-row {
@@ -101,8 +100,9 @@
     position: relative;
     background-color: white;
     box-sizing: border-box;
-    padding: $panel-padding 0;
+    padding: $panel-padding;
 
+    background-color: white;
     &.gray-stripe {
       background-color: rgba($light-gray, 0.5);
     }

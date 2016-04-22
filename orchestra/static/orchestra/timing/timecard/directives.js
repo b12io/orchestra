@@ -40,6 +40,21 @@
               scope.$apply();
             }
           });
+
+          scope.$watch(function() {
+            return scope.minDate;
+          }, function(newVal, oldVal) {
+            if (newVal !== oldVal) {
+              picker.setMinDate(newVal);
+            }
+          });
+          scope.$watch(function() {
+            return scope.maxDate;
+          }, function(newVal, oldVal) {
+            if (newVal !== oldVal) {
+              picker.setMaxDate(newVal);
+            }
+          });
         }
       };
     })

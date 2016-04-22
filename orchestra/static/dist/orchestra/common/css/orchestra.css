@@ -57,6 +57,10 @@ a.logo {
   a.logo:hover, a.logo:focus, a.logo:visited {
     color: white; }
 
+.work-timer {
+  float: right;
+  height: 52px; }
+
 #nav-options {
   cursor: pointer;
   font-size: 2rem;
@@ -171,6 +175,10 @@ a.logo {
   margin: 12px 30px; }
   a.logo:hover, a.logo:focus, a.logo:visited {
     color: white; }
+
+.work-timer {
+  float: right;
+  height: 52px; }
 
 #nav-options {
   cursor: pointer;
@@ -630,7 +638,7 @@ a.logo {
   position: absolute;
   top: 100px;
   width: 80%;
-  max-width: 600px;
+  max-width: 750px;
   left: 50%;
   transform: translateX(-50%);
   font-size: 1.4rem; }
@@ -639,6 +647,8 @@ a.logo {
     .timecard-view .date-picker i {
       margin-right: 3px;
       color: #0079bf; }
+  .timecard-view .incomplete {
+    color: red; }
   .timecard-view .edit-label {
     display: block;
     font-size: 0.8em;
@@ -654,29 +664,27 @@ a.logo {
       cursor: pointer; }
       .timecard-view .edit-tools i.active {
         color: #0079bf; }
+  .timecard-view .day-name {
+    display: block;
+    padding-right: 1.5rem;
+    text-align: right;
+    font-size: 1.8rem;
+    font-weight: bold;
+    text-transform: uppercase; }
   .timecard-view .date-group {
     position: relative;
     padding: 0.75rem;
-    margin: 0.75rem 0;
-    background-color: white; }
+    margin: 0.75rem 0; }
     .timecard-view .date-group h2 {
       position: relative;
-      font-size: 1.3em;
+      font-size: 1.8rem;
       padding: 1.5rem;
-      border-bottom: 1px solid #cccccc; }
+      border-bottom: 1px solid #cccccc;
+      background-color: white; }
       .timecard-view .date-group h2 .date-label {
         color: #27ae60;
         text-transform: uppercase;
         margin-right: 5px; }
-      .timecard-view .date-group h2 .day-name {
-        position: absolute;
-        top: 50%;
-        left: -3rem;
-        transform: translate(-100%, -50%);
-        display: block;
-        font-size: 0.8em;
-        font-weight: bold;
-        text-transform: uppercase; }
       .timecard-view .date-group h2 .btn-add-entry {
         cursor: pointer;
         position: relative; }
@@ -695,13 +703,12 @@ a.logo {
         float: right;
         display: inline-block;
         vertical-align: bottom; }
-    .timecard-view .date-group .date-entries {
-      padding: 0 1.5rem; }
   .timecard-view .entry-row {
     position: relative;
     background-color: white;
     box-sizing: border-box;
-    padding: 1.5rem 0; }
+    padding: 1.5rem;
+    background-color: white; }
     .timecard-view .entry-row.gray-stripe {
       background-color: rgba(204, 204, 204, 0.5); }
     .timecard-view .entry-row .row {

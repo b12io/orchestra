@@ -12,9 +12,6 @@
 </div>
 <!--  notification end -->
 
-<!-- TODO(jrbotros): make this task id dynamic -->
-<work-timer style="position: absolute; top: 10px; right: 200px;"></work-timer>
-
 <div id="nav-options" class="dropdown">
   <div class="dropdown-toggle" id="dropdown-menu-main" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
     {{ user.username }}
@@ -29,9 +26,9 @@
     </li>
 
     <li>
-      <a href="/orchestra/app/performance/">
-        <i class="fa fa-bar-chart-o"></i>
-        <span>Performance</span>
+      <a href="/orchestra/app/timecard/">
+        <i class="fa fa-clock-o"></i>
+        <span>Timecard</span>
       </a>
     </li>
 
@@ -43,6 +40,8 @@
     </li>
   </ul>
 </div>
+
+<work-timer class="work-timer"></work-timer>
 
 {% endblock %}
 

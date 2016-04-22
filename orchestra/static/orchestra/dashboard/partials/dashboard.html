@@ -7,7 +7,7 @@
             Active Tasks ({{ vm.orchestraTasks.numActiveTasks() }})
             <!-- New entry-level task button -->
             <button type="button"
-                    ng-click="vm.orchestraTasks.newTask('entry_level')"
+                    ng-click="vm.newTask('entry_level')"
                     ng-class="{'disabled': vm.orchestraTasks.preventNew ||
                                            vm.noTaskTimer}"
                     class="btn btn-primary btn-new-entry-task">
@@ -16,14 +16,14 @@
             <!-- New review task button -->
             <button type="button"
                     ng-if="vm.orchestraTasks.reviewerStatus"
-                    ng-click="vm.orchestraTasks.newTask('reviewer')"
+                    ng-click="vm.newTask('reviewer')"
                     ng-class="{'disabled': vm.orchestraTasks.preventNew ||
                                            vm.noTaskTimer}"
                     class="btn btn-primary btn-new-review-task">
               New review task
             </button>
             <span class="warning-message"
-                  ng-show="vm.new_tasks===0 && !vm.orchestraTasks.preventNew">
+                  ng-show="vm.newTaskError && !vm.orchestraTasks.preventNew">
               No tasks available at the moment
             </span>
             <i class="fa fa-spinner fa-spin" ng-show="vm.waiting"></i>

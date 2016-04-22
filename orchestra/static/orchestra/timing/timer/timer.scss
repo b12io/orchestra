@@ -1,16 +1,14 @@
 @import 'orchestra/static/orchestra/common/css/common';
 
 .timer {
-  position: relative;
-  display: inline-block;
+  $timer-width: 300px;
+
   font-size: 18px;
 
   .popover-toggle {
+    line-height: 52px;
     cursor: pointer;
     color: white;
-    &.active {
-      // color: $dark-green;
-    }
     font-size: 1.4em;
   }
 
@@ -49,7 +47,7 @@
   }
 
   .popover {
-    width: 300px;
+    width: $timer-width;
     max-width: none;
     .timer-popover {
       padding: 0;
