@@ -24,8 +24,11 @@ to toggle a timer to track their work time.
 
 .. image:: ../static/img/time_tracking/timer_dropdown.png
 
-The worker can optionally add a description and specify the task they are
-working on.
+After the timer is started, the worker can add a description and specify
+the task they are working on. If the timer is started in a task interface,
+the task field is pre-populated.
+
+.. image:: ../static/img/time_tracking/timer_dropdown_start.png
 
 When the timer is stopped, a time entry is automatically created for the
 amount of time worked. A worker can go to the timecard page to edit and
@@ -49,6 +52,11 @@ timer) by clicking the plus icon next to each date.
 
 Each time entry can be edited by clicking the pencil icon, or deleted by
 clicking the x icon.
+
+If a time entry is missing a description or a task, the missing fields are
+highlighted and the total hours for the day is hidden.
+
+.. image:: ../static/img/time_tracking/timecard_entry_invalid.png
 
 Quirks
 ======
