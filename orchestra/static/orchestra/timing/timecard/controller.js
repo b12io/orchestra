@@ -9,6 +9,41 @@
       vm.orchestraTasks = orchestraTasks;
       vm.timeEntries = timeEntries;
 
+      vm.weekStart = moment().startOf('isoweek').toDate();
+      vm.weekEnd = moment().endOf('isoweek').toDate();
+
+      vm.dataLoading = true;
+      orchestraTasks.data.then(function() {
+        timeEntries.data.then(function() {
+          vm.dataLoading = false;
+
+          vm.minDate = timeEntries.minDate;
+          vm.maxDate = timeEntries.maxDate;
+          $scope.$watch(function() {
+            return [vm.minDate, vm.maxDate];
+          }, function(newVal, oldVal) {
+            if (!angular.equals(newVal, oldVal)) {
+              timeEntries.updateEntries(newVal[0], newVal[1]);
+            }
+          }, true);
+
+          timeEntries.entries.forEach(function(entry) {
+            entry.editData = vm.initialEditData(entry);
+            $scope.$watch(function() {
+              return entry.editData.date;
+            }, function(newVal, oldVal) {
+              if (newVal !== oldVal) {
+                timeEntries.moveToDate(entry, newVal);
+              }
+            });
+          });
+        });
+      });
+
+      vm.expiredEntry = function(entry) {
+        return entry.date < moment().startOf('isoWeek');
+      };
+
       vm.datetimeFromKey = function(entries) {
         if (entries.$key) {
           return moment(entries.$key);
@@ -19,6 +54,12 @@
         // TODO(jrbotros): fix groupby with custom comparator
         if (dateString) {
           return moment(dateString).format('MMMM D');
+        }
+      };
+
+      vm.dayName = function(dateString) {
+        if (dateString) {
+          return moment(dateString).format('dddd');
         }
       };
 
@@ -34,7 +75,10 @@
         }
         entry.description = entry.editData.description;
         entry.time_worked = moment.duration(entry.editData.timeWorked);
-        entry.assignment = entry.editData.task.assignment_id;
+        entry.assignment = null;
+        if (entry.editData.task) {
+          entry.assignment = entry.editData.task.assignment_id;
+        }
         entry.save();
         entry.editing = false;
         entry.editData = vm.initialEditData(entry);
@@ -51,25 +95,11 @@
           // Time worked should only include hours and minutes, and should be
           // rounded up to the minute
           timeWorked: entry.time_worked.roundMinute().componentize(),
+          date: entry.date,
           task: orchestraTasks.tasksByAssignmentId[entry.assignment]
         };
-        // Don't set task if tasks haven't loaded yet
-        if (orchestraTasks.tasksByAssignmentId) {
-          data.task = orchestraTasks.tasksByAssignmentId[entry.assignment];
-        }
+        return data;
       };
-
-      // When tasks load, add correct task to any entry being edited
-      orchestraTasks.data.then(function() {
-        timeEntries.data.then(function() {
-          timeEntries.entries.forEach(function(entry) {
-            if (entry.editData) {
-              entry.editData.task = orchestraTasks.tasksByAssignmentId[entry.assignment];
-            }
-          });
-        });
-      });
-
 
       vm.entryUnchanged = function(entry) {
         return angular.equals(entry.editData, vm.initialEditData(entry));

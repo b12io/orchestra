@@ -19,13 +19,13 @@
           var service = this;
 
           // Remove time component from dates
-          minDate = minDate.startOf('day');
-          maxDate = maxDate.startOf('day');
+          service.minDate = minDate.startOf('day');
+          service.maxDate = maxDate.startOf('day');
 
           service.data = $http.get(service.apiUrl, {
             params: {
-              min_date: minDate.format('YYYY-MM-DD'),
-              max_date: maxDate.format('YYYY-MM-DD'),
+              min_date: service.minDate.format('YYYY-MM-DD'),
+              max_date: service.maxDate.format('YYYY-MM-DD'),
             }
           })
           .then(function(response) {
@@ -53,9 +53,37 @@
           var entries = this.entriesByDate[this.keyForDate(date)];
           var totalDuration = moment.duration();
           entries.forEach(function(entry) {
-            totalDuration.add(entry.time_worked.roundMinute());
+            if (entry.time_worked) {
+              totalDuration.add(entry.time_worked.roundMinute());
+            }
           });
           return totalDuration;
+        },
+
+        /**
+         * Determines the number of entries missing descriptions or dates for
+         * a given date.
+         */
+        invalidEntriesForDate: function(date) {
+          var entries = this.entriesByDate[this.keyForDate(date)];
+          var invalid = [];
+          entries.forEach(function(entry) {
+            if (!entry.description || entry.assignment === undefined) {
+              invalid.push(entry);
+            }
+          });
+          return invalid;
+        },
+
+        /**
+         * Determines the total number of entries missing descriptions or dates.
+         */
+        invalidEntries: function() {
+          var invalid = [];
+          for (var date in this.entriesByDate) {
+            invalid = invalid.concat(this.invalidEntriesForDate(date));
+          }
+          return invalid;
         },
 
         /**
@@ -92,6 +120,9 @@
         },
         addEntryToDate: function(entry, date) {
           var dateISO = this.keyForDate(date);
+          if (this.entriesByDate[dateISO] === undefined) {
+            this.entriesByDate[dateISO] = [];
+          }
           this.entriesByDate[dateISO].push(entry);
         },
         removeEntryFromDate: function(entry, date) {
@@ -99,7 +130,7 @@
           var index = this.entriesByDate[dateISO].indexOf(entry);
           this.entriesByDate[dateISO].splice(index, 1);
         },
-        moveToDate: function(entry, newDate) {
+            moveToDate: function(entry, newDate) {
           this.removeEntryFromDate(entry, entry.date);
           this.addEntryToDate(entry, newDate);
           entry.date = newDate;
@@ -108,8 +139,8 @@
       };
 
       // Default filtered view is the past week of time entries
-      var maxDate = moment().startOf('day');
-      var minDate = maxDate.clone().subtract(6, 'days');
+      var minDate = moment().startOf('isoWeek'),
+          maxDate = moment().startOf('day');
       timeEntries.updateEntries(minDate, maxDate);
       return timeEntries;
     });

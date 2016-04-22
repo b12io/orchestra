@@ -13,6 +13,7 @@
           var workTimer = this;
 
           workTimer.popoverTemplate = $static('/static/orchestra/timing/timer/popover.html');
+          workTimer.timeEntries = timeEntries;
 
           var resetTimer = function() {
             workTimer.toggledOn = false;

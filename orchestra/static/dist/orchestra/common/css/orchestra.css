@@ -634,13 +634,17 @@ a.logo {
   left: 50%;
   transform: translateX(-50%);
   font-size: 1.4rem; }
-  .timecard-view .flex-row {
-    display: flex;
-    padding: 5px 0;
-    justify-content: space-between;
-    align-content: center; }
-    .timecard-view .flex-row:not(:last-of-type) {
-      margin-bottom: 10px; }
+  .timecard-view .date-picker {
+    cursor: pointer; }
+    .timecard-view .date-picker i {
+      margin-right: 3px;
+      color: #0079bf; }
+  .timecard-view .edit-label {
+    display: block;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-right: 5px; }
   .timecard-view .timecard-header {
     padding: 1.5rem; }
   .timecard-view .edit-tools {
@@ -664,6 +668,15 @@ a.logo {
         color: #27ae60;
         text-transform: uppercase;
         margin-right: 5px; }
+      .timecard-view .date-group h2 .day-name {
+        position: absolute;
+        top: 50%;
+        left: -3rem;
+        transform: translate(-100%, -50%);
+        display: block;
+        font-size: 0.8em;
+        font-weight: bold;
+        text-transform: uppercase; }
       .timecard-view .date-group h2 .btn-add-entry {
         cursor: pointer;
         position: relative; }
@@ -695,17 +708,6 @@ a.logo {
       padding: 5px 0; }
     .timecard-view .entry-row .description input {
       width: 100%; }
-    .timecard-view .entry-row .edit-date .date-picker {
-      cursor: pointer; }
-      .timecard-view .entry-row .edit-date .date-picker i {
-        margin-right: 3px;
-        color: #0079bf; }
-    .timecard-view .entry-row .edit-label {
-      display: block;
-      font-size: 0.8em;
-      font-weight: bold;
-      text-transform: uppercase;
-      margin-right: 5px; }
     .timecard-view .entry-row .edit-time {
       text-align: right; }
       .timecard-view .entry-row .edit-time label {
