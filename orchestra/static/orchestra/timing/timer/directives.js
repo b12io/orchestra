@@ -82,10 +82,10 @@
             $timeout.cancel(workTimer.timerPromise);
             $http.post(stopTimerUrl)
             .then(function(response) {
-              timeEntries.addEntry(response.data);
+              var entry = timeEntries.addEntry(response.data);
               resetTimer();
-              if (!response.data.description) {
-                if (confirm("You didn't enter a description for this time entry. Would you like to view your timecard and edit it there?")) {
+              if (entry.isIncomplete()) {
+                if (confirm("Your new time entry is missing a description or assignment. Would you like to view your timecard and edit it there?")) {
                   workTimer.viewTimecard();
                 }
               }

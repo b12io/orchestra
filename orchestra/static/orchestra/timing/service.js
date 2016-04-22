@@ -46,6 +46,27 @@
           });
         },
 
+
+        /**
+         * Creates a new TimeEntry server-side and initializes with returned data.
+         */
+        createEntry: function(date) {
+          var service = this;
+
+          var createUrl = '/orchestra/api/interface/time_entries/';
+          this.date = date || moment();
+          return $http.post(createUrl, {
+            date: date.format('YYYY-MM-DD'),
+            time_worked: moment.duration().stamp(),
+          })
+          .then(function(response) {
+            return service.addEntry(response.data);
+          }, function(entry) {
+            alert('Could not add new time entry.');
+          });
+        },
+
+
         /**
          * Calculate the total work time for a given date.
          */
@@ -61,14 +82,13 @@
         },
 
         /**
-         * Determines the number of entries missing descriptions or dates for
-         * a given date.
+         * Determines the number of incomplete entries for a given date.
          */
         invalidEntriesForDate: function(date) {
           var entries = this.entriesByDate[this.keyForDate(date)];
           var invalid = [];
           entries.forEach(function(entry) {
-            if (!entry.description || entry.assignment === undefined) {
+            if (entry.isIncomplete()) {
               invalid.push(entry);
             }
           });
@@ -76,7 +96,7 @@
         },
 
         /**
-         * Determines the total number of entries missing descriptions or dates.
+         * Determines the total number of incomplete entries.
          */
         invalidEntries: function() {
           var invalid = [];
@@ -89,12 +109,6 @@
         /**
          * Helpers for adding and deleting time entries.
          */
-        createEntry: function(date) {
-          return this.addEntry({
-            create: true,
-            date: date,
-          });
-        },
         addEntry: function(data) {
           var entry = new TimeEntry(data);
           this.entries.push(entry);
@@ -130,11 +144,10 @@
           var index = this.entriesByDate[dateISO].indexOf(entry);
           this.entriesByDate[dateISO].splice(index, 1);
         },
-            moveToDate: function(entry, newDate) {
+        moveToDate: function(entry, newDate) {
           this.removeEntryFromDate(entry, entry.date);
           this.addEntryToDate(entry, newDate);
           entry.date = newDate;
-          entry.save();
         },
       };
 

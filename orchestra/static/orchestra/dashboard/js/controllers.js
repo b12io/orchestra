@@ -20,6 +20,13 @@
       vm.waiting = false;
     });
 
+    vm.newTask = function(taskType) {
+      vm.waiting = true;
+      orchestraTasks.newTask(taskType).then(function() {
+        vm.waiting = false;
+      });
+    };
+
     vm.waiting = false;
 
     vm.newTask = function(taskType) {

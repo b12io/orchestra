@@ -66,12 +66,7 @@
   angular.module('orchestra.timing')
     .factory('TimeEntry', function($http) {
       var TimeEntry = function(data) {
-        if (data.create === true) {
-          this.create(data.date);
-        }
-        else {
           this.initWithData(data);
-        }
       };
 
       /**
@@ -100,25 +95,6 @@
 
         // Convert time worked to a moment duration
         this.time_worked = moment.duration(data.time_worked);
-      };
-
-      /**
-       * Creates a new TimeEntry server-side and initializes with returned data.
-       */
-      TimeEntry.prototype.create = function(date) {
-        var entry = this;
-
-        var createUrl = '/orchestra/api/interface/time_entries/';
-        this.date = date || moment();
-        $http.post(createUrl, {
-          date: date.format('YYYY-MM-DD'),
-          time_worked: moment.duration().stamp(),
-        })
-        .then(function(response) {
-          entry.initWithData(response.data);
-        }, function(entry) {
-          alert('Could not add new time entry.');
-        });
       };
 
       /**
@@ -155,6 +131,13 @@
           .catch(function() {
             alert('Could not update time entry.');
           });
+      };
+
+      /**
+       * Determines whether the entry is incomplete.
+       */
+      TimeEntry.prototype.isIncomplete = function() {
+        return !this.description || this.assignment === undefined;
       };
 
       return TimeEntry;

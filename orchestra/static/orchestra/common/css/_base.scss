@@ -5,12 +5,14 @@
  * each Orchestra view.
  */
 
+$header-height: 52px;
+
 html, body {
   font-size: $base-font-size;
 }
 
 section.wrapper {
-  margin-top: 52px;
+  margin-top: $header-height;
 }
 
 section#main-content {
@@ -45,6 +47,12 @@ a.logo {
   &:hover, &:focus, &:visited {
     color: white;
   }
+}
+
+.work-timer {
+  position: relative;
+  float: right;
+  height: $header-height;
 }
 
 #nav-options {

@@ -2,107 +2,120 @@
   <span class="edit-label">
     Date range
   </span>
-  <date-picker date="vm.minDate"></date-picker> – <date-picker date="vm.maxDate" max-date="vm.weekEnd"></date-picker>
+  <date-picker date="vm.minDate" max-date="vm.maxDate"></date-picker> – <date-picker date="vm.maxDate" min-date="vm.minDate" max-date="vm.weekEnd"></date-picker>
   <div class="entries">
     <div class="date-group" ng-repeat="dateEntries in vm.timeEntries.entriesByDate | toArray | orderBy:vm.datetimeFromKey:'true'">
-      <h2>
-        <span class="date-label">{{ vm.prettyDate(dateEntries.$key) }}</span>
-        <span class="day-name">{{ vm.dayName(dateEntries.$key) }}</span>
-        <i ng-click="vm.timeEntries.createEntry(vm.datetimeFromKey(dateEntries))" class="fa fa-plus btn-add-entry"></i>
-        <span class="date-duration" ng-show="vm.timeEntries.invalidEntriesForDate(dateEntries.$key).length">
-          <em>Invalid Entries</em>
-        </span>
-        <span class="date-duration" ng-hide="vm.timeEntries.invalidEntriesForDate(dateEntries.$key).length">
-          {{ vm.timeEntries.timeWorkedForDate(dateEntries.$key).humanizeUnits() }}
-        </span>
-      </h2>
-      <div class="date-entries">
-        <div class="entry-row" ng-if="!dateEntries.length">
-          <div class="row">
-            <div class="col-xs-12">
-              <em>No entries for this date</em>
+      <div class="container-fluid">
+        <div class="row no-padding">
+          <div class="col-xs-12 col-md-2">
+            <span class="day-name">{{ vm.dayName(dateEntries.$key) }}</span>
+          </div>
+          <div class="col-xs-12 col-md-10">
+            <div class="date-entries">
+              <h2>
+                <span class="date-label">{{ vm.prettyDate(dateEntries.$key) }}</span>
+                <i ng-click="vm.addEntry(vm.datetimeFromKey(dateEntries))" class="fa fa-plus btn-add-entry"></i>
+                <span class="date-duration" ng-show="vm.timeEntries.invalidEntriesForDate(dateEntries.$key).length">
+                  <em class="incomplete">Invalid Entries</em>
+                </span>
+                <span class="date-duration" ng-hide="vm.timeEntries.invalidEntriesForDate(dateEntries.$key).length">
+                  {{ vm.timeEntries.timeWorkedForDate(dateEntries.$key).humanizeUnits() }}
+                </span>
+              </h2>
+              <div class="entry-row" ng-if="!dateEntries.length">
+                <div class="row">
+                  <div class="col-xs-12">
+                    <em>No entries for this date</em>
+                  </div>
+                </div>
+              </div>
+              <div class="entry-row" ng-class="{'gray-stripe': $index % 2}" ng-repeat="entry in dateEntries | orderBy:'-id'">
+                <form class="container-fluid" novalidate name="entryForm" class="form-inline">
+                  <div class="row">
+                    <div class="col-xs-2 edit-tools disable-select" ng-if="!vm.expiredEntry(entry)">
+                      <i ng-click="vm.timeEntries.deleteEntry(entry)" class="fa fa-times-circle"></i>
+                      <i class="fa fa-pencil-square-o" ng-class="{active: entry.editing}" ng-click="vm.editEntry(entry)"></i>
+                    </div>
+
+                    <!-- Readonly view for description and time worked -->
+                    <div class="col-xs-6 description" ng-if="!entry.editing">
+                      <span ng-show="entry.description">
+                        {{ entry.description }}
+                      </span>
+                      <span class="incomplete" ng-hide="entry.description">
+                        <em>No description</em>
+                      </span>
+                    </div>
+                    <div class="col-xs-4 edit-time" ng-if="!entry.editing">
+                      {{ entry.time_worked.roundMinute().humanizeUnits() }}
+                    </div>
+                    <div class="col-xs-12" ng-if="!entry.editing">
+                      <em class="pull-right" ng-show="vm.orchestraTasks.tasksByAssignmentId[entry.assignment]">
+                        {{ vm.orchestraTasks.getDescription(vm.orchestraTasks.tasksByAssignmentId[entry.assignment]) }}
+                      </em>
+                      <em class="pull-right incomplete" ng-hide="vm.orchestraTasks.tasksByAssignmentId[entry.assignment]">
+                        Unassigned
+                      </em>
+                    </div>
+
+                    <!-- Editable view for description and time worked -->
+                    <div class="col-xs-6" ng-if="entry.editing">
+                      <input class="form-control"
+                             type="text"
+                             ng-model="entry.editData.description"
+                             placeholder="What did you work on?">
+                    </div>
+                    <div class="col-xs-4 edit-time" ng-if="entry.editing">
+                      <div class="time-component">
+                        <input class="form-control"
+                               type="number"
+                               ng-model="entry.editData.timeWorked.h"
+                               min="0"
+                               max="23"
+                               enforce-integers>
+                        <label>hours</label>
+                      </div>
+                      <div class="time-component">
+                        <input class="form-control"
+                               type="number"
+                               ng-model="entry.editData.timeWorked.m"
+                               min="0"
+                               max="59"
+                               enforce-integers>
+                        <label>minutes</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row" ng-if="entry.editing">
+                    <div class="col-xs-4">
+                      <div class="edit-date">
+                        <label class="edit-label">Move to date</label>
+                        <date-picker date="entry.editData.date" min-date="vm.weekStart" max-date="vm.weekEnd"></date-picker>
+                      </div>
+                    </div>
+                    <div class="col-xs-8">
+                      <div class="edit-task">
+                        <task-select task="entry.editData.task"></task-select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row" ng-if="entry.editing">
+                    <div class="col-xs-12">
+                      <div class="edit-options pull-right">
+                        <div class="edit-cancel-handle" ng-click="vm.cancelChanges(entry)">
+                          Cancel
+                        </div>
+                        <div class="btn btn-primary btn-sm edit-save-handle" ng-disabled="vm.entryUnchanged(entry)" ng-click="vm.saveChanges(entry)">
+                          Save changes
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="entry-row" ng-class="{'gray-stripe': $index % 2}" ng-repeat="entry in dateEntries | orderBy:'timer_start_time'">
-          <form class="container-fluid" novalidate name="entryForm" class="form-inline">
-            <div class="row">
-              <div class="col-xs-2 edit-tools disable-select" ng-if="!vm.expiredEntry(entry)">
-                <i ng-click="vm.timeEntries.deleteEntry(entry)" class="fa fa-times-circle"></i>
-                <i class="fa fa-pencil-square-o" ng-class="{active: entry.editing}" ng-click="vm.editEntry(entry)"></i>
-              </div>
-
-              <!-- Readonly view for description and time worked -->
-              <div class="col-xs-6 description" ng-if="!entry.editing">
-                <span ng-show="entry.description">
-                  {{ entry.description }}
-                </span>
-                <span ng-hide="entry.description">
-                  <em>No description</em>
-                </span>
-              </div>
-              <div class="col-xs-4 edit-time" ng-if="!entry.editing">
-                {{ entry.time_worked.roundMinute().humanizeUnits() }}
-              </div>
-              <div class="col-xs-12" ng-if="!entry.editing">
-                <em class="pull-right">{{ vm.orchestraTasks.getDescription(vm.orchestraTasks.tasksByAssignmentId[entry.assignment]) || 'Unassigned' }}</em>
-              </div>
-
-              <!-- Editable view for description and time worked -->
-              <div class="col-xs-6" ng-if="entry.editing">
-                <input class="form-control"
-                       type="text"
-                       ng-model="entry.editData.description"
-                       placeholder="What did you work on?">
-              </div>
-              <div class="col-xs-4 edit-time" ng-if="entry.editing">
-                <div class="time-component">
-                  <input class="form-control"
-                         type="number"
-                         ng-model="entry.editData.timeWorked.h"
-                         min="0"
-                         max="23"
-                         enforce-integers>
-                  <label>hours</label>
-                </div>
-                <div class="time-component">
-                  <input class="form-control"
-                         type="number"
-                         ng-model="entry.editData.timeWorked.m"
-                         min="0"
-                         max="59"
-                         enforce-integers>
-                  <label>minutes</label>
-                </div>
-              </div>
-            </div>
-
-            <div class="row" ng-if="entry.editing">
-              <div class="col-xs-4">
-                <div class="edit-date">
-                  <label class="edit-label">Move to date</label>
-                  <date-picker date="entry.editData.date" min-date="vm.weekStart" max-date="vm.weekEnd"></date-picker>
-                </div>
-              </div>
-              <div class="col-xs-8">
-                <div class="edit-task">
-                  <task-select task="entry.editData.task"></task-select>
-                </div>
-              </div>
-            </div>
-            <div class="row" ng-if="entry.editing">
-              <div class="col-xs-12">
-                <div class="edit-options pull-right">
-                  <div class="edit-cancel-handle" ng-click="vm.cancelChanges(entry)">
-                    Cancel
-                  </div>
-                  <div class="btn btn-primary btn-sm edit-save-handle" ng-disabled="vm.entryUnchanged(entry)" ng-click="vm.saveChanges(entry)">
-                    Save changes
-                  </div>
-                </div>
-              </div>
-            </div>
-          </form>
         </div>
       </div>
     </div>
