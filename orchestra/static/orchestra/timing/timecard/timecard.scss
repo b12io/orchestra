@@ -7,16 +7,22 @@
   transform: translateX(-50%);
   font-size: 1.4rem;
 
-  .flex-row {
-    display: flex;
-    padding: 5px 0;
-    justify-content: space-between;
-    align-content: center;
-    &:not(:last-of-type) {
-      margin-bottom: 10px;
+  .date-picker {
+    cursor: pointer;
+    i {
+      margin-right: 3px;
+      color: $main-blue;
     }
   }
 
+  .edit-label {
+    display: block;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-right: 5px;
+  }
+  
   .timecard-header {
     padding: $panel-padding;
   }
@@ -47,6 +53,17 @@
         color: $dark-green;
         text-transform: uppercase;
         margin-right: 5px;
+      }
+
+      .day-name {
+        position: absolute;
+        top: 50%;
+        left: -2 * $panel-padding;
+        transform: translate(-100%, -50%);
+        display: block;
+        font-size: 0.8em;
+        font-weight: bold;
+        text-transform: uppercase;
       }
 
       .btn-add-entry {
@@ -98,24 +115,6 @@
       input {
         width: 100%;
       }
-    }
-
-    .edit-date {
-      .date-picker {
-        cursor: pointer;
-        i {
-          margin-right: 3px;
-          color: $main-blue;
-        }
-      }
-    }
-
-    .edit-label {
-      display: block;
-      font-size: 0.8em;
-      font-weight: bold;
-      text-transform: uppercase;
-      margin-right: 5px;
     }
 
     .edit-time {

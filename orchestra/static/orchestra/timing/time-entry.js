@@ -96,6 +96,7 @@
           }
         }
         entry.date = moment(entry.date).startOf('day');
+        entry.assignment = data.assignment || undefined;
 
         // Convert time worked to a moment duration
         this.time_worked = moment.duration(data.time_worked);
