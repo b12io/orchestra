@@ -23,9 +23,11 @@
         vm.is_read_only = data.is_read_only;
         vm.work_times_seconds = data.work_times_seconds;
 
-        orchestraTasks.currentTask = vm.taskAssignment;
-        $scope.$on('$locationChangeStart', function() {
-          orchestraTasks.currentTask = undefined;
+        orchestraTasks.data.then(function() {
+          orchestraTasks.currentTask = orchestraTasks.tasksByAssignmentId[vm.taskAssignment.assignment_id];
+          $scope.$on('$locationChangeStart', function() {
+            orchestraTasks.currentTask = undefined;
+          });
         });
 
         if (!vm.is_read_only) {

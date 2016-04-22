@@ -79,24 +79,32 @@
 
   serviceModule.factory('orchestraTasks', function($http) {
     var orchestraTasks = {
+      data: null,
       tasks: {
         'pending': [],
         'returned': [],
         'in_progress': [],
         'completed': []
       },
-      tasksById: {},
-
-      allTasks: function() {
-        var tasks = [];
-        for (var type in this.tasks) {
-          tasks = tasks.concat(this.tasks[type]);
-        }
-        return tasks;
-      },
+      tasksByAssignmentId: {},
       preventNew: false,
       reviewerStatus: false,
       currentTask: undefined,
+      updateTasks: function() {
+        var service = this;
+
+        service.data = $http.get('/orchestra/api/interface/dashboard_tasks/')
+          .then(function(response) {
+            service.tasks = response.data.tasks;
+
+            service.allTasks().forEach(function(task) {
+              service.tasksByAssignmentId[task.assignment_id] = task;
+            });
+
+            service.preventNew = response.data.preventNew;
+            service.reviewerStatus = response.data.reviewerStatus;
+          });
+      },
       newTask: function(taskType) {
         var service = this;
 
@@ -104,23 +112,15 @@
           .then(function(response) {
             var task = response.data;
             service.tasks.in_progress.push(task);
-            service.tasksById[task.id] = task;
+            service.tasksByAssignmentId[task.assignment_id] = task;
           });
       },
-      updateTasks: function() {
-        var service = this;
-
-        return $http.get('/orchestra/api/interface/dashboard_tasks/')
-          .then(function(response) {
-            service.tasks = response.data.tasks;
-
-            service.allTasks().forEach(function(task) {
-              service.tasksById[task.id] = task;
-            });
-
-            service.preventNew = response.data.preventNew;
-            service.reviewerStatus = response.data.reviewerStatus;
-          });
+      allTasks: function() {
+        var tasks = [];
+        for (var type in this.tasks) {
+          tasks = tasks.concat(this.tasks[type]);
+        }
+        return tasks;
       },
       tasksForType: function(taskType) {
         return this.tasks[taskType];
@@ -133,6 +133,11 @@
           }
         }
         return numTasks;
+      },
+      getDescription: function(task) {
+        if (task) {
+          return task.detail + ' (' + task.step + ')';
+        }
       }
     };
 

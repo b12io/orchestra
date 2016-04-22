@@ -457,12 +457,13 @@ def tasks_assigned_to_worker(worker):
             step = task_assignment.task.step
             workflow_version = step.workflow_version
 
-            # TODO(marcua): project should be workflow here, no?
-            tasks_val.append({'id': task_assignment.task.id,
-                              'step': step.name,
-                              'project': workflow_version.name,
-                              'detail':
-                              task_assignment.task.project.short_description})
+            # TODO(jrbotros): standardize task/assignment serialization
+            tasks_val.append({
+                'id': task_assignment.task.id,
+                'assignment_id': task_assignment.id,
+                'step': step.name,
+                'project': workflow_version.name,
+                'detail': task_assignment.task.project.short_description})
         tasks_assigned[state] = tasks_val
     return tasks_assigned
 

@@ -48,23 +48,23 @@
     cursor: pointer;
   }
 
-  .flex-row {
-    display: flex;
-    justify-content: space-between;
-    align-content: center;
-    &:not(:last-of-type) {
-      margin-bottom: 10px;
-    }
-  }
-  .tgl-btn {
-    margin-bottom: 0;
-  }
-
   .popover {
     width: 300px;
     max-width: none;
     .timer-popover {
-      overflow: auto;
+      padding: 0;
+      .ui-select-bootstrap > .ui-select-choices {
+        width: auto;
+      }
+
+      .row {
+        margin: 10px 0;
+      }
+
+      .tgl + .tgl-btn {
+        display: inline-block;
+        margin-bottom: 0;
+      }
     }
 
     // Taken from http://codepen.io/mallendeo/pen/eLIiG

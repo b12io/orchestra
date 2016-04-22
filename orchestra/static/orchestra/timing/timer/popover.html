@@ -1,9 +1,26 @@
-<div class="timer-popover">
-  <div class="flex-row">
-    <input ng-model="workTimer.toggledOn" ng-change="workTimer.toggleTimer()" class="tgl tgl-ios" id="timer-toggle" type="checkbox">
-    <label class="tgl-btn" for="timer-toggle" id="timer-toggle-button"></label>
-    <div class="time-display">{{ workTimer.timeElapsed.stamp() }}</div>
+<div class="timer-popover container-fluid">
+  <div class="row no-padding">
+    <div class="col-xs-12">
+      <input ng-model="workTimer.toggledOn" ng-change="workTimer.toggleTimer()" class="tgl tgl-ios" id="timer-toggle" type="checkbox">
+      <label class="tgl-btn" for="timer-toggle" id="timer-toggle-button"></label>
+      <div class="time-display pull-right">{{ workTimer.timeElapsed.stamp() }}</div>
+    </div>
   </div>
-  <input class="form-control" type="text" ng-model="workTimer.description" ng-model-options="{debounce: 1000}" ng-change="workTimer.updateDescription()" placeholder="What did you work on?">
-  <a class="pull-right" ng-click="workTimer.viewTimecard()">View timecard</a>
+  <div class="row no-padding" ng-if="workTimer.timerRunning">
+    <div class="col-xs-12">
+      <input class="form-control" type="text"
+             ng-model="workTimer.description"
+             ng-model-options="{debounce: 1000}"
+             ng-change="workTimer.updateTimer()"
+             placeholder="What are you working on?">
+    </div>
+  </div>
+  <div class="row no-padding" ng-if="workTimer.timerRunning">
+    <task-select task="workTimer.task"></task-select>
+  </div>
+  <div class="row no-padding">
+    <div class="col-xs-12">
+      <a class="pull-right" ng-click="workTimer.viewTimecard()">View timecard</a>
+    </div>
+  </div>
 </div>

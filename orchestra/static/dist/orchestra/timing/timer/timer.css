@@ -12,6 +12,12 @@
   -ms-user-select: none;
   user-select: none; }
 
+.row.no-padding, .row.no-padding > [class*="col-"] {
+  padding-left: 0;
+  padding-right: 0;
+  margin-left: 0;
+  margin-right: 0; }
+
 .timer {
   position: relative;
   display: inline-block;
@@ -41,19 +47,18 @@
       margin-bottom: 10px; }
   .timer a {
     cursor: pointer; }
-  .timer .flex-row {
-    display: flex;
-    justify-content: space-between;
-    align-content: center; }
-    .timer .flex-row:not(:last-of-type) {
-      margin-bottom: 10px; }
-  .timer .tgl-btn {
-    margin-bottom: 0; }
   .timer .popover {
     width: 300px;
     max-width: none; }
     .timer .popover .timer-popover {
-      overflow: auto; }
+      padding: 0; }
+      .timer .popover .timer-popover .ui-select-bootstrap > .ui-select-choices {
+        width: auto; }
+      .timer .popover .timer-popover .row {
+        margin: 10px 0; }
+      .timer .popover .timer-popover .tgl + .tgl-btn {
+        display: inline-block;
+        margin-bottom: 0; }
     .timer .popover .tgl {
       display: none; }
       .timer .popover .tgl, .timer .popover .tgl:after, .timer .popover .tgl:before,

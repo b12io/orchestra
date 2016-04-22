@@ -2,6 +2,21 @@
   'use strict';
 
   angular.module('orchestra.timing')
+    .directive('taskSelect', function(orchestraTasks) {
+      return {
+        scope: {
+          task: '=',
+        },
+        templateUrl: $static('/static/orchestra/timing/timecard/partials/task-select.html'),
+        controllerAs: 'taskSelect',
+        bindToController: true,
+        controller: function() {
+          var taskSelect = this;
+
+          taskSelect.orchestraTasks = orchestraTasks;
+        }
+      };
+    })
     .directive('pikaday', function(timeEntries) {
       return {
         scope: {
