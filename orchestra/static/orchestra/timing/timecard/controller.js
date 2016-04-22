@@ -59,7 +59,7 @@
 
       vm.addEntry = function(date) {
         vm.timeEntries.createEntry(date).then(function(entry) {
-          vm.editEntry();
+          vm.editEntry(entry);
         });
       };
 
