@@ -12,6 +12,10 @@ Workers can track time spent on a task using the timer/timecard feature. We
 provide both a timer widget that workers can turn on to track time, and a
 timecard page where workers can update and manually create time entries.
 
+.. raw:: html
+
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/ofO5Jwkf0io" frameborder="0" allowfullscreen></iframe>
+
 Timer
 =====
 
