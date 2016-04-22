@@ -37,9 +37,9 @@ def _execute_error():
 
 def _insert_delete_copy(**kwargs):
     insert_obj = MagicMock()
-    if ((kwargs.get('body') and kwargs['body'].get('title')
-         and 'error' in kwargs['body']['title'])
-            or kwargs.get('fileId') == 'error'):
+    body = kwargs.get('body')
+    if ((body and body.get('title') and 'error' in body['title']) or
+            kwargs.get('fileId') == 'error'):
         insert_obj.execute = _execute_error
     elif (kwargs.get('body') and
           kwargs['body'].get('title') and

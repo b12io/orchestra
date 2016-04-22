@@ -917,8 +917,7 @@ def _preassign_workers(task):
         if policy:
             raise AssignmentPolicyError('Machine step should not have '
                                         'assignment policy.')
-    elif (policy == 'previously_completed_steps'
-            and related_steps is not None):
+    elif policy == 'previously_completed_steps' and related_steps is not None:
         task = _assign_worker_from_previously_completed_steps(task,
                                                               related_steps)
     elif policy == 'anyone_certified':

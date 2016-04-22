@@ -127,8 +127,8 @@ def create_project_google_folder(project):
     Create drive folder for project information
     """
     today = date.today().strftime('%Y-%m-%d')
-    parent_id = (project.project_data.get('client_folder_id')
-                 or settings.GOOGLE_PROJECT_ROOT_ID)
+    parent_id = (project.project_data.get('client_folder_id') or
+                 settings.GOOGLE_PROJECT_ROOT_ID)
     folder = create_folder_with_permissions(
         parent_id,
         ' '.join((today, project.short_description)),
