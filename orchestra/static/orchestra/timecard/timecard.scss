@@ -1,0 +1,154 @@
+.timecard-view {
+  position: absolute;
+  top: 100px;
+  width: 80%;
+  max-width: 600px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.4rem;
+  background-color: white;
+
+  .timecard-header {
+    padding: $panel-padding;
+  }
+
+  .description {
+    width: 300px;
+    display: inline-block;
+    input {
+      width: 100%;
+    }
+  }
+
+  .edit-tools {
+    float: left;
+    i {
+      margin-right: 5px;
+      cursor: pointer;
+      &.active {
+        color: $main-blue;
+      }
+    }
+  }
+
+  .date-group {
+    position: relative;
+    border-top: 1px solid $light-gray;
+    h2 {
+      position: relative;
+      font-size: 1.3em;
+      padding: $panel-padding;
+      border-bottom: 1px solid $light-gray;
+
+      .date-label {
+        color: $dark-green;
+        text-transform: uppercase;
+        margin-right: 5px;
+      }
+
+      .btn-add-entry {
+        // color: $dark-green;
+        cursor: pointer;
+        position: relative;
+        &:hover::after {
+          content: 'New entry';
+          position: absolute;
+          top: 50%;
+          right: 0px;
+          padding: 5px;
+          transform: translate(100%, -50%);
+          text-transform: uppercase;
+          font-weight: bold;
+          font-size: 0.6em;
+          font-family: $main-font-stack;
+        }
+      }
+
+      .date-duration {
+        float: right;
+        display: inline-block;
+        vertical-align: bottom
+      }
+    }
+    .date-entries {
+      padding: 0 $panel-padding;
+    }
+  }
+
+  .edit-handle, .edit-cancel-handle {
+    position: absolute;
+    right: $panel-padding;
+    bottom: $panel-padding;
+    color: $main-blue;
+    cursor: pointer;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .entry-row {
+    position: relative;
+    overflow: visible;
+    background-color: white;
+    padding: $panel-padding / 2;
+    border: 1px solid transparent;
+    box-sizing: border-box;
+    overflow: auto;
+
+    .edit-date {
+      margin-top: $panel-padding;
+      .date-picker {
+        cursor: pointer;
+        i {
+          margin-right: 3px;
+          color: $main-blue;
+        }
+      }
+      label {
+        font-size: 0.8em;
+        font-weight: bold;
+        text-transform: uppercase;
+        margin-right: 5px;
+      }
+    }
+
+    .edit-time {
+      float: right;
+      input {
+        width: 60px;
+      }
+    }
+
+    input {
+      display: inline-block;
+      &:read-only {
+        background: transparent;
+      }
+    }
+    .form-cell {
+      &:not(:last-of-type) {
+        padding-right: 10px;
+      }
+    }
+    &:hover, &.editing {
+      input {
+        &:read-only {
+          background: white;
+        }
+      }
+    }
+    &:not(:last-child) {
+      border-bottom: 1px solid $light-gray;
+    }
+  }
+
+  .time-input {
+    width: 55px;
+  }
+
+  .show-description {
+    font-size: 1rem;
+    color: $main-blue;
+    cursor: pointer;
+  }
+}

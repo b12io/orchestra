@@ -12,7 +12,7 @@ from orchestra.models import TimeEntry
 from orchestra.models import Worker
 from orchestra.tests.helpers import OrchestraTransactionTestCase
 from orchestra.tests.helpers.fixtures import setup_models
-from orchestra.utils.time_tracking import _get_timer_object
+from orchestra.utils.time_tracking import get_timer_object
 from orchestra.utils.time_tracking import get_timer_current_duration
 from orchestra.utils.time_tracking import start_timer
 from orchestra.utils.time_tracking import stop_timer
@@ -41,16 +41,16 @@ class TaskTimerTests(OrchestraTransactionTestCase):
         self.addCleanup(patcher.stop)
         patcher.start()
 
-    def test_get_timer_object_created(self):
+    def testget_timer_object_created(self):
         with self.assertRaises(TaskTimer.DoesNotExist):
             self.worker.timer
-        timer = _get_timer_object(self.worker)
+        timer = get_timer_object(self.worker)
         self.assertEqual(timer, self.worker.timer)
 
-    def test_get_timer_object_not_created(self):
+    def testget_timer_object_not_created(self):
         timer = TaskTimer(worker=self.worker)
         timer.save()
-        new_timer = _get_timer_object(self.worker)
+        new_timer = get_timer_object(self.worker)
 
         # Function should return the already created timer object.
         self.assertEqual(new_timer, timer)
