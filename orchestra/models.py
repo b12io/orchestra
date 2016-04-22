@@ -284,6 +284,8 @@ class Project(models.Model):
             Represents whether the project is being actively worked on.
         workflow_version (orchestra.models.WorkflowVersion):
             Identifies the workflow that the project follows.
+        short_description(str):
+            A short description of the project.
         priority (int):
             Represents the relative priority of the project.
         task_class (int):
@@ -465,7 +467,6 @@ class Iteration(BaseModel):
             A JSON blob containing submitted data for this iteration. Will be
             None if the iteration is currently in progress.
     """
-
     class Status:
         PROCESSING = 0
         REQUESTED_REVIEW = 1
@@ -506,6 +507,9 @@ class TimeEntry(BaseModel):
             Server timestamp for timer stop (not null if TimeEntry is
             created using work timer)
     """
+    class Meta:
+        verbose_name_plural = "time entries"
+
     date = models.DateField()
     time_worked = models.DurationField()
     # TODO(lydia): Drop null=True after a data migration to fill in workers.
