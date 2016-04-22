@@ -1,8 +1,8 @@
 from orchestra.models import Project
 from orchestra.models import Step
 from orchestra.models import WorkflowVersion
-from orchestra.project_api.serializers import ProjectSerializer
-from orchestra.project_api.serializers import TaskSerializer
+from orchestra.serializers import ProjectSerializer
+from orchestra.serializers import TaskSerializer
 
 
 import logging

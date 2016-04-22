@@ -6,9 +6,9 @@ from orchestra.core.errors import InvalidRevertError
 from orchestra.models import Iteration
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
-from orchestra.project_api.serializers import IterationSerializer
-from orchestra.project_api.serializers import TaskSerializer
-from orchestra.project_api.serializers import TaskAssignmentSerializer
+from orchestra.serializers import IterationSerializer
+from orchestra.serializers import TaskSerializer
+from orchestra.serializers import TaskAssignmentSerializer
 from orchestra.utils.task_properties import assignment_history
 from orchestra.utils.task_properties import get_iteration_history
 from orchestra.utils.task_properties import get_latest_iteration

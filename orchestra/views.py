@@ -33,8 +33,8 @@ from orchestra.models import TaskAssignment
 from orchestra.models import TimeEntry
 from orchestra.models import Worker
 from orchestra.models import Step
-from orchestra.project_api.serializers import TaskTimerSerializer
-from orchestra.project_api.serializers import TimeEntrySerializer
+from orchestra.serializers import TaskTimerSerializer
+from orchestra.serializers import TimeEntrySerializer
 from orchestra.utils.s3 import upload_editor_image
 from orchestra.utils import time_tracking
 from orchestra.utils.task_lifecycle import save_task
