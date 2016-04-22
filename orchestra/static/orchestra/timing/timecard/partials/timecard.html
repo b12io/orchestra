@@ -1,9 +1,22 @@
 <div class="timecard-view" ng-if="!vm.dataLoading">
-  <span class="edit-label">
-    Date range
-  </span>
-  <date-picker date="vm.minDate" max-date="vm.maxDate.toDate()"></date-picker> – <date-picker date="vm.maxDate" min-date="vm.minDate.toDate()" max-date="vm.weekEnd.toDate()"></date-picker>
   <div class="entries">
+    <div class="container-fluid">
+      <div class="row no-padding">
+        <div class="col-xs-10 col-xs-offset-2">
+          <div class="row">
+            <div class="col-xs-12 col-md-10">
+              <span class="edit-label">
+                Date range
+              </span>
+              <date-picker date="vm.minDate" max-date="vm.maxDate.toDate()"></date-picker> – <date-picker date="vm.maxDate" min-date="vm.minDate.toDate()" max-date="vm.weekEnd.toDate()"></date-picker>
+            </div>
+            <div class="col-xs-12 col-md-2">
+              <a href="//orchestra.readthedocs.org/en/stable/features.html/#timer" target="_blank" class="pull-right help-icon"><i class="fa fa-question-circle"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="date-group" ng-repeat="dateEntries in vm.timeEntries.entriesByDate | toArray | orderBy:vm.datetimeFromKey:'true'">
       <div class="container-fluid">
         <div class="row no-padding">

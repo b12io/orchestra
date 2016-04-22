@@ -19,13 +19,16 @@
     <task-select task="workTimer.task"></task-select>
   </div>
   <div class="row no-padding">
-    <div class="col-xs-12">
+    <div class="col-xs-12 col-md-10">
       <a ng-show="workTimer.timeEntries.invalidEntries().length" ng-click="workTimer.viewTimecard()">
         Fix {{ workTimer.timeEntries.invalidEntries().length }} invalid entr<span ng-if="workTimer.timeEntries.invalidEntries().length === 1">y</span><span ng-if="workTimer.timeEntries.invalidEntries().length !== 1">ies</span>
       </a>
       <a ng-hide="workTimer.timeEntries.invalidEntries().length" ng-click="workTimer.viewTimecard()">
         View timecard
       </a>
+    </div>
+    <div class="col-xs-12 col-md-2">
+      <a href="//orchestra.readthedocs.org/en/stable/features.html/#timer" target="_blank" class="pull-right help-icon"><i class="fa fa-question-circle"></i></a>      
     </div>
   </div>
 </div>

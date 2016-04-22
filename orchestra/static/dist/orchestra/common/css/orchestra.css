@@ -14,9 +14,7 @@
 
 .row.no-padding, .row.no-padding > [class*="col-"] {
   padding-left: 0;
-  padding-right: 0;
-  margin-left: 0;
-  margin-right: 0; }
+  padding-right: 0; }
 
 /**
  * Base stylesheet for Orchestra.
@@ -133,9 +131,7 @@ a.logo {
 
 .row.no-padding, .row.no-padding > [class*="col-"] {
   padding-left: 0;
-  padding-right: 0;
-  margin-left: 0;
-  margin-right: 0; }
+  padding-right: 0; }
 
 /**
  * Base stylesheet for Orchestra.
@@ -332,9 +328,7 @@ a.logo {
 
 .row.no-padding, .row.no-padding > [class*="col-"] {
   padding-left: 0;
-  padding-right: 0;
-  margin-left: 0;
-  margin-right: 0; }
+  padding-right: 0; }
 
 /* Confirmation modals */
 .modal-confirm-submit {
@@ -515,9 +509,7 @@ a.logo {
 
 .row.no-padding, .row.no-padding > [class*="col-"] {
   padding-left: 0;
-  padding-right: 0;
-  margin-left: 0;
-  margin-right: 0; }
+  padding-right: 0; }
 
 .project-management-modal, .slack-modal, .data-modal, .revert-modal {
   font-size: 1.5rem;
@@ -647,6 +639,8 @@ a.logo {
     .timecard-view .date-picker i {
       margin-right: 3px;
       color: #0079bf; }
+  .timecard-view .help-icon {
+    font-size: 3rem; }
   .timecard-view .incomplete {
     color: red; }
   .timecard-view .edit-label {
