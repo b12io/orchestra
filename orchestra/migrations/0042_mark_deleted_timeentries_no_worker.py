@@ -13,12 +13,13 @@ def fill_in_worker_on_time_entries_or_delete(apps, schema_editor):
     TimeEntry = apps.get_model('orchestra', 'TimeEntry')
 
     for time_entry in TimeEntry.objects.all():
-        if time_entry.assignment.worker is None:
+        if (time_entry.assignment is None or
+            time_entry.assignment.worker is None):
             # Mark time entry as deleted.
             print('Deleting Time Entry {} ({} hours worked) because'.format(
                 time_entry.id, time_entry.time_worked),
-                  'TaskAssignment {} has no worker'.format(
-                      time_entry.assignment.id))
+                  'TaskAssignment {} is None or has no worker'.format(
+                      time_entry.assignment))
             time_entry.is_deleted = True
             time_entry.save()
         else:
