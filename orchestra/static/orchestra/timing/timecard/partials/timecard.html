@@ -9,10 +9,10 @@
         <span class="date-label">{{ vm.prettyDate(dateEntries.$key) }}</span>
         <span class="day-name">{{ vm.dayName(dateEntries.$key) }}</span>
         <i ng-click="vm.timeEntries.createEntry(vm.datetimeFromKey(dateEntries))" class="fa fa-plus btn-add-entry"></i>
-        <span class="date-duration" ng-show="vm.timeEntries.invalidEntriesForDate(dateEntries.$key).length">
-          <em>Invalid Entries</em>
+        <span class="date-duration" ng-show="vm.timeEntries.incompleteEntriesForDate(dateEntries.$key).length">
+          <em>Incomplete Entries</em>
         </span>
-        <span class="date-duration" ng-hide="vm.timeEntries.invalidEntriesForDate(dateEntries.$key).length">
+        <span class="date-duration" ng-hide="vm.timeEntries.incompleteEntriesForDate(dateEntries.$key).length">
           {{ vm.timeEntries.timeWorkedForDate(dateEntries.$key).humanizeUnits() }}
         </span>
       </h2>

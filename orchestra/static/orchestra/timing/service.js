@@ -64,7 +64,7 @@
          * Determines the number of entries missing descriptions or dates for
          * a given date.
          */
-        invalidEntriesForDate: function(date) {
+        incompleteEntriesForDate: function(date) {
           var entries = this.entriesByDate[this.keyForDate(date)];
           var invalid = [];
           entries.forEach(function(entry) {
@@ -78,10 +78,10 @@
         /**
          * Determines the total number of entries missing descriptions or dates.
          */
-        invalidEntries: function() {
+        incompleteEntries: function() {
           var invalid = [];
           for (var date in this.entriesByDate) {
-            invalid = invalid.concat(this.invalidEntriesForDate(date));
+            invalid = invalid.concat(this.incompleteEntriesForDate(date));
           }
           return invalid;
         },
@@ -130,7 +130,7 @@
           var index = this.entriesByDate[dateISO].indexOf(entry);
           this.entriesByDate[dateISO].splice(index, 1);
         },
-            moveToDate: function(entry, newDate) {
+        moveToDate: function(entry, newDate) {
           this.removeEntryFromDate(entry, entry.date);
           this.addEntryToDate(entry, newDate);
           entry.date = newDate;

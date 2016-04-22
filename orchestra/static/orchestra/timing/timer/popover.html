@@ -20,10 +20,10 @@
   </div>
   <div class="row no-padding">
     <div class="col-xs-12">
-      <a ng-show="workTimer.timeEntries.invalidEntries().length" ng-click="workTimer.viewTimecard()">
-        Fix {{ workTimer.timeEntries.invalidEntries().length }} invalid entr<span ng-if="workTimer.timeEntries.invalidEntries().length === 1">y</span><span ng-if="workTimer.timeEntries.invalidEntries().length !== 1">ies</span>
+      <a ng-show="workTimer.numIncompleteEntries()" ng-click="workTimer.viewTimecard()">
+        Fix {{ workTimer.numIncompleteEntries() }} incomplete entr<span ng-if="workTimer.numIncompleteEntries() === 1">y</span><span ng-if="workTimer.numIncompleteEntries() !== 1">ies</span>
       </a>
-      <a ng-hide="workTimer.timeEntries.invalidEntries().length" ng-click="workTimer.viewTimecard()">
+      <a ng-hide="workTimer.numIncompleteEntries()" ng-click="workTimer.viewTimecard()">
         View timecard
       </a>
     </div>

@@ -32,7 +32,7 @@
             $scope.$watch(function() {
               return entry.editData.date;
             }, function(newVal, oldVal) {
-              if (newVal !== oldVal) {
+              if (!angular.equals(newVal, oldVal)) {
                 timeEntries.moveToDate(entry, newVal);
               }
             });
