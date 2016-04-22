@@ -203,8 +203,7 @@ def submit_task_assignment(request):
         submit_task(assignment_information['task_id'],
                     assignment_information['task_data'],
                     iteration_status,
-                    worker,
-                    assignment_information.get('work_time_seconds'))
+                    worker)
         return {}
     except TaskStatusError:
         raise BadRequest('Task already completed')
