@@ -1,5 +1,4 @@
 import random
-from datetime import timedelta
 from importlib import import_module
 
 from django.conf import settings
@@ -19,7 +18,6 @@ from orchestra.models import Iteration
 from orchestra.models import Project
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
-from orchestra.models import TimeEntry
 from orchestra.models import Worker
 from orchestra.models import WorkerCertification
 from orchestra.slack import add_worker_to_project_team
@@ -708,8 +706,7 @@ def _are_desired_steps_completed_on_project(desired_steps,
 
 
 @transaction.atomic
-def submit_task(task_id, task_data, iteration_status, worker,
-                work_time_seconds=0):
+def submit_task(task_id, task_data, iteration_status, worker):
     """
     Returns a dict mapping task prerequisites onto their
     latest task assignment information.  The dict is of the form:
@@ -770,13 +767,6 @@ def submit_task(task_id, task_data, iteration_status, worker,
     next_status = get_next_task_status(task, iteration_status)
 
     assignment.in_progress_task_data = task_data
-
-    # TODO(jrbotros): remove when time entry interface is added
-    TimeEntry.objects.create(
-        date=timezone.now().date(),
-        time_worked=timedelta(seconds=work_time_seconds),
-        worker=assignment.worker,
-        assignment=assignment)
 
     # Submit latest iteration
     latest_iteration = get_latest_iteration(assignment)
