@@ -20,6 +20,14 @@ admin.site.site_title = 'Orchestra'
 admin.site.index_title = 'Orchestra'
 
 
+@admin.register(Certification)
+class CertificationAdmin(admin.ModelAdmin):
+    list_display = ('id', 'slug', 'workflow', 'name')
+    ordering = ('slug',)
+    search_fields = ('slug', 'description', 'name')
+    list_filter = ('workflow',)
+
+
 @admin.register(Iteration)
 class IterationAdmin(admin.ModelAdmin):
     list_display = (
@@ -47,14 +55,6 @@ class PayRateAdmin(admin.ModelAdmin):
 
     def edit_worker(self, obj):
         return edit_link(obj.worker)
-
-
-@admin.register(Certification)
-class CertificationAdmin(admin.ModelAdmin):
-    list_display = ('id', 'slug', 'workflow', 'name')
-    ordering = ('slug',)
-    search_fields = ('slug', 'description', 'name')
-    list_filter = ('workflow',)
 
 
 @admin.register(Project)
@@ -175,7 +175,8 @@ def edit_link(instance, text=None):
         return None
     if text is None:
         text = str(instance)
-    change_url_name = 'admin:{}_change'.format(instance._meta.db_table)
+    change_url_name = 'admin:{}_{}_change'.format(
+        instance._meta.app_label, instance._meta.model_name)
     change_url = reverse(change_url_name, args=(instance.id,))
     return linkify(change_url, text=text)
 

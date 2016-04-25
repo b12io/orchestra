@@ -508,7 +508,7 @@ class TimeEntry(BaseModel):
             created using work timer)
     """
     class Meta:
-        verbose_name_plural = "time entries"
+        verbose_name_plural = 'time entries'
 
     date = models.DateField()
     time_worked = models.DurationField()
