@@ -3,22 +3,20 @@
 
   angular
     .module('journalism_workflow.v1.reporter.controllers')
-    .controller('ArticleWritingController', ArticleWritingController)
+    .controller('ArticleWritingController', ArticleWritingController);
 
   ArticleWritingController.$inject = ['$scope', 'orchestraService'];
 
   function ArticleWritingController($scope, orchestraService) {
     var vm = $scope;
-    var editorStep = orchestraService.taskUtils.prerequisiteData(
-      vm.taskAssignment, 'article_planning');
-    vm.who = editorStep.task.data.who;
-    vm.what = editorStep.task.data.what;
-    vm.when = editorStep.task.data.when;
-    vm.where = editorStep.task.data.where;
-    vm.notes = editorStep.task.data.notes;
+    var editorStep = vm.taskAssignment.prerequisites.article_planning;
+    vm.who = editorStep.who;
+    vm.what = editorStep.what;
+    vm.when = editorStep.when;
+    vm.where = editorStep.where;
+    vm.notes = editorStep.notes;
 
-    var documentCreationStep = orchestraService.taskUtils.prerequisiteData(
-      vm.taskAssignment, 'document_creation');
-    vm.articleURL = documentCreationStep.task.data.articleURL;
+    var documentCreationStep = vm.taskAssignment.prerequisites.document_creation;
+    vm.articleURL = documentCreationStep.articleURL;
   }
 })();

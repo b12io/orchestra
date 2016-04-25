@@ -30,12 +30,7 @@ def autoadjust_photos(project_data, prerequisites):
     # List the existing photos
     raw_photo_folder_id = (prerequisites
                            .get('photography')
-                           .get('prerequisites')
-                           .get('article_planning')
-                           .get('prerequisites')
                            .get('document_creation')
-                           .get('task')
-                           .get('data')
                            .get('raw_photo_folder'))
     service = Service(settings.GOOGLE_P12_PATH,
                       settings.GOOGLE_SERVICE_EMAIL)

@@ -26,23 +26,12 @@
       },
     };
     var taskUtils = {
-      prerequisiteData: function(parentStep, desiredStep, dataKey) {
-        var stepsToTraverse = [parentStep];
-        while (stepsToTraverse.length) {
-          var currentStep = stepsToTraverse.pop();
-          if (currentStep.prerequisites.hasOwnProperty(desiredStep)) {
-            var taskData = currentStep.prerequisites[desiredStep].task.data;
-            if (taskData && dataKey) {
-              return taskData[dataKey];
-            }
-            else {
-              return taskData;
-            }
-          }
-          for (var step in currentStep.prerequisites) {
-            stepsToTraverse.push(currentStep.prerequisites[step]);
-          }
+      prerequisiteData: function(taskAssignment, desiredStep, dataKey) {
+        var previousData = taskAssignment.prerequisites[desiredStep];
+        if (dataKey && previousData) {
+          return previousData[dataKey];
         }
+        return previousData;
       },
       updateVersion: function(taskAssignment) {
         if (taskAssignment === undefined ||
@@ -70,9 +59,9 @@
     };
 
     var orchestraService = {
-      'googleUtils': googleUtils,
-      'taskUtils': taskUtils,
-      'signals': signals,
+      googleUtils: googleUtils,
+      taskUtils: taskUtils,
+      signals: signals,
     };
     return orchestraService;
   });
