@@ -6,7 +6,7 @@
     .controller('TaskController', TaskController);
 
   function TaskController($location, $scope, $routeParams, $http, $rootScope,
-    $uibModal, $timeout, autoSaveTask, orchestraService,
+    $uibModal, $timeout, autoSaveTask, orchestraService, orchestraTasks,
     requiredFields) {
     var vm = this;
     vm.taskId = $routeParams.taskId;
@@ -22,6 +22,13 @@
         vm.project = data.project;
         vm.is_read_only = data.is_read_only;
         vm.work_times_seconds = data.work_times_seconds;
+
+        orchestraTasks.data.then(function() {
+          orchestraTasks.currentTask = orchestraTasks.tasksByAssignmentId[vm.taskAssignment.assignment_id];
+          $scope.$on('$locationChangeStart', function() {
+            orchestraTasks.currentTask = undefined;
+          });
+        });
 
         if (!vm.is_read_only) {
           requiredFields.setup(vm);
@@ -61,7 +68,7 @@
       });
     };
 
-    vm.confirmSubmission = function(command, totalSeconds) {
+    vm.confirmSubmission = function(command) {
       vm.submitting = true;
       if (orchestraService.signals.fireSignal('submit.before') === false) {
         // If any of the registered signal handlers returns false, prevent
@@ -73,14 +80,14 @@
           'task_id': vm.taskId,
           'task_data': vm.taskAssignment.task.data,
           'command_type': command,
-          'work_time_seconds': totalSeconds
         })
         .success(function(data, status, headers, config) {
           // Prevent additional confirmation dialog on leaving the page; data
           // will be saved by submission
           vm.autoSaver.cancel();
           orchestraService.signals.fireSignal('submit.success');
-          $location.path('/');
+          orchestraTasks.updateTasks();
+          $location.path('/timecard');
         })
         .error(function(data, status, headers, config) {
           orchestraService.signals.fireSignal('submit.error');
@@ -92,125 +99,11 @@
     };
 
     vm.submitTask = function(command) {
-      var modalInstance = $uibModal.open({
-        templateUrl: 'submit_task_modal.html',
-        controller: 'SubmitModalInstanceCtrl',
-        size: 'sm',
-        windowClass: 'modal-confirm-submit',
-        resolve: {
-          command: function() {
-            return command;
-          },
-          work_times_seconds: function() {
-            return vm.work_times_seconds;
-          }
-        },
-      });
-
-      modalInstance.result.then(function(totalSeconds) {
-        vm.confirmSubmission(command, totalSeconds);
-      });
+      if (confirm('Are you sure you want to submit this task?')) {
+        vm.confirmSubmission(command);
+      }
     };
 
     vm.activate();
-  }
-
-})();
-
-
-(function() {
-  'use strict';
-
-  angular
-    .module('orchestra.task.controllers')
-    .controller('SubmitModalInstanceCtrl', SubmitModalInstanceCtrl);
-
-  SubmitModalInstanceCtrl.$inject = ['$scope', '$uibModalInstance', 'command', 'work_times_seconds'];
-
-  function SubmitModalInstanceCtrl($scope, $uibModalInstance, command, workTimesSeconds) {
-    $scope.command = command;
-    $scope.currentIterationHours = null;
-    $scope.currentIterationMinutes = null;
-    $scope.workTimesSeconds = workTimesSeconds;
-
-    $scope.submit = function() {
-      $uibModalInstance.close($scope.totalSeconds());
-    };
-
-    $scope.cancel = function() {
-      $uibModalInstance.dismiss('cancel');
-    };
-
-    $scope.totalSeconds = function() {
-      var hours = parseInt($scope.currentIterationHours);
-      var minutes = parseInt($scope.currentIterationMinutes);
-      if (isNaN(hours)) {
-        throw 'Please provide hours (0 is acceptable)';
-      }
-      if (hours.toString() !== $scope.currentIterationHours) {
-        throw 'Hours should be a whole number';
-      }
-      if (hours < 0) {
-        throw 'Hours should be >=0';
-      }
-      if (isNaN(minutes)) {
-        throw 'Please provide minutes (0 is acceptable)';
-      }
-      if (minutes.toString() !== $scope.currentIterationMinutes) {
-        throw 'Minutes should be a whole number';
-      }
-      if (minutes > 59 || minutes < 0) {
-        throw 'Minutes should be <60 and >=0';
-      }
-
-      return (hours * 3600) + (minutes * 60);
-    };
-
-    $scope.secondsError = function() {
-      try {
-        $scope.totalSeconds();
-      } catch (error) {
-        return error;
-      }
-
-      return null;
-    };
-
-    $scope.hoursMinutes = function(seconds) {
-      var hours = (seconds - (seconds % 3600)) / 3600;
-      var minutes = (seconds % 3600) / 60;
-      return [hours, minutes];
-    };
-
-    $scope.totalPreviousSeconds = function() {
-      var total = 0;
-      angular.forEach($scope.workTimesSeconds, function(seconds) {
-        total += seconds;
-      });
-      return total;
-    };
-
-    $scope.totalPreviousHoursMinutes = function() {
-      return $scope.hoursMinutes($scope.totalPreviousSeconds());
-    };
-
-    $scope.totalHoursMinutes = function() {
-      var allSeconds = $scope.totalPreviousSeconds();
-      try {
-        allSeconds += $scope.totalSeconds();
-      } catch (error) {}
-      return $scope.hoursMinutes(allSeconds);
-    };
-
-    $scope.$watchGroup(['currentIterationHours',
-        'currentIterationMinutes'
-      ],
-      function(newTimes, oldTimes) {
-        for (var i = 0; i < newTimes.length; i++) {
-          if (newTimes[i] != oldTimes[i]) {
-            $scope.secondsErrorMessage = $scope.secondsError();
-          }
-        }
-      });
   }
 })();

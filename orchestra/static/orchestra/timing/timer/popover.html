@@ -1,0 +1,34 @@
+<div class="timer-popover container-fluid">
+  <div class="row no-padding">
+    <div class="col-xs-12">
+      <input ng-model="workTimer.toggledOn" ng-change="workTimer.toggleTimer()" class="tgl tgl-ios" id="timer-toggle" type="checkbox">
+      <label class="tgl-btn" for="timer-toggle" id="timer-toggle-button"></label>
+      <div class="time-display pull-right">{{ workTimer.timeElapsed.stamp() }}</div>
+    </div>
+  </div>
+  <div class="row no-padding" ng-if="workTimer.timerRunning">
+    <div class="col-xs-12">
+      <input class="form-control" type="text"
+             ng-model="workTimer.description"
+             ng-model-options="{debounce: 1000}"
+             ng-change="workTimer.updateTimer()"
+             placeholder="What are you working on?">
+    </div>
+  </div>
+  <div class="row no-padding" ng-if="workTimer.timerRunning">
+    <task-select task="workTimer.task"></task-select>
+  </div>
+  <div class="row no-padding">
+    <div class="col-xs-12 col-md-10">
+      <a ng-show="workTimer.timeEntries.invalidEntries().length" ng-click="workTimer.viewTimecard()">
+        Fix {{ workTimer.timeEntries.invalidEntries().length }} invalid entr<span ng-if="workTimer.timeEntries.invalidEntries().length === 1">y</span><span ng-if="workTimer.timeEntries.invalidEntries().length !== 1">ies</span>
+      </a>
+      <a ng-hide="workTimer.timeEntries.invalidEntries().length" ng-click="workTimer.viewTimecard()">
+        View timecard
+      </a>
+    </div>
+    <div class="col-xs-12 col-md-2">
+      <a href="//orchestra.readthedocs.org/en/stable/features.html/#time-tracking" target="_blank" class="pull-right help-icon"><i class="fa fa-question-circle"></i></a>      
+    </div>
+  </div>
+</div>

@@ -1,5 +1,4 @@
 import random
-from datetime import timedelta
 from importlib import import_module
 
 from django.conf import settings
@@ -19,7 +18,6 @@ from orchestra.models import Iteration
 from orchestra.models import Project
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
-from orchestra.models import TimeEntry
 from orchestra.models import Worker
 from orchestra.models import WorkerCertification
 from orchestra.slack import add_worker_to_project_team
@@ -337,6 +335,7 @@ def get_task_assignment_details(task_assignment):
                    for attr in ('username', 'first_name', 'last_name')}
 
     return {
+        'assignment_id': task_assignment.id,
         'task': {
             'data': task_assignment.in_progress_task_data,
             'status': (dict(Task.STATUS_CHOICES)
@@ -437,6 +436,7 @@ def tasks_assigned_to_worker(worker):
         .order_by('-task__project__priority',
                   '-task__project__start_datetime')[:20])
 
+    # TODO(jrbotros): convert this to a filterable list
     task_assignments_overview = {
         'returned': (
             active_task_assignments
@@ -455,12 +455,13 @@ def tasks_assigned_to_worker(worker):
             step = task_assignment.task.step
             workflow_version = step.workflow_version
 
-            # TODO(marcua): project should be workflow here, no?
-            tasks_val.append({'id': task_assignment.task.id,
-                              'step': step.name,
-                              'project': workflow_version.name,
-                              'detail':
-                              task_assignment.task.project.short_description})
+            # TODO(jrbotros): standardize task/assignment serialization
+            tasks_val.append({
+                'id': task_assignment.task.id,
+                'assignment_id': task_assignment.id,
+                'step': step.name,
+                'project': workflow_version.name,
+                'detail': task_assignment.task.project.short_description})
         tasks_assigned[state] = tasks_val
     return tasks_assigned
 
@@ -705,8 +706,7 @@ def _are_desired_steps_completed_on_project(desired_steps,
 
 
 @transaction.atomic
-def submit_task(task_id, task_data, iteration_status, worker,
-                work_time_seconds=0):
+def submit_task(task_id, task_data, iteration_status, worker):
     """
     Returns a dict mapping task prerequisites onto their
     latest task assignment information.  The dict is of the form:
@@ -767,13 +767,6 @@ def submit_task(task_id, task_data, iteration_status, worker,
     next_status = get_next_task_status(task, iteration_status)
 
     assignment.in_progress_task_data = task_data
-
-    # TODO(jrbotros): remove when time entry interface is added
-    TimeEntry.objects.create(
-        date=timezone.now().date(),
-        time_worked=timedelta(seconds=work_time_seconds),
-        worker=assignment.worker,
-        assignment=assignment)
 
     # Submit latest iteration
     latest_iteration = get_latest_iteration(assignment)

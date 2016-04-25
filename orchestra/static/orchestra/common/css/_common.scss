@@ -19,6 +19,8 @@ $panel-margin: 3rem;
 $panel-padding: 1.5rem;
 $panel-button-margin: 1.5rem;
 
+$main-font-stack: 'Ruda', sans-serif;
+
 @mixin vendor-prefix($name, $argument) {
   -webkit-#{$name}: #{$argument};
   -ms-#{$name}: #{$argument};
@@ -34,4 +36,16 @@ $panel-button-margin: 1.5rem;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+
+%no-padding {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.row.no-padding {
+  @extend %no-padding;
+  > [class *= "col-"] {
+    @extend %no-padding;
+  }
 }

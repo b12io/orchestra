@@ -12,6 +12,10 @@
   -ms-user-select: none;
   user-select: none; }
 
+.row.no-padding, .row.no-padding > [class*="col-"] {
+  padding-left: 0;
+  padding-right: 0; }
+
 /**
  * Base stylesheet for Orchestra.
  *
@@ -50,6 +54,10 @@ a.logo {
   margin: 12px 30px; }
   a.logo:hover, a.logo:focus, a.logo:visited {
     color: white; }
+
+.work-timer {
+  float: right;
+  height: 52px; }
 
 #nav-options {
   cursor: pointer;
@@ -121,6 +129,10 @@ a.logo {
   -ms-user-select: none;
   user-select: none; }
 
+.row.no-padding, .row.no-padding > [class*="col-"] {
+  padding-left: 0;
+  padding-right: 0; }
+
 /**
  * Base stylesheet for Orchestra.
  *
@@ -159,6 +171,10 @@ a.logo {
   margin: 12px 30px; }
   a.logo:hover, a.logo:focus, a.logo:visited {
     color: white; }
+
+.work-timer {
+  float: right;
+  height: 52px; }
 
 #nav-options {
   cursor: pointer;
@@ -309,6 +325,10 @@ a.logo {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none; }
+
+.row.no-padding, .row.no-padding > [class*="col-"] {
+  padding-left: 0;
+  padding-right: 0; }
 
 /* Confirmation modals */
 .modal-confirm-submit {
@@ -487,6 +507,10 @@ a.logo {
   -ms-user-select: none;
   user-select: none; }
 
+.row.no-padding, .row.no-padding > [class*="col-"] {
+  padding-left: 0;
+  padding-right: 0; }
+
 .project-management-modal, .slack-modal, .data-modal, .revert-modal {
   font-size: 1.5rem;
   padding: 15px; }
@@ -601,3 +625,116 @@ a.logo {
 .error-text {
   font-size: 2rem;
   margin-bottom: .5rem; }
+
+.timecard-view {
+  position: absolute;
+  top: 100px;
+  width: 80%;
+  max-width: 750px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.4rem; }
+  .timecard-view .date-picker {
+    cursor: pointer; }
+    .timecard-view .date-picker i {
+      margin-right: 3px;
+      color: #0079bf; }
+  .timecard-view .help-icon {
+    font-size: 3rem; }
+  .timecard-view .incomplete {
+    color: red; }
+  .timecard-view .edit-label {
+    display: block;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-right: 5px; }
+  .timecard-view .timecard-header {
+    padding: 1.5rem; }
+  .timecard-view .edit-tools {
+    float: left; }
+    .timecard-view .edit-tools i {
+      margin-right: 5px;
+      cursor: pointer; }
+      .timecard-view .edit-tools i.active {
+        color: #0079bf; }
+  .timecard-view .day-name {
+    display: block;
+    padding-right: 1.5rem;
+    text-align: right;
+    font-size: 1.8rem;
+    font-weight: bold;
+    text-transform: uppercase; }
+  .timecard-view .date-group {
+    position: relative;
+    padding: 0.75rem;
+    margin: 0.75rem 0; }
+    .timecard-view .date-group h2 {
+      position: relative;
+      font-size: 1.8rem;
+      padding: 1.5rem;
+      border-bottom: 1px solid #cccccc;
+      background-color: white; }
+      .timecard-view .date-group h2 .date-label {
+        color: #27ae60;
+        text-transform: uppercase;
+        margin-right: 5px; }
+      .timecard-view .date-group h2 .btn-add-entry {
+        cursor: pointer;
+        position: relative; }
+        .timecard-view .date-group h2 .btn-add-entry:hover::after {
+          content: 'New entry';
+          position: absolute;
+          top: 50%;
+          right: 0px;
+          padding: 5px;
+          transform: translate(100%, -50%);
+          text-transform: uppercase;
+          font-weight: bold;
+          font-size: 0.6em;
+          font-family: "Ruda", sans-serif; }
+      .timecard-view .date-group h2 .date-duration {
+        float: right;
+        display: inline-block;
+        vertical-align: bottom; }
+  .timecard-view .entry-row {
+    position: relative;
+    background-color: white;
+    box-sizing: border-box;
+    padding: 1.5rem;
+    background-color: white; }
+    .timecard-view .entry-row.gray-stripe {
+      background-color: rgba(204, 204, 204, 0.5); }
+    .timecard-view .entry-row .row {
+      padding: 5px 0; }
+    .timecard-view .entry-row .description input {
+      width: 100%; }
+    .timecard-view .entry-row .edit-time {
+      text-align: right; }
+      .timecard-view .entry-row .edit-time label {
+        margin: 0; }
+      .timecard-view .entry-row .edit-time .time-component {
+        display: inline-block;
+        text-align: center; }
+    .timecard-view .entry-row .edit-task {
+      float: left;
+      width: 300px; }
+      .timecard-view .entry-row .edit-task .ui-select-bootstrap > .ui-select-choices {
+        width: auto; }
+    .timecard-view .entry-row .edit-options {
+      float: right; }
+      .timecard-view .entry-row .edit-options .edit-cancel-handle {
+        cursor: pointer;
+        display: inline-block; }
+        .timecard-view .entry-row .edit-options .edit-cancel-handle:hover {
+          text-decoration: underline; }
+    .timecard-view .entry-row .form-cell:not(:last-of-type) {
+      padding-right: 10px; }
+    .timecard-view .entry-row:hover input:read-only, .timecard-view .entry-row.editing input:read-only {
+      background: white; }
+  .timecard-view .time-input {
+    width: 55px; }
+  .timecard-view .show-description {
+    font-size: 1rem;
+    color: #0079bf;
+    cursor: pointer; }

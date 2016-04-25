@@ -1,0 +1,111 @@
+/**
+ * Common stylesheet for Orchestra.
+ *
+ * This partial provides common variables and mixins useful for various view and
+ * component styles.
+ */
+.disable-select {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none; }
+
+.row.no-padding, .row.no-padding > [class*="col-"] {
+  padding-left: 0;
+  padding-right: 0; }
+
+.timer {
+  font-size: 18px; }
+  .timer .popover-toggle {
+    line-height: 52px;
+    cursor: pointer;
+    color: white;
+    font-size: 1.4em; }
+  .timer .start-timer.btn {
+    color: white;
+    background-color: #2ecc71;
+    display: inline-block; }
+  .timer .time-display {
+    font-size: 28px;
+    line-height: initial;
+    vertical-align: top;
+    text-align: left;
+    font-family: "Lucida Console", Monaco, monospace; }
+  .timer .description input {
+    width: 100%; }
+  .timer .past-entries {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #cccccc; }
+    .timer .past-entries h1 {
+      font-size: 0.8em;
+      margin-bottom: 10px; }
+  .timer a {
+    cursor: pointer; }
+  .timer .popover {
+    width: 300px;
+    max-width: none; }
+    .timer .popover .timer-popover {
+      padding: 0; }
+      .timer .popover .timer-popover .ui-select-bootstrap > .ui-select-choices {
+        width: auto; }
+      .timer .popover .timer-popover .row {
+        margin: 10px 0; }
+      .timer .popover .timer-popover .tgl + .tgl-btn {
+        display: inline-block;
+        margin-bottom: 0; }
+    .timer .popover .tgl {
+      display: none; }
+      .timer .popover .tgl, .timer .popover .tgl:after, .timer .popover .tgl:before,
+      .timer .popover .tgl *, .timer .popover .tgl *:after, .timer .popover .tgl *:before,
+      .timer .popover .tgl + .tgl-btn {
+        box-sizing: border-box; }
+        .timer .popover .tgl::selection, .timer .popover .tgl:after::selection, .timer .popover .tgl:before::selection,
+        .timer .popover .tgl *::selection, .timer .popover .tgl *:after::selection, .timer .popover .tgl *:before::selection,
+        .timer .popover .tgl + .tgl-btn::selection {
+          background: none; }
+      .timer .popover .tgl + .tgl-btn {
+        outline: 0;
+        display: block;
+        width: 4em;
+        height: 2em;
+        position: relative;
+        cursor: pointer;
+        user-select: none; }
+        .timer .popover .tgl + .tgl-btn:after, .timer .popover .tgl + .tgl-btn:before {
+          position: relative;
+          display: block;
+          content: "";
+          width: 50%;
+          height: 100%; }
+        .timer .popover .tgl + .tgl-btn:after {
+          left: 0; }
+        .timer .popover .tgl + .tgl-btn:before {
+          display: none; }
+      .timer .popover .tgl:checked + .tgl-btn:after {
+        left: 50%; }
+    .timer .popover .tgl-ios + .tgl-btn {
+      background: #fbfbfb;
+      border-radius: 2em;
+      padding: 2px;
+      transition: all .4s ease;
+      border: 1px solid #e8eae9; }
+      .timer .popover .tgl-ios + .tgl-btn:after {
+        border-radius: 2em;
+        background: #fbfbfb;
+        transition: left 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), padding 0.3s ease, margin 0.3s ease;
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 4px 0 rgba(0, 0, 0, 0.08); }
+      .timer .popover .tgl-ios + .tgl-btn:hover:after {
+        will-change: padding; }
+      .timer .popover .tgl-ios + .tgl-btn:active {
+        box-shadow: inset 0 0 0 2em #e8eae9; }
+        .timer .popover .tgl-ios + .tgl-btn:active:after {
+          padding-right: .8em; }
+    .timer .popover .tgl-ios:checked + .tgl-btn {
+      background: #86d993; }
+      .timer .popover .tgl-ios:checked + .tgl-btn:active {
+        box-shadow: none; }
+        .timer .popover .tgl-ios:checked + .tgl-btn:active:after {
+          margin-left: -.8em; }

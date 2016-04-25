@@ -1,0 +1,180 @@
+.timecard-view {
+  position: absolute;
+  top: 100px;
+  width: 80%;
+  max-width: 750px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.4rem;
+
+  .date-picker {
+    cursor: pointer;
+    i {
+      margin-right: 3px;
+      color: $main-blue;
+    }
+  }
+
+  .help-icon {
+    font-size: 3rem;
+  }
+
+  .incomplete {
+    color: red;
+  }
+
+  .edit-label {
+    display: block;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-right: 5px;
+  }
+
+  .timecard-header {
+    padding: $panel-padding;
+  }
+
+  .edit-tools {
+    float: left;
+    i {
+      margin-right: 5px;
+      cursor: pointer;
+      &.active {
+        color: $main-blue;
+      }
+    }
+  }
+
+  .day-name {
+    display: block;
+    padding-right: $panel-padding;
+    text-align: right;
+    font-size: 1.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+
+  .date-group {
+    position: relative;
+    padding: $panel-padding / 2;
+    margin: $panel-padding / 2 0;
+    h2 {
+      position: relative;
+      font-size: 1.8rem;
+      padding: $panel-padding;
+      border-bottom: 1px solid $light-gray;
+      background-color: white;
+
+      .date-label {
+        color: $dark-green;
+        text-transform: uppercase;
+        margin-right: 5px;
+      }
+
+      .btn-add-entry {
+        // color: $dark-green;
+        cursor: pointer;
+        position: relative;
+        &:hover::after {
+          content: 'New entry';
+          position: absolute;
+          top: 50%;
+          right: 0px;
+          padding: 5px;
+          transform: translate(100%, -50%);
+          text-transform: uppercase;
+          font-weight: bold;
+          font-size: 0.6em;
+          font-family: $main-font-stack;
+        }
+      }
+
+      .date-duration {
+        float: right;
+        display: inline-block;
+        vertical-align: bottom
+      }
+    }
+  }
+
+  .entry-row {
+    $input-width: 300px;
+
+    position: relative;
+    background-color: white;
+    box-sizing: border-box;
+    padding: $panel-padding;
+
+    background-color: white;
+    &.gray-stripe {
+      background-color: rgba($light-gray, 0.5);
+    }
+
+    .row {
+      padding: 5px 0;
+    }
+
+    .description {
+      input {
+        width: 100%;
+      }
+    }
+
+    .edit-time {
+      text-align: right;
+      label {
+        margin: 0;
+      }
+      .time-component {
+        display: inline-block;
+        text-align: center;
+      }
+    }
+
+    .edit-task {
+      float: left;
+      width: $input-width;
+      // .ui-select-bootstrap > .ui-select-toggle {
+      //   width: 100%;
+      // }
+      .ui-select-bootstrap > .ui-select-choices {
+        width: auto;
+      }
+    }
+
+    .edit-options {
+      float: right;
+      .edit-cancel-handle {
+        cursor: pointer;
+        display: inline-block;
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .form-cell {
+      &:not(:last-of-type) {
+        padding-right: 10px;
+      }
+    }
+    &:hover, &.editing {
+      input {
+        &:read-only {
+          background: white;
+        }
+      }
+    }
+  }
+
+  .time-input {
+    width: 55px;
+  }
+
+  .show-description {
+    font-size: 1rem;
+    color: $main-blue;
+    cursor: pointer;
+  }
+}

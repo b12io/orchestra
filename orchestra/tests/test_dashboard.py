@@ -91,12 +91,13 @@ class DashboardTestCase(OrchestraTestCase):
         returned = json.loads(response.content.decode('utf-8'))
 
         task = Task.objects.get(id=returned['id'])
-        self.assertEquals(
-            {'id': task.id,
-             'step': task.step.slug,
-             'project': task.project.workflow_version.slug,
-             'detail': task.project.short_description},
-            returned)
+        self.assertEquals({
+            'id': task.id,
+            'assignment_id': task.assignments.get(worker=self.workers[0]).id,
+            'step': task.step.slug,
+            'project': task.project.workflow_version.slug,
+            'detail': task.project.short_description
+        }, returned)
 
         # task assignment for invalid id should give bad request
         self._verify_bad_task_assignment_information(
@@ -505,6 +506,7 @@ class DashboardTestCase(OrchestraTestCase):
             'status': assignment_status,
             'task': {'data': task_data, 'status': task_status},
             'task_id': task.id,
+            'assignment_id': task.assignments.get(worker=worker).id,
             'workflow': {
                 'slug': 'w1', 'name': 'Workflow One',
             },

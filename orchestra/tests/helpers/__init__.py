@@ -49,8 +49,7 @@ class OrchestraTestHelpersMixin(object):
         if data is None:
             data = {'test': 'test'}
         request = json.dumps(
-            {'task_id': task_id, 'task_data': data, 'command_type': command,
-             'work_time_seconds': seconds})
+            {'task_id': task_id, 'task_data': data, 'command_type': command})
 
         return client.post(
             '/orchestra/api/interface/submit_task_assignment/',

@@ -12,6 +12,7 @@ from orchestra.views import stop_timer
 from orchestra.views import submit_task_assignment
 from orchestra.views import task_assignment_information
 from orchestra.views import upload_image
+from orchestra.views import update_timer
 from orchestra.views import TimeEntryList
 from orchestra.views import TimeEntryDetail
 from orchestra.project_api.views import create_project
@@ -55,6 +56,7 @@ urlpatterns = patterns(
     url(r'^interface/timer/start/$', start_timer, name='start_timer'),
     url(r'^interface/timer/stop/$', stop_timer, name='stop_timer'),
     url(r'^interface/timer/$', get_timer, name='get_timer'),
+    url(r'^interface/timer/update/$', update_timer, name='update_timer'),
 
     url(r'^interface/project_management/',
         include('orchestra.interface_api.project_management.urls',

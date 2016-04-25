@@ -1,0 +1,15 @@
+<div class="timer" ng-if="!vm.dataLoading">
+  <div class="popover-toggle"
+       uib-popover-template="workTimer.popoverTemplate"
+       popover-placement="bottom-right">
+    <i class="fa fa-clock-o"></i>
+    <span ng-if="workTimer.timerRunning">
+      <span ng-if="workTimer.timeElapsed.get('hours') === 0">
+        {{ workTimer.timeElapsed.roundMinute().humanizeUnits(['m']) }}
+      </span>
+      <span ng-if="workTimer.timeElapsed.get('hours')">
+        {{ workTimer.timeElapsed.roundMinute().humanizeUnits() }}
+      </span>
+    </span>
+  </div>
+</div>
