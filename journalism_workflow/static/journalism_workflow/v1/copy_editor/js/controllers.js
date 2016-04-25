@@ -15,11 +15,11 @@
     vm.taskAssignment.articleDocument = documentCreationStep.articleURL;
 
     // Set up the photos for captioning
-    vm.taskAssignment.photos = [];
+    vm.taskAssignment.task.data.photos = [];
     var photoAdjustStep = vm.taskAssignment.prerequisites.photo_adjustment;
     var photos = photoAdjustStep.photos_for_caption;
     for (var i = 0; i < photos.length; i++) {
-      vm.taskAssignment.photos.push({
+      vm.taskAssignment.task.data.photos.push({
         src: photos[i],
         caption: ''
       });
