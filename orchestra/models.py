@@ -1,18 +1,26 @@
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models import Q
 from django.utils import timezone
 from djmoney.models.fields import MoneyField
 from jsonfield import JSONField
 
-from orchestra.core.errors import ModelSaveError
+from orchestra.model_mixins import WorkflowMixin
+from orchestra.model_mixins import WorkflowVersionMixin
+from orchestra.model_mixins import CertificationMixin
+from orchestra.model_mixins import StepMixin
+from orchestra.model_mixins import WorkerMixin
+from orchestra.model_mixins import WorkerCertificationMixin
+from orchestra.model_mixins import ProjectMixin
+from orchestra.model_mixins import TaskMixin
+from orchestra.model_mixins import TaskAssignmentMixin
+from orchestra.model_mixins import PayRateMixin
 from orchestra.utils.models import BaseModel
 
 # TODO(marcua): Convert ManyToManyFields to django-hstore referencefields or
 # wait for django-postgres ArrayFields in Django 1.8.
 
 
-class Workflow(models.Model):
+class Workflow(WorkflowMixin, models.Model):
     """
     Workflows describe the steps and requirements for experts to complete work.
 
@@ -40,11 +48,8 @@ class Workflow(models.Model):
     class Meta:
         app_label = 'orchestra'
 
-    def __str__(self):
-        return self.slug
 
-
-class WorkflowVersion(models.Model):
+class WorkflowVersion(WorkflowVersionMixin, models.Model):
     """
     WorkflowVersions represent changes made to a single workflow over time.
 
@@ -68,11 +73,8 @@ class WorkflowVersion(models.Model):
         app_label = 'orchestra'
         unique_together = (('workflow', 'slug'),)
 
-    def __str__(self):
-        return '{} - {}'.format(self.workflow.slug, self.slug)
 
-
-class Certification(models.Model):
+class Certification(CertificationMixin, models.Model):
     """
     Certifications allow workers to perform different types of tasks.
 
@@ -99,15 +101,12 @@ class Certification(models.Model):
         symmetrical=False)
     workflow = models.ForeignKey(Workflow, related_name='certifications')
 
-    def __str__(self):
-        return '{} - {}'.format(self.slug, self.workflow.slug)
-
     class Meta:
         app_label = 'orchestra'
         unique_together = (('workflow', 'slug'),)
 
 
-class Step(models.Model):
+class Step(StepMixin, models.Model):
     """
     Steps represent individual tasks in a workflow version.
 
@@ -173,12 +172,8 @@ class Step(models.Model):
         app_label = 'orchestra'
         unique_together = (('workflow_version', 'slug'),)
 
-    def __str__(self):
-        return '{} - {} - {}'.format(self.slug, self.workflow_version.slug,
-                                     self.workflow_version.workflow.slug)
 
-
-class Worker(models.Model):
+class Worker(WorkerMixin, models.Model):
     """
     Workers are human experts within the Orchestra ecosystem.
 
@@ -194,14 +189,11 @@ class Worker(models.Model):
     start_datetime = models.DateTimeField(default=timezone.now)
     slack_username = models.CharField(max_length=200, blank=True, null=True)
 
-    def __str__(self):
-        return '{}'.format(self.user.username)
-
     class Meta:
         app_label = 'orchestra'
 
 
-class WorkerCertification(models.Model):
+class WorkerCertification(WorkerCertificationMixin, models.Model):
     """
     A WorkerCertification maps a worker to a certification they possess.
 
@@ -252,28 +244,8 @@ class WorkerCertification(models.Model):
     task_class = models.IntegerField(choices=TASK_CLASS_CHOICES)
     role = models.IntegerField(choices=ROLE_CHOICES)
 
-    def __str__(self):
-        return '{} - {} - {} - {} - {}'.format(
-            self.worker.user.username, self.certification.slug,
-            self.certification.workflow.slug,
-            dict(WorkerCertification.TASK_CLASS_CHOICES)[self.task_class],
-            dict(WorkerCertification.ROLE_CHOICES)[self.role])
 
-    def save(self, *args, **kwargs):
-        if self.role == WorkerCertification.Role.REVIEWER:
-            if not (WorkerCertification.objects
-                    .filter(worker=self.worker, task_class=self.task_class,
-                            certification=self.certification,
-                            role=WorkerCertification.Role.ENTRY_LEVEL)
-                    .exists()):
-                raise ModelSaveError('You are trying to add a reviewer '
-                                     'certification ({}) for a worker without '
-                                     'an entry-level certification'
-                                     .format(self))
-        super().save(*args, **kwargs)
-
-
-class Project(models.Model):
+class Project(ProjectMixin, models.Model):
     """
     A project is a collection of tasks representing a workflow.
 
@@ -321,15 +293,11 @@ class Project(models.Model):
     team_messages_url = models.URLField(null=True, blank=True)
     slack_group_id = models.CharField(max_length=200, null=True, blank=True)
 
-    def __str__(self):
-        return '{} ({})'.format(str(self.workflow_version.slug),
-                                self.short_description)
-
     class Meta:
         app_label = 'orchestra'
 
 
-class Task(models.Model):
+class Task(TaskMixin, models.Model):
     """
     A task is a cohesive unit of work representing a workflow step.
 
@@ -366,14 +334,11 @@ class Task(models.Model):
     project = models.ForeignKey(Project, related_name='tasks')
     status = models.IntegerField(choices=STATUS_CHOICES)
 
-    def __str__(self):
-        return '{} - {}'.format(str(self.project), str(self.step.slug))
-
     class Meta:
         app_label = 'orchestra'
 
 
-class TaskAssignment(BaseModel):
+class TaskAssignment(TaskAssignmentMixin, BaseModel):
     """
     A task assignment is a worker's assignment for a given task.
 
@@ -429,22 +394,6 @@ class TaskAssignment(BaseModel):
     # Opaque field that stores current state of task as per the Step's
     # description
     in_progress_task_data = JSONField(default={}, blank=True)
-
-    def save(self, *args, **kwargs):
-        if self.task.step.is_human:
-            if self.worker is None:
-                raise ModelSaveError('Worker has to be present '
-                                     'if worker type is Human')
-        else:
-            if self.worker is not None:
-                raise ModelSaveError('Worker should not be assigned '
-                                     'if worker type is Machine')
-
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return '{} - {} - {}'.format(
-            str(self.task), self.assignment_counter, str(self.worker))
 
 
 class Iteration(BaseModel):
@@ -550,7 +499,7 @@ class TaskTimer(models.Model):
     description = models.CharField(max_length=200, null=True, blank=True)
 
 
-class PayRate(models.Model):
+class PayRate(PayRateMixin, models.Model):
     """
     A PayRate object tracks how much a worker is paid over time.
 
@@ -574,35 +523,3 @@ class PayRate(models.Model):
     hourly_multiplier = models.DecimalField(max_digits=6, decimal_places=4)
     start_date = models.DateField(default=timezone.now)
     end_date = models.DateField(null=True, blank=True)
-
-    def __str__(self):
-        return '{} ({} - {})'.format(
-            self.worker, self.start_date, self.end_date or 'now')
-
-    def save(self, *args, **kwargs):
-        if self.end_date and self.end_date < self.start_date:
-            raise ModelSaveError('end_date must be greater than '
-                                 'start_date')
-
-        if self.end_date is None:
-            # If end_date is None, need to check that no other PayRates have
-            # end_date is None, nor do they overlap.
-            if PayRate.objects.exclude(id=self.id).filter(
-                    (Q(end_date__gte=self.start_date) |
-                     Q(end_date__isnull=True)),
-                    worker=self.worker).exists():
-                raise ModelSaveError(
-                    'Date range overlaps with existing PayRate entry')
-        else:
-            # If end_date is not None, need to check if other PayRates overlap.
-            if (PayRate.objects.exclude(id=self.id).filter(
-                    start_date__lte=self.end_date,
-                    end_date__isnull=True,
-                    worker=self.worker).exists() or
-                PayRate.objects.exclude(id=self.id).filter(
-                    (Q(start_date__lte=self.end_date) &
-                     Q(end_date__gte=self.start_date)),
-                    worker=self.worker).exists()):
-                raise ModelSaveError(
-                    'Date range overlaps with existing PayRate entry')
-        super().save(*args, **kwargs)
