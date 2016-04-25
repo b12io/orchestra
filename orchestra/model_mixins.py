@@ -45,7 +45,7 @@ class WorkerCertificationMixin(object):
 
     def save(self, *args, **kwargs):
         if self.role == self.Role.REVIEWER:
-            if not (self.objects
+            if not (type(self).objects
                     .filter(worker=self.worker, task_class=self.task_class,
                             certification=self.certification,
                             role=self.Role.ENTRY_LEVEL)
@@ -103,7 +103,7 @@ class PayRateMixin(object):
         if self.end_date is None:
             # If end_date is None, need to check that no other PayRates have
             # end_date is None, nor do they overlap.
-            if self.objects.exclude(id=self.id).filter(
+            if type(self).objects.exclude(id=self.id).filter(
                     (Q(end_date__gte=self.start_date) |
                      Q(end_date__isnull=True)),
                     worker=self.worker).exists():
@@ -111,11 +111,11 @@ class PayRateMixin(object):
                     'Date range overlaps with existing PayRate entry')
         else:
             # If end_date is not None, need to check if other PayRates overlap.
-            if (self.objects.exclude(id=self.id).filter(
+            if (type(self).objects.exclude(id=self.id).filter(
                     start_date__lte=self.end_date,
                     end_date__isnull=True,
                     worker=self.worker).exists() or
-                self.objects.exclude(id=self.id).filter(
+                type(self).objects.exclude(id=self.id).filter(
                     (Q(start_date__lte=self.end_date) &
                      Q(end_date__gte=self.start_date)),
                     worker=self.worker).exists()):
