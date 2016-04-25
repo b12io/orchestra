@@ -802,7 +802,7 @@ def previously_completed_task_data(task):
     """
     Returns a dict mapping task prerequisites onto their
     latest task assignment information.  The dict is of the form:
-    {'previous-slug': {task_assignment_data}, ...}
+    {'previous-slug': {latest_assignment_data}, ...}
 
     Args:
         task (orchestra.models.Task): The specified task object.
@@ -812,27 +812,25 @@ def previously_completed_task_data(task):
             A dict mapping task prerequisites onto their latest task
             assignment information.
     """
-    step = task.step
-    prerequisites = {}
+    # Find all prerequisite steps in graph
+    to_visit = list(task.step.creation_depends_on.all())
+    prerequisite_steps = set(to_visit)
+    while to_visit:
+        current_step = to_visit.pop()
+        for step in current_step.creation_depends_on.all():
+            if step not in prerequisite_steps:
+                to_visit.append(step)
+                prerequisite_steps.add(step)
 
-    for required_step in step.creation_depends_on.all():
-        required_task = Task.objects.get(step=required_step,
-                                         project=task.project)
+    prerequisite_data = {}
+    for step in prerequisite_steps:
+        required_task = Task.objects.get(step=step, project=task.project)
+
         if required_task.status != Task.Status.COMPLETE:
             raise TaskDependencyError('Task depenency is not satisfied')
-
-        task_details = get_task_details(required_task.id)
-
         assignment = assignment_history(required_task).last()
-        task_assignment_details = {}
-        if assignment:
-            # Task assignment should be present unless task was skipped.
-            task_assignment_details = get_task_assignment_details(assignment)
-        task_assignment_details.update(task_details)
-
-        # TODO(kkamalov): check for circular prerequisites
-        prerequisites[required_step.slug] = task_assignment_details
-    return prerequisites
+        prerequisite_data[step.slug] = assignment.in_progress_task_data
+    return prerequisite_data
 
 
 def update_related_assignment_status(task, assignment_counter, data,

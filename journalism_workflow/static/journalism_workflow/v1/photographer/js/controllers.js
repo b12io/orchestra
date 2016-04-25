@@ -9,12 +9,11 @@
 
   function ImageUploadController($scope, orchestraService) {
     var vm = $scope;
-    var editorStep = orchestraService.taskUtils.prerequisiteData(
-      vm.taskAssignment, 'article_planning');
-    vm.who = editorStep.task.data.who;
-    vm.what = editorStep.task.data.what;
-    vm.when = editorStep.task.data.when;
-    vm.where = editorStep.task.data.where;
-    vm.notes = editorStep.task.data.notes;
+    var editorStep = vm.taskAssignment.prerequisites.article_planning;
+    vm.who = editorStep.who;
+    vm.what = editorStep.what;
+    vm.when = editorStep.when;
+    vm.where = editorStep.where;
+    vm.notes = editorStep.notes;
   }
 })();

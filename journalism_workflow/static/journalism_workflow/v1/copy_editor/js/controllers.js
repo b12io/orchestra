@@ -3,7 +3,7 @@
 
   angular
     .module('journalism_workflow.v1.copy_editor.controllers')
-    .controller('CopyEditorController', CopyEditorController)
+    .controller('CopyEditorController', CopyEditorController);
 
   CopyEditorController.$inject = ['$scope', 'orchestraService'];
 
@@ -11,15 +11,13 @@
     var vm = $scope;
 
     // Store the article text document URL for easier summary later
-    var documentCreationStep = orchestraService.taskUtils.prerequisiteData(
-      vm.taskAssignment, 'document_creation')
-    vm.taskAssignment.task.data.articleDocument = documentCreationStep.task.data.articleURL;
+    var documentCreationStep = vm.taskAssignment.prerequisites.document_creation;
+    vm.taskAssignment.articleDocument = documentCreationStep.articleURL;
 
     // Set up the photos for captioning
     vm.taskAssignment.task.data.photos = [];
-    var photoAdjustStep = orchestraService.taskUtils.prerequisiteData(
-      vm.taskAssignment, 'photo_adjustment');
-    var photos = photoAdjustStep.task.data.photos_for_caption;
+    var photoAdjustStep = vm.taskAssignment.prerequisites.photo_adjustment;
+    var photos = photoAdjustStep.photos_for_caption;
     for (var i = 0; i < photos.length; i++) {
       vm.taskAssignment.task.data.photos.push({
         src: photos[i],
