@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
             ],
             bases=(orchestra.models.communication.model_mixins.CommunicationPreferenceMixin, models.Model),
         ),
-        migrations.AlterUniqueTogether(
+        migrations.AlterUniqueTogether(  # manually-reviewed
             name='communicationpreference',
             unique_together=set([('worker', 'communication_type')]),
         ),

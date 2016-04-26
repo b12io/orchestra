@@ -9,7 +9,7 @@ class ModelsTestCase(OrchestraTestCase):
     def test_communication_preference_autocreation(self):
         """
             When new users register, CommunicationPreferences should be
-        automatically created .
+            automatically created .
         """
 
         # Create a user
@@ -17,7 +17,7 @@ class ModelsTestCase(OrchestraTestCase):
                            password='test',
                            email='test_registration_user@test.com')
 
-        # There should be no worker yet
+        # There should be no preferences yet
         self.assertFalse(CommunicationPreference.objects.filter(
             worker__user=user).exists())
 

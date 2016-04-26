@@ -8,16 +8,16 @@ from orchestra.utils.models import ChoicesEnum
 
 class CommunicationPreference(CommunicationPreferenceMixin, models.Model):
     """
-    A CommunicationPreference object defines how a User would like to contacted
-    for a given CommunicationType.
+        A CommunicationPreference object defines how a Worker would like to
+        contacted for a given CommunicationType.
 
-    Attributes:
-        worker (orchestra.models.Worker):
-            Django user that the preference represents.
-        methods (BitField):
-            The ways in which the user would like to be contacted.
-        type (CommunicationType):
-            The type of communication to which this preference applies.
+        Attributes:
+            worker (orchestra.models.Worker):
+                Django user that the preference represents.
+            methods (BitField):
+                The ways in which the user would like to be contacted.
+            type (CommunicationType):
+                The type of communication to which this preference applies.
     """
 
     class CommunicationMethods:
