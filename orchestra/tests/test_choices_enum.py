@@ -42,9 +42,3 @@ class ModelUtilsTests(OrchestraTestCase):
             },
         }
         self.assertEqual(TestEnum.serialize(), expected_data)
-
-        expected_description = 'desc0'
-        self.assertEqual(TestEnum.get_description(0), expected_description)
-
-        with self.assertRaises(ValueError):
-            TestEnum.get_description(-1)

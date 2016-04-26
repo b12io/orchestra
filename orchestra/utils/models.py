@@ -148,16 +148,3 @@ class ChoicesEnum(Enum):
         }
         """
         return {item.name: item.as_dict() for item in cls}
-
-    @classmethod
-    def get_description(cls, desired_value):
-        """
-            Get the description for the desired_value
-        >>> MyEnum.get_description(0)
-            'My first name'
-        """
-        for item in cls:
-            item_dict = item.as_dict()
-            if item_dict.get('value') == desired_value:
-                return item_dict.get('description')
-        raise ValueError('{} not found!'.format(desired_value))

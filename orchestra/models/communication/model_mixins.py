@@ -7,9 +7,13 @@ class CommunicationPreferenceMixin(object):
         """
         return 2 ** len(cls.COMMUNICATION_METHODS) - 1
 
+    def get_comunication_type_description(self):
+        return self.CommunicationType(
+            self.communication_type).description
+
     def __str__(self):
-        description = self.CommunicationType.get_description(
-            self.communication_type)
         return '{} - {} - {}'.format(
-            self.worker, self.methods.items(), description
+            self.worker,
+            self.methods.items(),
+            self.get_comunication_type_description()
         )
