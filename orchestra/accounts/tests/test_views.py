@@ -25,14 +25,12 @@ class AccountSettingsTest(OrchestraTestCase):
 
     def _get_account_settings_mock_data(self):
         return {
-            'email': 'mock_account_settings@b12.io',
             'first_name': 'Mock first',
             'last_name': 'Mock last',
         }
 
     def _get_account_settings_current_data(self):
         return {
-            'email': self.user.email,
             'first_name': self.user.first_name,
             'last_name': self.user.last_name,
         }
@@ -46,20 +44,11 @@ class AccountSettingsTest(OrchestraTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'accounts/settings.html')
 
-    def test_email_change(self):
-        data = self._get_account_settings_current_data()
-        data['email'] = 'new_test_account_settings@b12.io'
-        response = self.request_client.post(self.url, data)
-        self.user.refresh_from_db()
-        self.assertTrue(response.context['success'])
-        self.assertEqual(self.user.email, data['email'])
-
     def test_change_all_fields(self):
         data = self._get_account_settings_mock_data()
         response = self.request_client.post(self.url, data)
         self.assertTrue(response.context['success'])
         self.user.refresh_from_db()
-        self.assertEqual(self.user.email, data['email'])
         self.assertEqual(self.user.first_name, data['first_name'])
         self.assertEqual(self.user.last_name, data['last_name'])
 

@@ -28,13 +28,6 @@
                 <div {% if user_form.last_name.errors %} class="error-field" {% endif %}> {{ user_form.last_name.errors }} </div>
               </div>
             </div>
-            <div class="row spaced">
-              <div class="col-xs-12">
-                <label for="{{ user_form.email.id_for_label }}">Email</label>
-                {{ user_form.email|add_class:"form-control" }}
-                <div {% if user_form.email.errors %} class="error-field" {% endif %}> {{ user_form.email.errors }} </div>
-              </div>
-            </div>
 
             <div class="row">
               <div class="col-xs-12">
