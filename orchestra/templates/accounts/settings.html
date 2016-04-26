@@ -1,0 +1,45 @@
+{% extends "orchestra/base.html" %}
+{% load staticfiles %}
+{% load widget_tweaks %}
+
+{% block title %}Account Settings{% endblock %}
+
+{% block main %}
+<div class="login-wrap account-settings container-fluid">
+  <div class="row">
+    <div class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 col-xs-12">
+      <div class="account-tabs">
+        <a href="#" class="btn btn-primary selected">Account Settings</a>
+        <a class="btn btn-primary" href="{% url 'auth_password_change' %}">Change Password</a>
+      </div>
+      <div class="card">
+        <form action="{% url 'orchestra:account_settings' %}" method="post">
+          {% csrf_token %}
+          <div class="container-fluid">
+            <div class="row spaced">
+              <div class="col-lg-6 col-sm-12">
+                <label for="{{ user_form.first_name.id_for_label }}">First name</label>
+                {{ user_form.first_name|add_class:"form-control" }}
+                <div {% if user_form.first_name.errors %} class="error-field" {% endif %}> {{ user_form.first_name.errors }} </div>
+              </div>
+              <div class="col-lg-6 col-sm-12">
+                <label for="{{ user_form.last_name.id_for_label }}">Last name</label>
+                {{ user_form.last_name|add_class:"form-control" }}
+                <div {% if user_form.last_name.errors %} class="error-field" {% endif %}> {{ user_form.last_name.errors }} </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-xs-12">
+                <div class="account-actions">
+                  <button type="submit" class="btn btn-primary">Update account</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

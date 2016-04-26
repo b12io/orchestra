@@ -1,0 +1,47 @@
+.account-settings {
+
+  margin: 100px auto 0;
+
+  a:hover, a:focus, a:visited {
+    color: #FFF;
+    text-decoration: none;
+  }
+
+  .row:not(:last-child) {
+    margin-bottom: 15px;
+  }
+
+  .account-tabs {
+    margin-bottom: -1px;
+    position: relative;
+    z-index: 1;
+    .btn {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      &.selected {
+        background-color: darken(#428bca, 15%);
+      }
+    }
+  }
+
+  .card {
+    position: relative;
+    z-index: 2;
+    padding: 50px;
+    background: #FFFFFF;
+    box-shadow: 0px 17px 25px 0px rgba(104, 104, 104, 0.04), 0px 0px 55px 0px rgba(219, 219, 219, 0.28);
+    height: auto;
+  }
+
+  .account-actions {
+    margin-top: 15px;
+    text-align: right;
+  }
+
+  label {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1.59px;
+    line-height: 26px;
+  }
+}

@@ -6,4 +6,4 @@ class OrchestraAppConfig(AppConfig):
     verbose_name = 'Orchestra'
 
     def ready(self):
-        from orchestra import signals  # noqa
+        from orchestra.accounts import signals  # noqa
