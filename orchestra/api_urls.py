@@ -1,5 +1,4 @@
 from django.conf.urls import include
-from django.conf.urls import patterns
 from django.conf.urls import url
 
 from orchestra.views import dashboard_tasks
@@ -21,8 +20,7 @@ from orchestra.project_api.views import project_details_url
 from orchestra.project_api.views import project_information
 
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     # Interface API
     url(r'^interface/dashboard_tasks/$',
         dashboard_tasks, name='dashboard_tasks'),
@@ -78,4 +76,4 @@ urlpatterns = patterns(
     url(r'^status/$',
         status,
         name='status'),
-)
+]
