@@ -3,6 +3,7 @@ from django.db import models
 from django.utils import timezone
 from djmoney.models.fields import MoneyField
 from jsonfield import JSONField
+from multiselectfield import MultiSelectField
 
 from orchestra.model_mixins import WorkflowMixin
 from orchestra.model_mixins import WorkflowVersionMixin
@@ -15,6 +16,7 @@ from orchestra.model_mixins import TaskMixin
 from orchestra.model_mixins import TaskAssignmentMixin
 from orchestra.model_mixins import PayRateMixin
 from orchestra.utils.models import BaseModel
+from orchestra.utils.models import ChoicesEnum
 
 # TODO(marcua): Convert ManyToManyFields to django-hstore referencefields or
 # wait for django-postgres ArrayFields in Django 1.8.
@@ -523,3 +525,48 @@ class PayRate(PayRateMixin, models.Model):
     hourly_multiplier = models.DecimalField(max_digits=6, decimal_places=4)
     start_date = models.DateField(default=timezone.now)
     end_date = models.DateField(null=True, blank=True)
+
+
+class CommunicationType(BaseModel):
+    """
+    A CommunicationType object defines a certain type of communication with
+    Users.
+
+    Attributes:
+        slug (str):
+            Unique identifier for the communication type.
+        description (str):
+            A longer description of the communication type.
+    """
+    slug = models.CharField(max_length=100)
+    description = models.CharField(max_length=255)
+
+    class Meta:
+        app_label = 'orchestra'
+
+
+class CommunicationPreference(models.Model):
+    """
+    A CommunicationPreference object defines how a User would like to contacted
+    for a given CommunicationType.
+
+    Attributes:
+        user (django.contrib.auth.models.User):
+            Django user whom the preference represents.
+        methods (ChoicesEnum):
+            The ways in which the user would like to be contacted.
+        type (CommunicationType):
+            The type of communication to which this preference applies.
+    """
+
+    class CommunicationMethods(ChoicesEnum):
+        SLACK = 'slack'
+        EMAIL = 'email'
+
+    user = models.ForeignKey(User)
+    methods = MultiSelectField(
+        choices=CommunicationMethods.choices(), blank=True)
+    type = models.ForeignKey(CommunicationType)
+
+    class Meta:
+        app_label = 'orchestra'
