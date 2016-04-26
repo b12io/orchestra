@@ -64,6 +64,51 @@
         </a>
         <!--logo end-->
         {% block topbar %}
+          <div class="nav notify-row" id="top_menu">
+            <!--  notification start -->
+            <ul class="nav top-menu">
+            </ul>
+          </div>
+          <!--  notification end -->
+
+          <div id="nav-options" class="dropdown">
+            <div class="dropdown-toggle" id="dropdown-menu-main" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+              {{ user.username }}
+              <span class="caret"></span>
+            </div>
+            <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-menu-main">
+              <li>
+                <a href="/">
+                  <i class="fa fa-dashboard"></i>
+                  <span>Dashboard</span>
+                </a>
+              </li>
+
+              <li>
+                <a href="/orchestra/app/timecard/">
+                  <i class="fa fa-clock-o"></i>
+                  <span>Timecard</span>
+                </a>
+              </li>
+
+              <li>
+                <a href="/orchestra/accounts/settings/">
+                  <i class="fa fa-cog" aria-hidden="true"></i>
+                  <span>Account Settings</span>
+                </a>
+              </li>
+
+              <li>
+                <a href="{% url 'logout_then_login' %}" target="_self">
+                  <i class="fa fa-sign-out"></i>
+                  <span>Sign out</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <work-timer class="work-timer"></work-timer>
+
         {% endblock %}
         <div class="top-menu">
         </div>
