@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
+        migrations.RemoveField(  # manually-reviewed
             model_name='taskassignment',
             name='snapshots',
         ),

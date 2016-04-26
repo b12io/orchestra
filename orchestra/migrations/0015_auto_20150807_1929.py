@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
             name='worker',
             field=models.ForeignKey(to='orchestra.Worker', related_name='certifications'),
         ),
-        migrations.AlterUniqueTogether(
+        migrations.AlterUniqueTogether(  # manually-reviewed
             name='workercertification',
             unique_together=set([('certification', 'worker', 'task_class', 'role')]),
         ),

@@ -141,7 +141,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(to='orchestra.Worker'),
             preserve_default=True,
         ),
-        migrations.AlterUniqueTogether(
+        migrations.AlterUniqueTogether(  # manually-reviewed
             name='step',
             unique_together=set([('process', 'slug')]),
         ),

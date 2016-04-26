@@ -94,15 +94,15 @@ class Migration(migrations.Migration):
             name='step',
             field=models.ForeignKey(null=True, to='orchestra.Step', related_name='tasks'),
         ),
-        migrations.AlterUniqueTogether(
+        migrations.AlterUniqueTogether(  # manually-reviewed
             name='workflowversion',
             unique_together=set([('workflow', 'slug')]),
         ),
-        migrations.AlterUniqueTogether(
+        migrations.AlterUniqueTogether(  # manually-reviewed
             name='step',
             unique_together=set([('workflow_version', 'slug')]),
         ),
-        migrations.AlterUniqueTogether(
+        migrations.AlterUniqueTogether(  # manually-reviewed
             name='certification',
             unique_together=set([('workflow', 'slug')]),
         ),
