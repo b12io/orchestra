@@ -1,9 +1,9 @@
+from bitfield import BitField
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
 from djmoney.models.fields import MoneyField
 from jsonfield import JSONField
-from multiselectfield import MultiSelectField
 
 from orchestra.model_mixins import WorkflowMixin
 from orchestra.model_mixins import WorkflowVersionMixin
@@ -16,7 +16,6 @@ from orchestra.model_mixins import TaskMixin
 from orchestra.model_mixins import TaskAssignmentMixin
 from orchestra.model_mixins import PayRateMixin
 from orchestra.utils.models import BaseModel
-from orchestra.utils.models import ChoicesEnum
 
 # TODO(marcua): Convert ManyToManyFields to django-hstore referencefields or
 # wait for django-postgres ArrayFields in Django 1.8.
@@ -552,21 +551,26 @@ class CommunicationPreference(models.Model):
 
     Attributes:
         user (django.contrib.auth.models.User):
-            Django user whom the preference represents.
+            Django user that the preference represents.
         methods (ChoicesEnum):
             The ways in which the user would like to be contacted.
         type (CommunicationType):
             The type of communication to which this preference applies.
     """
 
-    class CommunicationMethods(ChoicesEnum):
+    class CommunicationMethods:
         SLACK = 'slack'
         EMAIL = 'email'
 
+    COMMUNICATION_METHODS = (
+        CommunicationMethods.SLACK, 'Slack',
+        CommunicationMethods.EMAIL, 'Email',
+    )
+
     user = models.ForeignKey(User)
-    methods = MultiSelectField(
-        choices=CommunicationMethods.choices(), blank=True)
-    type = models.ForeignKey(CommunicationType)
+    methods = BitField(flags=COMMUNICATION_METHODS,
+                       blank=True, null=True, default=None)
+    communication_type = models.ForeignKey(CommunicationType)
 
     class Meta:
         app_label = 'orchestra'

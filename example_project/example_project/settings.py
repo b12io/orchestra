@@ -33,7 +33,6 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'multiselectfield'
 )
 
 # Installed orchestra workflows to be included as Django apps
