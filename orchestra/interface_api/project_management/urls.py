@@ -1,10 +1,8 @@
-from django.conf.urls import patterns
 from django.conf.urls import url
 
 from orchestra.interface_api.project_management import views
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^assign_task/$',
         views.assign_task_api,
         name='assign_task'),
@@ -36,4 +34,4 @@ urlpatterns = patterns(
     url(r'^revert_task/$',
         views.revert_task_api,
         name='revert_task'),
-)
+]
