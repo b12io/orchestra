@@ -96,7 +96,6 @@ create_orchestra_project(
               'will create a new project and print out its id. ')
 
         project_id = create_orchestra_project(
-            None,
             'simple_workflow',
             'v1',
             'A test run of our simple workflow',

@@ -56,8 +56,7 @@ def get_project_details_url(project_id):
     return url
 
 
-def create_orchestra_project(client,
-                             workflow_slug,
+def create_orchestra_project(workflow_slug,
                              workflow_version_slug,
                              description,
                              priority,

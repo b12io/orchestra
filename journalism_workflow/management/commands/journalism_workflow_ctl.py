@@ -47,7 +47,6 @@ class Command(BaseCommand):
 
     def create_project(self):
         project_id = create_orchestra_project(
-            None,
             'journalism',
             'v1',
             'A test run of our journalism workflow',
