@@ -1,20 +1,19 @@
-from bitfield import BitField
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from djmoney.models.fields import MoneyField
 from jsonfield import JSONField
 
-from orchestra.model_mixins import WorkflowMixin
-from orchestra.model_mixins import WorkflowVersionMixin
-from orchestra.model_mixins import CertificationMixin
-from orchestra.model_mixins import StepMixin
-from orchestra.model_mixins import WorkerMixin
-from orchestra.model_mixins import WorkerCertificationMixin
-from orchestra.model_mixins import ProjectMixin
-from orchestra.model_mixins import TaskMixin
-from orchestra.model_mixins import TaskAssignmentMixin
-from orchestra.model_mixins import PayRateMixin
+from orchestra.models.core.model_mixins import WorkflowMixin
+from orchestra.models.core.model_mixins import WorkflowVersionMixin
+from orchestra.models.core.model_mixins import CertificationMixin
+from orchestra.models.core.model_mixins import StepMixin
+from orchestra.models.core.model_mixins import WorkerMixin
+from orchestra.models.core.model_mixins import WorkerCertificationMixin
+from orchestra.models.core.model_mixins import ProjectMixin
+from orchestra.models.core.model_mixins import TaskMixin
+from orchestra.models.core.model_mixins import TaskAssignmentMixin
+from orchestra.models.core.model_mixins import PayRateMixin
 from orchestra.utils.models import BaseModel
 
 # TODO(marcua): Convert ManyToManyFields to django-hstore referencefields or
@@ -186,7 +185,7 @@ class Worker(WorkerMixin, models.Model):
         slack_username (str):
             The worker's Slack username if Slack integration is enabled.
     """
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL)
     start_datetime = models.DateTimeField(default=timezone.now)
     slack_username = models.CharField(max_length=200, blank=True, null=True)
 
@@ -525,52 +524,3 @@ class PayRate(PayRateMixin, models.Model):
     start_date = models.DateField(default=timezone.now)
     end_date = models.DateField(null=True, blank=True)
 
-
-class CommunicationType(BaseModel):
-    """
-    A CommunicationType object defines a certain type of communication with
-    Users.
-
-    Attributes:
-        slug (str):
-            Unique identifier for the communication type.
-        description (str):
-            A longer description of the communication type.
-    """
-    slug = models.CharField(max_length=100)
-    description = models.CharField(max_length=255)
-
-    class Meta:
-        app_label = 'orchestra'
-
-
-class CommunicationPreference(models.Model):
-    """
-    A CommunicationPreference object defines how a User would like to contacted
-    for a given CommunicationType.
-
-    Attributes:
-        user (django.contrib.auth.models.User):
-            Django user that the preference represents.
-        methods (ChoicesEnum):
-            The ways in which the user would like to be contacted.
-        type (CommunicationType):
-            The type of communication to which this preference applies.
-    """
-
-    class CommunicationMethods:
-        SLACK = 'slack'
-        EMAIL = 'email'
-
-    COMMUNICATION_METHODS = (
-        CommunicationMethods.SLACK, 'Slack',
-        CommunicationMethods.EMAIL, 'Email',
-    )
-
-    user = models.ForeignKey(User)
-    methods = BitField(flags=COMMUNICATION_METHODS,
-                       blank=True, null=True, default=None)
-    communication_type = models.ForeignKey(CommunicationType)
-
-    class Meta:
-        app_label = 'orchestra'

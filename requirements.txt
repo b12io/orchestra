@@ -27,7 +27,7 @@ django-hijack-admin==2.1.0
 django-money==0.7.6
 django-filter==0.13.0
 django-widget-tweaks==1.4.1
-django-multiselectfield==0.1.3
+django-bitfield==1.8.0
 
 # Journalism Workflow requirements
 Pillow==3.2.0

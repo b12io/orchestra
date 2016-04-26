@@ -14,6 +14,7 @@ from orchestra.models import Worker
 from orchestra.models import WorkerCertification
 from orchestra.models import Workflow
 from orchestra.models import WorkflowVersion
+from orchestra.models import CommunicationPreference
 
 admin.site.site_header = 'Orchestra'
 admin.site.site_title = 'Orchestra'
@@ -166,8 +167,16 @@ class WorkflowVersionAdmin(admin.ModelAdmin):
     list_display = (
         'id', 'slug', 'workflow', 'name', 'description')
     ordering = ('workflow__slug',)
-    search_fields = ('workflow__slug', 'slug', 'name', 'description',)
+    search_fields = ('workflow__slug', 'slug', 'name', 'description')
     list_filter = ('workflow',)
+
+
+@admin.register(CommunicationPreference)
+class CommunicationPreferenceAdmin(admin.ModelAdmin):
+    list_display = (
+        'id', 'worker', 'methods', 'communication_type')
+    search_fields = ('worker__user__username', 'methods', 'communication_type')
+    list_filter = ('worker__user__username',)
 
 
 def edit_link(instance, text=None):
