@@ -15,6 +15,13 @@
     margin-bottom: -1px;
     position: relative;
     z-index: 1;
+    .btn {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      &.selected {
+        background-color: darken(#428bca, 15%);
+      }
+    }
   }
 
   .card {

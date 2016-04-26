@@ -750,6 +750,11 @@ a.logo {
     margin-bottom: -1px;
     position: relative;
     z-index: 1; }
+    .account-settings .account-tabs .btn {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0; }
+      .account-settings .account-tabs .btn.selected {
+        background-color: #2a6496; }
   .account-settings .card {
     position: relative;
     z-index: 2;
