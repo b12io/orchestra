@@ -26,8 +26,10 @@ class ModelsTestCase(OrchestraTestCase):
             sender=self.__class__, user=user, request=None)
 
         # Expect the worker object to be created
-        self.assertTrue(CommunicationPreference.objects.filter(worker__user=user).exists(),
-                        'CommunicationPreference not autocreated on User registration')
+        self.assertTrue(
+            CommunicationPreference.objects.filter(worker__user=user).exists(),
+            'CommunicationPreference not autocreated on User registration'
+        )
 
         for comm_pref in CommunicationPreference.objects.all():
             for label, flag in comm_pref.methods.iteritems():

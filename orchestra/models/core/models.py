@@ -523,4 +523,3 @@ class PayRate(PayRateMixin, models.Model):
     hourly_multiplier = models.DecimalField(max_digits=6, decimal_places=4)
     start_date = models.DateField(default=timezone.now)
     end_date = models.DateField(null=True, blank=True)
-

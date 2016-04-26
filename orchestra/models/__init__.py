@@ -1,14 +1,14 @@
-from orchestra.models.communication.models import CommunicationPreference
-from orchestra.models.core.models import Workflow
-from orchestra.models.core.models import WorkflowVersion
-from orchestra.models.core.models import Certification
-from orchestra.models.core.models import Step
-from orchestra.models.core.models import Worker
-from orchestra.models.core.models import WorkerCertification
-from orchestra.models.core.models import Project
-from orchestra.models.core.models import Task
-from orchestra.models.core.models import TaskAssignment
-from orchestra.models.core.models import Iteration
-from orchestra.models.core.models import TimeEntry
-from orchestra.models.core.models import TaskTimer
-from orchestra.models.core.models import PayRate
+from orchestra.models.communication.models import CommunicationPreference  # noqa
+from orchestra.models.core.models import Workflow  # noqa
+from orchestra.models.core.models import WorkflowVersion  # noqa
+from orchestra.models.core.models import Certification  # noqa
+from orchestra.models.core.models import Step  # noqa
+from orchestra.models.core.models import Worker  # noqa
+from orchestra.models.core.models import WorkerCertification  # noqa
+from orchestra.models.core.models import Project  # noqa
+from orchestra.models.core.models import Task  # noqa
+from orchestra.models.core.models import TaskAssignment  # noqa
+from orchestra.models.core.models import Iteration  # noqa
+from orchestra.models.core.models import TimeEntry  # noqa
+from orchestra.models.core.models import TaskTimer  # noqa
+from orchestra.models.core.models import PayRate  # noqa

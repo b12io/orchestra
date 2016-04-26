@@ -1,9 +1,8 @@
 from bitfield import BitField
 from django.db import models
 
-from orchestra.models.communication.model_mixins import CommunicationPreferenceMixin
+from orchestra.models.communication.model_mixins import CommunicationPreferenceMixin  # noqa
 from orchestra.models.core.models import Worker
-from orchestra.utils.models import BaseModel
 from orchestra.utils.models import ChoicesEnum
 
 
@@ -24,7 +23,6 @@ class CommunicationPreference(CommunicationPreferenceMixin, models.Model):
     class CommunicationMethods:
         SLACK = 'slack'
         EMAIL = 'email'
-
 
     COMMUNICATION_METHODS = (
         (CommunicationMethods.SLACK, 'Slack'),
