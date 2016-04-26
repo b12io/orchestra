@@ -113,5 +113,5 @@ class Migration(migrations.Migration):
             name='status',
             field=models.IntegerField(choices=[(0, 'Processing'), (1, 'Requested Review'), (2, 'Provided Review')], default=0),
         ),
-        migrations.RunPython(snapshots_to_iterations)
+        migrations.RunPython(snapshots_to_iterations)  # manually-reviewed
     ]

@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
                                    ('copy_pass', 'Copy Pass'), ('content_extraction', ' Content Extraction')]),
             preserve_default=True,
         ),
-        migrations.AlterUniqueTogether(
+        migrations.AlterUniqueTogether(  # manually-reviewed
             name='taskassignment',
             unique_together=set([('task', 'assignment_counter')]),
         ),

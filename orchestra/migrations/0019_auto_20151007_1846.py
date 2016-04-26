@@ -11,11 +11,11 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
+        migrations.RemoveField(  # manually-reviewed
             model_name='project',
             name='workflow_slug',
         ),
-        migrations.RemoveField(
+        migrations.RemoveField(  # manually-reviewed
             model_name='task',
             name='step_slug',
         ),

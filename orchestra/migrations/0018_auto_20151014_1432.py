@@ -19,5 +19,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(set_task_start_datetime),
+        migrations.RunPython(set_task_start_datetime),  # manually-reviewed
     ]

@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
             field=models.ManyToManyField(
                 related_name='required_certifications_rel_+', to='orchestra.Certification'),
         ),
-        migrations.AlterUniqueTogether(
+        migrations.AlterUniqueTogether(  # manually-reviewed
             name='taskassignment',
             unique_together=set([('task', 'assignment_counter')]),
         ),

@@ -11,19 +11,19 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterUniqueTogether(
+        migrations.AlterUniqueTogether(  # manually-reviewed
             name='step',
             unique_together=None,
         ),
-        migrations.RemoveField(
+        migrations.RemoveField(  # manually-reviewed
             model_name='step',
             name='depends_on',
         ),
-        migrations.RemoveField(
+        migrations.RemoveField(  # manually-reviewed
             model_name='step',
             name='process',
         ),
-        migrations.RemoveField(
+        migrations.RemoveField(  # manually-reviewed
             model_name='step',
             name='required_certifications',
         ),
@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
                 max_length=200, choices=[('Doctors', 'Doctors Process')]),
             preserve_default=True,
         ),
-        migrations.DeleteModel(
+        migrations.DeleteModel(  # manually-reviewed
             name='Process',
         ),
         migrations.AlterField(
@@ -51,7 +51,7 @@ class Migration(migrations.Migration):
                                    ('Content Extraction', ' Content Extraction'), ('Copy Pass', ' Copy Pass')]),
             preserve_default=True,
         ),
-        migrations.DeleteModel(
+        migrations.DeleteModel(  # manually-reviewed
             name='Step',
         ),
         migrations.AlterField(
