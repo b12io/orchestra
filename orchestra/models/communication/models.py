@@ -35,7 +35,6 @@ class CommunicationPreference(CommunicationPreferenceMixin, models.Model):
     worker = models.ForeignKey(Worker)
     methods = BitField(flags=COMMUNICATION_METHODS,
                        blank=True, null=True, default=None)
-
     communication_type = models.IntegerField(
         choices=CommunicationType.choices())
 
