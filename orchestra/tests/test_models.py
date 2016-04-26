@@ -2,11 +2,11 @@ import datetime
 
 from dateutil.parser import parse
 
+from orchestra.accounts.signals import orchestra_user_registered
 from orchestra.core.errors import ModelSaveError
 from orchestra.models import PayRate
 from orchestra.models import Worker
 from orchestra.models import WorkerCertification
-from orchestra.signals import orchestra_user_registered
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import CertificationFactory
 from orchestra.tests.helpers.fixtures import WorkerCertificationFactory
