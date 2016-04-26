@@ -9,7 +9,9 @@ from registration.models import RegistrationProfile
 from registration.views import RegistrationView
 
 from orchestra.accounts.forms import UserForm
+from orchestra.accounts.forms import WorkerForm
 from orchestra.accounts import signals
+from orchestra.models import Worker
 
 UserModel = get_user_model()
 
@@ -65,23 +67,35 @@ class OrchestraRegistrationView(RegistrationView):
 class AccountSettingsView(View):
     template_name = 'accounts/settings.html'
     user_form = UserForm
+    worker_form = WorkerForm
+
+    def dispatch(self, request, *args, **kwargs):
+        self.worker = Worker.objects.get(user=request.user)
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         user_form = self.user_form(
             instance=request.user)
+        worker_form = self.worker_form(instance=self.worker)
+
         return render(request, self.template_name, {
             'user_form': user_form,
+            'worker_form': worker_form,
         })
 
     def post(self, request, *args, **kwargs):
         user_form = self.user_form(
             data=request.POST, instance=request.user)
+        worker_form = self.worker_form(
+            data=request.POST, instance=self.worker)
 
-        success = user_form.is_valid()
+        success = user_form.is_valid() and worker_form.is_valid()
         if success:
             user_form.save()
+            worker_form.save()
 
         return render(request, self.template_name, {
             'user_form': user_form,
-            'success': success
+            'worker_form': worker_form,
+            'success': success,
         })

@@ -3,6 +3,7 @@ from django.test import Client as RequestClient
 
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import UserFactory
+from orchestra.tests.helpers.fixtures import WorkerFactory
 
 
 class AccountSettingsTest(OrchestraTestCase):
@@ -19,6 +20,7 @@ class AccountSettingsTest(OrchestraTestCase):
             first_name='first name',
             last_name='last name',
             password=self.password)
+        self.worker = WorkerFactory(user=self.user)
         self.user.is_active = True
         self.user.save()
         self.login()
@@ -27,12 +29,14 @@ class AccountSettingsTest(OrchestraTestCase):
         return {
             'first_name': 'Mock first',
             'last_name': 'Mock last',
+            'slack_username': 'Mock slack',
         }
 
     def _get_account_settings_current_data(self):
         return {
             'first_name': self.user.first_name,
             'last_name': self.user.last_name,
+            'slack_username': self.worker.slack_username,
         }
 
     def login(self):
@@ -48,9 +52,13 @@ class AccountSettingsTest(OrchestraTestCase):
         data = self._get_account_settings_mock_data()
         response = self.request_client.post(self.url, data)
         self.assertTrue(response.context['success'])
+
         self.user.refresh_from_db()
         self.assertEqual(self.user.first_name, data['first_name'])
         self.assertEqual(self.user.last_name, data['last_name'])
+
+        self.worker.refresh_from_db()
+        self.assertEqual(self.worker.slack_username, data['slack_username'])
 
     def test_missing_fields(self):
         required_fields = self._get_account_settings_mock_data().keys()
