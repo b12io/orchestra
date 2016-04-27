@@ -1,0 +1,2 @@
+class SlackConnectionError(Exception):
+    pass
