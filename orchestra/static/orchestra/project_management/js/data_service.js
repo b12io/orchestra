@@ -61,7 +61,7 @@
         for (var step_slug in this.data.tasks) {
           var task = this.data.tasks[step_slug];
           task.is_human = this.data.steps[task.step_slug].is_human;
-          if (!task.assignments.length) {
+          if (this.awaitingAssignment(task)) {
             // TODO(jrbotros): create the empty assignment in a saner way
             task.assignments.push({
               iterations: [],
