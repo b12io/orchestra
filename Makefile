@@ -1,5 +1,5 @@
 COVERAGE_ANNOTATION=coverage_annotations
-TEST_CMD=manage.py test orchestra beanstalk_dispatch
+TEST_CMD=manage.py test orchestra beanstalk_dispatch --with-xunit --stop
 
 clean:
 	find . -name '*.pyo' -delete
