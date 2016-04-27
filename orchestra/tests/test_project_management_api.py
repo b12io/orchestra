@@ -9,9 +9,9 @@ from orchestra.core.errors import InvalidRevertError
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import Project
-from orchestra.project_api.serializers import IterationSerializer
-from orchestra.project_api.serializers import TaskSerializer
-from orchestra.project_api.serializers import TaskAssignmentSerializer
+from orchestra.serializers import IterationSerializer
+from orchestra.serializers import TaskSerializer
+from orchestra.serializers import TaskAssignmentSerializer
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_complete_task
 from orchestra.tests.helpers.fixtures import setup_models

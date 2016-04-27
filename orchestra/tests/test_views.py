@@ -13,8 +13,8 @@ from orchestra.models import TaskAssignment
 from orchestra.models import TaskTimer
 from orchestra.models import TimeEntry
 from orchestra.models import Worker
-from orchestra.project_api.serializers import TaskTimerSerializer
-from orchestra.project_api.serializers import TimeEntrySerializer
+from orchestra.serializers import TaskTimerSerializer
+from orchestra.serializers import TimeEntrySerializer
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.fixtures import UserFactory

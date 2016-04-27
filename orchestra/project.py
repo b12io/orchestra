@@ -5,22 +5,16 @@ from orchestra.slack import create_project_slack_group
 from orchestra.utils.task_lifecycle import create_subsequent_tasks
 
 
-def create_project_with_tasks(workflow_slug,
-                              workflow_version_slug,
-                              description,
-                              priority,
-                              task_class,
-                              project_data):
+def create_project_with_tasks(workflow_version, description, priority,
+                              project_data, task_class):
+    workflow_version = WorkflowVersion.objects.get(id=workflow_version)
 
-    workflow_version = WorkflowVersion.objects.get(
-        slug=workflow_version_slug,
-        workflow__slug=workflow_slug)
-
-    project = Project.objects.create(workflow_version=workflow_version,
-                                     short_description=description,
-                                     priority=priority,
-                                     project_data=project_data,
-                                     task_class=task_class)
+    project = Project.objects.create(
+        workflow_version=workflow_version,
+        short_description=description,
+        priority=priority,
+        project_data=project_data,
+        task_class=task_class)
 
     create_project_slack_group(project)
     create_project_google_folder(project)

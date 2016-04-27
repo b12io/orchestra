@@ -1,4 +1,6 @@
 import json
+from urllib.parse import urlparse
+from urllib.parse import urlunsplit
 
 from django.core.urlresolvers import reverse
 from jsonview.exceptions import BadRequest
@@ -8,8 +10,7 @@ from orchestra.models import Workflow
 from orchestra.project import create_project_with_tasks
 from orchestra.project_api.api import get_project_information
 from orchestra.project_api.decorators import api_endpoint
-from urllib.parse import urlparse
-from urllib.parse import urlunsplit
+from orchestra.serializers import WorkflowSerializer
 
 import logging
 logger = logging.getLogger(__name__)
@@ -31,23 +32,21 @@ def project_information(request):
 @api_endpoint(['POST'])
 def create_project(request):
     project_details = json.loads(request.body.decode())
-    try:
+    for param in (
+            'workflow_version', 'description', 'priority', 'project_data',
+            'task_class'):
+        if project_details.get(param) is None:
+            raise BadRequest('Missing paramater {}'.format(param))
         if project_details['task_class'] == 'real':
             task_class = WorkerCertification.TaskClass.REAL
         else:
             task_class = WorkerCertification.TaskClass.TRAINING
-        args = (
-            project_details['workflow_slug'],
-            project_details['workflow_version_slug'],
-            project_details['description'],
-            project_details['priority'],
-            task_class,
-            project_details['project_data'],
-        )
-    except KeyError:
-        raise BadRequest('One of the parameters is missing')
-
-    project = create_project_with_tasks(*args)
+    project = create_project_with_tasks(
+        project_details['workflow_version'],
+        project_details['description'],
+        project_details['priority'],
+        project_details['project_data'],
+        task_class)
     return {'project_id': project.id}
 
 
@@ -72,16 +71,7 @@ def project_details_url(request):
 @api_endpoint(['GET'])
 def workflow_types(request):
     workflows = {
-        w.slug: {
-            'name': w.name,
-            'versions': {
-                v.slug: {
-                    'name': v.name,
-                    'description': v.description
-                }
-                for v in w.versions.all()
-            }
-        }
+        w.slug: WorkflowSerializer(w).data
         for w in Workflow.objects.all()
     }
     return {'workflows': workflows}

@@ -5,7 +5,33 @@ from orchestra.models import TaskAssignment
 from orchestra.models import TaskTimer
 from orchestra.models import TimeEntry
 from orchestra.models import WorkerCertification
+from orchestra.models import Workflow
+from orchestra.models import WorkflowVersion
 from rest_framework import serializers
+
+
+class WorkflowSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Workflow
+
+        fields = (
+            'slug',
+            'name',
+            'description',
+            'versions',
+        )
+
+    versions = serializers.SerializerMethodField()
+
+    def get_versions(self, obj):
+        return WorkflowVersionSerializer(obj.versions.all(), many=True).data
+
+
+class WorkflowVersionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = WorkflowVersion
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -15,8 +41,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
         fields = (
             'id',
-            'workflow_slug',
-            'workflow_version_slug',
+            'workflow_version',
             'short_description',
             'start_datetime',
             'priority',
@@ -24,14 +49,6 @@ class ProjectSerializer(serializers.ModelSerializer):
             'team_messages_url',
             'task_class',
         )
-
-    workflow_slug = serializers.SerializerMethodField()
-
-    def get_workflow_slug(self, obj):
-        return obj.workflow_version.workflow.slug
-
-    workflow_version_slug = serializers.SlugRelatedField(
-        source='workflow_version', slug_field='slug', read_only=True)
 
     task_class = serializers.ChoiceField(
         choices=WorkerCertification.TASK_CLASS_CHOICES)

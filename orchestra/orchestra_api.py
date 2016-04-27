@@ -56,16 +56,10 @@ def get_project_details_url(project_id):
     return url
 
 
-def create_orchestra_project(client,
-                             workflow_slug,
-                             workflow_version_slug,
-                             description,
-                             priority,
-                             project_data,
-                             task_class):
+def create_orchestra_project(workflow_version, description, priority,
+                             project_data, task_class):
     data = {
-        'workflow_slug': workflow_slug,
-        'workflow_version_slug': workflow_version_slug,
+        'workflow_version': workflow_version,
         'description': description,
         'priority': priority,
         'project_data': project_data,
