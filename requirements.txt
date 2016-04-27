@@ -20,6 +20,7 @@ pyOpenSSL==16.0.0
 pycrypto==2.6.1
 google-api-python-client==1.5.0
 slacker==0.9.10
+slackclient==1.0.0
 pandas==0.18.0
 python-dateutil==2.5.3
 django-hijack==2.1.1

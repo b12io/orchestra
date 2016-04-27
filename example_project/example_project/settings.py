@@ -112,4 +112,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = 'staticfiles'
 
+
+# Slack staffbot API token
+STAFFBOT_API_KEY = 'slack-token'
+
 setup_orchestra(__name__)
