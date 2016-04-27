@@ -21,19 +21,19 @@
               <div class="col-lg-6 col-sm-12">
                 <label for="{{ user_form.first_name.id_for_label }}">First name</label>
                 {{ user_form.first_name|add_class:"form-control" }}
-                <div {% if user_form.first_name.errors %} class="error-field" {% endif %}> {{ user_form.first_name.errors }} </div>
+                <div class="error-field"> {{ user_form.first_name.errors }} </div>
               </div>
 
               <div class="col-lg-6 col-sm-12">
                 <label for="{{ user_form.last_name.id_for_label }}">Last name</label>
                 {{ user_form.last_name|add_class:"form-control" }}
-                <div {% if user_form.last_name.errors %} class="error-field" {% endif %}> {{ user_form.last_name.errors }} </div>
+                <div class="error-field"> {{ user_form.last_name.errors }} </div>
               </div>
 
               <div class="col-lg-6 col-sm-12">
                 <label for="{{ worker_form.slack_username.id_for_label }}">Slack Username</label>
                 {{ worker_form.slack_username|add_class:"form-control" }}
-                <div {% if worker_form.slack_username.errors %} class="error-field" {% endif %}> {{ worker_form.slack_username.errors }} </div>
+                <div class="error-field"> {{ worker_form.slack_username.errors }} </div>
               </div>
             </div>
 
