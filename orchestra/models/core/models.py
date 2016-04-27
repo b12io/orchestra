@@ -1,19 +1,19 @@
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from djmoney.models.fields import MoneyField
 from jsonfield import JSONField
 
-from orchestra.model_mixins import WorkflowMixin
-from orchestra.model_mixins import WorkflowVersionMixin
-from orchestra.model_mixins import CertificationMixin
-from orchestra.model_mixins import StepMixin
-from orchestra.model_mixins import WorkerMixin
-from orchestra.model_mixins import WorkerCertificationMixin
-from orchestra.model_mixins import ProjectMixin
-from orchestra.model_mixins import TaskMixin
-from orchestra.model_mixins import TaskAssignmentMixin
-from orchestra.model_mixins import PayRateMixin
+from orchestra.models.core.model_mixins import WorkflowMixin
+from orchestra.models.core.model_mixins import WorkflowVersionMixin
+from orchestra.models.core.model_mixins import CertificationMixin
+from orchestra.models.core.model_mixins import StepMixin
+from orchestra.models.core.model_mixins import WorkerMixin
+from orchestra.models.core.model_mixins import WorkerCertificationMixin
+from orchestra.models.core.model_mixins import ProjectMixin
+from orchestra.models.core.model_mixins import TaskMixin
+from orchestra.models.core.model_mixins import TaskAssignmentMixin
+from orchestra.models.core.model_mixins import PayRateMixin
 from orchestra.utils.models import BaseModel
 
 # TODO(marcua): Convert ManyToManyFields to django-hstore referencefields or
@@ -185,7 +185,7 @@ class Worker(WorkerMixin, models.Model):
         slack_username (str):
             The worker's Slack username if Slack integration is enabled.
     """
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL)
     start_datetime = models.DateTimeField(default=timezone.now)
     slack_username = models.CharField(max_length=200, blank=True, null=True)
 
