@@ -11,9 +11,12 @@ class CommunicationPreferenceManager(models.Manager):
 
         methods = methods or self.model.get_default_methods()
         choices = self.model.CommunicationType.choices()
+        comm_prefs = []
         for communication_type, _ in choices:
-            self.get_or_create(
+            comm_pref, _ = self.get_or_create(
                 worker=worker,
                 methods=methods,
                 communication_type=communication_type
             )
+            comm_prefs.append(comm_prefs)
+        return comm_prefs
