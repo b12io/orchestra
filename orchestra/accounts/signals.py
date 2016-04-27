@@ -11,11 +11,6 @@ orchestra_user_registered = Signal(providing_args=['user', 'request'])
 @receiver(orchestra_user_registered)
 def add_worker_for_new_users(sender, user, request, **kwargs):
     worker = Worker.objects.create(user=user)
-    default_methods = CommunicationPreference.get_default_methods()
-    choices = CommunicationPreference.CommunicationType.choices()
-    for communication_type, _ in choices:
-        CommunicationPreference.objects.create(
-            worker=worker,
-            methods=default_methods,
-            communication_type=communication_type
-        )
+    CommunicationPreference.objects.create_all_types(
+        worker,
+    )

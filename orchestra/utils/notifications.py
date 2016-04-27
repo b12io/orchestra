@@ -1,10 +1,12 @@
 from urllib.parse import urljoin
 
+from annoying.functions import get_object_or_None
 from django.conf import settings
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 
 from orchestra.models import Task
+from orchestra.models import CommunicationPreference
 from orchestra.communication.slack import SlackService
 from orchestra.utils.settings import run_if
 from orchestra.utils.task_properties import assignment_history
@@ -12,7 +14,7 @@ from orchestra.utils.task_properties import current_assignment
 
 
 # TODO(jrbotros): design HTML template
-def notify_status_change(task, previous_status=None):
+def notify_status_change(task, previous_status=None):  # noqa
     """
     Notify workers after task has changed state
     """
@@ -63,12 +65,12 @@ def notify_status_change(task, previous_status=None):
     # for a task moving from PENDING_REVIEW to REVIEWING
     elif (task.status == Task.Status.REVIEWING and
           previous_status == Task.Status.POST_REVIEW_PROCESSING):
-            message_info = {
-                'subject': 'A task is ready for re-review!',
-                'message': ('A task has been updated and is ready for '
-                            're-review!'),
-                'recipient_list': [current_worker.user.email]
-            }
+        message_info = {
+            'subject': 'A task is ready for re-review!',
+            'message': ('A task has been updated and is ready for '
+                        're-review!'),
+            'recipient_list': [current_worker.user.email]
+        }
 
     # Notify all workers on a task when it has been aborted
     elif task.status == Task.Status.ABORTED:
@@ -83,11 +85,21 @@ def notify_status_change(task, previous_status=None):
                                assignment.worker.user.email]
         }
 
-    _notify_internal_slack_status_change(task, current_worker)
-    if task.project.slack_group_id:
-        _notify_experts_slack_status_change(task, current_worker)
+    # TODO(joshblum): Find a good abstraction for checking preferences
+    comm_type = CommunicationPreference.CommunicationType.TASK_STATUS_CHANGE
+    comm_pref = get_object_or_None(
+        CommunicationPreference,
+        worker=current_worker,
+        communication_type=comm_type.value
+    )
 
-    if message_info is not None:
+    if comm_pref is None or comm_pref.can_slack():
+        _notify_internal_slack_status_change(task, current_worker)
+        if task.project.slack_group_id:
+            _notify_experts_slack_status_change(task, current_worker)
+
+    if (message_info is not None and
+            (comm_pref is None or comm_pref.can_email())):
         message_info['message'] += _task_information(task)
         send_mail(from_email=settings.ORCHESTRA_NOTIFICATIONS_FROM_EMAIL,
                   fail_silently=True,
