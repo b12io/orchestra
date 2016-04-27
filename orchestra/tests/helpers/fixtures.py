@@ -360,15 +360,13 @@ def _setup_workers(test_case, workers):
     # Create and certify workers
     test_case.workers = {}
     test_case.clients = {}
-    test_case.comm_prefs = {}
     for user_id, certifications in workers.items():
         # Create user, worker, client
         user = (UserFactory(username='test_user_{}'.format(user_id),
                             first_name='test_first_{}'.format(user_id),
                             last_name='test_last_{}'.format(user_id),
                             email='test_user_{}@test.com'.format(user_id)))
-        worker = WorkerFactory(user=user)
-        test_case.workers[user_id] = worker
+        test_case.workers[user_id] = WorkerFactory(user=user)
         test_case.clients[user_id] = Client()
         test_case.clients[user_id].login(
             username='test_user_{}'.format(user_id),
