@@ -10,11 +10,6 @@ from django.test import Client
 from django.test import TestCase
 from django.test import override_settings
 
-# Don't log logger errors.
-import logging
-logging.disable(logging.CRITICAL)
-
-
 CALL_COUNTER = 0
 
 

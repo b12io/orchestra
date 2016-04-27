@@ -1,12 +1,12 @@
 from urllib.parse import urljoin
 
 from django.conf import settings
-from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 
 from orchestra.models import Task
 from orchestra.models import CommunicationPreference
 from orchestra.communication.slack import SlackService
+from orchestra.communication.mail import send_mail
 from orchestra.utils.settings import run_if
 from orchestra.utils.task_properties import assignment_history
 from orchestra.utils.task_properties import current_assignment
@@ -84,35 +84,16 @@ def notify_status_change(task, previous_status=None):  # noqa
                                assignment.worker.user.email]
         }
 
-    if current_worker is None:
-        _notify_slack(task, current_worker)
-        _notify_email(task, message_info)
-
-    else:
-        # TODO(joshblum): Find a good abstraction for checking preferences in
-        # general
-        comm_type = (CommunicationPreference.CommunicationType
-                     .TASK_STATUS_CHANGE.value)
-        comm_pref = CommunicationPreference.objects.get(
-            worker=current_worker,
-            communication_type=comm_type
-        )
-        if comm_pref.can_slack():
-            _notify_slack(task, current_worker)
-        if comm_pref.can_email():
-            _notify_email(task, message_info)
-
-
-def _notify_slack(task, current_worker):
     _notify_internal_slack_status_change(task, current_worker)
     if task.project.slack_group_id:
         _notify_experts_slack_status_change(task, current_worker)
 
-
-def _notify_email(task, message_info):
     if message_info is not None:
         message_info['message'] += _task_information(task)
+        comm_type = (CommunicationPreference.CommunicationType
+                     .TASK_STATUS_CHANGE.value)
         send_mail(from_email=settings.ORCHESTRA_NOTIFICATIONS_FROM_EMAIL,
+                  communication_type=comm_type,
                   fail_silently=True,
                   **message_info)
 

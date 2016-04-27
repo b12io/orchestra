@@ -18,7 +18,8 @@ class ModelsTestCase(OrchestraTestCase):
         self.assertEqual(len(comm_prefs), len(comm_types))
         for comm_type, _ in comm_types:
             comm_pref = CommunicationPreference.objects.get(
-                communication_type=comm_type)
+                communication_type=comm_type,
+                worker=self.worker)
             for key, is_set in comm_pref.methods.iteritems():
                 self.assertTrue(is_set)
 
@@ -27,13 +28,15 @@ class ModelsTestCase(OrchestraTestCase):
             Manually set the desired methods that are allowed.
         """
 
-        methods = CommunicationPreference.methods.slack & ~CommunicationPreference.methods.email
+        methods = ~CommunicationPreference.methods.email
+        methods &= CommunicationPreference.methods.slack
         comm_prefs = CommunicationPreference.objects.get_or_create_all_types(
             self.worker, methods=methods)
         comm_types = CommunicationPreference.CommunicationType.choices()
         self.assertEqual(len(comm_prefs), len(comm_types))
         for comm_type, _ in comm_types:
             comm_pref = CommunicationPreference.objects.get(
-                communication_type=comm_type)
+                communication_type=comm_type,
+                worker=self.worker)
             self.assertTrue(comm_pref.methods.slack)
             self.assertFalse(comm_pref.methods.email)

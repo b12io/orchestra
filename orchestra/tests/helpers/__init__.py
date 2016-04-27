@@ -5,7 +5,12 @@ from django.test import TestCase
 from django.test import TransactionTestCase
 
 from orchestra.tests.helpers.notifications import MockMail
-from orchestra.tests.helpers.slack import MockSlacker
+from orchestra.communication.tests.helpers.slack import MockSlacker
+
+# Don't log logger errors.
+import logging
+logging.disable(logging.CRITICAL)
+
 
 
 class OrchestraTestHelpersMixin(object):

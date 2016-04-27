@@ -11,25 +11,19 @@ class CommunicationPreferenceMixin(object):
         return self.CommunicationType(
             self.communication_type).description
 
-    def _can_send_communication(self, communication_method):
-        """
-            Determine if the user allows a given CommunicationMethod
-        """
-        return getattr(self.methods, communication_method).is_set
-
     def can_slack(self):
         """
             Boolean of whether or not the Worker wants slack messages
             for the CommunicationType.
         """
-        return self._can_send_communication(self.CommunicationMethods.SLACK)
+        return self.methods.slack
 
     def can_email(self):
         """
             Boolean of whether or not the Worker wants email messages
             for the CommunicationType.
         """
-        return self._can_send_communication(self.CommunicationMethods.EMAIL)
+        return self.methods.email
 
     def __str__(self):
         return '{} - {} - {}'.format(
