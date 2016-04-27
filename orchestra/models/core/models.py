@@ -3,6 +3,7 @@ from django.db import models
 from django.utils import timezone
 from djmoney.models.fields import MoneyField
 from jsonfield import JSONField
+from phonenumber_field.modelfields import PhoneNumberField
 
 from orchestra.models.core.model_mixins import WorkflowMixin
 from orchestra.models.core.model_mixins import WorkflowVersionMixin
@@ -184,10 +185,13 @@ class Worker(WorkerMixin, models.Model):
             The time the worker was created.
         slack_username (str):
             The worker's Slack username if Slack integration is enabled.
+        phone (str):
+            The worker's phone number
     """
     user = models.OneToOneField(settings.AUTH_USER_MODEL)
     start_datetime = models.DateTimeField(default=timezone.now)
     slack_username = models.CharField(max_length=200, blank=True, null=True)
+    phone = PhoneNumberField(null=True)
 
     class Meta:
         app_label = 'orchestra'

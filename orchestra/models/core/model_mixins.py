@@ -31,7 +31,11 @@ class StepMixin(object):
 class WorkerMixin(object):
 
     def __str__(self):
-        return '{}'.format(self.user.username)
+        return '{} - @{} -{}'.format(
+            self.user.username,
+            self.slack_username,
+            self.phone
+        )
 
 
 class WorkerCertificationMixin(object):
