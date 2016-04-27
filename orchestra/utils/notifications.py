@@ -13,7 +13,7 @@ from orchestra.utils.task_properties import current_assignment
 
 
 # TODO(jrbotros): design HTML template
-def notify_status_change(task, previous_status=None):  # noqa
+def notify_status_change(task, previous_status=None):
     """
     Notify workers after task has changed state
     """
