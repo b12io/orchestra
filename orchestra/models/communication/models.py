@@ -2,11 +2,15 @@ from bitfield import BitField
 from django.db import models
 
 from orchestra.models.communication.model_mixins import CommunicationPreferenceMixin  # noqa
+from orchestra.models.communication.model_mixins import StaffingRequestMixin
+from orchestra.models.communication.model_mixins import StaffingResponseMixin
+from orchestra.models.core.models import Task
 from orchestra.models.core.models import Worker
+from orchestra.utils.models import BaseModel
 from orchestra.utils.models import ChoicesEnum
 
 
-class CommunicationPreference(CommunicationPreferenceMixin, models.Model):
+class CommunicationPreference(CommunicationPreferenceMixin, BaseModel):
     """
         A CommunicationPreference object defines how a Worker would like to
         contacted for a given CommunicationType.
@@ -41,3 +45,52 @@ class CommunicationPreference(CommunicationPreferenceMixin, models.Model):
     class Meta:
         app_label = 'orchestra'
         unique_together = (('worker', 'communication_type'),)
+
+
+class StaffingRequest(StaffingRequestMixin, BaseModel):
+    """
+    A StaffingRequest object defines how a Worker was contacted to
+    work on a Task by staffbot.
+
+    Attributes:
+        worker (orchestra.models.Worker):
+            Django user that the request is sent to
+        task (orchestra.models.Task):
+            The task that needs a worker assignment
+        request_cause (RequestCause):
+            The cause for request
+        project_description (str):
+            Description of the project
+    """
+
+    class RequestCause(ChoicesEnum):
+        USER = 'user'
+        AUTOSTAFF = 'autostaff'
+        RESTAFF = 'restaff'
+
+    worker = models.ForeignKey(Worker)
+    task = models.ForeignKey(Task)
+    request_cause = models.IntegerField(choices=RequestCause.choices())
+    project_description = models.TextField(null=True, blank=True)
+
+
+class StaffingResponse(StaffingResponseMixin, BaseModel):
+    """
+    A StaffingResponse object stores a response from a worker and
+    whether the worker got the task.
+
+    Attributes:
+        request (orchestra.models.StaffingRequest):
+            Request object associated with a response
+        response_text (str):
+            Response text that a Worker provided
+        is_available (bool):
+            True if a Worker is ready to work on the Task
+        is_winner (bool):
+            True if a Worker was selected to work on the Task
+    """
+
+    request = models.ForeignKey(StaffingRequest, related_name='responses')
+    response_text = models.TextField(blank=True, null=True)
+    is_available = models.BooleanField()
+    is_winner = models.NullBooleanField()
