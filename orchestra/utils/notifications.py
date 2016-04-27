@@ -1,6 +1,5 @@
 from urllib.parse import urljoin
 
-from annoying.functions import get_object_or_None
 from django.conf import settings
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
@@ -85,21 +84,33 @@ def notify_status_change(task, previous_status=None):  # noqa
                                assignment.worker.user.email]
         }
 
-    # TODO(joshblum): Find a good abstraction for checking preferences
-    comm_type = CommunicationPreference.CommunicationType.TASK_STATUS_CHANGE
-    comm_pref = get_object_or_None(
-        CommunicationPreference,
-        worker=current_worker,
-        communication_type=comm_type.value
-    )
+    if current_worker is None:
+        _notify_slack(task, current_worker)
+        _notify_email(task, message_info)
 
-    if comm_pref is None or comm_pref.can_slack():
-        _notify_internal_slack_status_change(task, current_worker)
-        if task.project.slack_group_id:
-            _notify_experts_slack_status_change(task, current_worker)
+    else:
+        # TODO(joshblum): Find a good abstraction for checking preferences in
+        # general
+        comm_type = (CommunicationPreference.CommunicationType
+                     .TASK_STATUS_CHANGE.value)
+        comm_pref = CommunicationPreference.objects.get(
+            worker=current_worker,
+            communication_type=comm_type
+        )
+        if comm_pref.can_slack():
+            _notify_slack(task, current_worker)
+        if comm_pref.can_email():
+            _notify_email(task, message_info)
 
-    if (message_info is not None and
-            (comm_pref is None or comm_pref.can_email())):
+
+def _notify_slack(task, current_worker):
+    _notify_internal_slack_status_change(task, current_worker)
+    if task.project.slack_group_id:
+        _notify_experts_slack_status_change(task, current_worker)
+
+
+def _notify_email(task, message_info):
+    if message_info is not None:
         message_info['message'] += _task_information(task)
         send_mail(from_email=settings.ORCHESTRA_NOTIFICATIONS_FROM_EMAIL,
                   fail_silently=True,
