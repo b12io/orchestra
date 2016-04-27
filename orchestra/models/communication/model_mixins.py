@@ -17,3 +17,25 @@ class CommunicationPreferenceMixin(object):
             self.methods.items(),
             self.get_comunication_type_description()
         )
+
+
+class StaffingRequestMixin(object):
+
+    def get_request_cause_description(self):
+        return self.RequestCause(self.request_cause).description
+
+    def __str__(self):
+        return '{} - {} - {}'.format(
+            self.worker,
+            self.task.id,
+            self.get_request_cause_description()
+        )
+
+
+class StaffingResponseMixin(object):
+
+    def __str__(self):
+        return '{} - {}'.format(
+            self.request,
+            self.response_flags.items()
+        )
