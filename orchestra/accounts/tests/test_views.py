@@ -30,13 +30,8 @@ class AccountSettingsTest(OrchestraTestCase):
             'first_name': 'Mock first',
             'last_name': 'Mock last',
             'slack_username': 'Mock slack',
-        }
-
-    def _get_account_settings_current_data(self):
-        return {
-            'first_name': self.user.first_name,
-            'last_name': self.user.last_name,
-            'slack_username': self.worker.slack_username,
+            'phone_0': '+1',
+            'phone_1': '3477761527',
         }
 
     def login(self):
@@ -59,6 +54,7 @@ class AccountSettingsTest(OrchestraTestCase):
 
         self.worker.refresh_from_db()
         self.assertEqual(self.worker.slack_username, data['slack_username'])
+        self.assertEqual(self.worker.phone, data['phone_0'] + data['phone_1'])
 
     def test_missing_fields(self):
         required_fields = self._get_account_settings_mock_data().keys()
