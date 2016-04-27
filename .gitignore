@@ -30,3 +30,6 @@ example_project/staticfiles
 
 # Gulp
 node_modules
+
+# Testing
+*nosetests.xml
