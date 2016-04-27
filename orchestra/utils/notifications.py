@@ -5,7 +5,7 @@ from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 
 from orchestra.models import Task
-from orchestra.slack import SlackService
+from orchestra.communication.slack import SlackService
 from orchestra.utils.settings import run_if
 from orchestra.utils.task_properties import assignment_history
 from orchestra.utils.task_properties import current_assignment

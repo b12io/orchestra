@@ -20,7 +20,7 @@ from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import Worker
 from orchestra.models import WorkerCertification
-from orchestra.slack import add_worker_to_project_team
+from orchestra.communication.slack import add_worker_to_project_team
 from orchestra.utils.notifications import notify_status_change
 from orchestra.utils.task_properties import assignment_history
 from orchestra.utils.task_properties import current_assignment

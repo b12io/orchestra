@@ -15,7 +15,7 @@ from orchestra.models import WorkerCertification
 from orchestra.models import Workflow
 from orchestra.models import Step
 from orchestra.models import WorkflowVersion
-from orchestra.slack import create_project_slack_group
+from orchestra.communication.slack import create_project_slack_group
 from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.task_lifecycle import submit_task
 from orchestra.utils.task_properties import assignment_history

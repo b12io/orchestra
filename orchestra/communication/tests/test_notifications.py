@@ -5,7 +5,7 @@ from django.test import override_settings
 
 from orchestra.models import Iteration
 from orchestra.models import Task
-from orchestra.slack import _project_slack_group_name
+from orchestra.communication.slack import _project_slack_group_name
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.fixtures import TaskFactory
@@ -19,6 +19,7 @@ class BasicNotificationsTestCase(OrchestraTestCase):
     """
     Test modular functions in the notifications module
     """
+
     def setUp(self):  # noqa
         super().setUp()
         setup_models(self)
@@ -252,7 +253,8 @@ class BasicNotificationsTestCase(OrchestraTestCase):
         # Test that we create unique slack IDs if there are conflicts by
         # mocking the randomization logic to return deterministic results and
         # ensure that we don't repeat project IDs.
-        with patch('orchestra.slack._random_string', new=fake_random_string):
+        patch_path = 'orchestra.communication.slack._random_string'
+        with patch(patch_path, new=fake_random_string):
             for short_description, group_id in (
                     # Because the mock function's counter is at 1 and
                     # ketchup-3-sales-1 already exists, the channel gets set

@@ -6,7 +6,7 @@ from django.utils import timezone
 
 from orchestra.models import Project
 from orchestra.project_api.api import get_project_information
-from orchestra.slack import SlackService
+from orchestra.communication.slack import SlackService
 
 import logging
 
