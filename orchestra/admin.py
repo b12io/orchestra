@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.utils.html import format_html
+from phonenumber_field.modelfields import PhoneNumberField
+from phonenumber_field.widgets import PhoneNumberPrefixWidget
 
 from orchestra.models import Certification
 from orchestra.models import Iteration
@@ -132,9 +134,13 @@ class TimeEntryAdmin(admin.ModelAdmin):
 
 @admin.register(Worker)
 class WorkerAdmin(admin.ModelAdmin):
-    list_display = ('id', 'edit_user', 'email', 'slack_username',)
+    list_display = ('id', 'edit_user', 'email', 'slack_username', 'phone')
     ordering = ('user__username',)
     search_fields = ('user__username', 'user__email', 'slack_username')
+
+    formfield_overrides = {
+        PhoneNumberField: {'widget': PhoneNumberPrefixWidget},
+    }
 
     def edit_user(self, obj):
         return edit_link(obj.user, obj.user.username)

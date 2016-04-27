@@ -1,5 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
+from phonenumber_field.formfields import PhoneNumberField
+from phonenumber_field.widgets import PhoneNumberPrefixWidget
 
 from orchestra.models import Worker
 
@@ -19,8 +21,9 @@ class UserForm(forms.ModelForm):
 
 class WorkerForm(forms.ModelForm):
     slack_username = forms.CharField()
+    phone = PhoneNumberField(widget=PhoneNumberPrefixWidget)
 
     class Meta:
         model = Worker
-        fields = ('slack_username',)
+        fields = ('slack_username', 'phone')
         exclude = ('user', 'start_datetime')

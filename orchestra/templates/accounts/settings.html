@@ -35,6 +35,11 @@
                 {{ worker_form.slack_username|add_class:"form-control" }}
                 <div class="error-field"> {{ worker_form.slack_username.errors }} </div>
               </div>
+              <div class="col-lg-6 col-sm-12">
+                <label for="{{ worker_form.phone.id_for_label }}">Phone</label>
+                {{ worker_form.phone|add_class:"form-control" }}
+                <div class="error-field"> {{ worker_form.phone.errors }} </div>
+              </div>
             </div>
 
             <div class="row">
