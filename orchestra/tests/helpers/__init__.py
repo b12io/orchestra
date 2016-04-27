@@ -12,7 +12,6 @@ import logging
 logging.disable(logging.CRITICAL)
 
 
-
 class OrchestraTestHelpersMixin(object):
 
     def setUp(self):  # noqa

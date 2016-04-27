@@ -13,9 +13,8 @@ class ModelsTestCase(OrchestraTestCase):
         setup_models(self)
         self.worker = self.workers[0]
         self.comm_type = (CommunicationPreference.CommunicationType
-                     .TASK_STATUS_CHANGE.value)
+                          .TASK_STATUS_CHANGE.value)
         self.recipient_list = [self.worker.user.email]
-
 
     @patch('orchestra.communication.mail._send_mail')
     def test_filtering_no_preference(self, mock_mail):
