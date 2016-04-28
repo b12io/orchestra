@@ -7,23 +7,43 @@ from orchestra.tests.helpers.fixtures import WorkerFactory
 
 class ModelsTestCase(OrchestraTestCase):
 
-    def test_get_communication_type_description(self):
+    def setUp(self):
         # Create a user
-        user = UserFactory(username='test_registration_user',
-                           password='test',
-                           email='test_registration_user@test.com')
+        self.user = UserFactory(username='test_model_user',
+                                password='test',
+                                email='test_model_user@test.com')
 
-        worker = WorkerFactory(user=user)
+        self.worker = WorkerFactory(user=self.user)
         type_ = CommunicationPreference.CommunicationType.TASK_STATUS_CHANGE
-        comm_preference = CommunicationPreference.objects.create(
-            worker=worker,
-            communication_type=type_.value
+        self.comm_pref = CommunicationPreference.objects.create(
+            worker=self.worker,
+            communication_type=type_.value,
+            methods=CommunicationPreference.get_default_methods()
         )
 
+    def test_get_communication_type_description(self):
         self.assertEqual(
-            comm_preference.get_comunication_type_description(),
+            self.comm_pref.get_comunication_type_description(),
             'task_status_change'
         )
+
+    def test_can_slack(self):
+        """
+            Assert that the object respects the slack bit field settings.
+        """
+        self.assertTrue(self.comm_pref.can_slack())
+
+        self.comm_pref.methods.slack = False
+        self.assertFalse(self.comm_pref.can_slack())
+
+    def test_can_email(self):
+        """
+            Assert that the object respects the email bit field settings.
+        """
+        self.assertTrue(self.comm_pref.can_email())
+
+        self.comm_pref.methods.email = False
+        self.assertFalse(self.comm_pref.can_email())
 
     def test_communication_preference_autocreation(self):
         """
@@ -50,6 +70,10 @@ class ModelsTestCase(OrchestraTestCase):
             'CommunicationPreference not autocreated on User registration'
         )
 
-        for comm_pref in CommunicationPreference.objects.all():
+        comm_prefs = CommunicationPreference.objects.filter(worker__user=user)
+        self.assertEqual(comm_prefs.count(), len(
+            CommunicationPreference.CommunicationType.choices()))
+
+        for comm_pref in comm_prefs:
             for label, flag in comm_pref.methods.iteritems():
                 self.assertTrue(flag)

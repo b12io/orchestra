@@ -5,7 +5,11 @@ from django.test import TestCase
 from django.test import TransactionTestCase
 
 from orchestra.tests.helpers.notifications import MockMail
-from orchestra.tests.helpers.slack import MockSlacker
+from orchestra.communication.tests.helpers.slack import MockSlacker
+
+# Don't log logger errors.
+import logging
+logging.disable(logging.CRITICAL)
 
 
 class OrchestraTestHelpersMixin(object):
@@ -20,7 +24,7 @@ class OrchestraTestHelpersMixin(object):
         # Without patching the slack API calls, the tests hang indefinitely
         # and you'll need to restart your boot2docker.
         self.slack = MockSlacker()
-        patcher = patch('orchestra.slack.slacker.Slacker',
+        patcher = patch('orchestra.communication.slack.slacker.Slacker',
                         return_value=self.slack)
         patcher.start()
         self.addCleanup(patcher.stop)

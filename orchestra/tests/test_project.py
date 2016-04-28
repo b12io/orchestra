@@ -5,7 +5,7 @@ from django.test import override_settings
 from orchestra.google_apps.convenience import create_project_google_folder
 from orchestra.google_apps.convenience import Service
 from orchestra.models import Project
-from orchestra.slack import create_project_slack_group
+from orchestra.communication.slack import create_project_slack_group
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.google_apps import mock_create_drive_service
 from orchestra.tests.helpers.fixtures import ProjectFactory

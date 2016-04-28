@@ -4,6 +4,7 @@ from django.db import models
 from orchestra.models.communication.model_mixins import CommunicationPreferenceMixin  # noqa
 from orchestra.models.communication.model_mixins import StaffingRequestMixin
 from orchestra.models.communication.model_mixins import StaffingResponseMixin
+from orchestra.models.communication.managers import CommunicationPreferenceManager  # noqa
 from orchestra.models.core.models import Task
 from orchestra.models.core.models import Worker
 from orchestra.utils.models import BaseModel
@@ -23,6 +24,7 @@ class CommunicationPreference(CommunicationPreferenceMixin, BaseModel):
             type (CommunicationType):
                 The type of communication to which this preference applies.
     """
+    objects = CommunicationPreferenceManager()
 
     class CommunicationMethods:
         SLACK = 'slack'
