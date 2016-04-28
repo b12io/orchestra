@@ -10,16 +10,14 @@ logger = logging.getLogger(__name__)
 
 
 def delete_timeentries_marked_for_delete(apps, schema_editor):
-    cursor = connection.cursor()
-    cursor.execute('DELETE FROM orchestra_timeentry where is_deleted=true')
-    print('Deleted {} rows'.format(cursor.rowcount))
-    cursor.close()
+    TimeEntry = apps.get_model('orchestra', 'TimeEntry')
+    TimeEntry.objects.filter(is_deleted=True).delete()
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('orchestra', '0044_auto_20160426_0044'),
+        ('orchestra', '0050_auto_20160428_1751'),
     ]
 
     operations = [
