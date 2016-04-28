@@ -1,13 +1,12 @@
 (function() {
   'use strict';
 
-  var serviceModule = angular.module('orchestra.task.services');
-
   /**
    * Service to keep track of all required fields in a task view and
    * validate them on submit.
    */
-  serviceModule.factory('requiredFields', function($rootScope, orchestraService) {
+  angular.module('orchestra.task')
+  .factory('requiredFields', function($rootScope, orchestraService) {
     var requiredFields = {
       validators: {
         'input-checkbox': [
@@ -105,8 +104,8 @@
    *     error with `data-error-class="error-class"` on the directive
    *     element; otherwise, a default is provided for the input type.
    */
-  angular.module('orchestra.task.directives')
-    .directive('orchestraRequiredField', function($compile, requiredFields) {
+   angular.module('orchestra.task')
+  .directive('orchestraRequiredField', function($compile, requiredFields) {
       return {
         restrict: 'EA',
         link: function(scope, elem, attrs) {

@@ -26,7 +26,7 @@
             "policy": "no_review"
         },
         "user_interface": {
-            "angular_module": "journalism_workflow.v1.editor.module",
+            "angular_module": "journalism_workflow.v1.editor",
             "angular_directive": "editor",
             "javascript_includes": [
                 "journalism_workflow/v1/editor/js/modules.js",
@@ -51,7 +51,7 @@
             "max_reviews": 1
         },
         "user_interface": {
-            "angular_module": "journalism_workflow.v1.reporter.module",
+            "angular_module": "journalism_workflow.v1.reporter",
             "angular_directive": "reporter",
             "javascript_includes": [
                 "journalism_workflow/v1/reporter/js/modules.js",
@@ -76,7 +76,7 @@
             "max_reviews": 1
         },
         "user_interface": {
-            "angular_module": "journalism_workflow.v1.photographer.module",
+            "angular_module": "journalism_workflow.v1.photographer",
             "angular_directive": "photographer",
             "javascript_includes": [
                 "journalism_workflow/v1/photographer/js/modules.js",
@@ -112,7 +112,7 @@
             "policy": "no_review"
         },
         "user_interface": {
-            "angular_module": "journalism_workflow.v1.copy_editor.module",
+            "angular_module": "journalism_workflow.v1.copy_editor",
             "angular_directive": "copyEditor",
             "javascript_includes": [
                 "journalism_workflow/v1/copy_editor/js/modules.js",

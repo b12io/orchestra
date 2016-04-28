@@ -25,7 +25,7 @@
                 "policy": "no_review"
             },
             "user_interface": {
-                "angular_module": "simple_workflow.v1.rate.module",
+                "angular_module": "simple_workflow.v1.rate",
                 "angular_directive": "rate",
                 "javascript_includes": [
                     "simple_workflow/v1/rate/js/modules.js",

@@ -256,7 +256,7 @@ asks a reporter to write an article based on it::
       "max_reviews": 1
     },
     "user_interface": {
-      "angular_module": "journalism_workflow.v1.reporter.module",
+      "angular_module": "journalism_workflow.v1.reporter",
       "angular_directive": "reporter",
       "javascript_includes": [
         "journalism_workflow/v1/reporter/js/modules.js",
@@ -307,7 +307,7 @@ Remember that in our :ref:`workflow definition <workflow_def>`, we specified
 user interfaces with JSON that looked like this::
 
   {
-    "angular_module": "journalism_workflow.v1.editor.module",
+    "angular_module": "journalism_workflow.v1.editor",
     "angular_directive": "editor",
     "javascript_includes": [
       "journalism_workflow/v1/editor/js/modules.js",

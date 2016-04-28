@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  angular.module('test_dir.v2.s2.directives').directive(
+  angular.module('test_dir.v2.s2').directive(
     's2', function() {
       return {
         restrict: 'E',

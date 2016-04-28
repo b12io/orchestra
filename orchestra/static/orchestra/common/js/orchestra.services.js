@@ -1,8 +1,7 @@
 (function() {
   'use strict';
 
-  var serviceModule = angular.module('orchestra.common.services');
-
+  var serviceModule = angular.module('orchestra.common');
   serviceModule.factory('orchestraService', function() {
     var googleUtils = {
       folders: {

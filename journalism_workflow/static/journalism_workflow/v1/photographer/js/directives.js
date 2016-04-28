@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  angular.module('journalism_workflow.v1.photographer.directives').directive(
+  angular.module('journalism_workflow.v1.photographer').directive(
     'photographer', function() {
       return {
         restrict: 'E',

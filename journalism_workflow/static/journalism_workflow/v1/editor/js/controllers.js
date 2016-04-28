@@ -2,7 +2,7 @@
   'use strict';
 
   angular
-    .module('journalism_workflow.v1.editor.controllers')
+    .module('journalism_workflow.v1.editor')
     .controller('StoryFormController', StoryFormController)
 
   StoryFormController.$inject = ['$scope', 'orchestraService'];

@@ -2,7 +2,7 @@
   'use strict';
 
   angular
-    .module('orchestra.task.controllers')
+    .module('orchestra.task')
     .controller('TaskController', TaskController);
 
   function TaskController($location, $scope, $routeParams, $http, $rootScope,

@@ -2,7 +2,7 @@
   'use strict';
 
   angular
-    .module('orchestra.common.components.directives')
+    .module('orchestra.common')
     .directive('websiteIframe', ['$compile', '$sce', '$timeout', websiteIframe]);
 
   function websiteIframe($compile, $sce, $timeout) {
