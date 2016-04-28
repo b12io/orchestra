@@ -1,4 +1,5 @@
 from django.conf import settings
+from orchestra.accounts.bitformfield import BitFormField
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
@@ -113,6 +114,11 @@ class AccountSettingsView(WorkerViewMixin):
 class CommunicationPreferenceSettingsView(WorkerViewMixin):
     template_name = 'accounts/communication_preferences_settings.html'
     comm_pref_form = CommunicationPreferenceForm
+    default_choices = CommunicationPreference.COMMUNICATION_METHODS
+    method_choices = {
+        CommunicationPreference.CommunicationType.TASK_STATUS_CHANGE.value:
+        ((CommunicationPreference.CommunicationMethods.EMAIL, 'Email'),),
+    }
 
     def set_context_data(self, request, *args, **kwargs):
         super().set_context_data(request, *args, **kwargs)
@@ -126,9 +132,17 @@ class CommunicationPreferenceSettingsView(WorkerViewMixin):
         self.descriptions = [comm_pref.get_human_description()
                              for comm_pref in self.comm_prefs]
 
+    def set_method_choices(self, formset):
+        for form in formset:
+            comm_type = form.initial.get('communication_type')
+            choices = self.method_choices.get(comm_type,
+                                              self.default_choices)
+            form.fields['methods'] = BitFormField(choices=choices)
+
     def get(self, request, *args, **kwargs):
         comm_pref_formset = self.CommunicationPreferenceFormSet(
             queryset=self.comm_prefs)
+        self.set_method_choices(comm_pref_formset)
         return render(request, self.template_name, {
             'form_data': zip(comm_pref_formset, self.descriptions),
             'comm_pref_formset': comm_pref_formset,
@@ -137,6 +151,7 @@ class CommunicationPreferenceSettingsView(WorkerViewMixin):
     def post(self, request, *args, **kwargs):
         comm_pref_formset = self.CommunicationPreferenceFormSet(
             data=request.POST)
+        self.set_method_choices(comm_pref_formset)
 
         success = comm_pref_formset.is_valid()
         if success:

@@ -90,43 +90,12 @@ class CommunicationPreferenceSettingsTest(OrchestraTestCase):
 
     def test_disable_email(self):
 
-        data = self._get_mock_data()
         # email is unset and therefore false
-        data['form-0-methods'] = 'slack'
-
-        response = self.request_client.post(self.url, data)
-        self.assertTrue(response.context['success'])
-
-        self.comm_pref.refresh_from_db()
-        self.assertEqual(self.comm_pref.methods.slack,
-                         CommunicationPreference.methods.slack)
-        self.assertEqual(self.comm_pref.methods.email,
-                         ~CommunicationPreference.methods.email)
-
-    def test_disable_slack(self):
-
-        data = self._get_mock_data()
-        # slack is unset and therefore false
-        data['form-0-methods'] = 'email'
-
-        response = self.request_client.post(self.url, data)
-        self.assertTrue(response.context['success'])
-
-        self.comm_pref.refresh_from_db()
-        self.assertEqual(self.comm_pref.methods.slack,
-                         ~CommunicationPreference.methods.slack)
-        self.assertEqual(self.comm_pref.methods.email,
-                         CommunicationPreference.methods.email)
-
-    def test_disable_all(self):
-
         data = self._get_mock_data()
 
         response = self.request_client.post(self.url, data)
         self.assertTrue(response.context['success'])
 
         self.comm_pref.refresh_from_db()
-        self.assertEqual(self.comm_pref.methods.slack,
-                         ~CommunicationPreference.methods.slack)
         self.assertEqual(self.comm_pref.methods.email,
                          ~CommunicationPreference.methods.email)
