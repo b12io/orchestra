@@ -6,7 +6,7 @@ from orchestra.tests.helpers import OrchestraAuthenticatedTestCase
 from orchestra.utils.load_json import load_encoded_json
 
 
-class AccountSettingsTest(OrchestraAuthenticatedTestCase):
+class StaffBotViewTest(OrchestraAuthenticatedTestCase):
 
     def setUp(self):
         super().setUp()
