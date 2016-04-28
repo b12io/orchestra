@@ -1,29 +1,16 @@
 from django.core.urlresolvers import reverse
-from django.test import Client as RequestClient
 
-from orchestra.tests.helpers import OrchestraTestCase
-from orchestra.tests.helpers.fixtures import UserFactory
+from orchestra.tests.helpers import OrchestraAuthenticatedTestCase
 from orchestra.tests.helpers.fixtures import WorkerFactory
 
 
-class AccountSettingsTest(OrchestraTestCase):
+class AccountSettingsTest(OrchestraAuthenticatedTestCase):
 
     def setUp(self):
         super().setUp()
+        self.request_client, self.user = self.authenticate_user()
         self.url = reverse('orchestra:account_settings')
-        self.request_client = RequestClient()
-
-        self.password = 'test'
-        self.user = UserFactory(
-            username='test_account_settings',
-            email='test_account_settings@orchestra.com',
-            first_name='first name',
-            last_name='last name',
-            password=self.password)
         self.worker = WorkerFactory(user=self.user)
-        self.user.is_active = True
-        self.user.save()
-        self.login()
 
     def _get_account_settings_mock_data(self):
         return {
@@ -33,10 +20,6 @@ class AccountSettingsTest(OrchestraTestCase):
             'phone_0': '+1',
             'phone_1': '3477761527',
         }
-
-    def login(self):
-        self.assertTrue(self.request_client.login(
-            username=self.user.username, password=self.password))
 
     def test_get_form(self):
         response = self.request_client.get(self.url)
