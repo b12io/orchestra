@@ -465,9 +465,7 @@ class TimeEntry(BaseModel):
 
     date = models.DateField()
     time_worked = models.DurationField()
-    # TODO(lydia): Drop null=True after a data migration to fill in workers.
-    worker = models.ForeignKey(Worker, related_name='time_entries',
-                               null=True)
+    worker = models.ForeignKey(Worker, related_name='time_entries')
     assignment = models.ForeignKey(TaskAssignment,
                                    related_name='time_entries',
                                    null=True)
