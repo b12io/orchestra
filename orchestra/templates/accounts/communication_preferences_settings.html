@@ -19,7 +19,12 @@
               <div class="row spaced">
                 <div class="col-lg-12 col-sm-12">
                   <label class="xl-label" for="{{ comm_pref_form.methods.id_for_label }}">{{ description }}</label>
-                  {{ comm_pref_form.methods|add_class:"form-control" }}
+                  <div>
+                    {% for method in comm_pref_form.methods %}
+                      {{ method }}
+                    {% endfor %}
+                  </div>
+
                   <div class="error-field"> {{ comm_pref_form.methods.errors }} </div>
                 </div>
 
