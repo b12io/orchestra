@@ -85,7 +85,7 @@ class CommunicationPreferenceSettingsTest(OrchestraTestCase):
             'form-INITIAL_FORMS': 1,
             'form-MIN_NUM_FORMS': 0,
             'form-MAX_NUM_FORMS': 1,
-            'form-0-id': 1,
+            'form-0-id': self.comm_pref.id,
         }
 
     def test_disable_email(self):
