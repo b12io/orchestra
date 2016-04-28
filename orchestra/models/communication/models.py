@@ -70,10 +70,23 @@ class StaffingRequest(StaffingRequestMixin, BaseModel):
         AUTOSTAFF = 'autostaff'
         RESTAFF = 'restaff'
 
+    class Status(ChoicesEnum):
+        PENDING = 'pending'
+        SENT = 'sent'
+
+    class CommunicationMethod(ChoicesEnum):
+        SLACK = 'slack'
+        EMAIL = 'email'
+
     worker = models.ForeignKey(Worker)
     task = models.ForeignKey(Task)
     request_cause = models.IntegerField(choices=RequestCause.choices())
     project_description = models.TextField(null=True, blank=True)
+    status = models.IntegerField(
+        default=Status.PENDING.value,
+        choices=Status.choices())
+    communication_method = models.IntegerField(
+        choices=CommunicationMethod.choices())
 
 
 class StaffingResponse(StaffingResponseMixin, BaseModel):

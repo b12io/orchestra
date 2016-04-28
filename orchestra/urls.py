@@ -9,11 +9,14 @@ from orchestra.views import status
 urlpatterns = [
     url(r'^api/',
         include('orchestra.api_urls', namespace='orchestra')),
+    url(r'^communication/',
+        include('orchestra.communication.urls',
+                namespace='communication')),
     url(r'^app/?', index, name='index'),
     url(r'^status/', status, name='status'),
     url(r'^favicon.ico/$', RedirectView.as_view(
         url=settings.STATIC_URL + 'orchestra/icons/favicon.ico',
         permanent=True),
         name='favicon'),
-    url(r'', include('orchestra.accounts.urls'))
+    url(r'', include('orchestra.accounts.urls')),
 ]

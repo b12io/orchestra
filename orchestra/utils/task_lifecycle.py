@@ -1,15 +1,22 @@
 import random
 from importlib import import_module
 
+from annoying.functions import get_object_or_None
 from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
+from django.core.urlresolvers import reverse
+from django.template import Context
+from django.template.loader import render_to_string
 
+from orchestra.communication.mail import send_mail
 from orchestra.core.errors import AssignmentPolicyError
 from orchestra.core.errors import IllegalTaskSubmission
 from orchestra.core.errors import ModelSaveError
 from orchestra.core.errors import NoTaskAvailable
 from orchestra.core.errors import ReviewPolicyError
+from orchestra.models import StaffingRequest
+from orchestra.models import StaffingResponse
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import TaskDependencyError
 from orchestra.core.errors import TaskStatusError
@@ -1006,3 +1013,81 @@ def create_subsequent_tasks(project):
                     settings.MACHINE_STEP_SCHEDULER[1])
                 machine_step_scheduler = machine_step_scheduler_class()
                 machine_step_scheduler.schedule(project.id, step.slug)
+
+
+def send_task_to_workers(task, required_role):
+    # get all the workers that are certified to complete the task.
+    workers = Worker.objects.all()
+
+    for worker in workers:
+        if (not _worker_certified_for_task(worker, task, required_role) or
+                not _check_worker_allowed_new_assignment(worker, task.status)):
+            continue
+        send_task_to_worker(worker, task, required_role)
+
+
+def send_task_to_worker(worker, task):
+    staffing_request = StaffingRequest.objects.create(
+        worker=worker,
+        task=task,
+        request_cause=StaffingRequest.RequestCause.AUTOSTAFF.value,
+        communication_method=(
+            StaffingRequest.CommunicationMethod.EMAIL.value))
+
+    url_kwargs = {
+        'pk': staffing_request.pk
+    }
+
+    accept_url = '{}{}'.format(
+        settings.ORCHESTRA_URL +
+        reverse('orchestra:communication:accept_staffing_request',
+                kwargs=url_kwargs))
+
+    reject_url = '{}{}'.format(
+        settings.ORCHESTRA_URL +
+        reverse('orchestra:communication:reject_staffing_request',
+                kwargs=url_kwargs))
+
+    context = Context({
+        'username': worker.user.username,
+        'accept_url': accept_url,
+        'reject_url': reject_url
+    })
+
+    message_body = render_to_string('orchestra/new_task_available.txt',
+                                    context)
+    send_mail('New task is available for claim',
+              message_body,
+              settings.ORCHESTRA_NOTIFICATIONS_FROM_EMAIL,
+              [worker.user.email])
+
+    staffing_request.status = StaffingRequest.Status.SENT.value
+    staffing_request.save()
+
+
+@transaction.atomic
+def handle_staffing_response(worker, pk, is_available):
+    staffing_request = get_object_or_None(StaffingRequest,
+                                          pk=pk)
+    if staffing_request is None:
+        return None
+
+    response = StaffingResponse.objects.filter(request=staffing_request)
+    if response.exists():
+        response = response.first()
+        response.is_available = is_available
+
+        if not is_available:
+            response.is_winner = False
+    else:
+        response = StaffingResponse.objects.create(
+            request=staffing_request,
+            is_available=is_available)
+
+    if (is_available and
+            not StaffingResponse.objects.filter(is_winner=True).exists()):
+        # TODO(kkamalov): create a TaskAssignment object
+        response.is_winner = True
+
+    response.save()
+    return response

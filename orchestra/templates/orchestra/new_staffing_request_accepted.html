@@ -1,0 +1,16 @@
+{% extends 'orchestra/base.html' %}
+{% load staticfiles %}
+
+{% block title %}Thank you{% endblock %}
+
+{% block main %}
+<section id="main-content" ng-view autoscroll="true">
+  {% block content %}
+  {% if is_winner %}
+  Congratulations, you got the task.
+  {% else %}
+  Unfortunately, task has been taken.
+  {% endif %}
+  {% endblock content %}
+</section>
+{% endblock %}
