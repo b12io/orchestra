@@ -3,6 +3,8 @@ from django.contrib.auth import get_user_model
 from phonenumber_field.formfields import PhoneNumberField
 from phonenumber_field.widgets import PhoneNumberPrefixWidget
 
+from orchestra.accounts.bitformfield import BitFormField
+from orchestra.models import CommunicationPreference
 from orchestra.models import Worker
 
 UserModel = get_user_model()
@@ -27,3 +29,14 @@ class WorkerForm(forms.ModelForm):
         model = Worker
         fields = ('slack_username', 'phone')
         exclude = ('user', 'start_datetime')
+
+
+class CommunicationPreferenceForm(forms.ModelForm):
+
+    methods = BitFormField(choices=(
+        CommunicationPreference.COMMUNICATION_METHODS))
+
+    class Meta:
+        model = CommunicationPreference
+        exclude = ('worker', 'is_deleted',
+                   'created_at', 'communication_type')

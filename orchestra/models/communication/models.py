@@ -36,6 +36,9 @@ class CommunicationPreference(CommunicationPreferenceMixin, BaseModel):
     )
 
     class CommunicationType(ChoicesEnum):
+        # NOTE(joshblum): Since this enum maps to integers, the human
+        # readable name is made by converting '_' -> ' ', choose your
+        # name wisely!
         TASK_STATUS_CHANGE = 'task_status_change'
 
     worker = models.ForeignKey(Worker)

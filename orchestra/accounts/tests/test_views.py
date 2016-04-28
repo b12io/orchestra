@@ -1,7 +1,9 @@
 from django.core.urlresolvers import reverse
 
 from orchestra.tests.helpers import OrchestraAuthenticatedTestCase
+from orchestra.models import CommunicationPreference
 from orchestra.tests.helpers.fixtures import WorkerFactory
+from orchestra.tests.helpers.fixtures import setup_models
 
 
 class AccountSettingsTest(OrchestraAuthenticatedTestCase):
@@ -46,3 +48,85 @@ class AccountSettingsTest(OrchestraAuthenticatedTestCase):
             data.pop(field)
             response = self.request_client.post(self.url, data)
             self.assertFalse(response.context['success'])
+
+
+class CommunicationPreferenceSettingsTest(OrchestraTestCase):
+
+    def setUp(self):
+        super().setUp()
+        setup_models(self)
+        self.url = reverse('orchestra:communication_preference_settings')
+        self.request_client = RequestClient()
+
+        worker = self.workers[0]
+        # Update this to handle multiple prefs when we have them
+        self.comm_pref = CommunicationPreference.objects.filter(
+            worker=worker).first()
+        self.user = worker.user
+        self.password = 'test'
+        self.user.set_password(self.password)
+        self.user.is_active = True
+        self.user.save()
+        self.login()
+
+    def login(self):
+        self.assertTrue(self.request_client.login(
+            username=self.user.username, password=self.password))
+
+    def test_get_form(self):
+        response = self.request_client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response, 'accounts/communication_preferences_settings.html')
+
+    def _get_mock_data(self):
+        return {
+            'form-TOTAL_FORMS': 1,
+            'form-INITIAL_FORMS': 1,
+            'form-MIN_NUM_FORMS': 0,
+            'form-MAX_NUM_FORMS': 1,
+            'form-0-id': 1,
+        }
+
+    def test_disable_email(self):
+
+        data = self._get_mock_data()
+        # email is unset and therefore false
+        data['form-0-methods'] = 'slack'
+
+        response = self.request_client.post(self.url, data)
+        self.assertTrue(response.context['success'])
+
+        self.comm_pref.refresh_from_db()
+        self.assertEqual(self.comm_pref.methods.slack,
+                         CommunicationPreference.methods.slack)
+        self.assertEqual(self.comm_pref.methods.email,
+                         ~CommunicationPreference.methods.email)
+
+    def test_disable_slack(self):
+
+        data = self._get_mock_data()
+        # slack is unset and therefore false
+        data['form-0-methods'] = 'email'
+
+        response = self.request_client.post(self.url, data)
+        self.assertTrue(response.context['success'])
+
+        self.comm_pref.refresh_from_db()
+        self.assertEqual(self.comm_pref.methods.slack,
+                         ~CommunicationPreference.methods.slack)
+        self.assertEqual(self.comm_pref.methods.email,
+                         CommunicationPreference.methods.email)
+
+    def test_disable_all(self):
+
+        data = self._get_mock_data()
+
+        response = self.request_client.post(self.url, data)
+        self.assertTrue(response.context['success'])
+
+        self.comm_pref.refresh_from_db()
+        self.assertEqual(self.comm_pref.methods.slack,
+                         ~CommunicationPreference.methods.slack)
+        self.assertEqual(self.comm_pref.methods.email,
+                         ~CommunicationPreference.methods.email)

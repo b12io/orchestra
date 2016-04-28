@@ -11,6 +11,10 @@ class CommunicationPreferenceMixin(object):
         return self.CommunicationType(
             self.communication_type).description
 
+    def get_human_description(self):
+        return (self.get_comunication_type_description()
+                .replace('_', ' ').title())
+
     def can_slack(self):
         """
             Boolean of whether or not the Worker wants slack messages

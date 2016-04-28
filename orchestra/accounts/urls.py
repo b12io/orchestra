@@ -3,6 +3,7 @@ from django.views.generic import RedirectView
 
 from orchestra.accounts.views import OrchestraRegistrationView
 from orchestra.accounts.views import AccountSettingsView
+from orchestra.accounts.views import CommunicationPreferenceSettingsView
 
 
 urlpatterns = [
@@ -13,6 +14,9 @@ urlpatterns = [
         name='registration_register'),
     url(r'^accounts/settings/$',
         AccountSettingsView.as_view(), name='account_settings'),
+    url(r'^accounts/communication_preference_settings/$',
+        CommunicationPreferenceSettingsView.as_view(),
+        name='communication_preference_settings'),
     url(r'^password/change/done/$',
         RedirectView.as_view(
             pattern_name='account_settings'),
