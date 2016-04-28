@@ -49,7 +49,8 @@ class StaffingRequestMixin(object):
 class StaffingResponseMixin(object):
 
     def __str__(self):
-        return '{} - {}'.format(
+        return '{} - {} - {}'.format(
             self.request,
-            self.response_flags.items()
+            self.is_available,
+            self.is_winner
         )
