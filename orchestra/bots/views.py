@@ -1,6 +1,6 @@
-from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
 from orchestra.bots.errors import SlackCommandInvalidRequest
@@ -8,7 +8,7 @@ from orchestra.bots.staffbot import Bot
 from orchestra.bots.staffbot import StaffBot
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(csrf_exempt, name='dispatch')
 class BotMixin(View):
     """
         Generic mixin to handle messages to bots, should be used by specifying

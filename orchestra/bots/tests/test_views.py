@@ -1,16 +1,17 @@
 from django.core.urlresolvers import reverse
 from django.test import override_settings
+from django.test import Client as RequestClient
 
 from orchestra.bots.tests.fixtures import get_mock_slack_data
-from orchestra.tests.helpers import OrchestraAuthenticatedTestCase
+from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.utils.load_json import load_encoded_json
 
 
-class StaffBotViewTest(OrchestraAuthenticatedTestCase):
+class StaffBotViewTest(OrchestraTestCase):
 
     def setUp(self):
         super().setUp()
-        self.request_client, self.user = self.authenticate_user()
+        self.request_client = RequestClient()
         self.url = reverse('orchestra:staffbot')
 
     def test_get_not_allowed(self):

@@ -37,7 +37,7 @@ class Bot(object):
         token = data.get('token')
         if token != self.token:
             raise SlackCommandInvalidRequest(
-                'Token mismatch %s != %s', token, self.token)
+                'Token mismatch {} != {}'.format(token, self.token))
 
         for fieldname, whitelist in self.whitelists.items():
             if whitelist is None:
@@ -50,7 +50,8 @@ class Bot(object):
 
                 if value not in whitelist:
                     raise SlackCommandInvalidRequest(
-                        'Field %s did not validate: %s', fieldname, value)
+                        'Field {} did not validate: {}'.format(
+                            fieldname, value))
         return data
 
     def dispatch(self, data):
