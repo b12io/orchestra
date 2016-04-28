@@ -13,8 +13,10 @@ def send_mail(subject, message, from_email,
         opted out of using email via their CommuncationPreference object.
     """
     if communication_type is not None:
-        recipient_list = list(filter(lambda email: _filter_recipient(
-            communication_type, email), recipient_list))
+        recipient_list = [
+            email for email in recipient_list
+            if _can_email(communication_type, email)
+        ]
 
     if not len(recipient_list):
         return
@@ -25,7 +27,7 @@ def send_mail(subject, message, from_email,
                           connection=connection, html_message=html_message)
 
 
-def _filter_recipient(communication_type, email):
+def _can_email(communication_type, email):
     """
         Try to get the Worker associated with the given email and query if they
         want to receive a message for the given communication_type.
@@ -36,9 +38,6 @@ def _filter_recipient(communication_type, email):
             worker=worker,
             communication_type=communication_type
         )
-        if comm_pref.can_email():
-            return email
-        else:
-            return None
+        return comm_pref.can_email()
     except Worker.DoesNotExist:
-        return email
+        return True

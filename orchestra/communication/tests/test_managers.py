@@ -4,7 +4,7 @@ from orchestra.tests.helpers.fixtures import UserFactory
 from orchestra.tests.helpers.fixtures import WorkerFactory
 
 
-class ModelsTestCase(OrchestraTestCase):
+class ManagersTestCase(OrchestraTestCase):
 
     def setUp(self):
         self.user = UserFactory()
