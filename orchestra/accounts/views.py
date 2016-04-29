@@ -126,8 +126,8 @@ class CommunicationPreferenceSettingsView(WorkerViewMixin):
             worker=self.worker)
         self.CommunicationPreferenceFormSet = modelformset_factory(
             CommunicationPreference,
-            CommunicationPreferenceForm,
-            max_num=self.comm_prefs.count()
+            form=CommunicationPreferenceForm,
+            extra=0
         )
         self.descriptions = [comm_pref.get_descriptions()
                              for comm_pref in self.comm_prefs]
@@ -150,13 +150,13 @@ class CommunicationPreferenceSettingsView(WorkerViewMixin):
 
     def post(self, request, *args, **kwargs):
         comm_pref_formset = self.CommunicationPreferenceFormSet(
-            data=request.POST)
+            data=request.POST,
+            queryset=self.comm_prefs
+        )
         self.set_method_choices(comm_pref_formset)
-
         success = comm_pref_formset.is_valid()
         if success:
             comm_pref_formset.save()
-
         return render(request, self.template_name, {
             'form_data': zip(comm_pref_formset, self.descriptions),
             'comm_pref_formset': comm_pref_formset,
