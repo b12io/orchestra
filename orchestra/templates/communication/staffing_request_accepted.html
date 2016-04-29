@@ -1,16 +1,33 @@
 {% extends 'orchestra/base.html' %}
 {% load staticfiles %}
 
-{% block title %}Thank you{% endblock %}
+{% block title %}
+  {% if response.is_winner %}
+    Success!
+  {% else %}
+    Task Taken
+  {% endif %}
+{% endblock %}
 
 {% block main %}
-<section id="main-content" ng-view autoscroll="true">
-  {% block content %}
-  {% if is_winner %}
-  Congratulations, you got the task.
-  {% else %}
-  Unfortunately, task has been taken.
-  {% endif %}
-  {% endblock content %}
-</section>
+<div class="container-fluid main-content communication-container">
+  <div class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 col-xs-12">
+    <div class="card">
+        {% if response.is_winner %}
+        <h2>
+          Congratulations! You got the task :)
+        </h2>
+          <div class="row spaced">
+            <a href="{% url "orchestra:index" %}/task/{{ response.request.task.id }}/" class="btn btn-primary btn-lg">
+              View Task
+            </a>
+          </div>
+        {% else %}
+          <h2>
+            Unfortunately, task has already been taken :(
+          </h2>
+        {% endif %}
+    </div>
+  </div>
+</div>
 {% endblock %}

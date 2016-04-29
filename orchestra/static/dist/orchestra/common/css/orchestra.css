@@ -105,6 +105,9 @@ a.logo {
     padding-top: 1.5rem;
     padding-bottom: 1.5rem; }
 
+.main-content {
+  margin: 100px auto 0; }
+
 /* Login/account-related pages */
 .login-wrap {
   font-size: 1.3rem; }
@@ -221,6 +224,9 @@ a.logo {
   .section-panel .row:not(.section-header).padded > [class*="col-"] {
     padding-top: 1.5rem;
     padding-bottom: 1.5rem; }
+
+.main-content {
+  margin: 100px auto 0; }
 
 .tasks-section .section-header .warning-message {
   font-style: italic;
@@ -615,7 +621,6 @@ a.logo {
 .error-page {
   text-align: center;
   line-height: 24px;
-  margin-top: 100px;
   color: #000000; }
 
 .error-display {
@@ -739,41 +744,55 @@ a.logo {
     color: #0079bf;
     cursor: pointer; }
 
-.account-settings {
-  margin: 100px auto 0; }
-  .account-settings a:hover, .account-settings a:focus, .account-settings a:visited {
-    color: #FFF;
-    text-decoration: none; }
-  .account-settings .row:not(:last-child) {
-    margin-bottom: 15px; }
-  .account-settings .account-tabs {
-    margin-bottom: -1px;
-    position: relative;
-    z-index: 1; }
-    .account-settings .account-tabs .btn {
-      border-bottom-left-radius: 0;
-      border-bottom-right-radius: 0; }
-      .account-settings .account-tabs .btn.selected {
-        background-color: #2a6496; }
-  .account-settings .card {
-    position: relative;
-    z-index: 2;
-    padding: 50px;
-    background: #FFFFFF;
-    box-shadow: 0px 17px 25px 0px rgba(104, 104, 104, 0.04), 0px 0px 55px 0px rgba(219, 219, 219, 0.28);
-    height: auto; }
-  .account-settings .account-actions {
-    margin-top: 15px;
-    text-align: right; }
-  .account-settings label {
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 1.59px;
-    line-height: 26px; }
-  .account-settings .xl-label {
-    font-size: 24px; }
-  .account-settings input[type=checkbox] {
-    height: inherit;
-    width: auto;
-    display: inline-block;
-    margin-left: 3px; }
+.account-settings a:hover, .account-settings a:focus, .account-settings a:visited {
+  color: #FFF;
+  text-decoration: none; }
+
+.account-settings .row:not(:last-child) {
+  margin-bottom: 15px; }
+
+.account-settings .account-tabs {
+  margin-bottom: -1px;
+  position: relative;
+  z-index: 1; }
+  .account-settings .account-tabs .btn {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0; }
+    .account-settings .account-tabs .btn.selected {
+      background-color: #2a6496; }
+
+.account-settings .card {
+  position: relative;
+  z-index: 2;
+  padding: 50px;
+  background: #FFFFFF;
+  box-shadow: 0px 17px 25px 0px rgba(104, 104, 104, 0.04), 0px 0px 55px 0px rgba(219, 219, 219, 0.28);
+  height: auto; }
+
+.account-settings .account-actions {
+  margin-top: 15px;
+  text-align: right; }
+
+.account-settings label {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1.59px;
+  line-height: 26px; }
+
+.account-settings .xl-label {
+  font-size: 24px; }
+
+.account-settings input[type=checkbox] {
+  height: inherit;
+  width: auto;
+  display: inline-block;
+  margin-left: 3px; }
+
+.communication-container {
+  text-align: center; }
+  .communication-container .card {
+    padding-top: 80px; }
+  .communication-container a {
+    color: #FFF; }
+  .communication-container .spaced {
+    padding-top: 15px; }
