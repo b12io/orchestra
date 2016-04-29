@@ -7,18 +7,10 @@ class CommunicationPreferenceMixin(object):
         """
         return 2 ** len(cls.COMMUNICATION_METHODS) - 1
 
-    def get_comunication_type_description(self):
-        return self.CommunicationType(
+    def get_descriptions(self):
+        key = self.CommunicationType(
             self.communication_type).description
-
-    def get_short_description(self):
-        return (self.get_comunication_type_description()
-                .replace('_', ' ').title())
-
-    def get_long_description(self):
-        return self.COMMUNICATION_TYPE_DESCRIPTIONS.get(
-            self.get_comunication_type_description(), ''
-        )
+        return self.COMMUNICATION_TYPE_DESCRIPTIONS[key]
 
     def can_slack(self):
         """

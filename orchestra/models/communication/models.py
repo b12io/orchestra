@@ -36,18 +36,19 @@ class CommunicationPreference(CommunicationPreferenceMixin, BaseModel):
     )
 
     class CommunicationType(ChoicesEnum):
-        # NOTE(joshblum): Since this enum maps to integers, the human
-        # readable name is made by converting '_' -> ' ', choose your
-        # name wisely!
         TASK_STATUS_CHANGE = 'task_status_change'
 
     COMMUNICATION_TYPE_DESCRIPTIONS = {
         CommunicationType.TASK_STATUS_CHANGE.description:
-        """
-        When a task status changes (e.g., moved from in review to returned from
-        reviewer), you will automatically be alerted in a project slack group.
-        You can optionally receive email alerts.
-        """
+        {
+            'short_description': 'Task Status Change',
+            'long_description':
+            """
+            When a task status changes (e.g., moved from in review to returned
+            from reviewer), you will automatically be alerted in a project
+            slack group.  You can optionally receive email alerts.
+            """
+        }
     }
 
     worker = models.ForeignKey(Worker)
