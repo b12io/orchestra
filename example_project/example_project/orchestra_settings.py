@@ -172,11 +172,11 @@ def setup_orchestra(settings_module_name):
     settings.GOOGLE_APPS = False
 
     # Optional Google API related service email and path to a secret key.
-    settings.GOOGLE_SERVICE_EMAIL = ''  # noqa
-    settings.GOOGLE_P12_PATH = ''  # noqa
+    settings.GOOGLE_SERVICE_EMAIL = ''
+    settings.GOOGLE_P12_PATH = ''
 
     # Google Drive root folder id in which we create projects.
-    settings.GOOGLE_PROJECT_ROOT_ID = ''  # noqa
+    settings.GOOGLE_PROJECT_ROOT_ID = ''
 
     # Feature flags for toggling optional slack integration
     settings.SLACK_INTERNAL = False
@@ -189,6 +189,10 @@ def setup_orchestra(settings_module_name):
     settings.SLACK_INTERNAL_API_KEY = ''
     settings.SLACK_EXPERTS_API_KEY = ''
     settings.SLACK_INTERNAL_NOTIFICATION_CHANNEL = '#orchestra-tasks'
+
+    # Settings for orchestra bots Each bot needs a slack token to
+    # authenticate the command.
+    settings.SLACK_STAFFBOT_TOKEN = ''  # StaffBot slash command token
 
     # Optionally add a path for a template to support third party scripts
     # (such as Google Analytics)
