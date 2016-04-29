@@ -1,0 +1,50 @@
+{% extends "orchestra/base.html" %}
+{% load staticfiles %}
+{% load widget_tweaks %}
+
+{% block title %}Communication Preference Settings{% endblock %}
+
+{% block main %}
+<div class="login-wrap account-settings container-fluid">
+  <div class="row">
+    <div class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 col-xs-12">
+      {% include "accounts/settings-tabs.html" with communication_preference_settings="selected" %}
+      <div class="card">
+        <form action="{% url 'orchestra:communication_preference_settings' %}" method="post">
+          {{ comm_pref_formset.management_form }}
+          {% csrf_token %}
+          <div class="container-fluid">
+            {% for comm_pref_form, description in form_data %}
+              {{ comm_pref_form.id }}
+              <div class="row spaced">
+                <div class="col-lg-12 col-sm-12">
+                  <label class="xl-label" for="{{ comm_pref_form.methods.id_for_label }}">
+                    {{ description.short_description }}
+                  </label>
+                  <div> {{ description.long_description }} </div>
+                  <div>
+                    {% for method in comm_pref_form.methods %}
+                      {{ method }}
+                    {% endfor %}
+                  </div>
+
+                  <div class="error-field"> {{ comm_pref_form.methods.errors }} </div>
+                </div>
+
+              </div>
+            {% endfor %}
+
+            <div class="row">
+              <div class="col-xs-12">
+                <div class="account-actions">
+                  <button type="submit" class="btn btn-primary">Update account</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

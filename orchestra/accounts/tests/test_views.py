@@ -1,7 +1,9 @@
 from django.core.urlresolvers import reverse
 
 from orchestra.tests.helpers import OrchestraAuthenticatedTestCase
+from orchestra.models import CommunicationPreference
 from orchestra.tests.helpers.fixtures import WorkerFactory
+from orchestra.tests.helpers.fixtures import setup_models
 
 
 class AccountSettingsTest(OrchestraAuthenticatedTestCase):
@@ -46,3 +48,45 @@ class AccountSettingsTest(OrchestraAuthenticatedTestCase):
             data.pop(field)
             response = self.request_client.post(self.url, data)
             self.assertFalse(response.context['success'])
+
+
+class CommunicationPreferenceSettingsTest(OrchestraAuthenticatedTestCase):
+
+    def setUp(self):
+        super().setUp()
+        setup_models(self)
+        self.url = reverse('orchestra:communication_preference_settings')
+        self.request_client, self.user = self.authenticate_user()
+
+        worker = self.workers[0]
+        worker.user = self.user
+        worker.save()
+        # Update this to handle multiple prefs when we have them
+        self.comm_pref = CommunicationPreference.objects.filter(
+            worker=worker).first()
+
+    def test_get_form(self):
+        response = self.request_client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response, 'accounts/communication_preferences_settings.html')
+
+    def _get_mock_data(self):
+        return {
+            'form-TOTAL_FORMS': 1,
+            'form-INITIAL_FORMS': 1,
+            'form-MIN_NUM_FORMS': 0,
+            'form-MAX_NUM_FORMS': 1,
+            'form-0-id': self.comm_pref.id,
+        }
+
+    def test_disable_email(self):
+
+        # email is unset and therefore false
+        data = self._get_mock_data()
+
+        response = self.request_client.post(self.url, data)
+        self.assertTrue(response.context['success'])
+
+        self.comm_pref.refresh_from_db()
+        self.assertFalse(self.comm_pref.methods.email.is_set)

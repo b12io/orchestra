@@ -44,4 +44,15 @@
     letter-spacing: 1.59px;
     line-height: 26px;
   }
+
+  .xl-label {
+    font-size: 24px;
+  }
+
+  input[type=checkbox] {
+    height: inherit;
+    width: auto;
+    display: inline-block;
+    margin-left: 3px;
+  }
 }

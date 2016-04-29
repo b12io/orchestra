@@ -770,3 +770,10 @@ a.logo {
     font-weight: 600;
     letter-spacing: 1.59px;
     line-height: 26px; }
+  .account-settings .xl-label {
+    font-size: 24px; }
+  .account-settings input[type=checkbox] {
+    height: inherit;
+    width: auto;
+    display: inline-block;
+    margin-left: 3px; }

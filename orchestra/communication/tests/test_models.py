@@ -21,12 +21,6 @@ class ModelsTestCase(OrchestraTestCase):
             methods=CommunicationPreference.get_default_methods()
         )
 
-    def test_get_communication_type_description(self):
-        self.assertEqual(
-            self.comm_pref.get_comunication_type_description(),
-            'task_status_change'
-        )
-
     def test_can_slack(self):
         """
             Assert that the object respects the slack bit field settings.

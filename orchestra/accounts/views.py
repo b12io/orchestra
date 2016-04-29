@@ -2,15 +2,19 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
+from django.forms import modelformset_factory
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 from registration.models import RegistrationProfile
 from registration.views import RegistrationView
 
+from orchestra.accounts.bitformfield import BitFormField
+from orchestra.accounts.forms import CommunicationPreferenceForm
 from orchestra.accounts.forms import UserForm
 from orchestra.accounts.forms import WorkerForm
 from orchestra.accounts import signals
+from orchestra.models import CommunicationPreference
 from orchestra.models import Worker
 
 UserModel = get_user_model()
@@ -64,14 +68,20 @@ class OrchestraRegistrationView(RegistrationView):
 
 
 @method_decorator(login_required, name='dispatch')
-class AccountSettingsView(View):
+class WorkerViewMixin(View):
+
+    def dispatch(self, request, *args, **kwargs):
+        self.set_context_data(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
+
+    def set_context_data(self, request, *args, **kwargs):
+        self.worker = Worker.objects.get(user=request.user)
+
+
+class AccountSettingsView(WorkerViewMixin):
     template_name = 'accounts/settings.html'
     user_form = UserForm
     worker_form = WorkerForm
-
-    def dispatch(self, request, *args, **kwargs):
-        self.worker = Worker.objects.get(user=request.user)
-        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         user_form = self.user_form(
@@ -97,5 +107,58 @@ class AccountSettingsView(View):
         return render(request, self.template_name, {
             'user_form': user_form,
             'worker_form': worker_form,
+            'success': success,
+        })
+
+
+class CommunicationPreferenceSettingsView(WorkerViewMixin):
+    template_name = 'accounts/communication_preferences_settings.html'
+    comm_pref_form = CommunicationPreferenceForm
+    default_choices = CommunicationPreference.COMMUNICATION_METHODS
+    method_choices = {
+        CommunicationPreference.CommunicationType.TASK_STATUS_CHANGE.value:
+        ((CommunicationPreference.CommunicationMethods.EMAIL, 'Email'),),
+    }
+
+    def set_context_data(self, request, *args, **kwargs):
+        super().set_context_data(request, *args, **kwargs)
+        self.comm_prefs = CommunicationPreference.objects.filter(
+            worker=self.worker)
+        self.CommunicationPreferenceFormSet = modelformset_factory(
+            CommunicationPreference,
+            CommunicationPreferenceForm,
+            max_num=self.comm_prefs.count()
+        )
+        self.descriptions = [comm_pref.get_descriptions()
+                             for comm_pref in self.comm_prefs]
+
+    def set_method_choices(self, formset):
+        for form in formset:
+            comm_type = form.initial.get('communication_type')
+            choices = self.method_choices.get(comm_type,
+                                              self.default_choices)
+            form.fields['methods'] = BitFormField(choices=choices)
+
+    def get(self, request, *args, **kwargs):
+        comm_pref_formset = self.CommunicationPreferenceFormSet(
+            queryset=self.comm_prefs)
+        self.set_method_choices(comm_pref_formset)
+        return render(request, self.template_name, {
+            'form_data': zip(comm_pref_formset, self.descriptions),
+            'comm_pref_formset': comm_pref_formset,
+        })
+
+    def post(self, request, *args, **kwargs):
+        comm_pref_formset = self.CommunicationPreferenceFormSet(
+            data=request.POST)
+        self.set_method_choices(comm_pref_formset)
+
+        success = comm_pref_formset.is_valid()
+        if success:
+            comm_pref_formset.save()
+
+        return render(request, self.template_name, {
+            'form_data': zip(comm_pref_formset, self.descriptions),
+            'comm_pref_formset': comm_pref_formset,
             'success': success,
         })

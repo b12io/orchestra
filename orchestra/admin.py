@@ -1,3 +1,6 @@
+from bitfield import BitField
+from bitfield.admin import BitFieldListFilter
+from bitfield.forms import BitFieldCheckboxSelectMultiple
 from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.utils.html import format_html
@@ -179,10 +182,14 @@ class WorkflowVersionAdmin(admin.ModelAdmin):
 
 @admin.register(CommunicationPreference)
 class CommunicationPreferenceAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        BitField: {'widget': BitFieldCheckboxSelectMultiple},
+    }
     list_display = (
-        'id', 'worker', 'methods', 'communication_type')
+        'id', 'worker', 'methods', 'communication_type'
+    )
     search_fields = ('worker__user__username', 'methods', 'communication_type')
-    list_filter = ('worker__user__username',)
+    list_filter = ('worker__user__username', ('methods', BitFieldListFilter))
 
 
 def edit_link(instance, text=None):
