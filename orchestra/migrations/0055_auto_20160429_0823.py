@@ -9,7 +9,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('orchestra', '0054_add_slack_ids'),
+        ('orchestra', '0053_worker_slack_user_id'),
     ]
 
     operations = [
