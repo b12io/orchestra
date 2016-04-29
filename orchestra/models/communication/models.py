@@ -50,7 +50,7 @@ class CommunicationPreference(CommunicationPreferenceMixin, BaseModel):
             slack group.  You can optionally receive email alerts.
             """
         },
-        CommunicationType.NEW_TASK_AVAILABLE.description:
+        CommunicationType.NEW_TASK_AVAILABLE:
         {
             'short_description': 'New Task Available',
             'long_description':
