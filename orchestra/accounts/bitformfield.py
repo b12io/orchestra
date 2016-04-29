@@ -45,6 +45,7 @@ class BitFormField(IntegerField):
 
     def __init__(self,
                  choices=(),
+                 widget_choices=(),
                  widget=BitFieldCheckboxSelectMultiple,
                  *args,
                  **kwargs):
@@ -57,7 +58,9 @@ class BitFormField(IntegerField):
             kwargs['initial'] = l
         self.widget = widget
         super(BitFormField, self).__init__(widget=widget, *args, **kwargs)
-        self.choices = self.widget.choices = choices
+        self.choices = choices
+        # widget choices is a subset of choices that are available
+        self.widget.choices = widget_choices or choices
 
     def clean(self, value):
         if not value:

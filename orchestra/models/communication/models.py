@@ -39,7 +39,7 @@ class CommunicationPreference(CommunicationPreferenceMixin, BaseModel):
         TASK_STATUS_CHANGE = 'task_status_change'
 
     COMMUNICATION_TYPE_DESCRIPTIONS = {
-        CommunicationType.TASK_STATUS_CHANGE.description:
+        CommunicationType.TASK_STATUS_CHANGE:
         {
             'short_description': 'Task Status Change',
             'long_description':
