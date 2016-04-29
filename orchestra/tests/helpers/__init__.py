@@ -27,7 +27,7 @@ class OrchestraTestHelpersMixin(object):
         # Without patching the slack API calls, the tests hang indefinitely
         # and you'll need to restart your boot2docker.
         self.slack = MockSlacker()
-        patcher = patch('orchestra.communication.slack.slacker.Slacker',
+        patcher = patch('orchestra.communication.slack.SlackService',
                         return_value=self.slack)
         patcher.start()
         self.addCleanup(patcher.stop)
