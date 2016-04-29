@@ -4,3 +4,7 @@ class SlackConnectionError(Exception):
 
 class SlackCommandInvalidRequest(Exception):
     pass
+
+
+class BotError(Exception):
+    pass
