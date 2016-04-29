@@ -23,12 +23,9 @@
                   </label>
                   <div> {{ description.long_description }} </div>
                   <div>
-                    {% for method in comm_pref_form.methods %}
-                      {{ method }}
-                    {% endfor %}
+                    {{ comm_pref_form.methods }}
                   </div>
 
-                  <div class="error-field"> {{ comm_pref_form.methods.errors }} </div>
                 </div>
 
               </div>

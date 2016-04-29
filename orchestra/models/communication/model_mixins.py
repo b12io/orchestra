@@ -8,8 +8,7 @@ class CommunicationPreferenceMixin(object):
         return 2 ** len(cls.COMMUNICATION_METHODS) - 1
 
     def get_descriptions(self):
-        key = self.CommunicationType(
-            self.communication_type).description
+        key = self.CommunicationType(self.communication_type)
         return self.COMMUNICATION_TYPE_DESCRIPTIONS[key]
 
     def can_slack(self):

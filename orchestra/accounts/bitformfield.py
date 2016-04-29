@@ -1,6 +1,7 @@
 # Copy pasted from
 # https://raw.githubusercontent.com/greyside/django-bitfield/04efae91d292bffb569bd7cc13e5c941e42e8698/bitfield/forms.py
 from django.forms import CheckboxSelectMultiple, IntegerField, ValidationError
+from django.utils.safestring import mark_safe
 try:
     from django.utils.encoding import force_text
 except ImportError:
@@ -9,7 +10,18 @@ except ImportError:
 from bitfield.types import BitHandler
 
 
-class BitFieldCheckboxSelectMultiple(CheckboxSelectMultiple):
+class CheckboxSelectMultipleP(CheckboxSelectMultiple):
+    # https://djangosnippets.org/snippets/1760/
+
+    def render(self, *args, **kwargs):
+        output = super().render(*args, **kwargs)
+        return (mark_safe(output.replace(u'<ul>', u'').
+                          replace(u'</ul>', u'').
+                          replace(u'<li>', u'<p>').
+                          replace(u'</li>', u'</p>')))
+
+
+class BitFieldCheckboxSelectMultiple(CheckboxSelectMultipleP):
 
     def render(self, name, value, attrs=None, choices=()):
         if isinstance(value, BitHandler):
@@ -33,6 +45,7 @@ class BitFormField(IntegerField):
 
     def __init__(self,
                  choices=(),
+                 widget_choices=(),
                  widget=BitFieldCheckboxSelectMultiple,
                  *args,
                  **kwargs):
@@ -45,7 +58,9 @@ class BitFormField(IntegerField):
             kwargs['initial'] = l
         self.widget = widget
         super(BitFormField, self).__init__(widget=widget, *args, **kwargs)
-        self.choices = self.widget.choices = choices
+        self.choices = choices
+        # widget choices is a subset of choices that are available
+        self.widget.choices = widget_choices or choices
 
     def clean(self, value):
         if not value:
