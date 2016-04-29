@@ -2,6 +2,7 @@ import json
 from unittest.mock import patch
 
 from django.test import Client as RequestClient
+from django.test import override_settings
 from django.test import TestCase
 from django.test import TransactionTestCase
 
@@ -98,6 +99,7 @@ class AuthenticatedUserMixin(object):
         return request_client, auth_user
 
 
+@override_settings(SLACK_STAFFBOT_TOKEN='test-token')
 class OrchestraTestCase(OrchestraTestHelpersMixin, TestCase):
     # NOTE(lydia): Mixin should go before TestCase because when mixin calls
     # super().setUp(), it looks to the base of mixin (which is Object - doesn't
@@ -106,12 +108,14 @@ class OrchestraTestCase(OrchestraTestHelpersMixin, TestCase):
     pass
 
 
+@override_settings(SLACK_STAFFBOT_TOKEN='test-token')
 class OrchestraTransactionTestCase(OrchestraTestHelpersMixin,
                                    TransactionTestCase):
     # NOTE(lydia): See note above about multiple inheritance ordering.
     pass
 
 
+@override_settings(SLACK_STAFFBOT_TOKEN='test-token')
 class OrchestraAuthenticatedTestCase(OrchestraTestCase,
                                      AuthenticatedUserMixin):
     # NOTE(lydia): See note above about multiple inheritance ordering.

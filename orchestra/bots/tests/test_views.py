@@ -24,7 +24,7 @@ class StaffBotViewTest(OrchestraTestCase):
         self.assertEqual(response.status_code, 200)
         load_encoded_json(response.content)
 
-    @override_settings(STAFFBOT_TOKEN='')
+    @override_settings(SLACK_STAFFBOT_TOKEN='')
     def test_invalid_request(self):
         data = get_mock_slack_data()
         response = self.request_client.post(self.url, data)

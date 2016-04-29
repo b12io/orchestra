@@ -43,10 +43,11 @@ class Bot(object):
             if whitelist is None:
                 continue
             else:
-                try:
+                if hasattr(data, fieldname):
                     value = data[fieldname]
-                except KeyError as e:
-                    raise SlackCommandInvalidRequest(e)
+                else:
+                    raise SlackCommandInvalidRequest(
+                        '{} is missing'.format(fieldname))
 
                 if value not in whitelist:
                     raise SlackCommandInvalidRequest(
@@ -67,7 +68,7 @@ class StaffBot(Bot):
     def __init__(self, **kwargs):
         default_config = getattr(settings, 'STAFFBOT_CONFIG', {})
         default_config.update(kwargs)
-        token = settings.STAFFBOT_TOKEN
+        token = settings.SLACK_STAFFBOT_TOKEN
         super().__init__(token, **kwargs)
 
     def dispatch(self, data):

@@ -6,8 +6,7 @@ from orchestra.bots.staffbot import StaffBot
 from orchestra.bots.tests.fixtures import get_mock_slack_data
 
 
-@override_settings(STAFFBOT_TOKEN='test-token')
-class StaffBotTests(OrchestraTestCase):
+class BotTest(OrchestraTestCase):
 
     def test_request_validation(self):
         """
@@ -19,7 +18,7 @@ class StaffBotTests(OrchestraTestCase):
         self.assertEqual(mock_slack_data, bot.validate(mock_slack_data))
 
         # verify we validate the token
-        with override_settings(STAFFBOT_TOKEN=''):
+        with override_settings(SLACK_STAFFBOT_TOKEN=''):
             bot = StaffBot()
             with self.assertRaises(SlackCommandInvalidRequest):
                 bot.validate(mock_slack_data)

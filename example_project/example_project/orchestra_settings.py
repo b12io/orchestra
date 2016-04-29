@@ -190,9 +190,9 @@ def setup_orchestra(settings_module_name):
     settings.SLACK_EXPERTS_API_KEY = ''
     settings.SLACK_INTERNAL_NOTIFICATION_CHANNEL = '#orchestra-tasks'
 
-    # Settings for orchestra bots. Each bot needs a slack token to
-    # authenticate the command
-    settings.STAFFBOT_TOKEN = ''
+    # Settings for orchestra bots Each bot needs a slack token to
+    # authenticate the command.
+    settings.SLACK_STAFFBOT_TOKEN = ''  # StaffBot slash command token
 
     # Optionally add a path for a template to support third party scripts
     # (such as Google Analytics)
