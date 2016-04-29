@@ -6,8 +6,12 @@ from enum import Enum
 
 from django.db import migrations
 
-# Copy pasted from models since migrations does not have access
+################ CommunicationType Migration Boilerplate Start ################
+# NOTE(joshblum): Future migrations that add a CommunicationType should copy
+# paste all of this boilerplate code, so you just have to specify the correct
+# COMMUNICATION_METHODS you want to be configurable.
 class CommunicationMethods(object):
+    # Copy pasted from models since migrations does not have access
     SLACK = 'slack'
     EMAIL = 'email'
 
@@ -17,16 +21,16 @@ COMMUNICATION_METHODS = (
     (CommunicationMethods.EMAIL, 'Email'),
 )
 
+
 class CommunicationType(Enum):
     TASK_STATUS_CHANGE = 0
     NEW_TASK_AVAILABLE = 1
 
-def add_communication_type(apps, schema_editor):
+
+def _add_communication_type(apps, schema_editor, communication_type):
     Worker = apps.get_model('orchestra', 'Worker')
     CommunicationPreference = apps.get_model('orchestra',
                                              'CommunicationPreference')
-    communication_type = (
-        CommunicationType.NEW_TASK_AVAILABLE.value)
     for worker in Worker.objects.all():
         communication_preference, created = (
             CommunicationPreference.objects.get_or_create(
@@ -38,6 +42,14 @@ def add_communication_type(apps, schema_editor):
             communication_preference.methods.slack = True
             communication_preference.methods.email = True
         communication_preference.save()
+################# CommunicationType Migration Boilerplate Start #################
+
+def add_communication_type(apps, schema_editor):
+    # Change this in future migrations to be the new CommunicationType you've
+    # added.
+    communication_type = (
+        CommunicationType.NEW_TASK_AVAILABLE.value)
+    _add_communication_type(apps, schema_editor, communication_type)
 
 
 class Migration(migrations.Migration):
