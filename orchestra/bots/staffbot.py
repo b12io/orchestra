@@ -2,13 +2,20 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.template import Context
 from django.template.loader import render_to_string
+from slacker import Slacker
 
 from orchestra.bots.basebot import BaseBot
 from orchestra.communication.mail import send_mail
+from orchestra.models import CommunicationPreference
 from orchestra.models import StaffingRequest
 from orchestra.models import Worker
 from orchestra.utils.task_lifecycle import is_worker_certified_for_task
 from orchestra.utils.task_lifecycle import check_worker_allowed_new_assignment
+
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 # Types of responses we can send to slack
 VALID_RESPONSE_TYPES = {'ephemeral', 'in_channel'}
@@ -43,7 +50,7 @@ class StaffBot(BaseBot):
             'Restaffed task {} for {}!'.format(task_id, username)
         )
 
-    def _send_task_to_workers(self, task, required_role):
+    def _send_task_to_workers(self, task, required_role, request_cause):
         # get all the workers that are certified to complete the task.
         workers = Worker.objects.all()
         # TODO(joshblum): push is_worker_certified_for_task and
@@ -58,19 +65,45 @@ class StaffBot(BaseBot):
                 self._send_task_to_worker(
                     worker, task, required_role)
 
-    def _send_task_to_worker(self, worker, task):
+    def _send_task_to_worker(self, worker, task, request_cause):
         """
         Send the task to the worker for them to accept or reject.
         """
-        staffing_request = StaffingRequest.objects.create(
-            worker=worker,
-            task=task,
-            request_cause=StaffingRequest.RequestCause.AUTOSTAFF.value,
-            communication_method=(
-                StaffingRequest.CommunicationMethod.EMAIL.value))
+        communication_type = (
+            CommunicationPreference.CommunicationType.NEW_TASK_AVAILABLE.value)
+
+        communication_preference = CommunicationPreference.objects.get(
+            communication_type=communication_type,
+            worker=worker)
+
+        if communication_preference.can_email():
+            email_method = StaffingRequest.CommunicationMethod.EMAIL.value
+            staffing_request = StaffingRequest.objects.create(
+                communication_preference=communication_preference,
+                task=task,
+                request_cause=request_cause,
+                communication_method=email_method)
+            message = self.get_staffing_request_message(
+                staffing_request, 'communication/new_task_available_email.txt')
+            self.send_staffing_request_by_mail(staffing_request, message)
+
+        if communication_preference.can_slack():
+            slack_method = StaffingRequest.CommunicationMethod.SLACK.value
+            staffing_request = StaffingRequest.objects.create(
+                communication_preference=communication_preference,
+                task=task,
+                request_cause=request_cause,
+                communication_method=email_method)
+            message = self.get_staffing_request_message(
+                staffing_request, 'communication/new_task_available_slack.txt')
+            self.send_staffing_request_by_slack(staffing_request, message)
+
+    def get_staffing_request_message(self, staffing_request, template):
+        username = (
+            staffing_request.communication_preference.worker.user.username)
 
         url_kwargs = {
-            'pk': staffing_request.pk
+            'staffing_request_id': staffing_request.pk
         }
 
         accept_url = '{}{}'.format(
@@ -84,17 +117,35 @@ class StaffBot(BaseBot):
                     kwargs=url_kwargs))
 
         context = Context({
-            'username': worker.user.username,
+            'username': username,
             'accept_url': accept_url,
             'reject_url': reject_url
         })
 
-        message_body = render_to_string('communication/new_task_available.txt',
-                                        context)
-        send_mail('New task is available for claim',
-                  message_body,
-                  settings.ORCHESTRA_NOTIFICATIONS_FROM_EMAIL,
-                  [worker.user.email])
+        message_body = render_to_string(template, context)
+        return message_body
 
+    def send_staffing_request_by_mail(self, staffing_request, message):
+        email = (
+            staffing_request.communication_preference.worker.user.email)
+
+        send_mail('New task is available for claim',
+                  message,
+                  settings.ORCHESTRA_NOTIFICATIONS_FROM_EMAIL,
+                  [email])
+        staffing_request.status = StaffingRequest.Status.SENT.value
+        staffing_request.save()
+
+
+    def send_staffing_request_by_slack(self, staffing_request, message):
+        worker = (
+            staffing_request.communication_preference.worker)
+        if worker.slack_id is None:
+            logger.error('Worker {} does not have a slack id'.format(
+                worker))
+            return
+
+        slack = Slacker(settings.SLACK_EXPERTS_API_KEY)
+        slack.chat.post_message(worker.slack_id, message, parse='none')
         staffing_request.status = StaffingRequest.Status.SENT.value
         staffing_request.save()

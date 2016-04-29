@@ -37,6 +37,7 @@ class CommunicationPreference(CommunicationPreferenceMixin, BaseModel):
 
     class CommunicationType(ChoicesEnum):
         TASK_STATUS_CHANGE = 'task_status_change'
+        NEW_TASK_AVAILABLE = 'new_task_available'
 
     COMMUNICATION_TYPE_DESCRIPTIONS = {
         CommunicationType.TASK_STATUS_CHANGE:
@@ -47,6 +48,15 @@ class CommunicationPreference(CommunicationPreferenceMixin, BaseModel):
             When a task status changes (e.g., moved from in review to returned
             from reviewer), you will automatically be alerted in a project
             slack group.  You can optionally receive email alerts.
+            """
+        },
+        CommunicationType.NEW_TASK_AVAILABLE.description:
+        {
+            'short_description': 'New Task Available',
+            'long_description':
+            """
+            When a new task is available you can choose through which channels
+            you want to receive a notification.
             """
         }
     }
@@ -91,7 +101,7 @@ class StaffingRequest(StaffingRequestMixin, BaseModel):
         SLACK = 'slack'
         EMAIL = 'email'
 
-    worker = models.ForeignKey(Worker)
+    communication_preference = models.ForeignKey(CommunicationPreference)
     task = models.ForeignKey(Task)
     request_cause = models.IntegerField(choices=RequestCause.choices())
     project_description = models.TextField(null=True, blank=True)
