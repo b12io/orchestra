@@ -6,5 +6,5 @@ class SlackCommandInvalidRequest(Exception):
     pass
 
 
-class BotError(Exception):
+class BaseBotError(Exception):
     pass

@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
 from orchestra.bots.errors import SlackCommandInvalidRequest
-from orchestra.bots.staffbot import Bot
+from orchestra.bots.basebot import BaseBot
 from orchestra.bots.staffbot import StaffBot
 
 
@@ -14,7 +14,7 @@ class BotMixin(View):
     Generic mixin to handle messages to bots, should be used by specifying
     a `BotClass` to instantiate with the request data.
     """
-    BotClass = Bot
+    BotClass = BaseBot
     bot_config = {}
 
     def __init__(self, *args, **kwargs):
