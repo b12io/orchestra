@@ -97,5 +97,4 @@ class CommunicationPreferenceSettingsTest(OrchestraTestCase):
         self.assertTrue(response.context['success'])
 
         self.comm_pref.refresh_from_db()
-        self.assertEqual(self.comm_pref.methods.email,
-                         ~CommunicationPreference.methods.email)
+        self.assertFalse(self.comm_pref.methods.email.is_set)

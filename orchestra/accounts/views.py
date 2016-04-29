@@ -1,5 +1,4 @@
 from django.conf import settings
-from orchestra.accounts.bitformfield import BitFormField
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
@@ -10,6 +9,7 @@ from django.views.generic import View
 from registration.models import RegistrationProfile
 from registration.views import RegistrationView
 
+from orchestra.accounts.bitformfield import BitFormField
 from orchestra.accounts.forms import CommunicationPreferenceForm
 from orchestra.accounts.forms import UserForm
 from orchestra.accounts.forms import WorkerForm
