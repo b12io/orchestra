@@ -8,6 +8,8 @@ from django.test import Client
 from django.test import override_settings
 from django.utils import timezone
 
+from orchestra.models import StaffingRequest
+from orchestra.models import StaffingResponse
 from orchestra.models import Iteration
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
@@ -34,11 +36,18 @@ PICKUP_DELAY = timedelta(hours=1)
 
 class WorkflowFactory(factory.django.DjangoModelFactory):
 
+    code_directory = factory.Sequence(
+        lambda n: 'Code Directory {}'.format(n))
+    slug = factory.Sequence(
+        lambda n: 'Slug {}'.format(n))
+
     class Meta:
         model = Workflow
 
 
 class WorkflowVersionFactory(factory.django.DjangoModelFactory):
+
+    workflow = factory.SubFactory(WorkflowFactory)
 
     class Meta:
         model = WorkflowVersion
@@ -46,11 +55,16 @@ class WorkflowVersionFactory(factory.django.DjangoModelFactory):
 
 class StepFactory(factory.django.DjangoModelFactory):
 
+    is_human = False
+    workflow_version = factory.SubFactory(WorkflowVersionFactory)
+
     class Meta:
         model = Step
 
 
 class UserFactory(factory.django.DjangoModelFactory):
+    username = factory.Sequence(
+        lambda n: 'Username {}'.format(n))
 
     class Meta:
         model = User
@@ -60,6 +74,7 @@ class UserFactory(factory.django.DjangoModelFactory):
 
 
 class WorkerFactory(factory.django.DjangoModelFactory):
+    user = factory.SubFactory(UserFactory)
 
     class Meta:
         model = 'orchestra.Worker'
@@ -84,6 +99,7 @@ class ProjectFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = 'orchestra.Project'
 
+    workflow_version = factory.SubFactory(WorkflowVersionFactory)
     short_description = factory.Sequence(
         lambda n: 'Project {}'.format(n))
     priority = 0
@@ -91,6 +107,10 @@ class ProjectFactory(factory.django.DjangoModelFactory):
 
 
 class TaskFactory(factory.django.DjangoModelFactory):
+
+    step = factory.SubFactory(StepFactory)
+    project = factory.SubFactory(ProjectFactory)
+    status = Task.Status.AWAITING_PROCESSING
 
     class Meta:
         model = 'orchestra.Task'
@@ -108,6 +128,26 @@ class TimeEntryFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = 'orchestra.TimeEntry'
+
+
+class StaffingRequestFactory(factory.django.DjangoModelFactory):
+
+    worker = factory.SubFactory(WorkerFactory)
+    task = factory.SubFactory(TaskFactory)
+    request_cause = StaffingRequest.RequestCause.USER.value
+    communication_method = StaffingRequest.CommunicationMethod.SLACK.value
+
+    class Meta:
+        model = StaffingRequest
+
+
+class StaffingResponseFactory(factory.django.DjangoModelFactory):
+
+    request = factory.SubFactory(StaffingRequestFactory)
+    is_available = False
+
+    class Meta:
+        model = StaffingResponse
 
 
 @override_settings(SLACK_EXPERTS=True)
