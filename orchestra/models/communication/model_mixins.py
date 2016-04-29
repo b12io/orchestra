@@ -11,9 +11,14 @@ class CommunicationPreferenceMixin(object):
         return self.CommunicationType(
             self.communication_type).description
 
-    def get_human_description(self):
+    def get_short_description(self):
         return (self.get_comunication_type_description()
                 .replace('_', ' ').title())
+
+    def get_long_description(self):
+        return self.COMMUNICATION_TYPE_DESCRIPTIONS.get(
+            self.get_comunication_type_description(), ''
+        )
 
     def can_slack(self):
         """

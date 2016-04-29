@@ -18,7 +18,10 @@
               {{ comm_pref_form.id }}
               <div class="row spaced">
                 <div class="col-lg-12 col-sm-12">
-                  <label class="xl-label" for="{{ comm_pref_form.methods.id_for_label }}">{{ description }}</label>
+                  <label class="xl-label" for="{{ comm_pref_form.methods.id_for_label }}">
+                    {{ description.short_description }}
+                  </label>
+                  <div> {{ description.long_description }} </div>
                   <div>
                     {% for method in comm_pref_form.methods %}
                       {{ method }}

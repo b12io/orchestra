@@ -129,8 +129,12 @@ class CommunicationPreferenceSettingsView(WorkerViewMixin):
             CommunicationPreferenceForm,
             max_num=self.comm_prefs.count()
         )
-        self.descriptions = [comm_pref.get_human_description()
-                             for comm_pref in self.comm_prefs]
+        self.descriptions = [
+            {
+                'short_description': comm_pref.get_short_description(),
+                'long_description': comm_pref.get_long_description(),
+            }
+            for comm_pref in self.comm_prefs]
 
     def set_method_choices(self, formset):
         for form in formset:

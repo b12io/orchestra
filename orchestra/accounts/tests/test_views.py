@@ -50,28 +50,20 @@ class AccountSettingsTest(OrchestraAuthenticatedTestCase):
             self.assertFalse(response.context['success'])
 
 
-class CommunicationPreferenceSettingsTest(OrchestraTestCase):
+class CommunicationPreferenceSettingsTest(OrchestraAuthenticatedTestCase):
 
     def setUp(self):
         super().setUp()
         setup_models(self)
         self.url = reverse('orchestra:communication_preference_settings')
-        self.request_client = RequestClient()
+        self.request_client, self.user = self.authenticate_user()
 
         worker = self.workers[0]
+        worker.user = self.user
+        worker.save()
         # Update this to handle multiple prefs when we have them
         self.comm_pref = CommunicationPreference.objects.filter(
             worker=worker).first()
-        self.user = worker.user
-        self.password = 'test'
-        self.user.set_password(self.password)
-        self.user.is_active = True
-        self.user.save()
-        self.login()
-
-    def login(self):
-        self.assertTrue(self.request_client.login(
-            username=self.user.username, password=self.password))
 
     def test_get_form(self):
         response = self.request_client.get(self.url)
