@@ -32,9 +32,9 @@ class Bot(object):
                  allowed_user_names=None,
                  allowed_commands=None):
         """
-            Base configuration for the bot to validate messages. If a variable
-            is None, all fields are allowed, otherwise each request will only
-            be accepted if the request fields are contained in the whitelists.
+        Base configuration for the bot to validate messages. If a variable
+        is `None`, all fields are allowed, otherwise each request will only
+        be accepted if the request fields are contained in the whitelists.
         """
         self.token = token
         self.whitelists = {
@@ -53,8 +53,8 @@ class Bot(object):
 
     def validate(self, data):
         """
-            Handle a request received from slack. First we validate the
-            request and then pass the message to the appropriate handler.
+        Handle a request received from slack. First we validate the
+        request and then pass the message to the appropriate handler.
         """
         token = data.get('token')
         if token != self.token:
@@ -80,10 +80,10 @@ class Bot(object):
                              attachments=None,
                              response_type='ephemeral'):
         """
-            Helper method to send back a response in response to the slack
-            user.  text is plain text to be sent, attachments is a dictionary
-            of further data to attach to the message.  See
-            https://api.slack.com/docs/attachments
+        Helper method to send back a response in response to the slack user.
+        `text` is plain text to be sent, `attachments` is a dictionary of
+        further data to attach to the message. See
+        https://api.slack.com/docs/attachments
         """
         if response_type not in VALID_RESPONSE_TYPES:
             raise BotError(
@@ -97,8 +97,8 @@ class Bot(object):
 
     def no_command_found(self, text):
         """
-            If we are unable to parse the command, we return this helpful error
-            message.
+        If we are unable to parse the command, we return this helpful error
+        message.
         """
         return self.format_slack_message(
             '{}: {}'.format(self.default_error_text, text)
@@ -115,8 +115,8 @@ class Bot(object):
 
     def dispatch(self, data):
         """
-            Method to pass data for processing. Should return a dictionary of
-            data to return to the user.
+        Method to pass data for processing. Should return a dictionary of
+        data to return to the user.
         """
         data = self.validate(data)
         text = data.get('text')
@@ -140,15 +140,15 @@ class StaffBot(Bot):
 
     def staff(self, task_id):
         """
-            This function handles staffing a request for the given task_id.
+        This function handles staffing a request for the given task_id.
         """
         return self.format_slack_message('Staffed task {}!'.format(task_id))
 
     def restaff(self, task_id, username):
         """
-            This function handles restaffing a request for the given task_id.
-            The current user for the given username is removed, and a new user
-            is found.
+        This function handles restaffing a request for the given task_id.
+        The current user for the given username is removed, and a new user
+        is found.
         """
         return self.format_slack_message(
             'Restaffed task {} for {}!'.format(task_id, username)
@@ -169,7 +169,7 @@ class StaffBot(Bot):
 
     def _send_task_to_worker(self, worker, task):
         """
-            Send the task to the worker for them to accept or reject
+        Send the task to the worker for them to accept or reject.
         """
         staffing_request = StaffingRequest.objects.create(
             worker=worker,

@@ -10,7 +10,7 @@ class BotTest(OrchestraTestCase):
 
     def test_request_validation(self):
         """
-            Ensure we only listen to valid requests.
+        Ensure we only listen to valid requests.
         """
         mock_slack_data = get_mock_slack_data()
         # Test all requests allowed
@@ -36,12 +36,12 @@ class BotTest(OrchestraTestCase):
 
     def test_commands(self):
         """
-            Ensure that the bot can handle the following commands:
-            /staffbot staff <task_id>
-            /staffbot restaff <task_id> <username>
+        Ensure that the bot can handle the following commands:
+        /staffbot staff <task_id>
+        /staffbot restaff <task_id> <username>
 
-            This test only validates that the commands are processed, other
-            tests verify the functionality of the command execution.
+        This test only validates that the commands are processed, other
+        tests verify the functionality of the command execution.
         """
         bot = StaffBot()
 
@@ -63,8 +63,8 @@ class BotTest(OrchestraTestCase):
 
     def test_staff_command(self):
         """
-            Test that the staffing logic is properly executed for the
-            staff command.
+        Test that the staffing logic is properly executed for the
+        staff command.
         """
         bot = StaffBot()
 
@@ -80,8 +80,8 @@ class BotTest(OrchestraTestCase):
 
     def test_restaff_command(self):
         """
-            Test that the restaffing logic is properly executed for the
-            restaff command.
+        Test that the restaffing logic is properly executed for the
+        restaff command.
         """
         bot = StaffBot()
 

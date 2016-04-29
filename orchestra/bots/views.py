@@ -11,8 +11,8 @@ from orchestra.bots.staffbot import StaffBot
 @method_decorator(csrf_exempt, name='dispatch')
 class BotMixin(View):
     """
-        Generic mixin to handle messages to bots, should be used by specifying
-        a `BotClass` to instantiate with the request data.
+    Generic mixin to handle messages to bots, should be used by specifying
+    a `BotClass` to instantiate with the request data.
     """
     BotClass = Bot
     bot_config = {}

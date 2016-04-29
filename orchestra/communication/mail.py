@@ -9,8 +9,8 @@ def send_mail(subject, message, from_email,
               connection=None, html_message=None,
               communication_type=None):
     """
-        Light wrapper over Django's send_mail which filters out recipients who
-        opted out of using email via their CommuncationPreference object.
+    Light wrapper over Django's send_mail which filters out recipients who
+    opted out of using email via their `CommuncationPreference` object.
     """
     if communication_type is not None:
         recipient_list = [
