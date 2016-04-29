@@ -10,7 +10,8 @@ class StaffRequestTest(OrchestraAuthenticatedTestCase):
     def setUp(self):
         super().setUp()
         self.request_client, self.user = self.authenticate_user()
-        self.staffing_request = StaffingRequestFactory(worker__user=self.user)
+        self.staffing_request = StaffingRequestFactory(
+            communication_preference__worker__user=self.user)
         self.staffing_response = StaffingResponseFactory()
         self.url_kwargs = {
             'staffing_request_id': self.staffing_request.pk

@@ -97,6 +97,12 @@ class StaffBot(BaseBot):
                 staffing_request, 'communication/new_task_available_slack.txt')
             self.send_staffing_request_by_slack(staffing_request, message)
 
+    def _get_staffing_url(self, reverse_string, url_kwargs):
+        return '{}{}'.format(
+            settings.ORCHESTRA_URL,
+            reverse(reverse_string),
+            kwargs=url_kwargs)
+
     def get_staffing_request_message(self, staffing_request, template):
         username = (
             staffing_request.communication_preference.worker.user.username)
@@ -104,17 +110,10 @@ class StaffBot(BaseBot):
         url_kwargs = {
             'staffing_request_id': staffing_request.pk
         }
-
-        accept_url = '{}{}'.format(
-            settings.ORCHESTRA_URL,
-            reverse('orchestra:communication:accept_staffing_request',
-                    kwargs=url_kwargs))
-
-        reject_url = '{}{}'.format(
-            settings.ORCHESTRA_URL,
-            reverse('orchestra:communication:reject_staffing_request',
-                    kwargs=url_kwargs))
-
+        accept_url = self._get_staffing_url(
+            'orchestra:communication:accept_staffing_request', url_kwargs)
+        reject_url = self._get_staffing_url(
+            'orchestra:communication:reject_staffing_request', url_kwargs)
         context = Context({
             'username': username,
             'accept_url': accept_url,
@@ -138,11 +137,12 @@ class StaffBot(BaseBot):
     def send_staffing_request_by_slack(self, staffing_request, message):
         worker = (
             staffing_request.communication_preference.worker)
-        if worker.slack_id is None:
+        if worker.slack_user_id is None:
             logger.error('Worker {} does not have a slack id'.format(
                 worker))
             return
 
-        self.slack.chat.post_message(worker.slack_id, message, parse='none')
+        self.slack.chat.post_message(
+            worker.slack_user_id, message, parse='none')
         staffing_request.status = StaffingRequest.Status.SENT.value
         staffing_request.save()
