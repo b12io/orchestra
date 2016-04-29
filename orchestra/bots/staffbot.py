@@ -1,6 +1,14 @@
 from django.conf import settings
+from django.core.urlresolvers import reverse
+from django.template import Context
+from django.template.loader import render_to_string
 
 from orchestra.bots.errors import SlackCommandInvalidRequest
+from orchestra.communication.mail import send_mail
+from orchestra.models import StaffingRequest
+from orchestra.models import Worker
+from orchestra.utils.task_lifecycle import is_worker_certified_for_task
+from orchestra.utils.task_lifecycle import check_worker_allowed_new_assignment
 
 
 class Bot(object):
@@ -74,3 +82,57 @@ class StaffBot(Bot):
     def dispatch(self, data):
         data = self.validate(data)
         return {'text': data.get('text')}
+
+    def _send_task_to_workers(self, task, required_role):
+        # get all the workers that are certified to complete the task.
+        workers = Worker.objects.all()
+
+        for worker in workers:
+            can_send = (
+                is_worker_certified_for_task(worker, task, required_role) and
+                check_worker_allowed_new_assignment(worker, task.status)
+            )
+            if can_send:
+                self._send_task_to_worker(
+                    worker, task, required_role)
+
+    def _send_task_to_worker(self, worker, task):
+        """
+            Send the task to the worker for them to accept or reject
+        """
+        staffing_request = StaffingRequest.objects.create(
+            worker=worker,
+            task=task,
+            request_cause=StaffingRequest.RequestCause.AUTOSTAFF.value,
+            communication_method=(
+                StaffingRequest.CommunicationMethod.EMAIL.value))
+
+        url_kwargs = {
+            'pk': staffing_request.pk
+        }
+
+        accept_url = '{}{}'.format(
+            settings.ORCHESTRA_URL,
+            reverse('orchestra:communication:accept_staffing_request',
+                    kwargs=url_kwargs))
+
+        reject_url = '{}{}'.format(
+            settings.ORCHESTRA_URL,
+            reverse('orchestra:communication:reject_staffing_request',
+                    kwargs=url_kwargs))
+
+        context = Context({
+            'username': worker.user.username,
+            'accept_url': accept_url,
+            'reject_url': reject_url
+        })
+
+        message_body = render_to_string('communication/new_task_available.txt',
+                                        context)
+        send_mail('New task is available for claim',
+                  message_body,
+                  settings.ORCHESTRA_NOTIFICATIONS_FROM_EMAIL,
+                  [worker.user.email])
+
+        staffing_request.status = StaffingRequest.Status.SENT.value
+        staffing_request.save()

@@ -18,8 +18,8 @@ from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.fixtures import StepFactory
 from orchestra.tests.helpers.fixtures import TaskAssignmentFactory
 from orchestra.tests.helpers.fixtures import TaskFactory
-from orchestra.utils.task_lifecycle import _check_worker_allowed_new_assignment
-from orchestra.utils.task_lifecycle import _worker_certified_for_task
+from orchestra.utils.task_lifecycle import check_worker_allowed_new_assignment
+from orchestra.utils.task_lifecycle import is_worker_certified_for_task
 from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.task_lifecycle import create_subsequent_tasks
 from orchestra.utils.task_lifecycle import get_new_task_assignment
@@ -36,26 +36,27 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
     """
     Test modular functions in the task_lifecycle
     """
+
     def setUp(self):  # noqa
         super().setUp()
         setup_models(self)
 
-    def test_worker_certified_for_task(self):
+    def testis_worker_certified_for_task(self):
         task = Task.objects.filter(status=Task.Status.AWAITING_PROCESSING)[0]
 
         # workers[0] has a certification
         self.assertTrue(
-            _worker_certified_for_task(self.workers[0],
-                                       task,
-                                       WorkerCertification.Role.ENTRY_LEVEL))
+            is_worker_certified_for_task(self.workers[0],
+                                         task,
+                                         WorkerCertification.Role.ENTRY_LEVEL))
 
         # workers[2] has no certification
         self.assertFalse(
-            _worker_certified_for_task(self.workers[2],
-                                       task,
-                                       WorkerCertification.Role.ENTRY_LEVEL))
+            is_worker_certified_for_task(self.workers[2],
+                                         task,
+                                         WorkerCertification.Role.ENTRY_LEVEL))
 
-    def test_check_worker_allowed_new_assignment(self):
+    def testcheck_worker_allowed_new_assignment(self):
         invalid_statuses = [Task.Status.PROCESSING,
                             Task.Status.REVIEWING,
                             Task.Status.POST_REVIEW_PROCESSING,
@@ -63,7 +64,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
                             Task.Status.ABORTED]
         for status in invalid_statuses:
             with self.assertRaises(TaskStatusError):
-                _check_worker_allowed_new_assignment(self.workers[2], status)
+                check_worker_allowed_new_assignment(self.workers[2], status)
 
     def test_get_new_task_assignment_entry_level(self):
         # Entry-level assignment

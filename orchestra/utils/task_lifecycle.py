@@ -1,22 +1,15 @@
 import random
 from importlib import import_module
 
-from annoying.functions import get_object_or_None
 from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
-from django.core.urlresolvers import reverse
-from django.template import Context
-from django.template.loader import render_to_string
 
-from orchestra.communication.mail import send_mail
 from orchestra.core.errors import AssignmentPolicyError
 from orchestra.core.errors import IllegalTaskSubmission
 from orchestra.core.errors import ModelSaveError
 from orchestra.core.errors import NoTaskAvailable
 from orchestra.core.errors import ReviewPolicyError
-from orchestra.models import StaffingRequest
-from orchestra.models import StaffingResponse
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import TaskDependencyError
 from orchestra.core.errors import TaskStatusError
@@ -108,8 +101,8 @@ def worker_has_reviewer_status(worker,
     return has_reviwer_status
 
 
-def _worker_certified_for_task(worker, task, role,
-                               task_class=WorkerCertification.TaskClass.REAL):
+def is_worker_certified_for_task(
+        worker, task, role, task_class=WorkerCertification.TaskClass.REAL):
     """
     Check whether worker is certified for a given task, role, and task
     class.
@@ -176,7 +169,7 @@ def assign_task(worker_id, task_id):
         raise TaskAssignmentError('Status incompatible with new assignment')
 
     assignment = current_assignment(task)
-    if not _worker_certified_for_task(worker, task, required_role):
+    if not is_worker_certified_for_task(worker, task, required_role):
         raise WorkerCertificationError('Worker not certified for this task.')
     if is_worker_assigned_to_task(worker, task):
         raise TaskAssignmentError('Worker already assigned to this task.')
@@ -242,7 +235,7 @@ def reassign_assignment(worker_id, assignment_id):
     else:
         role = WorkerCertification.Role.ENTRY_LEVEL
 
-    if not _worker_certified_for_task(worker, assignment.task, role):
+    if not is_worker_certified_for_task(worker, assignment.task, role):
         raise WorkerCertificationError(
             'Worker not certified for this assignment.')
     if is_worker_assigned_to_task(worker, assignment.task):
@@ -555,7 +548,7 @@ def get_next_task_status(task, iteration_status):
             raise IllegalTaskSubmission('Task not in rejectable state.')
 
 
-def _check_worker_allowed_new_assignment(worker, task_status):
+def check_worker_allowed_new_assignment(worker, task_status):
     """
     Check if the worker can be assigned to a new task.
 
@@ -610,7 +603,7 @@ def get_new_task_assignment(worker, task_status):
         orchestra.core.errors.NoTaskAvailable:
             No human tasks are available for the given task status.
     """
-    _check_worker_allowed_new_assignment(worker, task_status)
+    check_worker_allowed_new_assignment(worker, task_status)
 
     tasks = (Task.objects
              .filter(status=task_status)
@@ -1013,81 +1006,3 @@ def create_subsequent_tasks(project):
                     settings.MACHINE_STEP_SCHEDULER[1])
                 machine_step_scheduler = machine_step_scheduler_class()
                 machine_step_scheduler.schedule(project.id, step.slug)
-
-
-def send_task_to_workers(task, required_role):
-    # get all the workers that are certified to complete the task.
-    workers = Worker.objects.all()
-
-    for worker in workers:
-        if (not _worker_certified_for_task(worker, task, required_role) or
-                not _check_worker_allowed_new_assignment(worker, task.status)):
-            continue
-        send_task_to_worker(worker, task, required_role)
-
-
-def send_task_to_worker(worker, task):
-    staffing_request = StaffingRequest.objects.create(
-        worker=worker,
-        task=task,
-        request_cause=StaffingRequest.RequestCause.AUTOSTAFF.value,
-        communication_method=(
-            StaffingRequest.CommunicationMethod.EMAIL.value))
-
-    url_kwargs = {
-        'pk': staffing_request.pk
-    }
-
-    accept_url = '{}{}'.format(
-        settings.ORCHESTRA_URL +
-        reverse('orchestra:communication:accept_staffing_request',
-                kwargs=url_kwargs))
-
-    reject_url = '{}{}'.format(
-        settings.ORCHESTRA_URL +
-        reverse('orchestra:communication:reject_staffing_request',
-                kwargs=url_kwargs))
-
-    context = Context({
-        'username': worker.user.username,
-        'accept_url': accept_url,
-        'reject_url': reject_url
-    })
-
-    message_body = render_to_string('orchestra/new_task_available.txt',
-                                    context)
-    send_mail('New task is available for claim',
-              message_body,
-              settings.ORCHESTRA_NOTIFICATIONS_FROM_EMAIL,
-              [worker.user.email])
-
-    staffing_request.status = StaffingRequest.Status.SENT.value
-    staffing_request.save()
-
-
-@transaction.atomic
-def handle_staffing_response(worker, pk, is_available):
-    staffing_request = get_object_or_None(StaffingRequest,
-                                          pk=pk)
-    if staffing_request is None:
-        return None
-
-    response = StaffingResponse.objects.filter(request=staffing_request)
-    if response.exists():
-        response = response.first()
-        response.is_available = is_available
-
-        if not is_available:
-            response.is_winner = False
-    else:
-        response = StaffingResponse.objects.create(
-            request=staffing_request,
-            is_available=is_available)
-
-    if (is_available and
-            not StaffingResponse.objects.filter(is_winner=True).exists()):
-        # TODO(kkamalov): create a TaskAssignment object
-        response.is_winner = True
-
-    response.save()
-    return response
