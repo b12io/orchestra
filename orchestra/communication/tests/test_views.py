@@ -23,7 +23,8 @@ class AcceptStaffRequestTest(StaffRequestTest):
     def setUp(self):
         super().setUp()
         self.url = reverse(
-            'orchestra:accept_staffing_request', kwargs=self.url_kwargs)
+            'orchestra:communication:accept_staffing_request',
+            kwargs=self.url_kwargs)
 
     def test_get(self):
         response = self.request_client.get(self.url)
@@ -37,7 +38,8 @@ class RejectStaffRequestTest(StaffRequestTest):
     def setUp(self):
         super().setUp()
         self.url = reverse(
-            'orchestra:reject_staffing_request', kwargs=self.url_kwargs)
+            'orchestra:communication:reject_staffing_request',
+            kwargs=self.url_kwargs)
 
     def test_get(self):
         response = self.request_client.get(self.url)

@@ -130,9 +130,20 @@ class TimeEntryFactory(factory.django.DjangoModelFactory):
         model = 'orchestra.TimeEntry'
 
 
-class StaffingRequestFactory(factory.django.DjangoModelFactory):
+class CommunicationPreferenceFactory(factory.django.DjangoModelFactory):
 
     worker = factory.SubFactory(WorkerFactory)
+    communication_type = (CommunicationPreference.CommunicationType.
+                          TASK_STATUS_CHANGE.value)
+
+    class Meta:
+        model = 'orchestra.CommunicationPreference'
+
+
+class StaffingRequestFactory(factory.django.DjangoModelFactory):
+
+    communication_preference = factory.SubFactory(
+        CommunicationPreferenceFactory)
     task = factory.SubFactory(TaskFactory)
     request_cause = StaffingRequest.RequestCause.USER.value
     communication_method = StaffingRequest.CommunicationMethod.SLACK.value
