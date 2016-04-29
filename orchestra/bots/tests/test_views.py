@@ -2,7 +2,7 @@ from django.core.urlresolvers import reverse
 from django.test import override_settings
 from django.test import Client as RequestClient
 
-from orchestra.bots.staffbot import Bot
+from orchestra.bots.staffbot import BaseBot
 from orchestra.bots.tests.fixtures import get_mock_slack_data
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.utils.load_json import load_encoded_json
@@ -46,7 +46,7 @@ class StaffBotViewTest(OrchestraTestCase):
         data['text'] = 'staff'
         response = self.request_client.post(self.url, data)
         self.assert_response(
-            response, default_error_text=Bot.default_error_text)
+            response, default_error_text=BaseBot.default_error_text)
 
     def test_restaff_command(self):
         data = get_mock_slack_data()
@@ -57,4 +57,4 @@ class StaffBotViewTest(OrchestraTestCase):
         data['text'] = 'restaff 5'
         response = self.request_client.post(self.url, data)
         self.assert_response(
-            response, default_error_text=Bot.default_error_text)
+            response, default_error_text=BaseBot.default_error_text)

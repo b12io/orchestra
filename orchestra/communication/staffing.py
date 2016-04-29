@@ -6,11 +6,10 @@ from orchestra.models import StaffingResponse
 
 
 @transaction.atomic
-def handle_staffing_response(worker, pk, is_available):
-    """
-    """
+def handle_staffing_response(worker, staffing_request_id, is_available):
+    # TODO(kkamalov): add proper docstring
     staffing_request = get_object_or_None(StaffingRequest,
-                                          pk=pk)
+                                          id=staffing_request_id)
     if staffing_request is None:
         return None
 

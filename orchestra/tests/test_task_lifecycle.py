@@ -41,7 +41,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         super().setUp()
         setup_models(self)
 
-    def testis_worker_certified_for_task(self):
+    def test_is_worker_certified_for_task(self):
         task = Task.objects.filter(status=Task.Status.AWAITING_PROCESSING)[0]
 
         # workers[0] has a certification
@@ -56,7 +56,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
                                          task,
                                          WorkerCertification.Role.ENTRY_LEVEL))
 
-    def testcheck_worker_allowed_new_assignment(self):
+    def test_check_worker_allowed_new_assignment(self):
         invalid_statuses = [Task.Status.PROCESSING,
                             Task.Status.REVIEWING,
                             Task.Status.POST_REVIEW_PROCESSING,

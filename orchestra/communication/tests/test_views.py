@@ -13,7 +13,7 @@ class StaffRequestTest(OrchestraAuthenticatedTestCase):
         self.staffing_request = StaffingRequestFactory(worker__user=self.user)
         self.staffing_response = StaffingResponseFactory()
         self.url_kwargs = {
-            'pk': self.staffing_request.pk
+            'staffing_request_id': self.staffing_request.pk
         }
 
 
