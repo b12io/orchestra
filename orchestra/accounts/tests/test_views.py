@@ -1,4 +1,5 @@
 from django.core.urlresolvers import reverse
+from unittest.mock import patch
 
 from orchestra.tests.helpers import OrchestraAuthenticatedTestCase
 from orchestra.models import CommunicationPreference
@@ -28,7 +29,10 @@ class AccountSettingsTest(OrchestraAuthenticatedTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'accounts/settings.html')
 
-    def test_change_all_fields(self):
+    @patch('orchestra.accounts.forms.get_slack_user_id')
+    def test_change_all_fields(self, mock_get_slack_user_id):
+        mock_get_slack_user_id.return_value = 'test_id'
+
         data = self._get_account_settings_mock_data()
         response = self.request_client.post(self.url, data)
         self.assertTrue(response.context['success'])
@@ -40,8 +44,12 @@ class AccountSettingsTest(OrchestraAuthenticatedTestCase):
         self.worker.refresh_from_db()
         self.assertEqual(self.worker.slack_username, data['slack_username'])
         self.assertEqual(self.worker.phone, data['phone_0'] + data['phone_1'])
+        self.assertEqual(self.worker.slack_user_id, 'test_id')
 
-    def test_missing_fields(self):
+    @patch('orchestra.accounts.forms.get_slack_user_id')
+    def test_missing_fields(self, mock_get_slack_user_id):
+        mock_get_slack_user_id.return_value = 'test_id'
+
         required_fields = self._get_account_settings_mock_data().keys()
         for field in required_fields:
             data = self._get_account_settings_mock_data()

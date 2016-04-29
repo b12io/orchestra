@@ -185,12 +185,15 @@ class Worker(WorkerMixin, models.Model):
             The time the worker was created.
         slack_username (str):
             The worker's Slack username if Slack integration is enabled.
+        slack_user_id (str):
+            The worker's Slack id if Slack integration is enabled.
         phone (str):
             The worker's phone number
     """
     user = models.OneToOneField(settings.AUTH_USER_MODEL)
     start_datetime = models.DateTimeField(default=timezone.now)
     slack_username = models.CharField(max_length=200, blank=True, null=True)
+    slack_user_id = models.CharField(max_length=200, blank=True, null=True)
     phone = PhoneNumberField(null=True)
 
     class Meta:
