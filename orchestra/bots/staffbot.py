@@ -21,11 +21,6 @@ class StaffBot(BaseBot):
         (r'restaff (?P<task_id>[0-9]+) (?P<username>[\w.@+-]+)', 'restaff'),
     )
 
-    commands = (
-        (r'staff (?P<task_id>[0-9]+)', 'staff'),
-        (r'restaff (?P<task_id>[0-9]+) (?P<username>[\w.@+-]+)', 'restaff'),
-    )
-
     def __init__(self, **kwargs):
         default_config = getattr(settings, 'STAFFBOT_CONFIG', {})
         default_config.update(kwargs)
