@@ -2,6 +2,7 @@ import re
 
 from orchestra.bots.errors import SlackCommandInvalidRequest
 from orchestra.bots.errors import BaseBotError
+from orchestra.communication.slack import SlackService
 
 # Types of responses we can send to slack
 VALID_RESPONSE_TYPES = {'ephemeral', 'in_channel'}
@@ -20,13 +21,16 @@ class BaseBot(object):
                  allowed_channel_names=None,
                  allowed_user_ids=None,
                  allowed_user_names=None,
-                 allowed_commands=None):
+                 allowed_commands=None,
+                 slack_api_key=None,
+                 **kwargs):
         """
-            Base configuration for the bot to validate messages. If a variable
-            is None, all fields are allowed, otherwise each request will only
-            be accepted if the request fields are contained in the whitelists.
+        Base configuration for the bot to validate messages. If a variable
+        is None, all fields are allowed, otherwise each request will only
+        be accepted if the request fields are contained in the whitelists.
         """
         self.token = token
+        self.slack = SlackService(slack_api_key)
         self.whitelists = {
             'team_id': allowed_team_ids,
             'team_domain': allowed_domains,
@@ -43,8 +47,8 @@ class BaseBot(object):
 
     def validate(self, data):
         """
-            Handle a request received from slack. First we validate the
-            request and then pass the message to the appropriate handler.
+        Handle a request received from slack. First we validate the
+        request and then pass the message to the appropriate handler.
         """
         token = data.get('token')
         if token != self.token:
@@ -70,10 +74,10 @@ class BaseBot(object):
                              attachments=None,
                              response_type='ephemeral'):
         """
-            Helper method to send back a response in response to the slack
-            user.  text is plain text to be sent, attachments is a dictionary
-            of further data to attach to the message.  See
-            https://api.slack.com/docs/attachments
+        Helper method to send back a response in response to the slack
+        user.  text is plain text to be sent, attachments is a dictionary
+        of further data to attach to the message.  See
+        https://api.slack.com/docs/attachments
         """
         if response_type not in VALID_RESPONSE_TYPES:
             raise BaseBotError(
@@ -87,8 +91,8 @@ class BaseBot(object):
 
     def no_command_found(self, text):
         """
-            If we are unable to parse the command, we return this helpful error
-            message.
+        If we are unable to parse the command, we return this helpful error
+        message.
         """
         return self.format_slack_message(
             '{}: {}'.format(self.default_error_text, text)
@@ -105,8 +109,8 @@ class BaseBot(object):
 
     def dispatch(self, data):
         """
-            Method to pass data for processing. Should return a dictionary of
-            data to return to the user.
+        Method to pass data for processing. Should return a dictionary of
+        data to return to the user.
         """
         data = self.validate(data)
         text = data.get('text')

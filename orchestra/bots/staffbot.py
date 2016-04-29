@@ -2,7 +2,6 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.template import Context
 from django.template.loader import render_to_string
-from slacker import Slacker
 
 from orchestra.bots.basebot import BaseBot
 from orchestra.communication.mail import send_mail
@@ -93,7 +92,7 @@ class StaffBot(BaseBot):
                 communication_preference=communication_preference,
                 task=task,
                 request_cause=request_cause,
-                communication_method=email_method)
+                communication_method=slack_method)
             message = self.get_staffing_request_message(
                 staffing_request, 'communication/new_task_available_slack.txt')
             self.send_staffing_request_by_slack(staffing_request, message)
@@ -136,7 +135,6 @@ class StaffBot(BaseBot):
         staffing_request.status = StaffingRequest.Status.SENT.value
         staffing_request.save()
 
-
     def send_staffing_request_by_slack(self, staffing_request, message):
         worker = (
             staffing_request.communication_preference.worker)
@@ -145,7 +143,6 @@ class StaffBot(BaseBot):
                 worker))
             return
 
-        slack = Slacker(settings.SLACK_EXPERTS_API_KEY)
-        slack.chat.post_message(worker.slack_id, message, parse='none')
+        self.slack.chat.post_message(worker.slack_id, message, parse='none')
         staffing_request.status = StaffingRequest.Status.SENT.value
         staffing_request.save()
