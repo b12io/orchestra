@@ -13,7 +13,7 @@ class StaffBotViewTest(OrchestraTestCase):
     def setUp(self):
         super().setUp()
         self.request_client = RequestClient()
-        self.url = reverse('orchestra:staffbot')
+        self.url = reverse('orchestra:bots:staffbot')
 
     def assert_response(self, response, error=False, default_error_text=None):
         self.assertEqual(response.status_code, 200)
