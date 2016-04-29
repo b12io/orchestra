@@ -10,10 +10,11 @@ class DeleteMixin(object):
     Overrides delete and sets `is_deleted=True` instead of deleting object.
     Intended to be used with models that have an `is_deleted` field.
     """
-
-    def delete(self, *args, **kwargs):
+    def delete(self, actually_delete=False, *args, **kwargs):
         # Implement cascading deletes.
         # NOTE(lydia): This ignores any other constraints passed to on_delete.
+        if actually_delete:
+            return super().delete(*args, **kwargs)
         fields = self._meta.get_fields(include_hidden=True)
         for field in fields:
             # Pass on fields that are not many-to-one relationships.
@@ -60,6 +61,7 @@ class BaseModel(DeleteMixin, models.Model):
             If value is True, mdoel is deleted. Default is False.
     """
     objects = BaseModelManager()
+    unsafe_objects = models.Manager()
 
     created_at = models.DateTimeField(default=timezone.now)
     is_deleted = models.BooleanField(default=False)
