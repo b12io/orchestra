@@ -11,6 +11,7 @@ $dark-gray: rgb(60, 60, 60);
 $light-green: rgb(46, 204, 113);
 $dark-green: rgb(39, 174, 96);
 $bold-yellow: rgb(230, 198, 55);
+$black: rgb(0, 0, 0);
 
 $sqrt-2: 1.4142;
 
@@ -47,5 +48,21 @@ $main-font-stack: 'Ruda', sans-serif;
   @extend %no-padding;
   > [class *= "col-"] {
     @extend %no-padding;
+  }
+}
+
+%loading-spinner {
+  &::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-bottom: 1px solid $black;
+    border-right: 1px solid $black;
+    border-radius: 50%;
+
+    content: "";
+    animation: spin .75s linear infinite;
   }
 }

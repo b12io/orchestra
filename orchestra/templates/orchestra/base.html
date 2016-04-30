@@ -20,15 +20,12 @@
 
     <title data-ng-bind="title">{% block title %}{% endblock %} | Orchestra</title>
 
-    <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="{% static 'orchestra/common/css/lib/style.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'orchestra/common/css/lib/style-responsive.css' %}">
 
-    <!--external css-->
-    <link rel="stylesheet" href="{% static 'orchestra/common/font-awesome/css/font-awesome.css' %}" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
 
-    <!-- Custom styles for this template -->
     <link rel="stylesheet" type="text/css" href="{% static 'hijack/hijack-styles.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'dist/orchestra/common/css/orchestra.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'orchestra/common/components/quill/css/quill.snow.min.css' %}">
@@ -88,6 +85,13 @@
                 <a href="/orchestra/app/timecard/">
                   <i class="fa fa-clock-o"></i>
                   <span>Timecard</span>
+                </a>
+              </li>
+
+              <li>
+                <a href="/orchestra/app/project/">
+                  <i class="fa fa-map-o"></i>
+                  <span>Project Management</span>
                 </a>
               </li>
 

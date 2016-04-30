@@ -5,11 +5,13 @@
     .module('orchestra.project_management')
     .controller('ProjectManagementController', ProjectManagementController);
 
-  function ProjectManagementController($location, $scope, $routeParams, $http, $sce,
-    $compile, $uibModal, $timeout, projectVis) {
+  function ProjectManagementController($route, $routeParams, $scope, projectVis, dataService) {
     var vm = this;
     $scope.activate = function() {
-      projectVis.setup($scope, $routeParams.projectId, '.project-management .svg-wrapper');
+      if (dataService.currentProject.id) {
+        $route.updateParams({projectId: dataService.currentProject.id});
+      }
+      projectVis.setup($scope, '.project-management .svg-wrapper', $routeParams.projectId);
     };
     $scope.activate();
   }

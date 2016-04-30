@@ -16,6 +16,18 @@
   padding-left: 0;
   padding-right: 0; }
 
+.project-management .vis-wrapper .overlay .spinner::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-bottom: 1px solid black;
+  border-right: 1px solid black;
+  border-radius: 50%;
+  content: "";
+  animation: spin .75s linear infinite; }
+
 /**
  * Base stylesheet for Orchestra.
  *
@@ -135,6 +147,18 @@ a.logo {
 .row.no-padding, .row.no-padding > [class*="col-"] {
   padding-left: 0;
   padding-right: 0; }
+
+.project-management .vis-wrapper .overlay .spinner::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-bottom: 1px solid black;
+  border-right: 1px solid black;
+  border-radius: 50%;
+  content: "";
+  animation: spin .75s linear infinite; }
 
 /**
  * Base stylesheet for Orchestra.
@@ -336,6 +360,18 @@ a.logo {
   padding-left: 0;
   padding-right: 0; }
 
+.project-management .vis-wrapper .overlay .spinner::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-bottom: 1px solid black;
+  border-right: 1px solid black;
+  border-radius: 50%;
+  content: "";
+  animation: spin .75s linear infinite; }
+
 /* Confirmation modals */
 .modal-confirm-submit {
   padding-top: 200px; }
@@ -517,6 +553,18 @@ a.logo {
   padding-left: 0;
   padding-right: 0; }
 
+.project-management .vis-wrapper .overlay .spinner::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-bottom: 1px solid black;
+  border-right: 1px solid black;
+  border-radius: 50%;
+  content: "";
+  animation: spin .75s linear infinite; }
+
 .project-management-modal, .slack-modal, .data-modal, .revert-modal {
   font-size: 1.5rem;
   padding: 15px; }
@@ -549,9 +597,13 @@ a.logo {
   margin-top: 75px;
   font-size: 1.5rem;
   position: relative; }
-  .project-management .project-description {
-    font-size: 3rem;
-    margin: 0 10px; }
+  .project-management .project-description.ui-select-bootstrap {
+    margin: 10px 0; }
+    .project-management .project-description.ui-select-bootstrap > .ui-select-match > .btn {
+      height: auto;
+      width: auto;
+      font-size: 30px;
+      padding-right: 40px; }
   .project-management .axis-wrapper {
     position: relative;
     display: inline-block; }
@@ -585,7 +637,24 @@ a.logo {
         border: none; }
   .project-management .vis-wrapper {
     position: relative;
-    margin-bottom: 75px; }
+    margin-bottom: 75px;
+    min-height: 200px; }
+    .project-management .vis-wrapper .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: white;
+      opacity: 0.75;
+      z-index: 100; }
+      .project-management .vis-wrapper .overlay .spinner {
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%); }
     .project-management .vis-wrapper .svg-wrapper {
       overflow-x: auto;
       overflow-y: hidden;

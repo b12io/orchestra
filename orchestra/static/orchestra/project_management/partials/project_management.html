@@ -3,7 +3,14 @@
     <div class="container-fluid">
       <div class="row padded">
         <div class="col-lg-12 col-md-12 col-sm-12">
-          <span class="project-description">{{vis.dataService.data.project.short_description}}</span>
+          <ui-select class="project-description" ng-model="vis.dataService.currentProject" ng-change="vis.dataService.changeProject()">
+            <ui-select-match>
+              <span ng-bind="$select.selected.short_description"></span>
+            </ui-select-match>
+            <ui-select-choices repeat="item in (vis.dataService.allProjects | toArray | filter: $select.search) track by item.id">
+              <span ng-bind="item.short_description"></span>
+            </ui-select-choices>
+          </ui-select>
           <div class="project-actions">
             <button type="button" ng-click="vis.createSubsequentTasks()" class="btn btn-default">
               Create subsequent tasks
@@ -23,7 +30,10 @@
       </div>
       <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12">
-          <div class="vis-wrapper">
+          <div class="vis-wrapper" ng-show="vis.dataService.currentProject.id">
+            <div class="overlay" ng-if="vis.dataService.loading">
+              <div class="spinner"></div>
+            </div>
             <div class="freeze-pane-left">
               <div class="scale-buttons">
                 <button ng-click="vis.axis.relativeTime = !vis.axis.relativeTime; vis.draw()"

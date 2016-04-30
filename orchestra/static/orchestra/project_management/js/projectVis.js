@@ -9,7 +9,7 @@
      * Service to coordinate and visualize the project management view.
      */
     return {
-      setup: function(scope, projectId, parentSelector) {
+      setup: function(scope, parentSelector, projectId) {
         var vis = this;
         scope.vis = vis;
 
@@ -25,7 +25,6 @@
           'scaleWidth': 1350
         };
 
-        dataService.setup(projectId);
         visUtils.setup(d3.select(parentSelector), params);
         crosshair.setup();
 
@@ -50,8 +49,12 @@
           .attr('class', 'x label');
 
         scope.$on('orchestra:projectManagement:dataUpdate', vis.draw);
-        dataService.updateData(function() {
-          visUtils.parentContainer.node().scrollLeft = 100;
+        dataService.dataReady.then(function() {
+          if (projectId !== undefined) {
+            dataService.changeProject(projectId).then(function() {
+              visUtils.parentContainer.node().scrollLeft = 100;
+            });            
+          }
         });
       },
       draw: function() {
@@ -71,7 +74,7 @@
          * in the visualization.
          */
         var vis = this;
-        orchestraApi.createSubsequentTasks(dataService.projectId)
+        orchestraApi.createSubsequentTasks(dataService.currentProject.id)
           .then(function() {
             dataService.updateData();
           }, function(response) {
@@ -104,7 +107,7 @@
           templateUrl: $static('/static/orchestra/project_management/partials/slack_modal.html'),
           controller: function($scope, $log) {
             $scope.editSlackMembership = function(action, username) {
-              orchestraApi.editSlackMembership(action, dataService.projectId, username)
+              orchestraApi.editSlackMembership(action, dataService.currentProject.id, username)
                 .then(function() {
                   modalInstance.close();
                 }, function(response) {
@@ -124,7 +127,7 @@
          * visualization.
          */
         if (confirm('Are you sure you want to end this project? This cannot be undone.')) {
-          orchestraApi.endProject(dataService.projectId)
+          orchestraApi.endProject(dataService.currentProject.id)
             .then(function() {
               $location.path('/');
             }, function(response) {

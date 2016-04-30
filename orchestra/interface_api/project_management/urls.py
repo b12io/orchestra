@@ -3,6 +3,10 @@ from django.conf.urls import url
 from orchestra.interface_api.project_management import views
 
 urlpatterns = [
+    url(r'^projects/$',
+        views.ProjectList.as_view(),
+        name='projects'),
+
     url(r'^assign_task/$',
         views.assign_task_api,
         name='assign_task'),

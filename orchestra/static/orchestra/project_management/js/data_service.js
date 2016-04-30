@@ -1,9 +1,9 @@
 (function() {
-  'use strict';
+  // 'use strict';
 
   var serviceModule = angular.module('orchestra.project_management');
 
-  serviceModule.factory('dataService', function($rootScope, $location, orchestraApi) {
+  serviceModule.factory('dataService', function($location, $rootScope, $route, orchestraApi) {
     /**
      * Service to share and manipulate project management data across
      * visualization components.
@@ -11,19 +11,43 @@
     var _meta;
     var _now = new Date();
 
-    return {
-      setup: function(projectId) {
+    var service = {
+      currentProject: {short_description: 'Select project to display', id: null},
+      dataReady: null,
+      allProjects: {},
+      resetData: function(projectId) {
+        ds = this;
         _meta = {
           'tasks': {}
         };
-        this.projectId = projectId;
       },
-      updateData: function(cb) {
+      getAllProjects: function() {
+        var dataService = this;
+        dataService.dataReady = orchestraApi.allProjects().then(function(response) {
+          response.data.forEach(function(project) {
+            dataService.allProjects[project.id] = project;
+          });
+        });
+        return dataService.dataReady;
+      },
+      changeProject: function(projectId) {
+        if (projectId !== undefined) {
+          this.currentProject = this.allProjects[projectId];
+        }
+
+        if (this.currentProject) {
+          $route.updateParams({projectId: this.currentProject.id});
+          this.resetData();
+          return this.updateData();
+        }
+      },
+      updateData: function() {
         /**
          * Retrieves latest project data from Orchestra.
          */
         var dataService = this;
-        orchestraApi.projectInformation(this.projectId)
+        dataService.loading = true;
+        return orchestraApi.projectInformation(this.currentProject.id)
           .then(function(response) {
             dataService.setData(response.data);
             if (dataService.data.project.status === 'Aborted') {
@@ -31,10 +55,8 @@
               $location.path('/');
             } else {
               $rootScope.$broadcast('orchestra:projectManagement:dataUpdate');
-              if (cb) {
-                cb();
-              }
             }
+            dataService.loading = false;
           }, function(response) {
             var errorMessage = 'Error updating data.';
             if (response.status === 400) {
@@ -186,5 +208,8 @@
         };
       }
     };
+
+    service.getAllProjects();
+    return service;
   });
 })();
