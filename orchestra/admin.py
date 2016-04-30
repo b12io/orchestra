@@ -20,6 +20,7 @@ from orchestra.models import WorkerCertification
 from orchestra.models import Workflow
 from orchestra.models import WorkflowVersion
 from orchestra.models import CommunicationPreference
+from orchestra.utils.slack import get_slack_user_id
 
 admin.site.site_header = 'Orchestra'
 admin.site.site_title = 'Orchestra'
@@ -139,11 +140,18 @@ class TimeEntryAdmin(admin.ModelAdmin):
 class WorkerAdmin(admin.ModelAdmin):
     list_display = ('id', 'edit_user', 'email', 'slack_username', 'phone')
     ordering = ('user__username',)
+    readonly_fields = ('slack_user_id',)
     search_fields = ('user__username', 'user__email', 'slack_username')
 
     formfield_overrides = {
         PhoneNumberField: {'widget': PhoneNumberPrefixWidget},
     }
+
+    def save_model(self, request, obj, form, change):
+        instance = form.save(commit=False)
+        instance.slack_user_id = get_slack_user_id(
+            form.data.get('slack_username'))
+        instance.save()
 
     def edit_user(self, obj):
         return edit_link(obj.user, obj.user.username)
