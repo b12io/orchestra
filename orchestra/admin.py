@@ -20,7 +20,7 @@ from orchestra.models import WorkerCertification
 from orchestra.models import Workflow
 from orchestra.models import WorkflowVersion
 from orchestra.models import CommunicationPreference
-from orchestra.utils.slack import get_slack_user_id
+from orchestra.communication.slack import get_slack_user_id
 
 admin.site.site_header = 'Orchestra'
 admin.site.site_title = 'Orchestra'
