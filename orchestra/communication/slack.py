@@ -1,20 +1,29 @@
 import random
-import slacker
 import string
 
 from django.conf import settings
 from django.utils.text import slugify
 from orchestra.utils.settings import run_if
+from slacker import Slacker
 
 
 class SlackService(object):
     """
     Wrapper slack service to allow easy swapping and mocking out of API.
     """
-    def __init__(self, api_key):
-        self._service = slacker.Slacker(api_key)
+
+    def __init__(self, api_key=None):
+        if not api_key:
+            api_key = settings.SLACK_EXPERTS_API_KEY
+        self._service = Slacker(api_key)
         for attr_name in ('chat', 'groups', 'users'):
             setattr(self, attr_name, getattr(self._service, attr_name))
+
+
+def get_slack_user_id(slack_username):
+    slack = SlackService()
+    slack_user_id = slack.users.get_user_id(slack_username)
+    return slack_user_id
 
 
 @run_if('SLACK_EXPERTS')

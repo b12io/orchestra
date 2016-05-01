@@ -29,7 +29,7 @@ class CommunicationPreferenceMixin(object):
         return '{} - {} - {}'.format(
             self.worker,
             self.methods.items(),
-            self.get_comunication_type_description()
+            self.get_descriptions().get('short_description')
         )
 
 

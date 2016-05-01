@@ -6,7 +6,7 @@ from phonenumber_field.widgets import PhoneNumberPrefixWidget
 from orchestra.accounts.bitformfield import BitFormField
 from orchestra.models import CommunicationPreference
 from orchestra.models import Worker
-from orchestra.utils.slack import get_slack_user_id
+from orchestra.communication.slack import get_slack_user_id
 
 UserModel = get_user_model()
 
