@@ -82,9 +82,9 @@ class StaffBot(BaseBot):
                 task=task,
                 request_cause=request_cause,
                 communication_method=email_method)
-            message = self.get_staffing_request_message(
+            message = self._get_staffing_request_message(
                 staffing_request, 'communication/new_task_available_email.txt')
-            self.send_staffing_request_by_mail(staffing_request, message)
+            self._send_staffing_request_by_mail(staffing_request, message)
 
         if communication_preference.can_slack():
             slack_method = StaffingRequest.CommunicationMethod.SLACK.value
@@ -93,9 +93,9 @@ class StaffBot(BaseBot):
                 task=task,
                 request_cause=request_cause,
                 communication_method=slack_method)
-            message = self.get_staffing_request_message(
+            message = self._get_staffing_request_message(
                 staffing_request, 'communication/new_task_available_slack.txt')
-            self.send_staffing_request_by_slack(staffing_request, message)
+            self._send_staffing_request_by_slack(staffing_request, message)
 
     def _get_staffing_url(self, reverse_string, url_kwargs):
         return '{}{}'.format(
@@ -103,7 +103,7 @@ class StaffBot(BaseBot):
             reverse(reverse_string),
             kwargs=url_kwargs)
 
-    def get_staffing_request_message(self, staffing_request, template):
+    def _get_staffing_request_message(self, staffing_request, template):
         username = (
             staffing_request.communication_preference.worker.user.username)
 
@@ -123,7 +123,7 @@ class StaffBot(BaseBot):
         message_body = render_to_string(template, context)
         return message_body
 
-    def send_staffing_request_by_mail(self, staffing_request, message):
+    def _send_staffing_request_by_mail(self, staffing_request, message):
         email = (
             staffing_request.communication_preference.worker.user.email)
 
@@ -134,7 +134,7 @@ class StaffBot(BaseBot):
         staffing_request.status = StaffingRequest.Status.SENT.value
         staffing_request.save()
 
-    def send_staffing_request_by_slack(self, staffing_request, message):
+    def _send_staffing_request_by_slack(self, staffing_request, message):
         worker = (
             staffing_request.communication_preference.worker)
         if worker.slack_user_id is None:
