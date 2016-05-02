@@ -40,7 +40,7 @@ class StaffingRequestMixin(object):
 
     def __str__(self):
         return '{} - {} - {}'.format(
-            self.worker,
+            self.communication_preference.worker,
             self.task.id,
             self.get_request_cause_description()
         )
