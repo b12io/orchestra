@@ -78,7 +78,7 @@ class StaffingRequest(StaffingRequestMixin, BaseModel):
     work on a Task by staffbot.
 
     Attributes:
-        worker (orchestra.models.Worker):
+        communication_preference (orchestra.models.CommunicationPreference):
             Django user that the request is sent to
         task (orchestra.models.Task):
             The task that needs a worker assignment

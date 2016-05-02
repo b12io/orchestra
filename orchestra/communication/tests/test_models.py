@@ -1,11 +1,13 @@
 from orchestra.accounts.signals import orchestra_user_registered
 from orchestra.models import CommunicationPreference
 from orchestra.tests.helpers import OrchestraTestCase
+from orchestra.tests.helpers.fixtures import StaffingRequestFactory
+from orchestra.tests.helpers.fixtures import StaffingResponseFactory
 from orchestra.tests.helpers.fixtures import UserFactory
 from orchestra.tests.helpers.fixtures import WorkerFactory
 
 
-class ModelsTestCase(OrchestraTestCase):
+class CommunicationPreferenceTestCase(OrchestraTestCase):
 
     def setUp(self):
         # Create a user
@@ -71,3 +73,41 @@ class ModelsTestCase(OrchestraTestCase):
         for comm_pref in comm_prefs:
             for label, flag in comm_pref.methods.iteritems():
                 self.assertTrue(flag)
+
+    def test_to_string(self):
+        """
+            If we change fields, ensure we update the __str__ method as well.
+        """
+        self.assertEqual(str(self.comm_pref), '{} - {} - {}'.format(
+            self.comm_pref.worker,
+            self.comm_pref.methods.items(),
+            self.comm_pref.get_descriptions().get('short_description')
+        ))
+
+
+class StaffingRequestTestCase(OrchestraTestCase):
+
+    def test_to_string(self):
+        """
+            If we change fields, ensure we update the __str__ method as well.
+        """
+        staffing_request = StaffingRequestFactory()
+        self.assertEqual(str(staffing_request), '{} - {} - {}'.format(
+            staffing_request.communication_preference.worker,
+            staffing_request.task.id,
+            staffing_request.get_request_cause_description()
+        ))
+
+
+class StaffingResponseTestCase(OrchestraTestCase):
+
+    def test_to_string(self):
+        """
+            If we change fields, ensure we update the __str__ method as well.
+        """
+        staffing_response = StaffingResponseFactory()
+        self.assertEqual(str(staffing_response), '{} - {} - {}'.format(
+            staffing_response.request,
+            staffing_response.is_available,
+            staffing_response.is_winner
+        ))

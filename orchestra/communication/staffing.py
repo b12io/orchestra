@@ -8,8 +8,11 @@ from orchestra.models import StaffingResponse
 @transaction.atomic
 def handle_staffing_response(worker, staffing_request_id, is_available):
     # TODO(kkamalov): add proper docstring
-    staffing_request = get_object_or_None(StaffingRequest,
-                                          id=staffing_request_id)
+    staffing_request = get_object_or_None(
+        StaffingRequest,
+        communication_preference__worker=worker,
+        id=staffing_request_id
+    )
     if staffing_request is None:
         return None
 
