@@ -1,5 +1,5 @@
 [run]
-source = .
+source = ../orchestra
 [report]
 omit =
     */migrations/*

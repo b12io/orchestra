@@ -17,7 +17,7 @@ test: lint
 
 coverage:
 	cd example_project && \
-	  coverage run --source=../orchestra $(TEST_CMD)
+	  coverage run --rcfile=../.coveragerc $(TEST_CMD)
 
 coveralls:
 	cd example_project && coveralls
