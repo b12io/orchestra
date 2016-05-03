@@ -1,31 +1,25 @@
 {
-  "slug": "journalism",
-  "name": "Journalism Workflow",
-  "description": "Create polished newspaper articles from scratch.",
-  "certifications": [
-    {
-      "slug": "editor",
-      "name": "Editor",
-      "description": "Trained in planning story ideas"
-    },
-    {
-      "slug": "reporter",
-      "name": "Reporter",
-      "description": "Trained in researching and writing articles"
-    },
-    {
-      "slug": "photographer",
-      "name": "Photographer",
-      "description": "Trained in taking photos for articles"
-    },
-    {
-      "slug": "copy_editor",
-      "name": "Copy Editor",
-      "description": "Trained in assembling photos and text into article layout"
+    "slug": "journalism",
+    "name": "Journalism Workflow",
+    "description": "Create polished newspaper articles from scratch.",
+    "certifications": [{
+        "slug": "editor",
+        "name": "Editor",
+        "description": "Trained in planning story ideas"
+    }, {
+        "slug": "reporter",
+        "name": "Reporter",
+        "description": "Trained in researching and writing articles"
+    }, {
+        "slug": "photographer",
+        "name": "Photographer",
+        "description": "Trained in taking photos for articles"
+    }, {
+        "slug": "copy_editor",
+        "name": "Copy Editor",
+        "description": "Trained in assembling photos and text into article layout"
+    }],
+    "sample_data_load_function": {
+        "path": "journalism_workflow.load_sample_data.load"
     }
-  ],
-  "sample_data_load_function": {
-    "module": "journalism_workflow.load_sample_data",
-    "name": "load"
-  }
 }

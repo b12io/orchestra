@@ -8,8 +8,7 @@
             "description": "Find an awesome image on a website.",
             "is_human": false,
             "execution_function": {
-                "module": "simple_workflow.v1.crawl",
-                "name": "crawl_page"
+                "path": "simple_workflow.v1.crawl.crawl_page"
             }
         },
 

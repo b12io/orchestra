@@ -8,8 +8,7 @@
             "description": "The first step.",
             "is_human": false,
             "execution_function": {
-                "module": "v2.machine",
-                "name": "machine_function"
+                "path": "v2.machine.machine_function"
             }
         },
 

@@ -138,8 +138,8 @@ workflow_fixtures = [
                         'is_human': False,
                         'creation_depends_on': ['step4'],
                         'execution_function': {
-                            'module': 'orchestra.tests.helpers.workflow',
-                            'name': 'simple_json',
+                            'path': ('orchestra.tests.helpers.'
+                                     'workflow.simple_json')
                         },
                     },
                 ],
@@ -201,8 +201,14 @@ workflow_fixtures = [
                             'max_reviews': 1,
                         },
                         'assignment_policy': {
-                            'policy': 'previously_completed_steps',
-                            'steps': ['step_0'],
+                            'policy_function': {
+                                'path': ('orchestra.assignment_policies.'
+                                         'previously_completed_steps'),
+                                'kwargs': {
+
+                                    'related_steps': ['step_0'],
+                                }
+                            }
                         },
                         'user_interface': {
                             'javascript_includes': ['/path/to/some.js'],
@@ -484,8 +490,7 @@ def assert_test_dir_v1_loaded(test_case):
             'description': 'The first step',
             'is_human': False,
             'execution_function': {
-                'module': 'v1.machine',
-                'name': 'machine_function',
+                'path': 'v1.machine.machine_function',
             },
             'review_policy': {},
             'user_interface': {},
@@ -601,8 +606,7 @@ def assert_test_dir_v2_loaded(test_case):
             'description': 'The first step.',
             'is_human': False,
             'execution_function': {
-                'module': 'v2.machine',
-                'name': 'machine_function',
+                'path': 'v2.machine.machine_function'
             },
             'review_policy': {},
             'user_interface': {},

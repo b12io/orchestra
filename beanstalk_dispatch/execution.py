@@ -1,9 +1,10 @@
+from pydoc import locate
+from django.conf import settings
+
 from beanstalk_dispatch import ARGS
 from beanstalk_dispatch import FUNCTION
 from beanstalk_dispatch import KWARGS
 from beanstalk_dispatch import BeanstalkDispatchError
-from django.conf import settings
-from importlib import import_module
 
 
 def execute_function(function_request):
@@ -21,13 +22,14 @@ def execute_function(function_request):
             raise BeanstalkDispatchError(
                 'Please provide a {} argument'.format(key))
 
-    module_name, function_name = (
-        dispatch_table.get(function_request[FUNCTION], (None, None)))
-    if module_name and function_name:
+    function_path = dispatch_table.get(
+        function_request[FUNCTION], ''
+    )
+
+    if function_path:
         # TODO(marcua): Catch import errors and rethrow them as
         # BeanstalkDispatchErrors.
-        module = import_module(module_name)
-        function = getattr(module, function_name)
+        function = locate(function_path)
         function(*function_request[ARGS], **function_request[KWARGS])
     else:
         raise BeanstalkDispatchError(

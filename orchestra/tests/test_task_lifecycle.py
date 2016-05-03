@@ -498,8 +498,14 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
             slug='machine_step',
             is_human=False,
             assignment_policy={
-                'policy': 'previously_completed_steps',
-                'steps': ['step_0']
+                'policy_function': {
+                    'path': ('orchestra.assignment_policies.'
+                             'previously_completed_steps'),
+                    'kwargs': {
+                        'related_steps': ['step_0']
+                    },
+                }
+
             },
         )
         malformed_step.creation_depends_on.add(first_step)
@@ -523,8 +529,13 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
 
         # Machine should not be member of assignment policy
         first_step.assignment_policy = {
-            'policy': 'previously_completed_steps',
-            'steps': ['machine_step']
+            'policy_function': {
+                'path': ('orchestra.assignment_policies.'
+                         'previously_completed_steps'),
+                'kwargs': {
+                    'related_steps': ['machine_step']
+                },
+            },
         }
         first_step.save()
         with self.assertRaises(AssignmentPolicyError):
