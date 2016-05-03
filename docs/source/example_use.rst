@@ -160,9 +160,9 @@ You should see output like::
    'photos': [{'caption': 'Your Caption 1',
                'src': 'https://docs.google.com/uc?id=someid'},
               {'caption': 'Your Caption 2',
-	       'src': 'htps://docs.google.com/uc?id=someid2'},
-	       ...
-	      ]
+       'src': 'htps://docs.google.com/uc?id=someid2'},
+       ...
+      ]
    }
 
 which summarizes all of the work accomplished in the workflow.
@@ -388,8 +388,7 @@ function name for loading sample data with JSON that looked like::
 
   {
     "sample_data_load_function": {
-      "module": "journalism_workflow.load_sample_data",
-      "name": "load"
+      "path": "journalism_workflow.load_sample_data.load"
     }
   }
 

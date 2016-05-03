@@ -85,17 +85,14 @@ class LoadWorkflowSampleDataTestCase(OrchestraTestCase):
 
         # Loading a workflow with no loading script should fail
         # Simulate this by moving the file.
-        module_path = os.path.join(TEST_WORKFLOW_DIR, 'load_sample_data.py')
-        new_path = os.path.join(TEST_WORKFLOW_DIR, 'load_sample_data.py.BAK')
-        try:
-            os.rename(module_path, new_path)
-            stderr3 = StringIO()
-            call_command('loadworkflowsampledata', v1_str, stderr=stderr3)
-            output3 = stderr3.getvalue()
-            no_module_error = 'An error occurred while loading sample data'
-            self.assertIn(no_module_error, output3)
-        finally:
-            os.rename(new_path, module_path)
+        workflow = Workflow.objects.get(slug=TEST_WORKFLOW)
+        workflow.sample_data_load_function = 'invalid_load_function'
+        workflow.save()
+        stderr3 = StringIO()
+        call_command('loadworkflowsampledata', v1_str, stderr=stderr3)
+        output3 = stderr3.getvalue()
+        no_module_error = 'An error occurred while loading sample data'
+        self.assertIn(no_module_error, output3)
 
         # Loading sample data for a workflow with no load function in its JSON
         # manifest should fail.

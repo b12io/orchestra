@@ -22,9 +22,10 @@ def counter_incrementer(first_arg, second_arg=None):
 
 DISPATCH_SETTINGS = {
     'BEANSTALK_DISPATCH_TABLE': {
-        'the_counter': (
-            'beanstalk_dispatch.tests.test_dispatcher',
-            'counter_incrementer')}}
+        'the_counter': ('beanstalk_dispatch.tests.'
+                        'test_dispatcher.counter_incrementer')
+    }
+}
 
 
 class DispatcherTestCase(TestCase):

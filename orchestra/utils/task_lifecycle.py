@@ -1,5 +1,4 @@
 import random
-from importlib import import_module
 from pydoc import locate
 
 from django.conf import settings
@@ -958,10 +957,9 @@ def create_subsequent_tasks(project):
 
             _preassign_workers(task)
             if not step.is_human:
-                machine_step_scheduler_module = import_module(
-                    settings.MACHINE_STEP_SCHEDULER[0])
-                machine_step_scheduler_class = getattr(
-                    machine_step_scheduler_module,
-                    settings.MACHINE_STEP_SCHEDULER[1])
-                machine_step_scheduler = machine_step_scheduler_class()
+                machine_step_scheduler_class = locate(
+                    settings.MACHINE_STEP_SCHEDULER['path']
+                )
+                kwargs = settings.MACHINE_STEP_SCHEDULER.get('kwargs', {})
+                machine_step_scheduler = machine_step_scheduler_class(**kwargs)
                 machine_step_scheduler.schedule(project.id, step.slug)

@@ -1,4 +1,4 @@
-from importlib import import_module
+from pydoc import locate
 
 from django.core.management.base import BaseCommand
 from django.db import transaction
@@ -60,11 +60,10 @@ class Command(BaseCommand):
             return
 
         try:
-            load_function_module = import_module(load_function_dict['module'])
-            load_function = getattr(load_function_module,
-                                    load_function_dict['name'])
+            load_function = locate(load_function_dict['path'])
+            kwargs = load_function_dict.get('kwargs', {})
             with transaction.atomic():
-                load_function(version)
+                load_function(version, **kwargs)
             print('Successfully loaded sample data for {}'.format(version),
                   file=self.stdout)
         except Exception as e:

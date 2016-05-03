@@ -127,9 +127,10 @@ def setup_orchestra(settings_module_name):
     ##########################
 
     # Scheduler for machine steps
-    settings.MACHINE_STEP_SCHEDULER = (
-        'orchestra.utils.machine_step_scheduler',
-        'SynchronousMachineStepScheduler')
+    settings.MACHINE_STEP_SCHEDULER = {
+        'path': ('orchestra.utils.machine_step_scheduler.'
+                 'SynchronousMachineStepScheduler')
+    }
 
     # Beanstalk dispatcher
     # Add keys to use AsynchronousMachineStepScheduler
@@ -138,7 +139,8 @@ def setup_orchestra(settings_module_name):
     settings.WORK_QUEUE = ''
     if os.environ.get('BEANSTALK_WORKER') == 'True':
         settings.BEANSTALK_DISPATCH_TABLE = {
-            'machine_task_executor': ('orchestra.machine_tasks', 'execute')}
+            'machine_task_executor': ('orchestra.machine_tasks.execute')
+        }
 
     # Email and Notifications
     #########################

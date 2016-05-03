@@ -11,13 +11,15 @@ from orchestra.utils.task_lifecycle import create_subsequent_tasks
 
 
 class DashboardTestCase(OrchestraTestCase):
+
     def setUp(self):  # noqa
         super().setUp()
         setup_models(self)
 
-    @override_settings(MACHINE_STEP_SCHEDULER=(
-        'orchestra.utils.machine_step_scheduler',
-        'SynchronousMachineStepScheduler'))
+    @override_settings(MACHINE_STEP_SCHEDULER={
+        'path': ('orchestra.utils.machine_step_scheduler.'
+                 'SynchronousMachineStepScheduler'),
+    })
     def test_task_creation(self):
         """
         Test human and machine task creation
