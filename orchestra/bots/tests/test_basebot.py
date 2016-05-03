@@ -51,7 +51,13 @@ class BaseBotTest(OrchestraTestCase):
         text = 'test_command 5'
         mock_slack_data['text'] = text
         result = bot.dispatch(mock_slack_data)
-        self.assertEqual(result, text)
+        self.assertEqual(text, result)
+
+        # Test a valid command with missing param
+        text = 'test_command'
+        mock_slack_data['text'] = text
+        result = bot.dispatch(mock_slack_data)
+        self.assertEqual(bot.no_command_found(text), result)
 
         # Test invalid command
         text = 'invalid'
