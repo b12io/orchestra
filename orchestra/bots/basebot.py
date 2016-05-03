@@ -74,10 +74,17 @@ class BaseBot(object):
                              attachments=None,
                              response_type='ephemeral'):
         """
-        Helper method to send back a response in response to the slack
-        user.  text is plain text to be sent, attachments is a dictionary
-        of further data to attach to the message.  See
-        https://api.slack.com/docs/attachments
+        Args:
+            text (str):
+                Plain text message to send
+            attachments (dict):
+               See https://api.slack.com/docs/attachments
+            response_type (string):
+                Should be `in_channel` or `ephemeral`. See
+                https://api.slack.com/slash-commands
+        Returns:
+            formatted_message (dict):
+                A formatted message to send via the slack client
         """
         if response_type not in VALID_RESPONSE_TYPES:
             raise BaseBotError(
