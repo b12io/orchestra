@@ -115,8 +115,25 @@ class OrchestraTransactionTestCase(OrchestraTestHelpersMixin,
     pass
 
 
-@override_settings(SLACK_STAFFBOT_TOKEN='test-token')
 class OrchestraAuthenticatedTestCase(OrchestraTestCase,
                                      AuthenticatedUserMixin):
     # NOTE(lydia): See note above about multiple inheritance ordering.
     pass
+
+
+class OrchestraModelTestCase(OrchestraTestCase):
+    """
+    This is a basic test to ensure that we update the __str__ method on models
+    when we modify fields. It is a simple way to catch errors before we break
+    the admin page because of model changes.
+
+    NOTE: This does not test the validity of __str__ it just verifies that the
+    function can run without error.
+    """
+    __test__ = False
+    model = None
+    model_kwargs = {}
+
+    def test_to_string(self):
+        instance = self.model(**self.model_kwargs)
+        self.assertEqual(str(instance), str(instance))

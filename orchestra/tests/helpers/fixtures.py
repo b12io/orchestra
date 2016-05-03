@@ -8,16 +8,16 @@ from django.test import Client
 from django.test import override_settings
 from django.utils import timezone
 
+from orchestra.models import CommunicationPreference
+from orchestra.models import Iteration
 from orchestra.models import StaffingRequest
 from orchestra.models import StaffingResponse
-from orchestra.models import Iteration
+from orchestra.models import Step
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import WorkerCertification
 from orchestra.models import Workflow
-from orchestra.models import Step
 from orchestra.models import WorkflowVersion
-from orchestra.models import CommunicationPreference
 from orchestra.communication.slack import create_project_slack_group
 from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.task_lifecycle import submit_task
@@ -82,16 +82,34 @@ class WorkerFactory(factory.django.DjangoModelFactory):
 
 class CertificationFactory(factory.django.DjangoModelFactory):
 
+    slug = factory.Sequence(
+        lambda n: 'Slug {}'.format(n))
+    name = factory.Sequence(
+        lambda n: 'Name {}'.format(n))
+    description = factory.Sequence(
+        lambda n: 'Description {}'.format(n))
+    workflow = factory.SubFactory(WorkflowFactory)
+
     class Meta:
         model = 'orchestra.Certification'
 
 
 class WorkerCertificationFactory(factory.django.DjangoModelFactory):
+    certification = factory.SubFactory(CertificationFactory)
+    worker = factory.SubFactory(WorkerFactory)
+    task_class = WorkerCertification.TaskClass.REAL
+    role = WorkerCertification.Role.ENTRY_LEVEL
 
     class Meta:
         model = 'orchestra.WorkerCertification'
 
-    task_class = WorkerCertification.TaskClass.REAL
+
+class PayRateFactory(factory.django.DjangoModelFactory):
+    worker = factory.SubFactory(WorkerFactory)
+    hourly_multiplier = 1
+
+    class Meta:
+        model = 'orchestra.PayRate'
 
 
 class ProjectFactory(factory.django.DjangoModelFactory):
@@ -117,11 +135,11 @@ class TaskFactory(factory.django.DjangoModelFactory):
 
 
 class TaskAssignmentFactory(factory.django.DjangoModelFactory):
+    task = factory.SubFactory(TaskFactory)
+    status = TaskAssignment.Status.PROCESSING
 
     class Meta:
         model = 'orchestra.TaskAssignment'
-
-    status = TaskAssignment.Status.PROCESSING
 
 
 class TimeEntryFactory(factory.django.DjangoModelFactory):
@@ -135,6 +153,7 @@ class CommunicationPreferenceFactory(factory.django.DjangoModelFactory):
     worker = factory.SubFactory(WorkerFactory)
     communication_type = (CommunicationPreference.CommunicationType.
                           TASK_STATUS_CHANGE.value)
+    methods = CommunicationPreference.get_default_methods()
 
     class Meta:
         model = 'orchestra.CommunicationPreference'

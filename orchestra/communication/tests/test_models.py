@@ -1,27 +1,20 @@
 from orchestra.accounts.signals import orchestra_user_registered
 from orchestra.models import CommunicationPreference
-from orchestra.tests.helpers import OrchestraTestCase
+from orchestra.tests.helpers import OrchestraModelTestCase
+from orchestra.tests.helpers.fixtures import CommunicationPreferenceFactory
 from orchestra.tests.helpers.fixtures import StaffingRequestFactory
 from orchestra.tests.helpers.fixtures import StaffingResponseFactory
 from orchestra.tests.helpers.fixtures import UserFactory
-from orchestra.tests.helpers.fixtures import WorkerFactory
 
 
-class CommunicationPreferenceTestCase(OrchestraTestCase):
+class CommunicationPreferenceTestCase(OrchestraModelTestCase):
+    __test__ = True
+    model = CommunicationPreferenceFactory
 
     def setUp(self):
         # Create a user
-        self.user = UserFactory(username='test_model_user',
-                                password='test',
-                                email='test_model_user@test.com')
 
-        self.worker = WorkerFactory(user=self.user)
-        type_ = CommunicationPreference.CommunicationType.TASK_STATUS_CHANGE
-        self.comm_pref = CommunicationPreference.objects.create(
-            worker=self.worker,
-            communication_type=type_.value,
-            methods=CommunicationPreference.get_default_methods()
-        )
+        self.comm_pref = CommunicationPreferenceFactory()
 
     def test_can_slack(self):
         """
@@ -74,40 +67,12 @@ class CommunicationPreferenceTestCase(OrchestraTestCase):
             for label, flag in comm_pref.methods.iteritems():
                 self.assertTrue(flag)
 
-    def test_to_string(self):
-        """
-            If we change fields, ensure we update the __str__ method as well.
-        """
-        self.assertEqual(str(self.comm_pref), '{} - {} - {}'.format(
-            self.comm_pref.worker,
-            self.comm_pref.methods.items(),
-            self.comm_pref.get_descriptions().get('short_description')
-        ))
+
+class StaffingRequestTestCase(OrchestraModelTestCase):
+    __test__ = True
+    model = StaffingRequestFactory
 
 
-class StaffingRequestTestCase(OrchestraTestCase):
-
-    def test_to_string(self):
-        """
-            If we change fields, ensure we update the __str__ method as well.
-        """
-        staffing_request = StaffingRequestFactory()
-        self.assertEqual(str(staffing_request), '{} - {} - {}'.format(
-            staffing_request.communication_preference.worker,
-            staffing_request.task.id,
-            staffing_request.get_request_cause_description()
-        ))
-
-
-class StaffingResponseTestCase(OrchestraTestCase):
-
-    def test_to_string(self):
-        """
-            If we change fields, ensure we update the __str__ method as well.
-        """
-        staffing_response = StaffingResponseFactory()
-        self.assertEqual(str(staffing_response), '{} - {} - {}'.format(
-            staffing_response.request,
-            staffing_response.is_available,
-            staffing_response.is_winner
-        ))
+class StaffingResponseTestCase(OrchestraModelTestCase):
+    __test__ = True
+    model = StaffingResponseFactory
