@@ -88,9 +88,9 @@ class StaffBotTest(OrchestraTestCase):
             task, WorkerCertification.Role.ENTRY_LEVEL)
 
         self._test_staffing_requests(worker, task, 'staff {}'.format(task.id),
-                                     False, False)
+                                     can_slack=False, can_mail=False)
         self._test_staffing_requests(worker, task, 'staff {}'.format(task.id),
-                                     True, True)
+                                     can_slack=True, can_mail=True)
 
         # Change the task state to pending review
         task = assign_task(worker.id, task.id)
