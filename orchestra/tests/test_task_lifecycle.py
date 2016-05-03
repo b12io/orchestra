@@ -25,6 +25,7 @@ from orchestra.utils.task_lifecycle import create_subsequent_tasks
 from orchestra.utils.task_lifecycle import get_new_task_assignment
 from orchestra.utils.task_lifecycle import get_next_task_status
 from orchestra.utils.task_lifecycle import get_task_overview_for_worker
+from orchestra.utils.task_lifecycle import remove_worker_from_task
 from orchestra.utils.task_lifecycle import submit_task
 from orchestra.utils.task_lifecycle import worker_assigned_to_rejected_task
 from orchestra.utils.task_lifecycle import worker_has_reviewer_status
@@ -169,6 +170,32 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         self.assertFalse(worker_has_reviewer_status(self.workers[4]))
         self.assertTrue(worker_has_reviewer_status(self.workers[5]))
         self.assertTrue(worker_has_reviewer_status(self.workers[6]))
+
+    def test_remove_worker_from_task(self):
+        entry_task = TaskFactory(
+            project=self.projects['base_test_project'],
+            status=Task.Status.AWAITING_PROCESSING,
+            step=self.test_step)
+
+        worker = self.workers[0]
+        self._test_remove_from_task(entry_task, worker,
+                                    Task.Status.AWAITING_PROCESSING)
+
+        entry_task.status = Task.Status.PENDING_REVIEW
+        entry_task.save()
+
+        worker = self.workers[3]
+        self._test_remove_from_task(entry_task, worker,
+                                    Task.Status.PENDING_REVIEW)
+
+    def _test_remove_from_task(self, task, worker, task_status):
+        task = assign_task(worker.id, task.id)
+        task = remove_worker_from_task(worker.user.username, task.id)
+
+        self.assertEquals(task.status, task_status)
+        task_assignment = TaskAssignment.objects.get(task=task,
+                                                     worker=worker)
+        self.assertTrue(task_assignment.status, TaskAssignment.Status.FAILED)
 
     def test_assign_task(self):
         entry_task = TaskFactory(
