@@ -175,6 +175,32 @@ class WorkerTestCase(OrchestraModelTestCase):
     __test__ = True
     model = WorkerFactory
 
+    def setUp(self):
+        self.cert = CertificationFactory()
+        super().setUp()
+
+    def test_is_reviewer(self):
+        worker = WorkerFactory()
+        WorkerCertificationFactory(
+            worker=worker,
+            certification=self.cert,
+            role=WorkerCertification.Role.ENTRY_LEVEL)
+        WorkerCertificationFactory(
+            worker=worker,
+            certification=self.cert,
+            role=WorkerCertification.Role.REVIEWER)
+        self.assertTrue(worker.is_reviewer(self.cert))
+        self.assertTrue(worker.is_entry_level(self.cert))
+
+    def test_is_entry_level(self):
+        worker = WorkerFactory()
+        WorkerCertificationFactory(
+            worker=worker,
+            certification=self.cert,
+            role=WorkerCertification.Role.ENTRY_LEVEL)
+        self.assertTrue(worker.is_entry_level(self.cert))
+        self.assertFalse(worker.is_reviewer(self.cert))
+
 
 class WorkerCertificationTestCase(OrchestraModelTestCase):
     __test__ = True

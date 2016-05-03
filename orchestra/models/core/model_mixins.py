@@ -30,6 +30,28 @@ class StepMixin(object):
 
 class WorkerMixin(object):
 
+    def has_certificate(self, certification, role):
+        from orchestra.models import WorkerCertification
+        return WorkerCertification.objects.filter(
+            worker=self,
+            certification=certification,
+            role=role
+        ).exists()
+
+    def is_reviewer(self, certification):
+        from orchestra.models import WorkerCertification
+        return self.has_certificate(
+            certification,
+            WorkerCertification.Role.REVIEWER
+        )
+
+    def is_entry_level(self, certification):
+        from orchestra.models import WorkerCertification
+        return self.has_certificate(
+            certification,
+            WorkerCertification.Role.ENTRY_LEVEL
+        )
+
     def __str__(self):
         return '{} - @{} -{}'.format(
             self.user.username,
