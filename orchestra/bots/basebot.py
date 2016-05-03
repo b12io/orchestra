@@ -40,6 +40,7 @@ class BaseBot(object):
             'user_name': allowed_user_names,
             'command': allowed_commands,
         }
+        self.commands += ((r'help', 'help'),)
         self.command_matchers = [
             (re.compile(pattern, re.IGNORECASE), command)
             for pattern, command in self.commands
@@ -95,6 +96,12 @@ class BaseBot(object):
             'text': text,
             'attachments': attachments,
         }
+
+    def help(self):
+        """
+        Base classes should implement a description of what the command does.
+        """
+        raise NotImplementedError
 
     def no_command_found(self, text):
         """

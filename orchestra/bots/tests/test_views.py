@@ -38,23 +38,21 @@ class StaffBotViewTest(OrchestraTestCase):
         self.assert_response(response, error=True)
 
     def test_staff_command(self):
-        data = get_mock_slack_data()
-        data['text'] = 'staff 5'
+        data = get_mock_slack_data(text='staff 5')
         response = self.request_client.post(self.url, data)
         self.assert_response(response)
 
-        data['text'] = 'staff'
+        data = get_mock_slack_data(text='staff')
         response = self.request_client.post(self.url, data)
         self.assert_response(
             response, default_error_text=BaseBot.default_error_text)
 
     def test_restaff_command(self):
-        data = get_mock_slack_data()
-        data['text'] = 'restaff 5 username'
+        data = get_mock_slack_data(text='restaff 5 username')
         response = self.request_client.post(self.url, data)
         self.assert_response(response)
 
-        data['text'] = 'restaff 5'
+        data = get_mock_slack_data(text='restaff 5')
         response = self.request_client.post(self.url, data)
         self.assert_response(
             response, default_error_text=BaseBot.default_error_text)
