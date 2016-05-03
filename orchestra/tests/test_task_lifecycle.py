@@ -498,7 +498,8 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
             slug='machine_step',
             is_human=False,
             assignment_policy={
-                'policy': 'previously_completed_steps',
+                'policy': ('orchestra.assignment_policies.'
+                           'simple.previously_completed_steps'),
                 'steps': ['step_0']
             },
         )
@@ -523,7 +524,8 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
 
         # Machine should not be member of assignment policy
         first_step.assignment_policy = {
-            'policy': 'previously_completed_steps',
+            'policy': ('orchestra.assignment_policies.'
+                       'simple.previously_completed_steps'),
             'steps': ['machine_step']
         }
         first_step.save()

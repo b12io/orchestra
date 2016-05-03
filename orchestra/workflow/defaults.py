@@ -10,7 +10,7 @@ def get_default_assignment_policy(is_human):
             A dictionary specifying the assignment policy.
     """
     return {} if not is_human else {
-        'policy': 'anyone_certified'
+        'policy': 'orchestra.assignment_policies.simple.anyone_certified'
     }
 
 

@@ -1,5 +1,6 @@
 import random
 from importlib import import_module
+from pydoc import locate
 
 from django.conf import settings
 from django.db import transaction
@@ -484,9 +485,9 @@ def _is_review_needed(task):
             The specified review policy type is not supported.
     """
     policy_dict = task.step.review_policy
-    policy = policy_dict.get('policy', None)
-    sample_rate = policy_dict.get('rate', None)
-    max_reviews = policy_dict.get('max_reviews', None)
+    policy = policy_dict.get('policy')
+    sample_rate = policy_dict.get('rate')
+    max_reviews = policy_dict.get('max_reviews')
 
     if (policy == 'sampled_review' and
             sample_rate is not None and
@@ -908,57 +909,14 @@ def _preassign_workers(task):
         if policy:
             raise AssignmentPolicyError('Machine step should not have '
                                         'assignment policy.')
-    elif policy == 'previously_completed_steps' and related_steps is not None:
-        task = _assign_worker_from_previously_completed_steps(task,
-                                                              related_steps)
-    elif policy == 'anyone_certified':
-        # Leave the task in the awaiting processing pool
-        pass
-    else:
+    elif not policy:
         raise AssignmentPolicyError('Assignment policy incorrectly specified.')
-    return task
-
-
-def _assign_worker_from_previously_completed_steps(task, related_steps):
-    """
-    Assign a new task to the entry-level worker of the specified tasks.
-    If no worker can be assigned, return the unmodified task.
-
-    Args:
-        task (orchestra.models.Task):
-            The newly created task to assign.
-        related_steps ([str]):
-            List of step slugs from which to attempt to assign a worker.
-
-    Returns:
-        task (orchestra.models.Task): The modified task object.
-
-    Raises:
-        orchestra.core.errors.AssignmentPolicyError:
-            Machine steps cannot be included in an assignment policy.
-    """
-    workflow_version = task.step.workflow_version
-    for step_slug in related_steps:
-        step = workflow_version.steps.get(slug=step_slug)
-        if not step.is_human:
-            raise AssignmentPolicyError('Machine step should not be '
-                                        'member of assignment policy')
-    related_tasks = (
-        Task.objects
-        .filter(step__slug__in=related_steps, project=task.project)
-        .select_related('step'))
-    for related_task in related_tasks:
-        entry_level_assignment = assignment_history(related_task).first()
-        if entry_level_assignment and entry_level_assignment.worker:
-            try:
-                return assign_task(entry_level_assignment.worker.id, task.id)
-            except Exception:
-                # Task could not be assigned to related worker, try with
-                # another related worker
-                logger.warning('Tried to assign worker %s to step %s, for '
-                               'which they are not certified',
-                               entry_level_assignment.worker.id,
-                               task.step.slug, exc_info=True)
+    else:
+        try:
+            policy_fn = locate(policy)
+            task = policy_fn(task, related_steps)
+        except Exception as e:
+            raise AssignmentPolicyError(e)
     return task
 
 

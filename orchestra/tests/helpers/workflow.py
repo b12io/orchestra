@@ -201,7 +201,8 @@ workflow_fixtures = [
                             'max_reviews': 1,
                         },
                         'assignment_policy': {
-                            'policy': 'previously_completed_steps',
+                            'policy': ('orchestra.assignment_policies.'
+                                       'simple.previously_completed_steps'),
                             'steps': ['step_0'],
                         },
                         'user_interface': {
