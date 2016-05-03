@@ -8,8 +8,7 @@
         "description": "Create google documents for the project in the relevant folder.",
         "is_human": false,
         "execution_function": {
-            "module": "journalism_workflow.v1.documents",
-            "name": "create_documents"
+            "path": "journalism_workflow.v1.documents.create_documents"
         }
     }, {
         "slug": "article_planning",
@@ -93,8 +92,7 @@
             "photography"
         ],
         "execution_function": {
-            "module": "journalism_workflow.v1.adjust_photos",
-            "name": "autoadjust_photos"
+            "path": "journalism_workflow.v1.adjust_photos.autoadjust_photos"
         }
     }, {
         "slug": "copy_editing",

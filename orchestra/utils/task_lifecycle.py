@@ -902,8 +902,9 @@ def _preassign_workers(task):
             machine step is given an assignment policy.
     """
     step = task.step
-    policy = step.assignment_policy.get('policy')
-    related_steps = step.assignment_policy.get('steps')
+    policy = step.assignment_policy.get('policy_function', {})
+    policy_path = policy.get('path', '')
+    policy_kwargs = policy.get('kwargs', {})
 
     if not step.is_human:
         if policy:
@@ -913,8 +914,8 @@ def _preassign_workers(task):
         raise AssignmentPolicyError('Assignment policy incorrectly specified.')
     else:
         try:
-            policy_fn = locate(policy)
-            task = policy_fn(task, related_steps)
+            policy_function = locate(policy_path)
+            task = policy_function(task, **policy_kwargs)
         except Exception as e:
             raise AssignmentPolicyError(e)
     return task

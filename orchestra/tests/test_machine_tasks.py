@@ -22,8 +22,7 @@ class MachineTaskTestCase(OrchestraTestCase):
         self.step = machine_workflow_version.steps.get(slug='machine_step')
         self.assertIsNotNone(self.step)
         self.step.execution_function = {
-            'module': 'orchestra.tests.helpers.workflow',
-            'name': 'machine_task_function'
+            'path': 'orchestra.tests.helpers.workflow.machine_task_function',
         }
         self.step.save()
         patcher = patch(

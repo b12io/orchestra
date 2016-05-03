@@ -285,8 +285,7 @@ layout::
       "photography"
     ],
     "execution_function": {
-      "module": "journalism_workflow.v1.adjust_photos",
-      "name": "autoadjust_photos"
+      "path": "journalism_workflow.v1.adjust_photos.autoadjust_photos"
     }
   }
 

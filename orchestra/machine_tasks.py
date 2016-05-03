@@ -1,4 +1,4 @@
-from importlib import import_module
+from pydoc import locate
 
 import logging
 
@@ -65,10 +65,10 @@ def execute(project_id, step_slug):
 
     prerequisites = previously_completed_task_data(task)
 
-    function_module = import_module(step.execution_function['module'])
-    function = getattr(function_module, step.execution_function['name'])
+    function = locate(step.execution_function['path'])
+    kwargs = step.execution_function.get('kwargs', {})
     try:
-        task_data = function(project.project_data, prerequisites)
+        task_data = function(project.project_data, prerequisites, **kwargs)
     except:
         task_assignment.status = TaskAssignment.Status.FAILED
         logger.exception('Machine task has failed')

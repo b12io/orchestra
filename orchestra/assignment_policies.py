@@ -1,4 +1,5 @@
 from orchestra.core.errors import AssignmentPolicyError
+from orchestra.core.errors import WorkerCertificationError
 from orchestra.models import Task
 from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.task_properties import assignment_history
@@ -7,7 +8,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def anyone_certified(task, related_steps):
+def anyone_certified(task, **kwargs):
     """
     Default assignment policy, we leave the task
     in the awaiting processing pool.
@@ -15,7 +16,7 @@ def anyone_certified(task, related_steps):
     return task
 
 
-def previously_completed_steps(task, related_steps):
+def previously_completed_steps(task, related_steps, **kwargs):
     """
     Assign a new task to the entry-level worker of the specified tasks.
     If no worker can be assigned, return the unmodified task.
@@ -51,11 +52,13 @@ def previously_completed_steps(task, related_steps):
         if entry_level_assignment and entry_level_assignment.worker:
             try:
                 return assign_task(entry_level_assignment.worker.id, task.id)
-            except Exception:
+            except WorkerCertificationError:
                 # Task could not be assigned to related worker, try with
                 # another related worker
                 logger.warning('Tried to assign worker %s to step %s, for '
                                'which they are not certified',
                                entry_level_assignment.worker.id,
                                task.step.slug, exc_info=True)
+            except Exception:
+                logger.warning('Unable to assign task.', exc_info=True)
     return task
