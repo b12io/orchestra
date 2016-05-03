@@ -135,6 +135,7 @@ class CommunicationPreferenceFactory(factory.django.DjangoModelFactory):
     worker = factory.SubFactory(WorkerFactory)
     communication_type = (CommunicationPreference.CommunicationType.
                           TASK_STATUS_CHANGE.value)
+    methods = CommunicationPreference.get_default_methods()
 
     class Meta:
         model = 'orchestra.CommunicationPreference'
