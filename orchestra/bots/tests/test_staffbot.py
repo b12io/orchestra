@@ -128,7 +128,7 @@ class StaffBotTest(OrchestraTestCase):
         bot.dispatch(data)
         self.assertEquals(StaffingRequest.objects.filter(
             communication_preference__worker_id=worker,
-            task=task).count(), can_slack+can_mail)
+            task=task).count(), can_slack + can_mail)
 
     def test_restaff_command_errors(self):
         """

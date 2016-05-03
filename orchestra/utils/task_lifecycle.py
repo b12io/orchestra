@@ -795,7 +795,10 @@ def submit_task(task_id, task_data, iteration_status, worker):
     task.status = next_status
     task.save()
 
-    if task.status == Task.Status.REVIEWING:
+    if task.status == Task.Status.PENDING_REVIEW:
+        # Check the assignment policy to try to assign a reviewer automatically
+        task = _preassign_workers(task, policy_type='reviewer')
+    elif task.status == Task.Status.REVIEWING:
         update_related_assignment_status(task,
                                          assignment.assignment_counter + 1,
                                          assignment.in_progress_task_data,
@@ -896,7 +899,7 @@ def end_project(project_id):
         notify_status_change(task, assignment_history(task))
 
 
-def _preassign_workers(task):
+def _preassign_workers(task, policy_type='entry_level'):
     """
     Assign a new task to a worker according to its assignment policy,
     leaving the task unchanged if policy not present.
@@ -904,6 +907,9 @@ def _preassign_workers(task):
     Args:
         task (orchestra.models.Task):
             The newly created task to assign.
+        policy_type (string):
+            The type of assignment policy to use, either an 'entry_level'
+            policy or 'reviewer' policy.
 
     Returns:
         task (orchestra.models.Task):
@@ -915,7 +921,8 @@ def _preassign_workers(task):
             machine step is given an assignment policy.
     """
     step = task.step
-    policy = step.assignment_policy.get('policy_function', {})
+    policy = step.assignment_policy.get(
+        'policy_function', {}).get(policy_type, {})
     policy_path = policy.get('path', '')
     policy_kwargs = policy.get('kwargs', {})
 

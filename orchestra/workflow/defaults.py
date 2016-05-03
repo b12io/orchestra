@@ -11,7 +11,12 @@ def get_default_assignment_policy(is_human):
     """
     return {} if not is_human else {
         'policy_function': {
-            'path': 'orchestra.assignment_policies.anyone_certified'
+            'entry_level': {
+                'path': 'orchestra.assignment_policies.anyone_certified'
+            },
+            'reviewer': {
+                'path': 'orchestra.assignment_policies.anyone_certified'
+            }
         },
     }
 
