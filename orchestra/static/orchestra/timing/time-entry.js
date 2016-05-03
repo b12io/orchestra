@@ -137,7 +137,8 @@
        * Determines whether the entry is incomplete.
        */
       TimeEntry.prototype.isIncomplete = function() {
-        return !this.description || this.assignment === undefined;
+        return !(this.description &&
+                 (this.assignment || this.assignment === 0));
       };
 
       return TimeEntry;
