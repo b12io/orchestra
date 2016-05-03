@@ -7,6 +7,12 @@ from orchestra.bots.tests.fixtures import get_mock_slack_data
 class BaseBotTest(OrchestraTestCase):
     token = get_mock_slack_data().get('token')
 
+    def test_help(self):
+        bot = BaseBot(self.token)
+        mock_slack_data = get_mock_slack_data(text='help')
+        with self.assertRaises(NotImplementedError):
+            bot.dispatch(mock_slack_data)
+
     def test_validate(self):
         """
             Ensure we only listen to valid requests.
@@ -45,22 +51,20 @@ class BaseBotTest(OrchestraTestCase):
         # Assign the testing command
         bot.__init__(self.token)
 
-        mock_slack_data = get_mock_slack_data()
-
         # Test a valid command
         text = 'test_command 5'
-        mock_slack_data['text'] = text
+        mock_slack_data = get_mock_slack_data(text=text)
         result = bot.dispatch(mock_slack_data)
         self.assertEqual(text, result)
 
         # Test a valid command with missing param
         text = 'test_command'
-        mock_slack_data['text'] = text
+        mock_slack_data = get_mock_slack_data(text=text)
         result = bot.dispatch(mock_slack_data)
         self.assertEqual(bot.no_command_found(text), result)
 
         # Test invalid command
         text = 'invalid'
-        mock_slack_data['text'] = text
+        mock_slack_data = get_mock_slack_data(text=text)
         result = bot.dispatch(mock_slack_data)
         self.assertEqual(bot.no_command_found(text), result)

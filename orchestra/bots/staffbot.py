@@ -33,6 +33,24 @@ class StaffBot(BaseBot):
         token = settings.SLACK_STAFFBOT_TOKEN
         super().__init__(token, **kwargs)
 
+    def help(self):
+        return self.format_slack_message(
+            'Use `/staffbot` to staff or restaff a Task within Orchestra.',
+            attachments=[
+                {
+                    'pretext': '`/staffbot staff <task-id>`',
+                    'text': ('Ask qualified experts to work on'
+                             ' the given `<task-id>`.'),
+                    'mrkdwn_in': ['text', 'pretext'],
+                },
+                {
+                    'pretext': '`/staffbot restaff <task-id> <username>`',
+                    'text': ('Remove the given `<username>` from'
+                             ' the task and find another qualified expert'),
+                    'mrkdwn_in': ['text', 'pretext'],
+                }
+            ])
+
     def staff(self, task_id):
         """
         This function handles staffing a request for the given task_id.
