@@ -1,6 +1,6 @@
 Hi {{username}},
 
-New task is available to be claimed.
+New {{required_role}} task is available to be claimed.
 
 <a href="{{accept_url}}"> Accept </a>
 <a href="{{reject_url}}"> Reject </a>

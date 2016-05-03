@@ -6,6 +6,10 @@ from django.utils.text import slugify
 from orchestra.utils.settings import run_if
 from slacker import Slacker
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class SlackService(object):
     """
@@ -18,6 +22,13 @@ class SlackService(object):
         self._service = Slacker(api_key)
         for attr_name in ('chat', 'groups', 'users'):
             setattr(self, attr_name, getattr(self._service, attr_name))
+
+    def post_message(self, slack_user_id, message, parse='none'):
+        if settings.PRODUCTION:
+            self.chat.post_message(
+                slack_user_id, message, parse=parse)
+        else:
+            logger.info('{}: {}'.format(slack_user_id, message))
 
 
 def get_slack_user_id(slack_username):

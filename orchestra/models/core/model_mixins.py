@@ -110,6 +110,12 @@ class TaskAssignmentMixin(object):
 
         super().save(*args, **kwargs)
 
+    def is_entry_level(self):
+        return self.assignment_counter == 0
+
+    def is_reviewer(self):
+        return self.assignment_counter > 0
+
     def __str__(self):
         return '{} - {} - {}'.format(
             str(self.task), self.assignment_counter, str(self.worker))

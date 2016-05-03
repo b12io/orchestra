@@ -7,6 +7,7 @@ from orchestra.models.communication.model_mixins import StaffingResponseMixin
 from orchestra.models.communication.managers import CommunicationPreferenceManager  # noqa
 from orchestra.models.core.models import Task
 from orchestra.models.core.models import Worker
+from orchestra.models.core.models import WorkerCertification
 from orchestra.utils.models import BaseModel
 from orchestra.utils.models import ChoicesEnum
 
@@ -103,6 +104,9 @@ class StaffingRequest(StaffingRequestMixin, BaseModel):
 
     communication_preference = models.ForeignKey(CommunicationPreference)
     task = models.ForeignKey(Task)
+    required_role = models.IntegerField(
+        default=WorkerCertification.Role.ENTRY_LEVEL,
+        choices=WorkerCertification.ROLE_CHOICES)
     request_cause = models.IntegerField(choices=RequestCause.choices())
     project_description = models.TextField(null=True, blank=True)
     status = models.IntegerField(

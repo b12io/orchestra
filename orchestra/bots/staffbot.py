@@ -5,9 +5,16 @@ from django.template.loader import render_to_string
 
 from orchestra.bots.basebot import BaseBot
 from orchestra.communication.mail import send_mail
+from orchestra.core.errors import TaskAssignmentError
+from orchestra.core.errors import TaskStatusError
 from orchestra.models import CommunicationPreference
 from orchestra.models import StaffingRequest
+from orchestra.models import Task
+from orchestra.models import TaskAssignment
 from orchestra.models import Worker
+from orchestra.models import WorkerCertification
+from orchestra.utils.task_lifecycle import remove_worker_from_task
+from orchestra.utils.task_lifecycle import role_required_for_new_task
 from orchestra.utils.task_lifecycle import is_worker_certified_for_task
 from orchestra.utils.task_lifecycle import check_worker_allowed_new_assignment
 
@@ -26,6 +33,11 @@ class StaffBot(BaseBot):
         (r'staff (?P<task_id>[0-9]+)', 'staff'),
         (r'restaff (?P<task_id>[0-9]+) (?P<username>[\w.@+-]+)', 'restaff'),
     )
+    task_does_not_exist_error = 'Task {} does not exist'
+    task_assignment_error = 'Task {} got an error: "{}"'
+    worker_does_not_exist = 'Worker with username {} does not exist'
+    task_assignment_does_not_exist_error = (
+        'TaskAssignment associated with user {} and task {} does not exist.')
 
     def __init__(self, **kwargs):
         default_config = getattr(settings, 'STAFFBOT_CONFIG', {})
@@ -51,21 +63,53 @@ class StaffBot(BaseBot):
                 }
             ])
 
-    def staff(self, task_id):
+    def staff(self, task_id,
+              request_cause=StaffingRequest.RequestCause.USER.value):
         """
         This function handles staffing a request for the given task_id.
         """
+        try:
+            task = Task.objects.get(id=task_id)
+            required_role = role_required_for_new_task(task)
+            error_msg = None
+        except Task.DoesNotExist:
+            error_msg = self.task_does_not_exist_error.format(task_id)
+        except TaskAssignmentError as error:
+            error_msg = self.task_assignment_error.format(task_id, error)
+        if error_msg is not None:
+            logger.exception(error_msg)
+            return self.format_slack_message(error_msg)
+        self._send_task_to_workers(task, required_role, request_cause)
         return self.format_slack_message('Staffed task {}!'.format(task_id))
 
-    def restaff(self, task_id, username):
+    def restaff(self, task_id, username,
+                request_cause=StaffingRequest.RequestCause.USER.value):
         """
         This function handles restaffing a request for the given task_id.
         The current user for the given username is removed, and a new user
         is found.
         """
-        return self.format_slack_message(
-            'Restaffed task {} for {}!'.format(task_id, username)
-        )
+        # TODO(kkamalov): maybe username could also be slack_username
+        try:
+            task = remove_worker_from_task(username, task_id)
+            required_role = role_required_for_new_task(task)
+            error_msg = None
+        except Worker.DoesNotExist:
+            error_msg = self.worker_does_not_exist.format(username)
+        except Task.DoesNotExist:
+            error_msg = self.task_does_not_exist_error.format(task_id)
+        except TaskAssignment.DoesNotExist:
+            error_msg = (self.task_assignment_does_not_exist_error
+                         .format(username, task_id))
+        except TaskAssignmentError as error:
+            error_msg = self.task_assignment_error.format(task_id, error)
+
+        if error_msg is not None:
+            logger.exception(error_msg)
+            return self.format_slack_message(error_msg)
+        self._send_task_to_workers(
+            task, required_role, request_cause)
+        return self.format_slack_message('Restaffed task {}!'.format(task_id))
 
     def _send_task_to_workers(self, task, required_role, request_cause):
         # get all the workers that are certified to complete the task.
@@ -74,15 +118,17 @@ class StaffBot(BaseBot):
         # check_worker_allowed_new_assignment into the DB as filters so we
         # don't loop over all workers
         for worker in workers:
-            can_send = (
-                is_worker_certified_for_task(worker, task, required_role) and
+            try:
                 check_worker_allowed_new_assignment(worker, task.status)
-            )
-            if can_send:
-                self._send_task_to_worker(
-                    worker, task, required_role)
+                if is_worker_certified_for_task(worker, task, required_role):
+                    self._send_task_to_worker(
+                        worker, task, required_role, request_cause)
+            except TaskStatusError:
+                pass
+            except TaskAssignmentError:
+                pass
 
-    def _send_task_to_worker(self, worker, task, request_cause):
+    def _send_task_to_worker(self, worker, task, required_role, request_cause):
         """
         Send the task to the worker for them to accept or reject.
         """
@@ -98,6 +144,7 @@ class StaffBot(BaseBot):
             staffing_request = StaffingRequest.objects.create(
                 communication_preference=communication_preference,
                 task=task,
+                required_role=required_role,
                 request_cause=request_cause,
                 communication_method=email_method)
             message = self._get_staffing_request_message(
@@ -109,6 +156,7 @@ class StaffBot(BaseBot):
             staffing_request = StaffingRequest.objects.create(
                 communication_preference=communication_preference,
                 task=task,
+                required_role=required_role,
                 request_cause=request_cause,
                 communication_method=slack_method)
             message = self._get_staffing_request_message(
@@ -118,8 +166,7 @@ class StaffBot(BaseBot):
     def _get_staffing_url(self, reverse_string, url_kwargs):
         return '{}{}'.format(
             settings.ORCHESTRA_URL,
-            reverse(reverse_string),
-            kwargs=url_kwargs)
+            reverse(reverse_string, kwargs=url_kwargs))
 
     def _get_staffing_request_message(self, staffing_request, template):
         username = (
@@ -132,10 +179,13 @@ class StaffBot(BaseBot):
             'orchestra:communication:accept_staffing_request', url_kwargs)
         reject_url = self._get_staffing_url(
             'orchestra:communication:reject_staffing_request', url_kwargs)
+
+        roles = dict(WorkerCertification.ROLE_CHOICES)
         context = Context({
             'username': username,
             'accept_url': accept_url,
-            'reject_url': reject_url
+            'reject_url': reject_url,
+            'required_role': roles.get(staffing_request.required_role)
         })
 
         message_body = render_to_string(template, context)
@@ -160,7 +210,6 @@ class StaffBot(BaseBot):
                 worker))
             return
 
-        self.slack.chat.post_message(
-            worker.slack_user_id, message, parse='none')
+        self.slack.post_message(worker.slack_user_id, message)
         staffing_request.status = StaffingRequest.Status.SENT.value
         staffing_request.save()

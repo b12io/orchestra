@@ -43,12 +43,6 @@ def worker_assigned_to_max_tasks(worker):
         assigned_to_max_tasks (bool):
             True if worker is assigned to the maximum number of tasks.
     """
-    # # TODO(jrbotros): allow per-user exception to task limit
-    # return (TaskAssignment.objects
-    #         .filter(worker=worker,
-    #                 status=TaskAssignment.Status.PROCESSING,
-    #                 task__status=Task.Status.PROCESSING)
-    #         .count()) >= settings.ORCHESTRA_MAX_IN_PROGRESS_TASKS
     assigned_to_max_tasks = False
     return assigned_to_max_tasks
 
@@ -133,6 +127,34 @@ def is_worker_certified_for_task(
     return certified_for_task
 
 
+def role_required_for_new_task(task):
+    roles = {
+        Task.Status.AWAITING_PROCESSING: WorkerCertification.Role.ENTRY_LEVEL,
+        Task.Status.PENDING_REVIEW: WorkerCertification.Role.REVIEWER
+    }
+
+    required_role = roles.get(task.status)
+    if required_role is None:
+        raise TaskAssignmentError('Status incompatible with new assignment')
+    return required_role
+
+
+@transaction.atomic
+def remove_worker_from_task(worker_username, task_id):
+    worker = Worker.objects.get(user__username=worker_username)
+    task = Task.objects.get(id=task_id)
+    task_assignment = TaskAssignment.objects.get(worker=worker, task=task)
+
+    if task_assignment.is_reviewer():
+        task.status = Task.Status.PENDING_REVIEW
+    else:
+        task.status = Task.Status.AWAITING_PROCESSING
+    task_assignment.status = TaskAssignment.Status.FAILED
+    task_assignment.save()
+    task.save()
+    return task
+
+
 @transaction.atomic
 def assign_task(worker_id, task_id):
     """
@@ -158,15 +180,7 @@ def assign_task(worker_id, task_id):
     """
     worker = Worker.objects.get(id=worker_id)
     task = Task.objects.get(id=task_id)
-
-    roles = {
-        Task.Status.AWAITING_PROCESSING: WorkerCertification.Role.ENTRY_LEVEL,
-        Task.Status.PENDING_REVIEW: WorkerCertification.Role.REVIEWER
-    }
-
-    required_role = roles.get(task.status)
-    if required_role is None:
-        raise TaskAssignmentError('Status incompatible with new assignment')
+    required_role = role_required_for_new_task(task)
 
     assignment = current_assignment(task)
     if not is_worker_certified_for_task(worker, task, required_role):
