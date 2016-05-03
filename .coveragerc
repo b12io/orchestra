@@ -4,6 +4,8 @@ source = ../orchestra
 omit =
     */migrations/*
     */tests/*
+    bitformfield.py
+
 exclude_lines =
     pragma: no cover
     def __repr__
