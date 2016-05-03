@@ -8,8 +8,17 @@ from orchestra.models import PayRate
 from orchestra.models import Worker
 from orchestra.models import WorkerCertification
 from orchestra.tests.helpers import OrchestraTestCase
+from orchestra.tests.helpers import OrchestraModelTestCase
 from orchestra.tests.helpers.fixtures import CertificationFactory
+from orchestra.tests.helpers.fixtures import StepFactory
+from orchestra.tests.helpers.fixtures import PayRateFactory
+from orchestra.tests.helpers.fixtures import ProjectFactory
+from orchestra.tests.helpers.fixtures import TaskFactory
+from orchestra.tests.helpers.fixtures import TaskAssignmentFactory
+from orchestra.tests.helpers.fixtures import WorkerFactory
 from orchestra.tests.helpers.fixtures import WorkerCertificationFactory
+from orchestra.tests.helpers.fixtures import WorkflowFactory
+from orchestra.tests.helpers.fixtures import WorkflowVersionFactory
 from orchestra.tests.helpers.fixtures import UserFactory
 from orchestra.tests.helpers.fixtures import setup_models
 
@@ -130,3 +139,53 @@ class ModelsTestCase(OrchestraTestCase):
             end_date=None)
         payrate.end_date = datetime.date(2016, 3, 1)
         payrate.save()
+
+
+class CertificationTestCase(OrchestraModelTestCase):
+    __test__ = True
+    model = CertificationFactory
+
+
+class StepTestCase(OrchestraModelTestCase):
+    __test__ = True
+    model = StepFactory
+
+
+class PayRateTestCase(OrchestraModelTestCase):
+    __test__ = True
+    model = PayRateFactory
+
+
+class ProjectTestCase(OrchestraModelTestCase):
+    __test__ = True
+    model = ProjectFactory
+
+
+class TaskTestCase(OrchestraModelTestCase):
+    __test__ = True
+    model = TaskFactory
+
+
+class TaskAssignmentTestCase(OrchestraModelTestCase):
+    __test__ = True
+    model = TaskAssignmentFactory
+
+
+class WorkerTestCase(OrchestraModelTestCase):
+    __test__ = True
+    model = WorkerFactory
+
+
+class WorkerCertificationTestCase(OrchestraModelTestCase):
+    __test__ = True
+    model = WorkerCertificationFactory
+
+
+class WorkflowTestCase(OrchestraModelTestCase):
+    __test__ = True
+    model = WorkflowFactory
+
+
+class WorkflowVersionTestCase(OrchestraModelTestCase):
+    __test__ = True
+    model = WorkflowVersionFactory
