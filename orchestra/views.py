@@ -304,24 +304,24 @@ def bad_request(request):
     })
 
 
-def permission_denied(request):
-    error_code = http_status.HTTP_403_PERMISSION_DENIED
+def forbidden(request):
+    error_code = http_status.HTTP_403_FORBIDDEN
     return error_handler(request, error_code, context={
-        'page_title': '403 Permission Denied',
+        'page_title': '403 Forbidden',
     })
 
 
-def page_not_found(request):
+def not_found(request):
     error_code = http_status.HTTP_404_NOT_FOUND
     return error_handler(request, error_code, context={
-        'page_title': '404 Page Not Found',
+        'page_title': '404 Not Found',
     })
 
 
-def server_error(request):
+def internal_server_error(request):
     error_code = http_status.HTTP_500_INTERNAL_SERVER_ERROR
     return error_handler(request, error_code, context={
-        'page_title': '500 Server Error',
+        'page_title': '500 Internal Server Error',
     })
 
 
