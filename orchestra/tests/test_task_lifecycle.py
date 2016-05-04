@@ -19,6 +19,7 @@ from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.fixtures import StepFactory
 from orchestra.tests.helpers.fixtures import TaskAssignmentFactory
 from orchestra.tests.helpers.fixtures import TaskFactory
+from orchestra.utils.task_lifecycle import AssignmentPolicyType
 from orchestra.utils.task_lifecycle import check_worker_allowed_new_assignment
 from orchestra.utils.task_lifecycle import is_worker_certified_for_task
 from orchestra.utils.task_lifecycle import assign_task
@@ -506,7 +507,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
                                        Iteration.Status.REQUESTED_REVIEW,
                                        self.workers[0])
             mock_preassign_workers.assert_called_once_with(
-                initial_task, policy_type='reviewer')
+                initial_task, AssignmentPolicyType.REVIEWER)
 
         # Reset project
         project.tasks.all().delete()
