@@ -194,11 +194,12 @@ class StaffBot(BaseBot):
     def _send_staffing_request_by_mail(self, staffing_request, message):
         email = (
             staffing_request.communication_preference.worker.user.email)
-
+        logger_only = not settings.PRODUCTION
         send_mail('New task is available for claim',
                   message,
                   settings.ORCHESTRA_NOTIFICATIONS_FROM_EMAIL,
-                  [email])
+                  [email],
+                  logger_only=logger_only)
         staffing_request.status = StaffingRequest.Status.SENT.value
         staffing_request.save()
 

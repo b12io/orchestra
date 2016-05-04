@@ -31,6 +31,21 @@ class ModelsTestCase(OrchestraTestCase):
         self.assertTrue(mock_mail.called)
 
     @patch('orchestra.communication.mail._send_mail')
+    def test_email_logged_only(self, mock_mail):
+        """
+            Verify that we correctly filter users based on their email
+            preferences.
+        """
+        # Test when no comm_type is given
+        send_mail(subject='test_subject',
+                  message='test_message',
+                  from_email='test@test.com',
+                  recipient_list=self.recipient_list,
+                  logger_only=True
+                  )
+        self.assertFalse(mock_mail.called)
+
+    @patch('orchestra.communication.mail._send_mail')
     def test_filtering_send_with_preference(self, mock_mail):
         # Test when comm_type is allowed
         send_mail(subject='test_subject',
