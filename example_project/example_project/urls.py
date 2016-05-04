@@ -14,9 +14,9 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 
 handler400 = 'orchestra.views.bad_request'  # noqa
-handler403 = 'orchestra.views.permission_denied'  # noqa
-handler404 = 'orchestra.views.page_not_found'  # noqa
-handler500 = 'orchestra.views.server_error'  # noqa
+handler403 = 'orchestra.views.forbidden'  # noqa
+handler404 = 'orchestra.views.not_found'  # noqa
+handler500 = 'orchestra.views.internal_server_error'  # noqa
 
 urlpatterns = [
 

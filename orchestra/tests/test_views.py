@@ -2,6 +2,7 @@ import datetime
 import json
 
 from unittest.mock import patch
+from unittest.mock import MagicMock
 
 from django.core.urlresolvers import reverse
 from django.test import Client as RequestClient
@@ -19,6 +20,10 @@ from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.fixtures import UserFactory
 from orchestra.tests.helpers.fixtures import WorkerFactory
+from orchestra.views import bad_request
+from orchestra.views import forbidden
+from orchestra.views import not_found
+from orchestra.views import internal_server_error
 
 
 class EndpointTests(OrchestraTestCase):
@@ -240,3 +245,23 @@ class TimerEndpointTests(EndpointTests):
         expected = TaskTimerSerializer(timer).data
         expected['time_worked'] = '1:00:00'
         self.assertEqual(data, expected)
+
+
+class TestErrorViews(OrchestraTestCase):
+
+    def assert_error_view(self, handler, status_code):
+        request = MagicMock()
+        response = handler(request)
+        self.assertEqual(response.status_code, status_code)
+
+    def test_bad_request(self):
+        self.assert_error_view(bad_request, 400)
+
+    def test_forbidden(self):
+        self.assert_error_view(forbidden, 403)
+
+    def test_not_found(self):
+        self.assert_error_view(not_found, 404)
+
+    def test_internal_server_error(self):
+        self.assert_error_view(internal_server_error, 500)
