@@ -223,6 +223,79 @@ workflow_fixtures = [
             },
         ],
     },
+    {
+        'slug': 'staffbot_assignment_policy',
+        'name': 'StaffBot Assignment Policy Workflow',
+        'versions': [
+            {
+                'slug': 'staffbot_assignment_policy_workflow',
+                'name': 'The workflow',
+                'description': 'A description of the workflow',
+                'steps': [
+                    {
+                        'slug': 'staffbot_step_0',
+                        'name': 'The first step',
+                        'description': ('The longer description of the '
+                                        'first step'),
+                        'is_human': True,
+                        'creation_depends_on': [],
+                        'required_certifications': [],
+                        'review_policy': {
+                            'policy': 'no_review',
+                        },
+                        'assignment_policy': {
+                            'policy_function': {
+                                'entry_level': {
+                                    'path': ('orchestra.bots.'
+                                             'assignment_policies.'
+                                             'staffbot_autoassign'),
+                                }
+                            }
+                        },
+                        'user_interface': {
+                            'javascript_includes': ['/path/to/some.js'],
+                            'stylesheet_includes': ['/path/to/some.css'],
+                            'angular_module': 'step1',
+                            'angular_directive': 'step1_directive',
+                        },
+                    },
+                    {
+                        'slug': 'staffbot_step_1',
+                        'name': 'The second step',
+                        'description': ('The longer description of the '
+                                        'second step'),
+                        'is_human': True,
+                        'creation_depends_on': ['staffbot_step_0'],
+                        'required_certifications': ['certification2_ap'],
+                        'review_policy': {
+                            'policy': 'sampled_review',
+                            'rate': 1,
+                            'max_reviews': 1,
+                        },
+                        'assignment_policy': {
+                            'policy_function': {
+                                'entry_level': {
+                                    'path': ('orchestra.bots.'
+                                             'assignment_policies.'
+                                             'staffbot_autoassign'),
+                                    'kwargs': {
+
+                                        'related_steps': ['staffbot_step_0'],
+                                    }
+                                }
+                            }
+                        },
+                        'user_interface': {
+                            'javascript_includes': ['/path/to/some.js'],
+                            'stylesheet_includes': ['/path/to/some.css'],
+                            'angular_module': 'step2',
+                            'angular_directive': 'step2_directive',
+                        },
+                    },
+                ],
+            },
+        ],
+    },
 
     # The following is a workflow with a more complex dependency graph to test
     # the topographical sort and other graph related functions.

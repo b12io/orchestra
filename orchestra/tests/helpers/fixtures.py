@@ -256,6 +256,7 @@ def setup_models(test_case):
         'project_to_end': 'test_workflow',
         'assignment_policy': 'assignment_policy_workflow',
         'project_management_project': 'test_workflow',
+        'staffbot_assignment_policy': 'staffbot_assignment_policy_workflow',
     }
 
     # Task generation data
@@ -332,6 +333,8 @@ def _setup_workflows(test_case, workflows):
         test_case.workflows[workflow_details['slug']] = workflow
 
         # Create certifications and dependencies
+        # TODO(joshblum): workflow_step slugs may not be unique across
+        # workflows! we shouldn't depend on this here
         for cert_details in workflow_details.get('certifications', []):
             certification = CertificationFactory(
                 slug=cert_details['slug'],
@@ -355,6 +358,8 @@ def _setup_workflows(test_case, workflows):
             test_case.workflow_versions[version_details['slug']] = version
 
             # Create workflow steps
+            # TODO(joshblum): workflow_step slugs may not be unique across
+            # workflows! we shouldn't depend on this here
             test_case.workflow_steps[version.slug] = {}
             workflow_steps = test_case.workflow_steps[version.slug]
             workflow_step_backrefs = []
