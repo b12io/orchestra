@@ -1,0 +1,43 @@
+from unittest.mock import patch
+
+from orchestra.models import Iteration
+from orchestra.models import Task
+from orchestra.tests.helpers import OrchestraTestCase
+from orchestra.tests.helpers.fixtures import setup_models
+from orchestra.utils.task_lifecycle import assign_task
+from orchestra.utils.task_lifecycle import create_subsequent_tasks
+from orchestra.utils.task_lifecycle import submit_task
+
+
+class StaffBotAutoAssignTestCase(OrchestraTestCase):
+
+    def setUp(self):
+        super().setUp()
+        setup_models(self)
+
+    @patch('orchestra.bots.staffbot.send_mail')
+    def test_preassign_workers(self, mock_mail):
+        project = self.projects['staffbot_assignment_policy']
+
+        # Create first task in test project
+        create_subsequent_tasks(project)
+        self.assertEqual(project.tasks.count(), 1)
+        # Assign initial task to worker 0
+        initial_task = assign_task(self.workers[0].id,
+                                   project.tasks.first().id)
+        # Submit task; next task should be created
+        with patch('orchestra.utils.task_lifecycle._is_review_needed',
+                   return_value=False):
+            initial_task = submit_task(initial_task.id, {},
+                                       Iteration.Status.REQUESTED_REVIEW,
+                                       self.workers[0])
+        self.assertTrue(mock_mail.called)
+        self.assertEqual(project.tasks.count(), 2)
+        related_task = project.tasks.exclude(id=initial_task.id).first()
+        # Worker 0 not certified for related tasks, so should not have been
+        # auto-assigned
+        self.assertEqual(related_task.assignments.count(), 0)
+        self.assertEqual(related_task.status, Task.Status.AWAITING_PROCESSING)
+
+        # Reset project
+        project.tasks.all().delete()

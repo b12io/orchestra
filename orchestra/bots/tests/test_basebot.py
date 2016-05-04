@@ -33,7 +33,7 @@ class BaseBotTest(OrchestraTestCase):
                             'allowed_user_ids', 'allowed_user_names',
                             'allowed_commands']
         for field in validated_fields:
-            config = {field: ''}
+            config = {field: []}
             bot = BaseBot(self.token, **config)
             with self.assertRaises(SlackCommandInvalidRequest):
                 bot.validate(mock_slack_data)
