@@ -14,6 +14,7 @@ class StaffRequestBase(OrchestraAuthenticatedTestCase):
         super().setUp()
         self.request_client, self.user = self.authenticate_user()
         self.staffing_response = StaffingResponseFactory(
+            request__task__step__is_human=True,
             request__communication_preference__worker__user=self.user)
         self.url_kwargs = {
             'staffing_request_id': self.staffing_response.request.pk

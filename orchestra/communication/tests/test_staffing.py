@@ -1,5 +1,7 @@
 from orchestra.communication.staffing import handle_staffing_response
 from orchestra.models import StaffingResponse
+from orchestra.models import Task
+from orchestra.models import TaskAssignment
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import StaffingRequestFactory
 from orchestra.tests.helpers.fixtures import WorkerFactory
@@ -10,7 +12,9 @@ class StaffingTestCase(OrchestraTestCase):
     def setUp(self):
         self.worker = WorkerFactory()
         self.staffing_request = StaffingRequestFactory(
-            communication_preference__worker=self.worker)
+            communication_preference__worker=self.worker,
+            task__step__is_human=True
+        )
         super().setUp()
 
     def test_handle_staffing_response_invalid_request(self):
@@ -36,6 +40,16 @@ class StaffingTestCase(OrchestraTestCase):
         self.assertTrue(response.is_winner)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
 
+        task_assignment = (TaskAssignment.objects
+                           .get(worker=self.worker,
+                                task=self.staffing_request.task))
+        self.assertEquals(task_assignment.status,
+                          TaskAssignment.Status.PROCESSING)
+        self.staffing_request.task.refresh_from_db()
+
+        self.assertEquals(self.staffing_request.task.status,
+                          Task.Status.PROCESSING)
+
         # Replay of same request
         response = handle_staffing_response(
             self.worker, self.staffing_request.id, is_available=True)
@@ -47,9 +61,17 @@ class StaffingTestCase(OrchestraTestCase):
             self.worker, self.staffing_request.id, is_available=False)
         self.assertFalse(response.is_winner)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
+        task_assignment.refresh_from_db()
+        self.assertEquals(task_assignment.status, TaskAssignment.Status.FAILED)
+        self.staffing_request.task.refresh_from_db()
 
         # Task is available to claim
-        new_staffing_request = StaffingRequestFactory()
+        self.assertEquals(self.staffing_request.task.status,
+                          Task.Status.AWAITING_PROCESSING)
+
+        new_staffing_request = StaffingRequestFactory(
+            task__step__is_human=True
+        )
         new_worker = new_staffing_request.communication_preference.worker
         old_count = StaffingResponse.objects.all().count()
         response = handle_staffing_response(

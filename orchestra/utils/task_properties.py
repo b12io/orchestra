@@ -2,7 +2,7 @@ from orchestra.core.errors import TaskAssignmentError
 from orchestra.models import Iteration
 from orchestra.models import TaskAssignment
 
-
+# TODO(kkamalov): move everything to model_mixins
 def assignment_history(task):
     """
     Return all assignments for `task` ordered by `assignment_counter`.
@@ -70,22 +70,3 @@ def all_workers(task):
             A list of all workers involved with `task`.
     """
     return [assignment.worker for assignment in assignment_history(task).all()]
-
-
-def is_worker_assigned_to_task(worker, task):
-    """
-    Check if specified worker is assigned to the given task.
-
-    Args:
-        worker (orchestra.models.Worker):
-            The specified worker object.
-        task (orchestra.models.Task):
-            The given task object.
-
-    Returns:
-        worker_assigned_to_task (bool):
-            True if worker has existing assignment for the given task.
-    """
-    return (task.assignments
-            .filter(worker=worker)
-            .exists())

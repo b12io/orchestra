@@ -12,7 +12,6 @@ from orchestra.tests.helpers.fixtures import TaskFactory
 from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.task_lifecycle import end_project
 from orchestra.utils.task_lifecycle import submit_task
-from orchestra.utils.task_properties import is_worker_assigned_to_task
 
 
 class BasicNotificationsTestCase(OrchestraTestCase):
@@ -51,7 +50,7 @@ class BasicNotificationsTestCase(OrchestraTestCase):
         # Entry-level worker picks up task
         self.assertEquals(task.status, Task.Status.AWAITING_PROCESSING)
         task = assign_task(self.workers[0].id, task.id)
-        self.assertTrue(is_worker_assigned_to_task(self.workers[0], task))
+        self.assertTrue(task.is_worker_assigned(self.workers[0]))
 
         # Notification should be sent to entry-level worker
         self.assertEquals(len(self.mail.inbox), 1)
