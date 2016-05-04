@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 from orchestra.models import Iteration
 from orchestra.models import Task
+from orchestra.models import StaffingRequest
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.utils.task_lifecycle import assign_task
@@ -17,6 +18,9 @@ class StaffBotAutoAssignTestCase(OrchestraTestCase):
 
     @patch('orchestra.bots.staffbot.send_mail')
     def test_preassign_workers(self, mock_mail):
+        request_cause = StaffingRequest.RequestCause.AUTOSTAFF.value
+        staffing_request_count = StaffingRequest.objects.filter(
+            request_cause=request_cause).count()
         project = self.projects['staffbot_assignment_policy']
 
         # Create first task in test project
@@ -31,7 +35,13 @@ class StaffBotAutoAssignTestCase(OrchestraTestCase):
             initial_task = submit_task(initial_task.id, {},
                                        Iteration.Status.REQUESTED_REVIEW,
                                        self.workers[0])
+
+        # Mock mail should be called if we autostaff
         self.assertTrue(mock_mail.called)
+        # Assert we created new StaffingRequests because of autostaff
+        new_staffing_request_count = StaffingRequest.objects.filter(
+            request_cause=request_cause).count()
+        self.assertTrue(staffing_request_count < new_staffing_request_count)
         self.assertEqual(project.tasks.count(), 2)
         related_task = project.tasks.exclude(id=initial_task.id).first()
         # Worker 0 not certified for related tasks, so should not have been
