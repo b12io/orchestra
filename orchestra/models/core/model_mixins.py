@@ -92,6 +92,20 @@ class ProjectMixin(object):
 
 class TaskMixin(object):
 
+    def is_worker_assigned(self, worker):
+        """
+        Check if specified worker is assigned to the given task.
+
+        Args:
+            worker (orchestra.models.Worker):
+                The specified worker object.
+
+        Returns:
+            worker_assigned_to_task (bool):
+                True if worker has existing assignment for the given task.
+        """
+        return self.assignments.filter(worker=worker).exists()
+
     def __str__(self):
         return '{} - {}'.format(str(self.project), str(self.step.slug))
 

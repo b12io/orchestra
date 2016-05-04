@@ -32,7 +32,6 @@ from orchestra.utils.task_lifecycle import submit_task
 from orchestra.utils.task_lifecycle import worker_assigned_to_rejected_task
 from orchestra.utils.task_lifecycle import worker_has_reviewer_status
 from orchestra.utils.task_properties import current_assignment
-from orchestra.utils.task_properties import is_worker_assigned_to_task
 
 
 class BasicTaskLifeCycleTestCase(OrchestraTestCase):
@@ -139,16 +138,14 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
             get_new_task_assignment(self.workers[7],
                                     Task.Status.AWAITING_PROCESSING)
 
-    def test_is_worker_assigned_to_task(self):
+    def test_is_worker_assigned(self):
         task = self.tasks['review_task']
 
         # worker is not related to any task
-        self.assertFalse(is_worker_assigned_to_task(self.workers[2],
-                                                    task))
+        self.assertFalse(task.is_worker_assigned(self.workers[2]))
 
         # worker is assigned to a task.
-        self.assertTrue(is_worker_assigned_to_task(self.workers[0],
-                                                   task))
+        self.assertTrue(task.is_worker_assigned(self.workers[0]))
 
     # TODO(jrbotros): write this test when per-user max tasks logic created
     def test_worker_assigned_to_max_tasks(self):
@@ -211,8 +208,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
 
         # Assign entry-level task to entry-level worker
         entry_task = assign_task(self.workers[0].id, entry_task.id)
-        self.assertTrue(is_worker_assigned_to_task(self.workers[0],
-                                                   entry_task))
+        self.assertTrue(entry_task.is_worker_assigned(self.workers[0]))
         self.assertEqual(entry_task.status, Task.Status.PROCESSING)
 
         self.assertEqual(entry_task.assignments.count(), 1)
@@ -529,8 +525,8 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         # Worker 4 is certified for related task and should have been assigned
         self.assertEquals(related_task.assignments.count(), 1)
         self.assertEquals(related_task.status, Task.Status.PROCESSING)
-        self.assertTrue(is_worker_assigned_to_task(self.workers[4],
-                                                   related_task))
+        self.assertTrue(
+            related_task.is_worker_assigned(self.workers[4]))
 
         # Reset project
         project.tasks.all().delete()

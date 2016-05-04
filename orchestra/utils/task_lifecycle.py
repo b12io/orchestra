@@ -25,7 +25,6 @@ from orchestra.utils.notifications import notify_status_change
 from orchestra.utils.task_properties import assignment_history
 from orchestra.utils.task_properties import current_assignment
 from orchestra.utils.task_properties import get_latest_iteration
-from orchestra.utils.task_properties import is_worker_assigned_to_task
 
 import logging
 logger = logging.getLogger(__name__)
@@ -190,7 +189,7 @@ def assign_task(worker_id, task_id):
     assignment = current_assignment(task)
     if not is_worker_certified_for_task(worker, task, required_role):
         raise WorkerCertificationError('Worker not certified for this task.')
-    if is_worker_assigned_to_task(worker, task):
+    if task.is_worker_assigned(worker):
         raise TaskAssignmentError('Worker already assigned to this task.')
 
     assignment_counter = task.assignments.count()
@@ -207,7 +206,6 @@ def assign_task(worker_id, task_id):
     elif previous_status == Task.Status.PENDING_REVIEW:
         task.status = Task.Status.REVIEWING
     task.save()
-
     assignment = (
         TaskAssignment.objects
         .create(worker=worker,
@@ -257,7 +255,7 @@ def reassign_assignment(worker_id, assignment_id):
     if not is_worker_certified_for_task(worker, assignment.task, role):
         raise WorkerCertificationError(
             'Worker not certified for this assignment.')
-    if is_worker_assigned_to_task(worker, assignment.task):
+    if assignment.task.is_worker_assigned(worker):
         raise TaskAssignmentError('Worker already assigned to this task.')
 
     assignment.worker = worker
@@ -386,7 +384,7 @@ def get_task_overview_for_worker(task_id, worker):
             Information about `task` and its assignment for `worker`.
     """
     task = Task.objects.get(id=task_id)
-    if not is_worker_assigned_to_task(worker, task):
+    if not task.is_worker_assigned(worker):
         raise TaskAssignmentError('Worker is not associated with task')
     task_details = get_task_details(task_id)
 
@@ -671,7 +669,7 @@ def save_task(task_id, task_data, worker):
             assignment is in a non-processing state.
     """
     task = Task.objects.get(id=task_id)
-    if not is_worker_assigned_to_task(worker, task):
+    if not task.is_worker_assigned(worker):
         raise TaskAssignmentError('Worker is not associated with task')
 
     # Use select_for_update to prevent concurrency issues with submit_task.
