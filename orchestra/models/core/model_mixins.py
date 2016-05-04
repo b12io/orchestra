@@ -37,8 +37,8 @@ class StepMixin(object):
             detailed_description (str):
                 Dynamic message describing the step.
         """
-        path = self.description_function.get('path')
-        kwargs = self.description_function.get('kwargs', {})
+        path = self.detailed_description_function.get('path')
+        kwargs = self.detailed_description_function.get('kwargs', {})
         if extra_kwargs is not None:
             kwargs.update(extra_kwargs)
         try:

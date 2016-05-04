@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='step',
-            name='description_function',
+            name='detailed_description_function',
             field=jsonfield.fields.JSONField(default={}),
         ),
     ]

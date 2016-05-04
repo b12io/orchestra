@@ -237,7 +237,7 @@ workflow_fixtures = [
                         'name': 'The first step',
                         'description': ('The longer description of the '
                                         'first step'),
-                        'description_function': {
+                        'detailed_description_function': {
                             'path': ('orchestra.tests.helpers.'
                                      'fixtures.get_detailed_description')
                         },
@@ -268,7 +268,7 @@ workflow_fixtures = [
                         'name': 'The second step',
                         'description': ('The longer description of the '
                                         'second step'),
-                        'description_function': {
+                        'detailed_description_function': {
                             'path': ('orchestra.tests.helpers.'
                                      'fixtures.get_detailed_description'),
                             'kwargs': {
@@ -574,6 +574,13 @@ def assert_test_dir_v1_loaded(test_case):
         {
             'name': 'Step 1',
             'description': 'The first step',
+            'detailed_description_function': {
+                'path': ('orchestra.tests.helpers.'
+                         'fixtures.get_detailed_description'),
+                'kwargs': {
+                    'text': 'step 2 text'
+                }
+            },
             'is_human': False,
             'execution_function': {
                 'path': 'v1.machine.machine_function',

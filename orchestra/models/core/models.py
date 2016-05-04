@@ -118,7 +118,7 @@ class Step(StepMixin, models.Model):
             Human-readable name for the workflow step.
         description (str):
             A longer description of the workflow step.
-        description_function (str):
+        detailed_description_function (str):
             A JSON blob used to give a dynamic description of the step.
         workflow_version (orchestra.models.WorkflowVersion):
             The workflow version that this is a step of.
@@ -149,7 +149,7 @@ class Step(StepMixin, models.Model):
     slug = models.CharField(max_length=200)
     name = models.CharField(max_length=200)
     description = models.TextField()
-    description_function = JSONField(default={})
+    detailed_description_function = JSONField(default={})
     workflow_version = models.ForeignKey(WorkflowVersion, related_name='steps')
     creation_depends_on = models.ManyToManyField(
         'self',

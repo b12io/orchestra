@@ -136,6 +136,8 @@ def load_workflow_version(version_data, workflow, force=False):
                 'name': step_data['name'],
                 'description': step_data['description'],
                 'is_human': is_human,
+                'detailed_description_function': step_data.get(
+                    'detailed_description_function', {}),
                 'execution_function': step_data.get('execution_function', {}),
                 'assignment_policy': step_data.get(
                     'assignment_policy',
