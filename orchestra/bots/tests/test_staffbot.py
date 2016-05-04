@@ -22,6 +22,30 @@ class StaffBotTest(OrchestraTestCase):
         super().setUp()
         setup_models(self)
 
+    def _get_worker_for_task(self, task, role):
+        # Get certified reviewer
+        for worker in Worker.objects.all():
+            if is_worker_certified_for_task(worker, task, role):
+                return worker
+
+    def _test_staffing_requests(self, worker, task, command,
+                                can_slack=False, can_mail=False):
+        bot = StaffBot()
+        communication_type = (CommunicationPreference.CommunicationType
+                              .NEW_TASK_AVAILABLE.value)
+        communication_preference = CommunicationPreference.objects.get(
+            worker=worker,
+            communication_type=communication_type)
+        communication_preference.methods.slack = can_slack
+        communication_preference.methods.email = can_mail
+        communication_preference.save()
+
+        data = get_mock_slack_data(text=command)
+        bot.dispatch(data)
+        self.assertEquals(StaffingRequest.objects.filter(
+            communication_preference__worker_id=worker,
+            task=task).count(), can_slack + can_mail)
+
     def test_commands(self):
         """
         Ensure that the bot can handle the following commands:
@@ -47,30 +71,6 @@ class StaffBotTest(OrchestraTestCase):
         mock_slack_data = get_mock_slack_data(text='invalid command')
         response = bot.dispatch(mock_slack_data)
         self.assertTrue(bot.default_error_text in response.get('text', ''))
-
-    def test_staff_command_errors(self):
-        """
-        Test that the staffing logic errors are raised during
-        staff command.
-        """
-        bot = StaffBot()
-        data = get_mock_slack_data(text='staff 999999999999')
-
-        response = bot.dispatch(data)
-        self.assertEqual(response.get('text'),
-                         bot.task_does_not_exist_error.format('999999999999'))
-
-        data = get_mock_slack_data(text='staff')
-        response = bot.dispatch(data)
-        self.assertTrue(bot.default_error_text in response.get('text'))
-
-        task = TaskFactory(status=Task.Status.COMPLETE)
-        data = get_mock_slack_data(text='staff {}'.format(task.id))
-        response = bot.dispatch(data)
-        self.assertEquals(response.get('text'),
-                          bot.task_assignment_error
-                          .format(task.id,
-                                  'Status incompatible with new assignment'))
 
     @patch('orchestra.bots.staffbot.StaffBot._send_staffing_request_by_mail')
     @patch('orchestra.bots.staffbot.StaffBot._send_staffing_request_by_slack')
@@ -105,30 +105,62 @@ class StaffBotTest(OrchestraTestCase):
                                      can_slack=False, can_mail=False)
         self._test_staffing_requests(worker, task, 'staff {}'.format(task.id),
                                      can_slack=True, can_mail=True)
+        self.assertTrue(mock_mail.called)
+        self.assertTrue(mock_slack.called)
 
-    def _get_worker_for_task(self, task, role):
-        # Get certified reviewer
-        for worker in Worker.objects.all():
-            if is_worker_certified_for_task(worker, task, role):
-                return worker
-
-    def _test_staffing_requests(self, worker, task, command,
-                                can_slack=False, can_mail=False):
+    def test_staff_command_errors(self):
+        """
+        Test that the staffing logic errors are raised during
+        staff command.
+        """
         bot = StaffBot()
-        communication_type = (CommunicationPreference.CommunicationType
-                              .NEW_TASK_AVAILABLE.value)
-        communication_preference = CommunicationPreference.objects.get(
-            worker=worker,
-            communication_type=communication_type)
-        communication_preference.methods.slack = can_slack
-        communication_preference.methods.email = can_mail
-        communication_preference.save()
+        data = get_mock_slack_data(text='staff 999999999999')
 
-        data = get_mock_slack_data(text=command)
-        bot.dispatch(data)
-        self.assertEquals(StaffingRequest.objects.filter(
-            communication_preference__worker_id=worker,
-            task=task).count(), can_slack + can_mail)
+        response = bot.dispatch(data)
+        self.assertEqual(response.get('text'),
+                         bot.task_does_not_exist_error.format('999999999999'))
+
+        data = get_mock_slack_data(text='staff')
+        response = bot.dispatch(data)
+        self.assertTrue(bot.default_error_text in response.get('text'))
+
+        task = TaskFactory(status=Task.Status.COMPLETE)
+        data = get_mock_slack_data(text='staff {}'.format(task.id))
+        response = bot.dispatch(data)
+        self.assertEquals(response.get('text'),
+                          bot.task_assignment_error
+                          .format(task.id,
+                                  'Status incompatible with new assignment'))
+
+    @patch('orchestra.bots.staffbot.StaffBot._send_staffing_request_by_mail')
+    @patch('orchestra.bots.staffbot.StaffBot._send_staffing_request_by_slack')
+    def test_restaff_command(self, mock_slack, mock_mail):
+        """
+        Test that the restaffing logic is properly executed for the
+        restaff command.
+        """
+        task = (Task.objects
+                .filter(status=Task.Status.AWAITING_PROCESSING)
+                .first())
+
+        # Get certified worker
+        worker = self._get_worker_for_task(
+            task, WorkerCertification.Role.ENTRY_LEVEL)
+        task = assign_task(worker.id, task.id)
+        command = 'restaff {} {}'.format(task.id, worker.user.username)
+
+        self._test_staffing_requests(worker, task, command,
+                                     can_slack=False, can_mail=False)
+
+        task.status = Task.Status.AWAITING_PROCESSING
+        task.save()
+        TaskAssignment.objects.filter(worker=worker,
+                                      task=task).delete()
+        task = assign_task(worker.id, task.id)
+        self._test_staffing_requests(worker, task, command,
+                                     can_slack=True, can_mail=True)
+        self.assertTrue(mock_mail.called)
+        self.assertTrue(mock_slack.called)
 
     def test_restaff_command_errors(self):
         """
@@ -160,29 +192,3 @@ class StaffBotTest(OrchestraTestCase):
         self.assertEquals(response.get('text'),
                           (bot.task_assignment_does_not_exist_error
                            .format(worker.user.username, task.id)))
-
-    def test_restaff_command(self):
-        """
-        Test that the restaffing logic is properly executed for the
-        restaff command.
-        """
-        task = (Task.objects
-                .filter(status=Task.Status.AWAITING_PROCESSING)
-                .first())
-
-        # Get certified worker
-        worker = self._get_worker_for_task(
-            task, WorkerCertification.Role.ENTRY_LEVEL)
-        task = assign_task(worker.id, task.id)
-        command = 'restaff {} {}'.format(task.id, worker.user.username)
-
-        self._test_staffing_requests(worker, task, command,
-                                     can_slack=False, can_mail=False)
-
-        task.status = Task.Status.AWAITING_PROCESSING
-        task.save()
-        TaskAssignment.objects.filter(worker=worker,
-                                      task=task).delete()
-        task = assign_task(worker.id, task.id)
-        self._test_staffing_requests(worker, task, command,
-                                     can_slack=True, can_mail=True)
