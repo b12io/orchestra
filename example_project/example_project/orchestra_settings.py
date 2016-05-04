@@ -31,8 +31,10 @@ def setup_orchestra(settings_module_name):
     environment = os.environ.get('ENVIRONMENT')
     settings.PRODUCTION = False
     settings.STAGING = False
+    settings.ORCHESTRA_SEND_STAFFING_MESSAGES = False
     if environment == 'production':
         settings.PRODUCTION = True
+        settings.ORCHESTRA_SEND_STAFFING_MESSAGES = True
     elif environment == 'staging':
         settings.STAGING = True
 

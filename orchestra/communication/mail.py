@@ -2,11 +2,25 @@ from django.core.mail import send_mail as _send_mail
 from orchestra.models import CommunicationPreference
 from orchestra.models import Worker
 
+import logging
+
+logger = logging.getLogger(__name__)
+
+EMAIL_FORMAT = (
+    """
+    Subject: {},
+    From: {},
+    To: {},
+    Message: {}
+    """
+)
+
 
 def send_mail(subject, message, from_email,
               recipient_list, fail_silently=False,
               auth_user=None, auth_password=None,
               connection=None, html_message=None,
+              logger_only=False,
               communication_type=None):
     """
     Light wrapper over Django's send_mail which filters out recipients who
@@ -20,6 +34,9 @@ def send_mail(subject, message, from_email,
 
     if not len(recipient_list):
         return
+    elif logger_only:
+        logger.info(EMAIL_FORMAT.format(subject, from_email,
+                                        recipient_list, message))
     else:
         return _send_mail(subject, message, from_email,
                           recipient_list, fail_silently=fail_silently,

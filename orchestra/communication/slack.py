@@ -24,7 +24,7 @@ class SlackService(object):
             setattr(self, attr_name, getattr(self._service, attr_name))
 
     def post_message(self, slack_user_id, message, parse='none'):
-        if settings.PRODUCTION:
+        if settings.ORCHESTRA_SEND_STAFFING_MESSAGES:
             self.chat.post_message(
                 slack_user_id, message, parse=parse)
         else:
