@@ -181,6 +181,8 @@ class StaffBot(BaseBot):
             'orchestra:communication:reject_staffing_request', url_kwargs)
 
         roles = dict(WorkerCertification.ROLE_CHOICES)
+        # TODO(joshblum): handle urls if present in the detailed_description to
+        # convert for slack
         detailed_description = (
             staffing_request.task.step.get_detailed_description()
         )

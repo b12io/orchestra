@@ -1,6 +1,7 @@
 Hi {{username}},
 
 New {{required_role}} task is available to be claimed.
+{{ detailed_description }}
 
 <{{accept_url}}|Accept>
 <{{reject_url}}|Reject>
