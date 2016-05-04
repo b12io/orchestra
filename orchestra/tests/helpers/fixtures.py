@@ -34,6 +34,12 @@ ITERATION_DURATION = timedelta(hours=1)
 PICKUP_DELAY = timedelta(hours=1)
 
 
+def get_detailed_description(text=None):
+    if text is None:
+        text = 'No text given'
+    return text
+
+
 class WorkflowFactory(factory.django.DjangoModelFactory):
 
     code_directory = factory.Sequence(

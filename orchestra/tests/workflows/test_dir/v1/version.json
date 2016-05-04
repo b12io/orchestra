@@ -6,6 +6,12 @@
             "slug": "s1",
             "name": "Step 1",
             "description": "The first step",
+            "detailed_description_function": {
+                "path": "orchestra.tests.helpers.fixtures.get_detailed_description",
+                "kwargs": {
+                    "text": "step 2 text"
+                }
+            },
             "is_human": false,
             "execution_function": {
                 "path": "v1.machine.machine_function"

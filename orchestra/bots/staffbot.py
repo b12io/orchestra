@@ -181,11 +181,17 @@ class StaffBot(BaseBot):
             'orchestra:communication:reject_staffing_request', url_kwargs)
 
         roles = dict(WorkerCertification.ROLE_CHOICES)
+        # TODO(joshblum): handle urls if present in the detailed_description to
+        # convert for slack
+        detailed_description = (
+            staffing_request.task.step.get_detailed_description()
+        )
         context = Context({
             'username': username,
             'accept_url': accept_url,
             'reject_url': reject_url,
-            'required_role': roles.get(staffing_request.required_role)
+            'required_role': roles.get(staffing_request.required_role),
+            'detailed_description': detailed_description,
         })
 
         message_body = render_to_string(template, context)
