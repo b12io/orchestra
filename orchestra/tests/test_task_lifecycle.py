@@ -1,4 +1,5 @@
 from unittest.mock import patch
+from unittest.mock import MagicMock
 
 from orchestra.core.errors import IllegalTaskSubmission
 from orchestra.core.errors import NoTaskAvailable
@@ -18,6 +19,7 @@ from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.fixtures import StepFactory
 from orchestra.tests.helpers.fixtures import TaskAssignmentFactory
 from orchestra.tests.helpers.fixtures import TaskFactory
+from orchestra.utils.task_lifecycle import AssignmentPolicyType
 from orchestra.utils.task_lifecycle import check_worker_allowed_new_assignment
 from orchestra.utils.task_lifecycle import is_worker_certified_for_task
 from orchestra.utils.task_lifecycle import assign_task
@@ -494,6 +496,25 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         # Create first task in test project
         create_subsequent_tasks(project)
         self.assertEquals(project.tasks.count(), 1)
+        # Assign initial task to worker 0
+        initial_task = assign_task(self.workers[0].id,
+                                   project.tasks.first().id)
+        # Submit task; verify we use the reviewer assignment policy
+        mock_preassign_workers = MagicMock(return_value=initial_task)
+        patch_path = 'orchestra.utils.task_lifecycle._preassign_workers'
+        with patch(patch_path, new=mock_preassign_workers):
+            initial_task = submit_task(initial_task.id, {},
+                                       Iteration.Status.REQUESTED_REVIEW,
+                                       self.workers[0])
+            mock_preassign_workers.assert_called_once_with(
+                initial_task, AssignmentPolicyType.REVIEWER)
+
+        # Reset project
+        project.tasks.all().delete()
+
+        # Create first task in test project
+        create_subsequent_tasks(project)
+        self.assertEquals(project.tasks.count(), 1)
         # Assign initial task to worker 4
         initial_task = assign_task(self.workers[4].id,
                                    project.tasks.first().id)
@@ -526,13 +547,14 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
             is_human=False,
             assignment_policy={
                 'policy_function': {
-                    'path': ('orchestra.assignment_policies.'
-                             'previously_completed_steps'),
-                    'kwargs': {
-                        'related_steps': ['step_0']
-                    },
+                    'entry_level': {
+                        'path': ('orchestra.assignment_policies.'
+                                 'previously_completed_steps'),
+                        'kwargs': {
+                            'related_steps': ['step_0']
+                        },
+                    }
                 }
-
             },
         )
         malformed_step.creation_depends_on.add(first_step)
@@ -557,12 +579,14 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         # Machine should not be member of assignment policy
         first_step.assignment_policy = {
             'policy_function': {
-                'path': ('orchestra.assignment_policies.'
-                         'previously_completed_steps'),
-                'kwargs': {
-                    'related_steps': ['machine_step']
+                'entry_level': {
+                    'path': ('orchestra.assignment_policies.'
+                             'previously_completed_steps'),
+                    'kwargs': {
+                        'related_steps': ['machine_step']
+                    },
                 },
-            },
+            }
         }
         first_step.save()
         with self.assertRaises(AssignmentPolicyError):

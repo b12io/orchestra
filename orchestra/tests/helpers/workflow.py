@@ -202,11 +202,13 @@ workflow_fixtures = [
                         },
                         'assignment_policy': {
                             'policy_function': {
-                                'path': ('orchestra.assignment_policies.'
-                                         'previously_completed_steps'),
-                                'kwargs': {
+                                'entry_level': {
+                                    'path': ('orchestra.assignment_policies.'
+                                             'previously_completed_steps'),
+                                    'kwargs': {
 
-                                    'related_steps': ['step_0'],
+                                        'related_steps': ['step_0'],
+                                    }
                                 }
                             }
                         },
