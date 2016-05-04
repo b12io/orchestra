@@ -2,6 +2,7 @@ from orchestra.core.errors import TaskAssignmentError
 from orchestra.models import Iteration
 from orchestra.models import TaskAssignment
 
+
 # TODO(kkamalov): move everything to model_mixins
 def assignment_history(task):
     """
