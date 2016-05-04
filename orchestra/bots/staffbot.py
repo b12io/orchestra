@@ -181,11 +181,15 @@ class StaffBot(BaseBot):
             'orchestra:communication:reject_staffing_request', url_kwargs)
 
         roles = dict(WorkerCertification.ROLE_CHOICES)
+        detailed_description = (
+            staffing_request.task.step.get_detailed_description()
+        )
         context = Context({
             'username': username,
             'accept_url': accept_url,
             'reject_url': reject_url,
-            'required_role': roles.get(staffing_request.required_role)
+            'required_role': roles.get(staffing_request.required_role),
+            'detailed_description': detailed_description,
         })
 
         message_body = render_to_string(template, context)

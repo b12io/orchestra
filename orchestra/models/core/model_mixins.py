@@ -1,3 +1,5 @@
+from pydoc import locate
+
 from django.db.models import Q
 
 from orchestra.core.errors import ModelSaveError
@@ -22,6 +24,28 @@ class CertificationMixin(object):
 
 
 class StepMixin(object):
+
+    def get_detailed_description(self, extra_kwargs=None):
+        """
+        This function uses the `description_function` field to generate
+        dynamic text describing a step within a task.
+        Args:
+            extra_kwargs (dict):
+                Additional (dynamic) kwargs that will be passed to the
+                description function.
+        Returns:
+            detailed_description (str):
+                Dynamic message describing the step.
+        """
+        path = self.description_function.get('path')
+        kwargs = self.description_function.get('kwargs', {})
+        if extra_kwargs is not None:
+            kwargs.update(extra_kwargs)
+        try:
+            function = locate(path)
+            return function(**kwargs)
+        except:
+            return ''
 
     def __str__(self):
         return '{} - {} - {}'.format(self.slug, self.workflow_version.slug,

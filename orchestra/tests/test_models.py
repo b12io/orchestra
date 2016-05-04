@@ -9,6 +9,7 @@ from orchestra.models import Worker
 from orchestra.models import WorkerCertification
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers import OrchestraModelTestCase
+from orchestra.tests.helpers.fixtures import get_detailed_description
 from orchestra.tests.helpers.fixtures import CertificationFactory
 from orchestra.tests.helpers.fixtures import StepFactory
 from orchestra.tests.helpers.fixtures import PayRateFactory
@@ -149,6 +150,33 @@ class CertificationTestCase(OrchestraModelTestCase):
 class StepTestCase(OrchestraModelTestCase):
     __test__ = True
     model = StepFactory
+
+    def test_get_detailed_description(self):
+        """
+        Verify that the detailed description text is valid
+        """
+        # description functions are optional
+        step = StepFactory()
+        self.assertEqual(step.get_detailed_description(), '')
+
+        no_kwargs = {
+            'path': ('orchestra.tests.helpers.'
+                     'fixtures.get_detailed_description')
+        }
+        step_no_kwargs = StepFactory(description_function=no_kwargs)
+        self.assertEqual(step_no_kwargs.get_detailed_description(),
+                         get_detailed_description())
+
+        with_kwargs = {
+            'path': ('orchestra.tests.helpers.'
+                     'fixtures.get_detailed_description'),
+            'kwargs': {
+                'text': 'step 2 text',
+            }
+        }
+        step_with_kwargs = StepFactory(description_function=with_kwargs)
+        self.assertEqual(step_with_kwargs.get_detailed_description(
+        ), get_detailed_description(text='step 2 text'))
 
 
 class PayRateTestCase(OrchestraModelTestCase):
