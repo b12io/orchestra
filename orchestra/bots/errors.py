@@ -1,3 +1,7 @@
+class StaffingResponseException(Exception):
+    pass
+
+
 class SlackConnectionError(Exception):
     pass
 

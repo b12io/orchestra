@@ -1,3 +1,4 @@
+from orchestra.bots.errors import StaffingResponseException
 from orchestra.communication.staffing import handle_staffing_response
 from orchestra.models import StaffingResponse
 from orchestra.models import Task
@@ -56,18 +57,10 @@ class StaffingTestCase(OrchestraTestCase):
         self.assertTrue(response.is_winner)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
 
-        # Change mind to `is_available=False`
-        response = handle_staffing_response(
-            self.worker, self.staffing_request.id, is_available=False)
-        self.assertFalse(response.is_winner)
-        self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
-        task_assignment.refresh_from_db()
-        self.assertEquals(task_assignment.status, TaskAssignment.Status.FAILED)
-        self.staffing_request.task.refresh_from_db()
-
-        # Task is available to claim
-        self.assertEquals(self.staffing_request.task.status,
-                          Task.Status.AWAITING_PROCESSING)
+        # Change mind to `is_available=False` does not do anything
+        with self.assertRaises(StaffingResponseException):
+            response = handle_staffing_response(
+                self.worker, self.staffing_request.id, is_available=False)
 
         new_staffing_request = StaffingRequestFactory(
             task__step__is_human=True
