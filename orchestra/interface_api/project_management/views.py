@@ -26,7 +26,8 @@ logger = logging.getLogger(__name__)
 
 
 def is_project_admin(user):
-    return user.groups.filter(name='project_admins').exists()
+    return (user.groups.filter(name='project_admins').exists() or
+            user.is_superuser)
 
 
 @json_view

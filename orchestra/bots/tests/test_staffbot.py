@@ -4,6 +4,7 @@ from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.fixtures import TaskFactory
 from orchestra.tests.helpers.fixtures import WorkerFactory
+from orchestra.bots.errors import SlackUserUnauthorized
 from orchestra.bots.staffbot import StaffBot
 from orchestra.bots.tests.fixtures import get_mock_slack_data
 from orchestra.models import CommunicationPreference
@@ -21,6 +22,9 @@ class StaffBotTest(OrchestraTestCase):
     def setUp(self):
         super().setUp()
         setup_models(self)
+        self.worker = self.workers[0]
+        self.worker.user.is_superuser = True
+        self.worker.user.save()
 
     def _get_worker_for_task(self, task, role):
         # Get certified reviewer
@@ -40,11 +44,19 @@ class StaffBotTest(OrchestraTestCase):
         communication_preference.methods.email = can_mail
         communication_preference.save()
 
-        data = get_mock_slack_data(text=command)
+        data = get_mock_slack_data(
+            text=command,
+            user_id=self.worker.slack_user_id)
         bot.dispatch(data)
         self.assertEquals(StaffingRequestInquiry.objects.filter(
             communication_preference__worker_id=worker,
             task=task).count(), can_slack + can_mail)
+
+    def test_assert_validate_error(self):
+        bot = StaffBot()
+        with self.assertRaises(SlackUserUnauthorized):
+            mock_slack_data = get_mock_slack_data(text='staff 5')
+            bot.dispatch(mock_slack_data)
 
     def test_commands(self):
         """
@@ -58,17 +70,20 @@ class StaffBotTest(OrchestraTestCase):
         bot = StaffBot()
 
         # Test staff command
-        mock_slack_data = get_mock_slack_data(text='staff 5')
+        mock_slack_data = get_mock_slack_data(
+            text='staff 5',
+            user_id=self.worker.slack_user_id)
+
         response = bot.dispatch(mock_slack_data)
         self.assertFalse(bot.default_error_text in response.get('text', ''))
 
         # Test the restaff command
-        mock_slack_data = get_mock_slack_data(text='restaff 5 username')
+        mock_slack_data['text'] = 'restaff 5 username'
         response = bot.dispatch(mock_slack_data)
         self.assertFalse(bot.default_error_text in response.get('text', ''))
 
         # Test we fail gracefully
-        mock_slack_data = get_mock_slack_data(text='invalid command')
+        mock_slack_data['text'] = 'invalid command'
         response = bot.dispatch(mock_slack_data)
         self.assertTrue(bot.default_error_text in response.get('text', ''))
 
@@ -114,18 +129,20 @@ class StaffBotTest(OrchestraTestCase):
         staff command.
         """
         bot = StaffBot()
-        data = get_mock_slack_data(text='staff 999999999999')
+        data = get_mock_slack_data(
+            text='staff 999999999999',
+            user_id=self.worker.slack_user_id)
 
         response = bot.dispatch(data)
         self.assertEqual(response.get('text'),
                          bot.task_does_not_exist_error.format('999999999999'))
 
-        data = get_mock_slack_data(text='staff')
+        data['text'] = 'staff'
         response = bot.dispatch(data)
         self.assertTrue(bot.default_error_text in response.get('text'))
 
         task = TaskFactory(status=Task.Status.COMPLETE)
-        data = get_mock_slack_data(text='staff {}'.format(task.id))
+        data['text'] = 'staff {}'.format(task.id)
         response = bot.dispatch(data)
         self.assertEquals(response.get('text'),
                           bot.task_assignment_error
@@ -168,26 +185,28 @@ class StaffBotTest(OrchestraTestCase):
         staff command.
         """
         bot = StaffBot()
-        data = get_mock_slack_data(text='restaff 999999999999 unknown')
+        data = get_mock_slack_data(
+            text='restaff 999999999999 unknown',
+            user_id=self.worker.slack_user_id)
 
         response = bot.dispatch(data)
         self.assertEqual(response.get('text'),
                          bot.worker_does_not_exist.format('unknown'))
 
         worker = WorkerFactory(user__username='slackusername')
-        data = get_mock_slack_data(text='restaff 999999999999 slackusername')
+        data['text'] = 'restaff 999999999999 slackusername'
         response = bot.dispatch(data)
         self.assertEqual(response.get('text'),
                          bot.task_does_not_exist_error.format('999999999999'))
 
-        data = get_mock_slack_data(text='restaff')
+        data['text'] = 'restaff'
         response = bot.dispatch(data)
         self.assertTrue(bot.default_error_text in response.get('text'))
 
         task = TaskFactory(status=Task.Status.COMPLETE)
         command = 'restaff {} {}'.format(task.id, worker.user.username)
 
-        data = get_mock_slack_data(text=command)
+        data['text'] = command
         response = bot.dispatch(data)
         self.assertEquals(response.get('text'),
                           (bot.task_assignment_does_not_exist_error
