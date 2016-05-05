@@ -159,7 +159,7 @@ def remove_worker_from_task(worker_username, task_id):
     task_assignment.save()
     task.save()
 
-    # if there is existing StaffingResponse mark is as not a winner
+    # if there is existing StaffingResponse mark it as not a winner
     response = get_object_or_None(
         StaffingResponse,
         request__task=task,
