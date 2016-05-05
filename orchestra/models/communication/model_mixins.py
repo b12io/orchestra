@@ -33,7 +33,7 @@ class CommunicationPreferenceMixin(object):
         )
 
 
-class StaffingRequestMixin(object):
+class StaffingRequestInquiryMixin(object):
 
     def get_request_cause_description(self):
         return self.RequestCause(self.request_cause).description

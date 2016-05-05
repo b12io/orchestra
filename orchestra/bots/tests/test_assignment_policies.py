@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 from orchestra.models import Iteration
 from orchestra.models import Task
-from orchestra.models import StaffingRequest
+from orchestra.models import StaffingRequestInquiry
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.utils.task_lifecycle import assign_task
@@ -18,8 +18,8 @@ class StaffBotAutoAssignTestCase(OrchestraTestCase):
 
     @patch('orchestra.bots.staffbot.send_mail')
     def test_preassign_workers(self, mock_mail):
-        request_cause = StaffingRequest.RequestCause.AUTOSTAFF.value
-        staffing_request_count = StaffingRequest.objects.filter(
+        request_cause = StaffingRequestInquiry.RequestCause.AUTOSTAFF.value
+        staffing_request_count = StaffingRequestInquiry.objects.filter(
             request_cause=request_cause).count()
         project = self.projects['staffbot_assignment_policy']
 
@@ -38,8 +38,8 @@ class StaffBotAutoAssignTestCase(OrchestraTestCase):
 
         # Mock mail should be called if we autostaff
         self.assertTrue(mock_mail.called)
-        # Assert we created new StaffingRequests because of autostaff
-        new_staffing_request_count = StaffingRequest.objects.filter(
+        # Assert we created new StaffingRequestInquirys because of autostaff
+        new_staffing_request_count = StaffingRequestInquiry.objects.filter(
             request_cause=request_cause).count()
         self.assertTrue(staffing_request_count < new_staffing_request_count)
         self.assertEqual(project.tasks.count(), 2)

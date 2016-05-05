@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
-            bases=(orchestra.models.communication.model_mixins.StaffingRequestMixin, orchestra.utils.models.DeleteMixin, models.Model),
+            bases=(orchestra.models.communication.model_mixins.StaffingRequestInquiryMixin, orchestra.utils.models.DeleteMixin, models.Model),
         ),
         migrations.CreateModel(
             name='StaffingResponse',

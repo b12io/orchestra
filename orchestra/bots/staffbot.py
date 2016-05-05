@@ -8,7 +8,7 @@ from orchestra.communication.mail import send_mail
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import TaskStatusError
 from orchestra.models import CommunicationPreference
-from orchestra.models import StaffingRequest
+from orchestra.models import StaffingRequestInquiry
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import Worker
@@ -64,7 +64,7 @@ class StaffBot(BaseBot):
             ])
 
     def staff(self, task_id,
-              request_cause=StaffingRequest.RequestCause.USER.value):
+              request_cause=StaffingRequestInquiry.RequestCause.USER.value):
         """
         This function handles staffing a request for the given task_id.
         """
@@ -83,7 +83,7 @@ class StaffBot(BaseBot):
         return self.format_slack_message('Staffed task {}!'.format(task_id))
 
     def restaff(self, task_id, username,
-                request_cause=StaffingRequest.RequestCause.USER.value):
+                request_cause=StaffingRequestInquiry.RequestCause.USER.value):
         """
         This function handles restaffing a request for the given task_id.
         The current user for the given username is removed, and a new user
@@ -140,8 +140,9 @@ class StaffBot(BaseBot):
             worker=worker)
 
         if communication_preference.can_email():
-            email_method = StaffingRequest.CommunicationMethod.EMAIL.value
-            staffing_request = StaffingRequest.objects.create(
+            email_method = (
+                StaffingRequestInquiry.CommunicationMethod.EMAIL.value)
+            staffing_request = StaffingRequestInquiry.objects.create(
                 communication_preference=communication_preference,
                 task=task,
                 required_role=required_role,
@@ -152,8 +153,9 @@ class StaffBot(BaseBot):
             self._send_staffing_request_by_mail(staffing_request, message)
 
         if communication_preference.can_slack():
-            slack_method = StaffingRequest.CommunicationMethod.SLACK.value
-            staffing_request = StaffingRequest.objects.create(
+            slack_method = (
+                StaffingRequestInquiry.CommunicationMethod.SLACK.value)
+            staffing_request = StaffingRequestInquiry.objects.create(
                 communication_preference=communication_preference,
                 task=task,
                 required_role=required_role,
@@ -206,7 +208,7 @@ class StaffBot(BaseBot):
                   settings.ORCHESTRA_NOTIFICATIONS_FROM_EMAIL,
                   [email],
                   logger_only=logger_only)
-        staffing_request.status = StaffingRequest.Status.SENT.value
+        staffing_request.status = StaffingRequestInquiry.Status.SENT.value
         staffing_request.save()
 
     def _send_staffing_request_by_slack(self, staffing_request, message):
@@ -218,5 +220,5 @@ class StaffBot(BaseBot):
             return
 
         self.slack.post_message(worker.slack_user_id, message)
-        staffing_request.status = StaffingRequest.Status.SENT.value
+        staffing_request.status = StaffingRequestInquiry.Status.SENT.value
         staffing_request.save()
