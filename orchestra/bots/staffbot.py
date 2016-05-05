@@ -1,3 +1,4 @@
+from annoying.functions import get_object_or_None
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.template import Context
@@ -5,8 +6,10 @@ from django.template.loader import render_to_string
 
 from orchestra.bots.basebot import BaseBot
 from orchestra.communication.mail import send_mail
+from orchestra.bots.errors import SlackUserUnauthorized
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import TaskStatusError
+from orchestra.interface_api.project_management.views import is_project_admin
 from orchestra.models import CommunicationPreference
 from orchestra.models import StaffingRequestInquiry
 from orchestra.models import Task
@@ -222,3 +225,19 @@ class StaffBot(BaseBot):
         self.slack.post_message(worker.slack_user_id, message)
         staffing_request.status = StaffingRequestInquiry.Status.SENT.value
         staffing_request.save()
+
+    def validate(self, data):
+        """
+        Handle a request received from slack. First we validate the
+        request and then pass the message to the appropriate handler.
+        """
+        slack_user_id = data.get('user_id')
+        username = data.get('user_name')
+
+        worker = get_object_or_None(Worker, slack_user_id=slack_user_id)
+        if worker is None:
+            raise SlackUserUnauthorized('Worker {} not found'.format(username))
+        elif not is_project_admin(worker.user):
+            raise SlackUserUnauthorized('You are not authorized!')
+        data = super().validate(data)
+        return data

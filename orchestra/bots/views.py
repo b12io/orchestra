@@ -4,6 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
 from orchestra.bots.errors import SlackCommandInvalidRequest
+from orchestra.bots.errors import SlackUserUnauthorized
 from orchestra.bots.basebot import BaseBot
 from orchestra.bots.staffbot import StaffBot
 
@@ -26,6 +27,8 @@ class BotMixin(View):
         try:
             response_data = self.bot.dispatch(data)
         except SlackCommandInvalidRequest as e:
+            response_data = {'error': str(e)}
+        except SlackUserUnauthorized as e:
             response_data = {'error': str(e)}
         return JsonResponse(response_data)
 
