@@ -5,7 +5,6 @@ from orchestra.bots.errors import StaffingResponseException
 from orchestra.models import StaffingRequest
 from orchestra.models import StaffingResponse
 from orchestra.utils.task_lifecycle import assign_task
-from orchestra.utils.task_lifecycle import remove_worker_from_task
 
 
 @transaction.atomic
@@ -35,9 +34,9 @@ def handle_staffing_response(worker, staffing_request_id, is_available=False):
 
     if (is_available and
             not StaffingResponse.objects.filter(
-                    request__task=staffing_request.task,
-                    request__required_role=staffing_request.required_role,
-                    is_winner=True).exists()):
+                request__task=staffing_request.task,
+                request__required_role=staffing_request.required_role,
+                is_winner=True).exists()):
         response.is_winner = True
         assign_task(worker.id,
                     staffing_request.task.id)
