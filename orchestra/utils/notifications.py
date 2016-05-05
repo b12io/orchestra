@@ -7,7 +7,7 @@ from orchestra.models import Task
 from orchestra.models import CommunicationPreference
 from orchestra.communication.slack import OrchestraSlackService
 from orchestra.communication.mail import send_mail
-from orchestra.utils.settings import run_if
+from orchestra.utils.decorators import run_if
 from orchestra.utils.task_properties import assignment_history
 from orchestra.utils.task_properties import current_assignment
 

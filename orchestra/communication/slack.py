@@ -3,7 +3,7 @@ import string
 
 from django.conf import settings
 from django.utils.text import slugify
-from orchestra.utils.settings import run_if
+from orchestra.utils.decorators import run_if
 from slacker import Slacker
 
 import logging

@@ -15,7 +15,7 @@ from orchestra.google_apps.permissions import read_with_link_permission
 from orchestra.google_apps.permissions import write_with_link_permission
 from orchestra.google_apps.service import Service
 from orchestra.utils.common_regex import image_file_regex
-from orchestra.utils.settings import run_if
+from orchestra.utils.decorators import run_if
 
 
 logger = logging.getLogger(__name__)
