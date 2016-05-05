@@ -4,7 +4,7 @@ from orchestra.models import StaffingResponse
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.tests.helpers import OrchestraTestCase
-from orchestra.tests.helpers.fixtures import StaffingRequestFactory
+from orchestra.tests.helpers.fixtures import StaffingRequestInquiryFactory
 from orchestra.tests.helpers.fixtures import WorkerFactory
 
 
@@ -12,7 +12,7 @@ class StaffingTestCase(OrchestraTestCase):
 
     def setUp(self):
         self.worker = WorkerFactory()
-        self.staffing_request = StaffingRequestFactory(
+        self.staffing_request = StaffingRequestInquiryFactory(
             communication_preference__worker=self.worker,
             task__step__is_human=True
         )
@@ -62,7 +62,7 @@ class StaffingTestCase(OrchestraTestCase):
             response = handle_staffing_response(
                 self.worker, self.staffing_request.id, is_available=False)
 
-        new_staffing_request = StaffingRequestFactory(
+        new_staffing_request = StaffingRequestInquiryFactory(
             task__step__is_human=True
         )
         new_worker = new_staffing_request.communication_preference.worker
@@ -93,7 +93,7 @@ class StaffingTestCase(OrchestraTestCase):
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
 
         # Task is not available to claim
-        new_staffing_request = StaffingRequestFactory(
+        new_staffing_request = StaffingRequestInquiryFactory(
             task=self.staffing_request.task,
             required_role=self.staffing_request.required_role,
             task__step__is_human=True)

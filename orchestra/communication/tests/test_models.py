@@ -2,7 +2,7 @@ from orchestra.accounts.signals import orchestra_user_registered
 from orchestra.models import CommunicationPreference
 from orchestra.tests.helpers import OrchestraModelTestCase
 from orchestra.tests.helpers.fixtures import CommunicationPreferenceFactory
-from orchestra.tests.helpers.fixtures import StaffingRequestFactory
+from orchestra.tests.helpers.fixtures import StaffingRequestInquiryFactory
 from orchestra.tests.helpers.fixtures import StaffingResponseFactory
 from orchestra.tests.helpers.fixtures import UserFactory
 
@@ -68,9 +68,9 @@ class CommunicationPreferenceTestCase(OrchestraModelTestCase):
                 self.assertTrue(flag)
 
 
-class StaffingRequestTestCase(OrchestraModelTestCase):
+class StaffingRequestInquiryTestCase(OrchestraModelTestCase):
     __test__ = True
-    model = StaffingRequestFactory
+    model = StaffingRequestInquiryFactory
 
 
 class StaffingResponseTestCase(OrchestraModelTestCase):

@@ -7,7 +7,7 @@ from orchestra.tests.helpers.fixtures import WorkerFactory
 from orchestra.bots.staffbot import StaffBot
 from orchestra.bots.tests.fixtures import get_mock_slack_data
 from orchestra.models import CommunicationPreference
-from orchestra.models import StaffingRequest
+from orchestra.models import StaffingRequestInquiry
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import Worker
@@ -42,7 +42,7 @@ class StaffBotTest(OrchestraTestCase):
 
         data = get_mock_slack_data(text=command)
         bot.dispatch(data)
-        self.assertEquals(StaffingRequest.objects.filter(
+        self.assertEquals(StaffingRequestInquiry.objects.filter(
             communication_preference__worker_id=worker,
             task=task).count(), can_slack + can_mail)
 
@@ -97,7 +97,7 @@ class StaffBotTest(OrchestraTestCase):
         task.status = Task.Status.PENDING_REVIEW
         task.save()
 
-        StaffingRequest.objects.all().delete()
+        StaffingRequestInquiry.objects.all().delete()
 
         worker = self._get_worker_for_task(task,
                                            WorkerCertification.Role.REVIEWER)

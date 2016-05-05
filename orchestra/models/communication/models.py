@@ -2,7 +2,7 @@ from bitfield import BitField
 from django.db import models
 
 from orchestra.models.communication.model_mixins import CommunicationPreferenceMixin  # noqa
-from orchestra.models.communication.model_mixins import StaffingRequestMixin
+from orchestra.models.communication.model_mixins import StaffingRequestInquiryMixin  # noqa
 from orchestra.models.communication.model_mixins import StaffingResponseMixin
 from orchestra.models.communication.managers import CommunicationPreferenceManager  # noqa
 from orchestra.models.core.models import Task
@@ -73,9 +73,9 @@ class CommunicationPreference(CommunicationPreferenceMixin, BaseModel):
         unique_together = (('worker', 'communication_type'),)
 
 
-class StaffingRequest(StaffingRequestMixin, BaseModel):
+class StaffingRequestInquiry(StaffingRequestInquiryMixin, BaseModel):
     """
-    A StaffingRequest object defines how a Worker was contacted to
+    A StaffingRequestInquiry object defines how a Worker was contacted to
     work on a Task by staffbot.
 
     Attributes:
@@ -122,7 +122,7 @@ class StaffingResponse(StaffingResponseMixin, BaseModel):
     whether the worker got the task.
 
     Attributes:
-        request (orchestra.models.StaffingRequest):
+        request (orchestra.models.StaffingRequestInquiry):
             Request object associated with a response
         response_text (str):
             Response text that a Worker provided
@@ -132,7 +132,8 @@ class StaffingResponse(StaffingResponseMixin, BaseModel):
             True if a Worker was selected to work on the Task
     """
 
-    request = models.ForeignKey(StaffingRequest, related_name='responses')
+    request = models.ForeignKey(StaffingRequestInquiry,
+                                related_name='responses')
     response_text = models.TextField(blank=True, null=True)
     is_available = models.BooleanField()
     is_winner = models.NullBooleanField()

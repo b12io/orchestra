@@ -2,7 +2,7 @@ from annoying.functions import get_object_or_None
 from django.db import transaction
 
 from orchestra.bots.errors import StaffingResponseException
-from orchestra.models import StaffingRequest
+from orchestra.models import StaffingRequestInquiry
 from orchestra.models import StaffingResponse
 from orchestra.utils.task_lifecycle import assign_task
 
@@ -11,7 +11,7 @@ from orchestra.utils.task_lifecycle import assign_task
 def handle_staffing_response(worker, staffing_request_id, is_available=False):
     # TODO(kkamalov): add proper docstring
     staffing_request = get_object_or_None(
-        StaffingRequest,
+        StaffingRequestInquiry,
         communication_preference__worker=worker,
         id=staffing_request_id
     )
