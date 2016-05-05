@@ -1,4 +1,5 @@
 import random
+from annoying.functions import get_object_or_None
 from pydoc import locate
 
 from django.conf import settings
@@ -16,6 +17,7 @@ from orchestra.core.errors import TaskStatusError
 from orchestra.core.errors import WorkerCertificationError
 from orchestra.models import Iteration
 from orchestra.models import Project
+from orchestra.models import StaffingResponse
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import Worker
@@ -156,6 +158,16 @@ def remove_worker_from_task(worker_username, task_id):
     task_assignment.status = TaskAssignment.Status.FAILED
     task_assignment.save()
     task.save()
+
+    # if there is existing StaffingResponse mark it as not a winner
+    response = get_object_or_None(
+        StaffingResponse,
+        request__task=task,
+        request__communication_preference__worker=worker,
+        is_winner=True)
+    if response is not None:
+        response.is_winner = False
+        response.save()
     return task
 
 

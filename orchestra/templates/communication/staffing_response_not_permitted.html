@@ -1,0 +1,16 @@
+{% extends 'orchestra/base.html' %}
+{% load staticfiles %}
+
+{% block title %}
+Task cannot be rejected.
+{% endblock %}
+
+{% block main %}
+<div class="container-fluid main-content communication-container">
+  <div class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 col-xs-12">
+    <div class="card">
+      Unfortunately, you can not reject the task after accepting it. Reach out if you can no longer work on this task!
+    </div>
+  </div>
+</div>
+{% endblock %}
