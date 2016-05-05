@@ -84,3 +84,13 @@ def get_project_information(project_id):
     response = _make_api_request('post', 'project_information',
                                  data=json.dumps(data))
     return json.loads(response.text)
+
+
+def assign_worker_to_task(worker_id, task_id):
+    data = {
+        'worker_id': worker_id,
+        'task_id': task_id,
+    }
+    response = _make_api_request('post', 'assign_worker_to_task',
+                                 data=json.dumps(data))
+    return json.loads(response.text)
