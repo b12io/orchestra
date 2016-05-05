@@ -31,10 +31,8 @@ def setup_orchestra(settings_module_name):
     environment = os.environ.get('ENVIRONMENT')
     settings.PRODUCTION = False
     settings.STAGING = False
-    settings.ORCHESTRA_SEND_STAFFING_MESSAGES = False
     if environment == 'production':
         settings.PRODUCTION = True
-        settings.ORCHESTRA_SEND_STAFFING_MESSAGES = True
     elif environment == 'staging':
         settings.STAGING = True
 
@@ -185,6 +183,10 @@ def setup_orchestra(settings_module_name):
     # Feature flags for toggling optional slack integration
     settings.SLACK_INTERNAL = False
     settings.SLACK_EXPERTS = False
+    settings.ORCHESTRA_SEND_STAFFING_MESSAGES = False
+    if settings.PRODUCTION:
+        settings.SLACK_EXPERTS = True
+        settings.ORCHESTRA_SEND_STAFFING_MESSAGES = True
 
     # Settings for slack notifications. Notifications are shared internally
     # upon task status change; the experts team organizes project
