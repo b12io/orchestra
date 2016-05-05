@@ -6,7 +6,11 @@ logger = logging.getLogger(__name__)
 
 def load_encoded_json(encoded_data):
     """
-        Return a dictionary from a byte object encoded as json.
+    Args: encoded_data (str):
+        Encoded JSON data
+    Returns:
+        data (dict):
+            Dictionary of decoded JSON content
     """
     # TODO(joshblum): grep around the code base and use this function where we
     # can

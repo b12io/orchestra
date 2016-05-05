@@ -14,6 +14,7 @@ from orchestra.views import upload_image
 from orchestra.views import update_timer
 from orchestra.views import TimeEntryList
 from orchestra.views import TimeEntryDetail
+from orchestra.project_api.views import assign_worker_to_task
 from orchestra.project_api.views import create_project
 from orchestra.project_api.views import workflow_types
 from orchestra.project_api.views import project_details_url
@@ -73,6 +74,9 @@ urlpatterns = [
     url(r'^project/project_details_url/$',
         project_details_url,
         name='project_details_url'),
+    url(r'^project/assign_worker_to_task/$',
+        assign_worker_to_task,
+        name='assign_worker_to_task'),
     url(r'^status/$',
         status,
         name='status'),

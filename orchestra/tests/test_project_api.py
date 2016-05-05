@@ -1,4 +1,3 @@
-import json
 from unittest.mock import patch
 
 from django.conf import settings
@@ -11,6 +10,7 @@ from rest_framework.test import APIClient
 from orchestra.google_apps.service import Service
 from orchestra.models import Project
 from orchestra.models import Task
+from orchestra.models import TaskAssignment
 from orchestra.models import WorkerCertification
 from orchestra.project_api.api import get_workflow_steps
 from orchestra.project_api.api import MalformedDependencyException
@@ -19,11 +19,12 @@ from orchestra.project_api.auth import SignedUser
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.google_apps import mock_create_drive_service
+from orchestra.utils.load_json import load_encoded_json
 
 
 class ProjectAPITestCase(OrchestraTestCase):
 
-    def setUp(self):  # noqa
+    def setUp(self):
         super().setUp()
         setup_models(self)
         self.api_client = APIClient(enforce_csrf_checks=True)
@@ -36,7 +37,7 @@ class ProjectAPITestCase(OrchestraTestCase):
             {'project_id': project.id},
             format='json')
         self.assertEquals(response.status_code, 200)
-        returned = json.loads(response.content.decode('utf-8'))
+        returned = load_encoded_json(response.content)
         project_details_url = returned.get('project_details_url')
         self.assertEquals(project_details_url,
                           ('http://testserver/orchestra/app/project/%s' %
@@ -59,7 +60,7 @@ class ProjectAPITestCase(OrchestraTestCase):
             {'project_id': project.id},
             format='json')
         self.assertEquals(response.status_code, 200)
-        returned = json.loads(response.content.decode('utf-8'))
+        returned = load_encoded_json(response.content)
 
         unimportant_keys = (
             'id',
@@ -158,7 +159,7 @@ class ProjectAPITestCase(OrchestraTestCase):
             '/orchestra/api/project/project_information/',
             {'project_id': self.projects['no_task_assignments'].id},
             format='json')
-        returned = json.loads(response.content.decode('utf-8'))
+        returned = load_encoded_json(response.content)
         for key in ('id', 'project', 'start_datetime'):
             del returned['tasks']['step1'][key]
         self.assertEquals(response.status_code, 200)
@@ -225,7 +226,7 @@ class ProjectAPITestCase(OrchestraTestCase):
              'project_data': {}},
             format='json')
         self.assertEquals(response.status_code, 200)
-        project_id = json.loads(response.content.decode('utf-8'))['project_id']
+        project_id = load_encoded_json(response.content)['project_id']
         self.assertEquals(Project.objects.get(id=project_id).task_class,
                           WorkerCertification.TaskClass.TRAINING)
 
@@ -244,7 +245,7 @@ class ProjectAPITestCase(OrchestraTestCase):
             '/orchestra/api/project/workflow_types/', format='json')
         self.assertEquals(response.status_code, 200)
 
-        workflows = json.loads(response.content.decode('utf-8'))['workflows']
+        workflows = load_encoded_json(response.content)['workflows']
         workflows = dict(workflows)
         self.assertEquals(
             workflows,
@@ -263,6 +264,44 @@ class ProjectAPITestCase(OrchestraTestCase):
             }
         )
 
+    def _make_assign_worker_task_request(self, worker, task, success=True):
+        response = self.api_client.post(
+            '/orchestra/api/project/assign_worker_to_task/',
+            {
+                'worker_id': worker.id,
+                'task_id': task.id,
+            },
+            format='json')
+        self.assertEquals(response.status_code, 200)
+        data = load_encoded_json(response.content)
+        self.assertEqual(data['success'], success)
+        return data
+
+    def test_assign_worker_to_task(self):
+        worker = self.workers[0]
+
+        # We should be able to assign to an unassigned task
+        task = self.tasks['awaiting_processing']
+        query = TaskAssignment.objects.filter(worker=worker, task=task)
+        self.assertFalse(query.exists())
+        data = self._make_assign_worker_task_request(worker, task)
+        self.assertTrue(query.exists())
+        query.delete()
+
+        # Worker0 is not a reviewer so this should fail
+        task = self.tasks['review_task']
+        data = self._make_assign_worker_task_request(
+            worker, task, success=False)
+        self.assertTrue('worker_certification_error' in data['errors'])
+        self.assertFalse(query.exists())
+
+        # Can't assign to aborted task
+        task = self.tasks['aborted']
+        data = self._make_assign_worker_task_request(
+            worker, task, success=False)
+        self.assertTrue('task_assignment_error' in data['errors'])
+        self.assertFalse(query.exists())
+
     def test_permissions(self):
         self.api_client.force_authenticate(user=AnonymousUser())
 
@@ -271,7 +310,7 @@ class ProjectAPITestCase(OrchestraTestCase):
             {'project_id': 1},
             format='json')
         self.assertEquals(response.status_code, 403)
-        returned = json.loads(response.content.decode('utf-8'))
+        returned = load_encoded_json(response.content)
         self.assertEquals(
             returned,
             {'detail': 'You do not have permission to perform this action.'})
@@ -280,7 +319,7 @@ class ProjectAPITestCase(OrchestraTestCase):
 @override_settings(ORCHESTRA_PROJECT_API_CREDENTIALS={'a': 'b'})
 class ProjectAPIAuthTestCase(OrchestraTestCase):
 
-    def setUp(self):  # noqa
+    def setUp(self):
         super().setUp()
         setup_models(self)
         self.authentication = OrchestraProjectAPIAuthentication()

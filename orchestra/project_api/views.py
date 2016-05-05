@@ -1,15 +1,19 @@
-import json
+from urllib.parse import urlparse
+from urllib.parse import urlunsplit
 
 from django.core.urlresolvers import reverse
 from jsonview.exceptions import BadRequest
+
+from orchestra.core.errors import TaskAssignmentError
+from orchestra.core.errors import WorkerCertificationError
 from orchestra.models import Project
 from orchestra.models import WorkerCertification
 from orchestra.models import Workflow
 from orchestra.project import create_project_with_tasks
 from orchestra.project_api.api import get_project_information
 from orchestra.project_api.decorators import api_endpoint
-from urllib.parse import urlparse
-from urllib.parse import urlunsplit
+from orchestra.utils.task_lifecycle import assign_task
+from orchestra.utils.load_json import load_encoded_json
 
 import logging
 logger = logging.getLogger(__name__)
@@ -18,10 +22,9 @@ logger = logging.getLogger(__name__)
 @api_endpoint(['POST'])
 def project_information(request):
     try:
-        # TODO(marcua): Add checking for json.loads exceptions to all
-        # endpoints.
-        return get_project_information(
-            json.loads(request.body.decode())['project_id'])
+        data = load_encoded_json(request.body)
+        project_id = data['project_id']
+        return get_project_information(project_id)
     except KeyError:
         raise BadRequest('project_id is required')
     except Project.DoesNotExist:
@@ -30,7 +33,7 @@ def project_information(request):
 
 @api_endpoint(['POST'])
 def create_project(request):
-    project_details = json.loads(request.body.decode())
+    project_details = load_encoded_json(request.body)
     try:
         if project_details['task_class'] == 'real':
             task_class = WorkerCertification.TaskClass.REAL
@@ -53,7 +56,7 @@ def create_project(request):
 
 @api_endpoint(['POST'])
 def project_details_url(request):
-    project_details = json.loads(request.body.decode())
+    project_details = load_encoded_json(request.body)
     project_id = project_details.get('project_id')
 
     if project_id is None:
@@ -85,3 +88,20 @@ def workflow_types(request):
         for w in Workflow.objects.all()
     }
     return {'workflows': workflows}
+
+
+@api_endpoint(['POST'])
+def assign_worker_to_task(request):
+    data = load_encoded_json(request.body)
+    errors = {}
+    try:
+        assign_task(data.get('worker_id'), data.get('task_id'))
+    except WorkerCertificationError as e:
+        errors['worker_certification_error'] = str(e)
+    except TaskAssignmentError as e:
+        errors['task_assignment_error'] = str(e)
+    success = len(errors) == 0
+    return {
+        'success': success,
+        'errors': errors,
+    }
