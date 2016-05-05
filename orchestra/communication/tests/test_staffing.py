@@ -93,7 +93,10 @@ class StaffingTestCase(OrchestraTestCase):
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
 
         # Task is not available to claim
-        new_staffing_request = StaffingRequestFactory()
+        new_staffing_request = StaffingRequestFactory(
+            task=self.staffing_request.task,
+            required_role=self.staffing_request.required_role,
+            task__step__is_human=True)
         new_worker = new_staffing_request.communication_preference.worker
         old_count = StaffingResponse.objects.all().count()
         response = handle_staffing_response(
