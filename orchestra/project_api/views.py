@@ -100,6 +100,8 @@ def assign_worker_to_task(request):
         errors['worker_certification_error'] = str(e)
     except TaskAssignmentError as e:
         errors['task_assignment_error'] = str(e)
+    except Exception as e:
+        errors['error'] = str(e)
     success = len(errors) == 0
     return {
         'success': success,

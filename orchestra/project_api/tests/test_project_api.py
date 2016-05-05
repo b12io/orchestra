@@ -264,12 +264,13 @@ class ProjectAPITestCase(OrchestraTestCase):
             }
         )
 
-    def _make_assign_worker_task_request(self, worker, task, success=True):
+    def _make_assign_worker_task_request(self, worker_id,
+                                         task_id, success=True):
         response = self.api_client.post(
             '/orchestra/api/project/assign_worker_to_task/',
             {
-                'worker_id': worker.id,
-                'task_id': task.id,
+                'worker_id': worker_id,
+                'task_id': task_id,
             },
             format='json')
         self.assertEquals(response.status_code, 200)
@@ -284,21 +285,47 @@ class ProjectAPITestCase(OrchestraTestCase):
         task = self.tasks['awaiting_processing']
         query = TaskAssignment.objects.filter(worker=worker, task=task)
         self.assertFalse(query.exists())
-        data = self._make_assign_worker_task_request(worker, task)
+        data = self._make_assign_worker_task_request(worker.id, task.id)
         self.assertTrue(query.exists())
         query.delete()
+
+        # Nonsense arguments
+        task = self.tasks['awaiting_processing']
+        query = TaskAssignment.objects.filter(worker=worker, task=task)
+        self.assertFalse(query.exists())
+        data = self._make_assign_worker_task_request(None, None, success=False)
+        self.assertTrue('error' in data['errors'])
+        self.assertFalse(query.exists())
+
+        # Invalid Worker
+        task = self.tasks['awaiting_processing']
+        query = TaskAssignment.objects.filter(worker=worker, task=task)
+        self.assertFalse(query.exists())
+        data = self._make_assign_worker_task_request(
+            -1, task.id, success=False)
+        self.assertTrue('error' in data['errors'])
+        self.assertFalse(query.exists())
+
+        # Invalid Task
+        task = self.tasks['awaiting_processing']
+        query = TaskAssignment.objects.filter(worker=worker, task=task)
+        self.assertFalse(query.exists())
+        data = self._make_assign_worker_task_request(
+            worker.id, -1, success=False)
+        self.assertTrue('error' in data['errors'])
+        self.assertFalse(query.exists())
 
         # Worker0 is not a reviewer so this should fail
         task = self.tasks['review_task']
         data = self._make_assign_worker_task_request(
-            worker, task, success=False)
+            worker.id, task.id, success=False)
         self.assertTrue('worker_certification_error' in data['errors'])
         self.assertFalse(query.exists())
 
         # Can't assign to aborted task
         task = self.tasks['aborted']
         data = self._make_assign_worker_task_request(
-            worker, task, success=False)
+            worker.id, task.id, success=False)
         self.assertTrue('task_assignment_error' in data['errors'])
         self.assertFalse(query.exists())
 
