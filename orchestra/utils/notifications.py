@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 
 from orchestra.models import Task
 from orchestra.models import CommunicationPreference
-from orchestra.communication.slack import SlackService
+from orchestra.communication.slack import OrchestraSlackService
 from orchestra.communication.mail import send_mail
 from orchestra.utils.settings import run_if
 from orchestra.utils.task_properties import assignment_history
@@ -122,7 +122,7 @@ def _task_information(task, with_slack_link=True):
 def _notify_slack_status_change(task, current_worker, slack_api_key,
                                 slack_channel, with_slack_link=True,
                                 with_user_mention=False):
-    slack = SlackService(slack_api_key)
+    slack = OrchestraSlackService(slack_api_key)
     slack_statuses = {
         Task.Status.PROCESSING: 'Task has been picked up by a worker.',
         Task.Status.PENDING_REVIEW: 'Task is awaiting review.',

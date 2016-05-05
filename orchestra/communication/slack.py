@@ -11,7 +11,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class SlackService(object):
+class OrchestraSlackService(object):
     """
     Wrapper slack service to allow easy swapping and mocking out of API.
     """
@@ -32,14 +32,14 @@ class SlackService(object):
 
 
 def get_slack_user_id(slack_username):
-    slack = SlackService()
+    slack = OrchestraSlackService()
     slack_user_id = slack.users.get_user_id(slack_username)
     return slack_user_id
 
 
 @run_if('SLACK_EXPERTS')
 def add_worker_to_project_team(worker, project):
-    slack = SlackService(settings.SLACK_EXPERTS_API_KEY)
+    slack = OrchestraSlackService()
     try:
         user_id = slack.users.get_user_id(worker.slack_username)
         response = slack.groups.invite(project.slack_group_id, user_id)
@@ -59,7 +59,7 @@ def create_project_slack_group(project):
     """
     Create slack channel for project team communication
     """
-    slack = SlackService(settings.SLACK_EXPERTS_API_KEY)
+    slack = OrchestraSlackService()
     response = slack.groups.create(_project_slack_group_name(project))
     project.slack_group_id = response.body['group']['id']
     slack.groups.set_topic(project.slack_group_id, project.short_description)
@@ -86,7 +86,7 @@ def _project_slack_group_name(project):
     # The human-readable portion of the name (16 characters) involves
     # slugifying the project short description.
     descriptor = slugify(project.short_description)[:16].strip('-')
-    slack = SlackService(settings.SLACK_EXPERTS_API_KEY)
+    slack = OrchestraSlackService()
     groups = {group['name'] for group in slack.groups.list().body['groups']}
     while True:
         # Add 4 characters of randomness (~1.68 million permutations).

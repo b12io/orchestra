@@ -2,7 +2,7 @@ import re
 
 from orchestra.bots.errors import SlackCommandInvalidRequest
 from orchestra.bots.errors import BaseBotError
-from orchestra.communication.slack import SlackService
+from orchestra.communication.slack import OrchestraSlackService
 
 # Types of responses we can send to slack
 VALID_RESPONSE_TYPES = {'ephemeral', 'in_channel'}
@@ -30,7 +30,7 @@ class BaseBot(object):
         be accepted if the request fields are contained in the whitelists.
         """
         self.token = token
-        self.slack = SlackService(slack_api_key)
+        self.slack = OrchestraSlackService(slack_api_key)
         self.whitelists = {
             'team_id': allowed_team_ids,
             'team_domain': allowed_domains,
