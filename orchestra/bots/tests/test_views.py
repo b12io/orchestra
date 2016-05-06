@@ -25,12 +25,11 @@ class StaffBotViewTest(OrchestraTestCase):
                                             password='defaultpassword')
         self.url = reverse('orchestra:bots:staffbot')
 
-    def assert_response(self, response, error=False, default_error_text=None):
+    def assert_response(self, response, default_error_text=None):
         self.assertEqual(response.status_code, 200)
         data = load_encoded_json(response.content)
-        self.assertEqual('error' in data, error)
         if default_error_text is not None:
-            self.assertTrue(default_error_text in data.get('error', ''))
+            self.assertTrue(default_error_text in data.get('text', ''))
 
     def test_unauthorized_user(self):
         worker1 = self.workers[1]
@@ -40,13 +39,11 @@ class StaffBotViewTest(OrchestraTestCase):
             user_id=worker1.slack_user_id)
         response = request_client.post(self.url, data)
         self.assert_response(response,
-                             error=True,
                              default_error_text='You are not authorized!')
 
         data['user_id'] = 'fake_id'
         response = request_client.post(self.url, data)
         self.assert_response(response,
-                             error=True,
                              default_error_text='not found')
 
     def test_get_not_allowed(self):
@@ -60,11 +57,12 @@ class StaffBotViewTest(OrchestraTestCase):
         self.assert_response(response)
 
     @override_settings(ORCHESTRA_SLACK_STAFFBOT_TOKEN='')
-    def test_post_invalid_data(self):
+    def test_post_invalid_token(self):
         data = get_mock_slack_data(
             user_id=self.worker.slack_user_id)
         response = self.request_client.post(self.url, data)
-        self.assert_response(response, error=True)
+        self.assert_response(
+            response, default_error_text='Invalid token')
 
     @patch('orchestra.bots.staffbot.StaffBot._send_staffing_request_by_mail')
     @patch('orchestra.bots.staffbot.StaffBot._send_staffing_request_by_slack')

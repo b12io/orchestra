@@ -3,12 +3,16 @@ import string
 
 from django.conf import settings
 from django.utils.text import slugify
-from orchestra.utils.decorators import run_if
 from slacker import Slacker
 
-import logging
+from orchestra.utils.decorators import run_if
+from orchestra.communication.errors import SlackFormatError
 
+import logging
 logger = logging.getLogger(__name__)
+
+# Types of responses we can send to slack
+VALID_RESPONSE_TYPES = {'ephemeral', 'in_channel'}
 
 
 class OrchestraSlackService(object):
@@ -31,7 +35,6 @@ class OrchestraSlackService(object):
             logger.info('{}: {}'.format(slack_user_id, message))
 
 
-@run_if('ORCHESTRA_SLACK_EXPERTS_ENABLED')
 def get_slack_user_id(slack_username):
     slack = OrchestraSlackService()
     slack_user_id = slack.users.get_user_id(slack_username)
@@ -95,3 +98,29 @@ def _project_slack_group_name(project):
         if name not in groups:
             break
     return name
+
+
+def format_slack_message(text,
+                         attachments=None,
+                         response_type='ephemeral'):
+    """
+    Args:
+        text (str):
+            Plain text message to send
+        attachments (dict):
+           See https://api.slack.com/docs/attachments
+        response_type (string):
+            Should be `in_channel` or `ephemeral`. See
+            https://api.slack.com/slash-commands
+    Returns:
+        formatted_message (dict):
+            A formatted message to send via the slack client
+    """
+    if response_type not in VALID_RESPONSE_TYPES:
+        raise SlackFormatError(
+            'Response type {} is invalid'.format(response_type))
+    return {
+        'response_type': response_type,
+        'text': text,
+        'attachments': attachments,
+    }
