@@ -24,7 +24,8 @@ class UserForm(forms.ModelForm):
 
 class WorkerForm(forms.ModelForm):
     slack_username = forms.CharField()
-    phone = PhoneNumberField(widget=PhoneNumberPrefixWidget)
+    phone = PhoneNumberField(
+        widget=PhoneNumberPrefixWidget(initial='US'))
 
     class Meta:
         model = Worker

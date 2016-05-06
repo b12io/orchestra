@@ -4,6 +4,9 @@
 /* Login/account-related pages */
 .login-wrap {
   font-size: 1.3rem;
+  .account-tabs selected {
+
+  }
   .error-non-field {
     padding: 0px 0px 10px 10px;
     color: red;
@@ -11,16 +14,5 @@
   .error-field {
     padding: 5px 0px 0px 10px;
     color: red;
-  }
-  .communication-methods {
-    ul {
-      padding: 5px 0px 0px 0px;
-    }
-    ul p label {
-      font-size: 13px;
-      font-weight: normal;
-      letter-spacing: normal;
-      line-spacing: inherit;
-    }
   }
 }

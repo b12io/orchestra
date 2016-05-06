@@ -63,4 +63,16 @@
     display: inline-block;
     margin-left: 3px;
   }
+
+  #id_phone_0, #id_phone_1 {
+    display: inline;
+  }
+
+  #id_phone_0 {
+    width: 30%;
+  }
+
+  #id_phone_1 {
+    width: 70%;
+  }
 }

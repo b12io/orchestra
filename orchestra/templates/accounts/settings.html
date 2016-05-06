@@ -47,7 +47,9 @@
               <div class="col-xs-12">
                 <div class="fieldWrapper">
                   <label for="{{ worker_form.phone.id_for_label }}">Phone</label>
-                  {{ worker_form.phone|add_class:"form-control" }}
+                  <div>
+                    {{ worker_form.phone|add_class:"form-control" }}
+                  </div>
                   <div class="error-field"> {{ worker_form.phone.errors }} </div>
                 </div>
               </div>
