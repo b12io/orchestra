@@ -9,7 +9,8 @@ from orchestra.communication.mail import send_mail
 from orchestra.bots.errors import SlackUserUnauthorized
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import TaskStatusError
-from orchestra.interface_api.project_management.views import is_project_admin
+from orchestra.interface_api.project_management.decorators import \
+    is_project_admin
 from orchestra.models import CommunicationPreference
 from orchestra.models import StaffingRequestInquiry
 from orchestra.models import Task
