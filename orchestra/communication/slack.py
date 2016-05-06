@@ -24,20 +24,21 @@ class OrchestraSlackService(object):
             setattr(self, attr_name, getattr(self._service, attr_name))
 
     def post_message(self, slack_user_id, message, parse='none'):
-        if settings.ORCHESTRA_SEND_STAFFING_MESSAGES:
+        if settings.ORCHESTRA_SLACK_ACTIONS_ENABLED:
             self.chat.post_message(
                 slack_user_id, message, parse=parse)
         else:
             logger.info('{}: {}'.format(slack_user_id, message))
 
 
+@run_if('ORCHESTRA_SLACK_EXPERTS_ENABLED')
 def get_slack_user_id(slack_username):
     slack = OrchestraSlackService()
     slack_user_id = slack.users.get_user_id(slack_username)
     return slack_user_id
 
 
-@run_if('SLACK_EXPERTS')
+@run_if('ORCHESTRA_SLACK_EXPERTS_ENABLED')
 def add_worker_to_project_team(worker, project):
     slack = OrchestraSlackService()
     try:
@@ -54,7 +55,7 @@ def add_worker_to_project_team(worker, project):
         pass
 
 
-@run_if('SLACK_EXPERTS')
+@run_if('ORCHESTRA_SLACK_EXPERTS_ENABLED')
 def create_project_slack_group(project):
     """
     Create slack channel for project team communication

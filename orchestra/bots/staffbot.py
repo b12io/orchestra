@@ -22,7 +22,6 @@ from orchestra.utils.task_lifecycle import is_worker_certified_for_task
 from orchestra.utils.task_lifecycle import check_worker_allowed_new_assignment
 
 import logging
-
 logger = logging.getLogger(__name__)
 
 
@@ -45,7 +44,7 @@ class StaffBot(BaseBot):
     def __init__(self, **kwargs):
         default_config = getattr(settings, 'STAFFBOT_CONFIG', {})
         default_config.update(kwargs)
-        token = settings.SLACK_STAFFBOT_TOKEN
+        token = settings.ORCHESTRA_SLACK_STAFFBOT_TOKEN
         super().__init__(token, **kwargs)
 
     def help(self):
@@ -205,7 +204,7 @@ class StaffBot(BaseBot):
     def _send_staffing_request_by_mail(self, staffing_request, message):
         email = (
             staffing_request.communication_preference.worker.user.email)
-        logger_only = not settings.ORCHESTRA_SEND_STAFFING_MESSAGES
+        logger_only = not settings.ORCHESTRA_SLACK_ACTIONS_ENABLED
         send_mail('New task is available for claim',
                   message,
                   settings.ORCHESTRA_NOTIFICATIONS_FROM_EMAIL,

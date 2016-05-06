@@ -23,8 +23,8 @@ class BasicNotificationsTestCase(OrchestraTestCase):
         super().setUp()
         setup_models(self)
 
-    @override_settings(SLACK_INTERNAL=True)
-    @override_settings(SLACK_EXPERTS=True)
+    @override_settings(ORCHESTRA_SLACK_INTERNAL_ENABLED=True)
+    @override_settings(ORCHESTRA_SLACK_EXPERTS_ENABLED=True)
     def test_notify_status_change(self):
         project = self.projects['empty_project']
         internal_name = settings.SLACK_INTERNAL_NOTIFICATION_CHANNEL.strip('#')

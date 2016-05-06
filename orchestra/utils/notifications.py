@@ -146,14 +146,14 @@ def _notify_slack_status_change(task, current_worker, slack_api_key,
     slack.chat.post_message(slack_channel, slack_message)
 
 
-@run_if('SLACK_INTERNAL')
+@run_if('ORCHESTRA_SLACK_INTERNAL_ENABLED')
 def _notify_internal_slack_status_change(task, current_worker):
     _notify_slack_status_change(task, current_worker,
                                 settings.SLACK_INTERNAL_API_KEY,
                                 settings.SLACK_INTERNAL_NOTIFICATION_CHANNEL)
 
 
-@run_if('SLACK_EXPERTS')
+@run_if('ORCHESTRA_SLACK_EXPERTS_ENABLED')
 def _notify_experts_slack_status_change(task, current_worker):
     _notify_slack_status_change(task, current_worker,
                                 settings.SLACK_EXPERTS_API_KEY,

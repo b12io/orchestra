@@ -181,12 +181,11 @@ def setup_orchestra(settings_module_name):
     settings.GOOGLE_PROJECT_ROOT_ID = ''
 
     # Feature flags for toggling optional slack integration
-    settings.SLACK_INTERNAL = False
-    settings.SLACK_EXPERTS = False
-    settings.ORCHESTRA_SEND_STAFFING_MESSAGES = False
-    if settings.PRODUCTION:
-        settings.SLACK_EXPERTS = True
-        settings.ORCHESTRA_SEND_STAFFING_MESSAGES = True
+    settings.ORCHESTRA_SLACK_INTERNAL_ENABLED = False
+    settings.ORCHESTRA_SLACK_EXPERTS_ENABLED = False
+    # Feature flag for sending messages/creating slack groups. Can be enabled
+    # for production but disabled otherwise.
+    settings.ORCHESTRA_SLACK_ACTIONS_ENABLED = False
 
     # Settings for slack notifications. Notifications are shared internally
     # upon task status change; the experts team organizes project

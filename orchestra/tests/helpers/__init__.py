@@ -99,7 +99,7 @@ class AuthenticatedUserMixin(object):
         return request_client, auth_user
 
 
-@override_settings(SLACK_STAFFBOT_TOKEN='test-token')
+@override_settings(ORCHESTRA_SLACK_STAFFBOT_TOKEN='test-token')
 class OrchestraTestCase(OrchestraTestHelpersMixin, TestCase):
     # NOTE(lydia): Mixin should go before TestCase because when mixin calls
     # super().setUp(), it looks to the base of mixin (which is Object - doesn't
@@ -108,7 +108,7 @@ class OrchestraTestCase(OrchestraTestHelpersMixin, TestCase):
     pass
 
 
-@override_settings(SLACK_STAFFBOT_TOKEN='test-token')
+@override_settings(ORCHESTRA_SLACK_STAFFBOT_TOKEN='test-token')
 class OrchestraTransactionTestCase(OrchestraTestHelpersMixin,
                                    TransactionTestCase):
     # NOTE(lydia): See note above about multiple inheritance ordering.

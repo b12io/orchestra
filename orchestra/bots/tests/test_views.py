@@ -59,7 +59,7 @@ class StaffBotViewTest(OrchestraTestCase):
         response = self.request_client.post(self.url, data)
         self.assert_response(response)
 
-    @override_settings(SLACK_STAFFBOT_TOKEN='')
+    @override_settings(ORCHESTRA_SLACK_STAFFBOT_TOKEN='')
     def test_post_invalid_data(self):
         data = get_mock_slack_data(
             user_id=self.worker.slack_user_id)
