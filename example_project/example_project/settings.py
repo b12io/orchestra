@@ -32,8 +32,14 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django_gulp',
     'django.contrib.staticfiles',
 )
+
+# django-gulp settings
+GULP_PRODUCTION_COMMAND = 'gulp --gulpfile ../gulpfile.js build --production'  # noqa
+# If you need the scss source maps, remove the --production flag
+GULP_DEVELOP_COMMAND = 'gulp --gulpfile ../gulpfile.js --production'
 
 # Installed orchestra workflows to be included as Django apps
 ORCHESTRA_WORKFLOWS = (
