@@ -12,4 +12,15 @@
     padding: 5px 0px 0px 10px;
     color: red;
   }
+  .communication-methods {
+    ul {
+      padding: 5px 0px 0px 0px;
+    }
+    ul p label {
+      font-size: 13px;
+      font-weight: normal;
+      letter-spacing: normal;
+      line-spacing: inherit;
+    }
+  }
 }

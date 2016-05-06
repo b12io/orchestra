@@ -16,9 +16,23 @@
     .btn {
       border-bottom-left-radius: 0;
       border-bottom-right-radius: 0;
-      &.selected {
-        background-color: darken(#428bca, 15%);
+      &.selected, &:hover{
+        color: darken(#428bca, 15%);
+        background-color: white;
+        border-color: white;
       }
+    }
+  }
+
+  .communication-methods {
+    ul {
+      padding: 5px 0px 0px 0px;
+    }
+    ul p label {
+      font-size: 13px;
+      font-weight: normal;
+      letter-spacing: normal;
+      line-spacing: inherit;
     }
   }
 
@@ -41,10 +55,6 @@
     font-weight: 600;
     letter-spacing: 1.59px;
     line-height: 26px;
-  }
-
-  .xl-label {
-    font-size: 24px;
   }
 
   input[type=checkbox] {
