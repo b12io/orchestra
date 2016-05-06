@@ -758,8 +758,19 @@ a.logo {
   .account-settings .account-tabs .btn {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0; }
-    .account-settings .account-tabs .btn.selected {
-      background-color: #2a6496; }
+    .account-settings .account-tabs .btn.selected, .account-settings .account-tabs .btn:hover {
+      color: #2a6496;
+      background-color: white;
+      border-color: white; }
+
+.account-settings .communication-methods ul {
+  padding: 5px 0px 0px 0px; }
+
+.account-settings .communication-methods ul p label {
+  font-size: 13px;
+  font-weight: normal;
+  letter-spacing: normal;
+  line-spacing: inherit; }
 
 .account-settings .card {
   position: relative;
@@ -779,14 +790,20 @@ a.logo {
   letter-spacing: 1.59px;
   line-height: 26px; }
 
-.account-settings .xl-label {
-  font-size: 24px; }
-
 .account-settings input[type=checkbox] {
   height: inherit;
   width: auto;
   display: inline-block;
   margin-left: 3px; }
+
+.account-settings #id_phone_0, .account-settings #id_phone_1 {
+  display: inline; }
+
+.account-settings #id_phone_0 {
+  width: 30%; }
+
+.account-settings #id_phone_1 {
+  width: 70%; }
 
 .communication-container {
   text-align: center; }

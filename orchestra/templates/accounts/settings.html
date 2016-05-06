@@ -12,30 +12,46 @@
       <div class="card">
         <form action="{% url 'orchestra:account_settings' %}" method="post">
           {% csrf_token %}
-          <div class="container-fluid">
 
-            <div class="row spaced">
-              <div class="col-lg-6 col-sm-12">
-                <label for="{{ user_form.first_name.id_for_label }}">First name</label>
-                {{ user_form.first_name|add_class:"form-control" }}
-                <div class="error-field"> {{ user_form.first_name.errors }} </div>
+            <div class="row">
+              <div class="col-xs-12">
+                <div class="fieldWrapper">
+                  <label for="{{ user_form.first_name.id_for_label }}">First name</label>
+                  {{ user_form.first_name|add_class:"form-control" }}
+                  <div class="error-field"> {{ user_form.first_name.errors }} </div>
+                </div>
               </div>
+            </div>
 
-              <div class="col-lg-6 col-sm-12">
-                <label for="{{ user_form.last_name.id_for_label }}">Last name</label>
-                {{ user_form.last_name|add_class:"form-control" }}
-                <div class="error-field"> {{ user_form.last_name.errors }} </div>
+            <div class="row">
+              <div class="col-xs-12">
+                <div class="fieldWrapper">
+                  <label for="{{ user_form.last_name.id_for_label }}">Last name</label>
+                  {{ user_form.last_name|add_class:"form-control" }}
+                  <div class="error-field"> {{ user_form.last_name.errors }} </div>
+                </div>
               </div>
+            </div>
 
-              <div class="col-lg-6 col-sm-12">
-                <label for="{{ worker_form.slack_username.id_for_label }}">Slack Username</label>
-                {{ worker_form.slack_username|add_class:"form-control" }}
-                <div class="error-field"> {{ worker_form.slack_username.errors }} </div>
+            <div class="row">
+              <div class="col-xs-12">
+                <div class="fieldWrapper">
+                  <label for="{{ worker_form.slack_username.id_for_label }}">Slack username</label>
+                  {{ worker_form.slack_username|add_class:"form-control" }}
+                  <div class="error-field"> {{ worker_form.slack_username.errors }} </div>
+                </div>
               </div>
-              <div class="col-lg-6 col-sm-12">
-                <label for="{{ worker_form.phone.id_for_label }}">Phone</label>
-                {{ worker_form.phone|add_class:"form-control" }}
-                <div class="error-field"> {{ worker_form.phone.errors }} </div>
+            </div>
+
+            <div class="row">
+              <div class="col-xs-12">
+                <div class="fieldWrapper">
+                  <label for="{{ worker_form.phone.id_for_label }}">Phone</label>
+                  <div>
+                    {{ worker_form.phone|add_class:"form-control" }}
+                  </div>
+                  <div class="error-field"> {{ worker_form.phone.errors }} </div>
+                </div>
               </div>
             </div>
 
@@ -46,7 +62,6 @@
                 </div>
               </div>
             </div>
-          </div>
         </form>
       </div>
     </div>

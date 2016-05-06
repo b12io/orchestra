@@ -43,21 +43,23 @@ class CommunicationPreference(CommunicationPreferenceMixin, BaseModel):
     COMMUNICATION_TYPE_DESCRIPTIONS = {
         CommunicationType.TASK_STATUS_CHANGE:
         {
-            'short_description': 'Task Status Change',
+            'short_description': 'Task Status Changes',
             'long_description':
             """
-            When a task status changes (e.g., moved from in review to returned
-            from reviewer), you will automatically be alerted in a project
-            slack group.  You can optionally receive email alerts.
+            When a task status changes (e.g., when it moves from in
+            review to returned from reviewer), you will automatically
+            receive a notification in the project Slack group. Select
+            whether you would like to receive an email notification as
+            well.
             """
         },
         CommunicationType.NEW_TASK_AVAILABLE:
         {
-            'short_description': 'New Task Available',
+            'short_description': 'New Tasks',
             'long_description':
             """
-            When a new task is available you can choose through which channels
-            you want to receive a notification.
+            Select your preferred channel for being notified when a
+            new task is available to work on.
             """
         }
     }
