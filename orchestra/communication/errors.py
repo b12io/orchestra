@@ -1,0 +1,2 @@
+class SlackFormatError(Exception):
+    pass

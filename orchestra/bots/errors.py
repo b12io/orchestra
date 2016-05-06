@@ -12,7 +12,3 @@ class SlackUserUnauthorized(Exception):
 
 class SlackCommandInvalidRequest(Exception):
     pass
-
-
-class BaseBotError(Exception):
-    pass

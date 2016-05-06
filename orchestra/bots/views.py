@@ -7,6 +7,7 @@ from orchestra.bots.errors import SlackCommandInvalidRequest
 from orchestra.bots.errors import SlackUserUnauthorized
 from orchestra.bots.basebot import BaseBot
 from orchestra.bots.staffbot import StaffBot
+from orchestra.communication.slack import format_slack_message
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -27,9 +28,9 @@ class BotMixin(View):
         try:
             response_data = self.bot.dispatch(data)
         except SlackCommandInvalidRequest as e:
-            response_data = {'error': str(e)}
+            response_data = format_slack_message(str(e))
         except SlackUserUnauthorized as e:
-            response_data = {'error': str(e)}
+            response_data = format_slack_message(str(e))
         return JsonResponse(response_data)
 
 

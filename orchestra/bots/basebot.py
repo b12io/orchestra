@@ -1,11 +1,8 @@
 import re
 
 from orchestra.bots.errors import SlackCommandInvalidRequest
-from orchestra.bots.errors import BaseBotError
+from orchestra.communication.slack import format_slack_message
 from orchestra.communication.slack import OrchestraSlackService
-
-# Types of responses we can send to slack
-VALID_RESPONSE_TYPES = {'ephemeral', 'in_channel'}
 
 
 class BaseBot(object):
@@ -71,32 +68,6 @@ class BaseBot(object):
                             fieldname, value))
         return data
 
-    def format_slack_message(self, text,
-                             attachments=None,
-                             response_type='ephemeral'):
-        """
-        Args:
-            text (str):
-                Plain text message to send
-            attachments (dict):
-               See https://api.slack.com/docs/attachments
-            response_type (string):
-                Should be `in_channel` or `ephemeral`. See
-                https://api.slack.com/slash-commands
-        Returns:
-            formatted_message (dict):
-                A formatted message to send via the slack client
-        """
-        if response_type not in VALID_RESPONSE_TYPES:
-            raise BaseBotError(
-                'Response type {} is invalid'.format(response_type))
-
-        return {
-            'response_type': response_type,
-            'text': text,
-            'attachments': attachments,
-        }
-
     def help(self):
         """
         Base classes should implement a description of what the command does.
@@ -108,7 +79,7 @@ class BaseBot(object):
         If we are unable to parse the command, we return this helpful error
         message.
         """
-        return self.format_slack_message(
+        return format_slack_message(
             '{}: {}'.format(self.default_error_text, text)
         )
 

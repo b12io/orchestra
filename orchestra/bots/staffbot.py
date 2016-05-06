@@ -6,6 +6,7 @@ from django.template.loader import render_to_string
 
 from orchestra.bots.basebot import BaseBot
 from orchestra.communication.mail import send_mail
+from orchestra.communication.slack import format_slack_message
 from orchestra.bots.errors import SlackUserUnauthorized
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import TaskStatusError
@@ -49,7 +50,7 @@ class StaffBot(BaseBot):
         super().__init__(token, **kwargs)
 
     def help(self):
-        return self.format_slack_message(
+        return format_slack_message(
             'Use `/staffbot` to staff or restaff a Task within Orchestra.',
             attachments=[
                 {
@@ -81,9 +82,9 @@ class StaffBot(BaseBot):
             error_msg = self.task_assignment_error.format(task_id, error)
         if error_msg is not None:
             logger.exception(error_msg)
-            return self.format_slack_message(error_msg)
+            return format_slack_message(error_msg)
         self._send_task_to_workers(task, required_role, request_cause)
-        return self.format_slack_message('Staffed task {}!'.format(task_id))
+        return format_slack_message('Staffed task {}!'.format(task_id))
 
     def restaff(self, task_id, username,
                 request_cause=StaffingRequestInquiry.RequestCause.USER.value):
@@ -109,10 +110,10 @@ class StaffBot(BaseBot):
 
         if error_msg is not None:
             logger.exception(error_msg)
-            return self.format_slack_message(error_msg)
+            return format_slack_message(error_msg)
         self._send_task_to_workers(
             task, required_role, request_cause)
-        return self.format_slack_message('Restaffed task {}!'.format(task_id))
+        return format_slack_message('Restaffed task {}!'.format(task_id))
 
     def _send_task_to_workers(self, task, required_role, request_cause):
         # get all the workers that are certified to complete the task.
