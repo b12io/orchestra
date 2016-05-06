@@ -237,8 +237,11 @@ class StaffBot(BaseBot):
 
         worker = get_object_or_None(Worker, slack_user_id=slack_user_id)
         if worker is None:
-            raise SlackUserUnauthorized('Worker {} not found'.format(username))
+            raise SlackUserUnauthorized(
+                'Worker {} not found. slack_user_id: {}'.format(
+                    username, slack_user_id))
         elif not is_project_admin(worker.user):
-            raise SlackUserUnauthorized('You are not authorized!')
+            raise SlackUserUnauthorized(
+                'You are not authorized to staff projects!')
         data = super().validate(data)
         return data
