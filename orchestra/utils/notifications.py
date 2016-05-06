@@ -5,9 +5,9 @@ from django.core.urlresolvers import reverse
 
 from orchestra.models import Task
 from orchestra.models import CommunicationPreference
-from orchestra.communication.slack import SlackService
+from orchestra.communication.slack import OrchestraSlackService
 from orchestra.communication.mail import send_mail
-from orchestra.utils.settings import run_if
+from orchestra.utils.decorators import run_if
 from orchestra.utils.task_properties import assignment_history
 from orchestra.utils.task_properties import current_assignment
 
@@ -122,7 +122,7 @@ def _task_information(task, with_slack_link=True):
 def _notify_slack_status_change(task, current_worker, slack_api_key,
                                 slack_channel, with_slack_link=True,
                                 with_user_mention=False):
-    slack = SlackService(slack_api_key)
+    slack = OrchestraSlackService(slack_api_key)
     slack_statuses = {
         Task.Status.PROCESSING: 'Task has been picked up by a worker.',
         Task.Status.PENDING_REVIEW: 'Task is awaiting review.',
@@ -146,14 +146,14 @@ def _notify_slack_status_change(task, current_worker, slack_api_key,
     slack.chat.post_message(slack_channel, slack_message)
 
 
-@run_if('SLACK_INTERNAL')
+@run_if('ORCHESTRA_SLACK_INTERNAL_ENABLED')
 def _notify_internal_slack_status_change(task, current_worker):
     _notify_slack_status_change(task, current_worker,
                                 settings.SLACK_INTERNAL_API_KEY,
                                 settings.SLACK_INTERNAL_NOTIFICATION_CHANNEL)
 
 
-@run_if('SLACK_EXPERTS')
+@run_if('ORCHESTRA_SLACK_EXPERTS_ENABLED')
 def _notify_experts_slack_status_change(task, current_worker):
     _notify_slack_status_change(task, current_worker,
                                 settings.SLACK_EXPERTS_API_KEY,

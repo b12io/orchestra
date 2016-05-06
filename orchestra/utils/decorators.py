@@ -1,6 +1,3 @@
-# TODO(marcua): Change this module name from `settings` to something else.
-# Especially since we import django settings here, we're bound to run into
-# some naming conflict or confusion.
 from django.conf import settings
 
 

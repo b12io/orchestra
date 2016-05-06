@@ -187,7 +187,7 @@ class StaffingResponseFactory(factory.django.DjangoModelFactory):
         model = StaffingResponse
 
 
-@override_settings(SLACK_EXPERTS=True)
+@override_settings(ORCHESTRA_SLACK_EXPERTS_ENABLED=True)
 def setup_models(test_case):
     """ Set up models that we'll use in multiple tests """
 
