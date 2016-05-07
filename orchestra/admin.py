@@ -20,6 +20,8 @@ from orchestra.models import WorkerCertification
 from orchestra.models import Workflow
 from orchestra.models import WorkflowVersion
 from orchestra.models import CommunicationPreference
+from orchestra.models import StaffingRequestInquiry
+from orchestra.models import StaffingResponse
 from orchestra.communication.slack import get_slack_user_id
 
 admin.site.site_header = 'Orchestra'
@@ -198,6 +200,28 @@ class CommunicationPreferenceAdmin(admin.ModelAdmin):
     )
     search_fields = ('worker__user__username', 'methods', 'communication_type')
     list_filter = ('worker__user__username', ('methods', BitFieldListFilter))
+
+
+@admin.register(StaffingRequestInquiry)
+class StaffingRequestInquiryAdmin(admin.ModelAdmin):
+    list_display = (
+        'id', 'project_description',
+    )
+    search_fields = (
+        'communication_preference__worker__user__username',
+        'communication_type', 'project_description'
+    )
+
+
+@admin.register(StaffingResponse)
+class StaffingResponseAdmin(admin.ModelAdmin):
+    list_display = (
+        'id', 'request'
+    )
+    search_fields = (
+        'request__communication_preference__worker__user__username',
+        'request__communication_type', 'request__project_description'
+    )
 
 
 def edit_link(instance, text=None):
