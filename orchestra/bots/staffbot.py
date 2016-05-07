@@ -42,6 +42,7 @@ class StaffBot(BaseBot):
     worker_does_not_exist = 'Worker with username {} does not exist'
     task_assignment_does_not_exist_error = (
         'TaskAssignment associated with user {} and task {} does not exist.')
+    not_authorized_error = 'You are not authorized to staff projects!'
 
     def __init__(self, **kwargs):
         default_config = getattr(settings, 'STAFFBOT_CONFIG', {})
@@ -241,7 +242,6 @@ class StaffBot(BaseBot):
                 'Worker {} not found. slack_user_id: {}'.format(
                     username, slack_user_id))
         elif not is_project_admin(worker.user):
-            raise SlackUserUnauthorized(
-                'You are not authorized to staff projects!')
+            raise SlackUserUnauthorized(self.not_authorized_error)
         data = super().validate(data)
         return data
