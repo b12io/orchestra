@@ -8,9 +8,6 @@ from slacker import Slacker
 from orchestra.utils.decorators import run_if
 from orchestra.communication.errors import SlackFormatError
 
-import logging
-logger = logging.getLogger(__name__)
-
 # Types of responses we can send to slack
 VALID_RESPONSE_TYPES = {'ephemeral', 'in_channel'}
 
@@ -28,20 +25,18 @@ class OrchestraSlackService(object):
             setattr(self, attr_name, getattr(self._service, attr_name))
 
     def post_message(self, slack_user_id, message, parse='none'):
-        if settings.ORCHESTRA_SLACK_ACTIONS_ENABLED:
-            self.chat.post_message(
-                slack_user_id, message, parse=parse)
-        else:
-            logger.info('{}: {}'.format(slack_user_id, message))
+        self.chat.post_message(
+            slack_user_id, message, parse=parse)
 
 
+@run_if('ORCHESTRA_SLACK_EXPERTS_ENABLED')
 def get_slack_user_id(slack_username):
     slack = OrchestraSlackService()
     slack_user_id = slack.users.get_user_id(slack_username)
     return slack_user_id
 
 
-@run_if('ORCHESTRA_SLACK_EXPERTS_ENABLED')
+@run_if('ORCHESTRA_SLACK_EXPERTS_ENABLED', 'ORCHESTRA_SLACK_ACTIONS_ENABLED')
 def add_worker_to_project_team(worker, project):
     slack = OrchestraSlackService()
     try:
@@ -58,7 +53,7 @@ def add_worker_to_project_team(worker, project):
         pass
 
 
-@run_if('ORCHESTRA_SLACK_EXPERTS_ENABLED')
+@run_if('ORCHESTRA_SLACK_EXPERTS_ENABLED', 'ORCHESTRA_SLACK_ACTIONS_ENABLED')
 def create_project_slack_group(project):
     """
     Create slack channel for project team communication

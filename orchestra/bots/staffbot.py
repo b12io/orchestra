@@ -207,12 +207,12 @@ class StaffBot(BaseBot):
     def _send_staffing_request_by_mail(self, staffing_request, message):
         email = (
             staffing_request.communication_preference.worker.user.email)
-        logger_only = not settings.ORCHESTRA_SLACK_ACTIONS_ENABLED
+        mock_mail = not settings.ORCHESTRA_SLACK_ACTIONS_ENABLED
         send_mail('New task is available for claim',
                   message,
                   settings.ORCHESTRA_NOTIFICATIONS_FROM_EMAIL,
                   [email],
-                  logger_only=logger_only)
+                  mock_mail=mock_mail)
         staffing_request.status = StaffingRequestInquiry.Status.SENT.value
         staffing_request.save()
 

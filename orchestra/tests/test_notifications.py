@@ -19,12 +19,13 @@ class BasicNotificationsTestCase(OrchestraTestCase):
     Test modular functions in the notifications module
     """
 
-    def setUp(self):  # noqa
+    def setUp(self):
         super().setUp()
         setup_models(self)
 
     @override_settings(ORCHESTRA_SLACK_INTERNAL_ENABLED=True)
     @override_settings(ORCHESTRA_SLACK_EXPERTS_ENABLED=True)
+    @override_settings(ORCHESTRA_SLACK_ACTIONS_ENABLED=True)
     def test_notify_status_change(self):
         project = self.projects['empty_project']
         internal_name = settings.SLACK_INTERNAL_NOTIFICATION_CHANNEL.strip('#')
