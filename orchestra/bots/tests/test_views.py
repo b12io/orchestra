@@ -4,6 +4,7 @@ from django.test import Client as RequestClient
 from unittest.mock import patch
 
 from orchestra.bots.tests.fixtures import get_mock_slack_data
+from orchestra.bots.staffbot import StaffBot
 from orchestra.models import Task
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_models
@@ -39,7 +40,7 @@ class StaffBotViewTest(OrchestraTestCase):
             user_id=worker1.slack_user_id)
         response = request_client.post(self.url, data)
         self.assert_response(response,
-                             default_error_text='You are not authorized!')
+                             default_error_text=StaffBot.not_authorized_error)
 
         data['user_id'] = 'fake_id'
         response = request_client.post(self.url, data)
