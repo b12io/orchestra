@@ -24,10 +24,6 @@ class OrchestraSlackService(object):
         for attr_name in ('chat', 'groups', 'users'):
             setattr(self, attr_name, getattr(self._service, attr_name))
 
-    def post_message(self, slack_user_id, message, parse='none'):
-        self.chat.post_message(
-            slack_user_id, message, parse=parse)
-
 
 @run_if('ORCHESTRA_SLACK_EXPERTS_ENABLED')
 def get_slack_user_id(slack_username):

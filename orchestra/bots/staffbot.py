@@ -224,7 +224,7 @@ class StaffBot(BaseBot):
                 worker))
             return
 
-        self.slack.post_message(worker.slack_user_id, message)
+        self.slack.chat.post_message(worker.slack_user_id, message)
         staffing_request.status = StaffingRequestInquiry.Status.SENT.value
         staffing_request.save()
 

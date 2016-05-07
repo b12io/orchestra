@@ -130,7 +130,7 @@ class Groups(BaseAPI):
 
 
 class Chat(BaseAPI):
-    def post_message(self, group_identifier, text):
+    def post_message(self, group_identifier, text, parse='none'):
         if group_identifier.startswith('#'):
             groups = [
                 group for group in self.data['groups'].values()
