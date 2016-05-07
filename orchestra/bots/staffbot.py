@@ -220,7 +220,7 @@ class StaffBot(BaseBot):
         worker = (
             staffing_request.communication_preference.worker)
         if worker.slack_user_id is None:
-            logger.error('Worker {} does not have a slack id'.format(
+            logger.warning('Worker {} does not have a slack id'.format(
                 worker))
             return
 
