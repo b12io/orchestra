@@ -25,28 +25,6 @@ class CertificationMixin(object):
 
 class StepMixin(object):
 
-    def get_detailed_description(self, extra_kwargs=None):
-        """
-        This function uses the `description_function` field to generate
-        dynamic text describing a step within a task.
-        Args:
-            extra_kwargs (dict):
-                Additional (dynamic) kwargs that will be passed to the
-                description function.
-        Returns:
-            detailed_description (str):
-                Dynamic message describing the step.
-        """
-        path = self.detailed_description_function.get('path')
-        kwargs = self.detailed_description_function.get('kwargs', {})
-        if extra_kwargs is not None:
-            kwargs.update(extra_kwargs)
-        try:
-            function = locate(path)
-            return function(**kwargs)
-        except:
-            return ''
-
     def __str__(self):
         return '{} - {} - {}'.format(self.slug, self.workflow_version.slug,
                                      self.workflow_version.workflow.slug)
@@ -129,6 +107,30 @@ class TaskMixin(object):
                 True if worker has existing assignment for the given task.
         """
         return self.assignments.filter(worker=worker).exists()
+
+    def get_detailed_description(self, extra_kwargs=None):
+        """
+        This function uses a step's `description_function` field to generate
+        dynamic text describing a step within a task.
+        Args:
+            extra_kwargs (dict):
+                Additional (dynamic) kwargs that will be passed to the
+                description function.
+        Returns:
+            detailed_description (str):
+                Dynamic message describing the task.
+        """
+        from orchestra.utils.task_lifecycle import (
+            get_task_details)
+        path = self.step.detailed_description_function.get('path')
+        kwargs = self.step.detailed_description_function.get('kwargs', {})
+        if extra_kwargs is not None:
+            kwargs.update(extra_kwargs)
+        try:
+            function = locate(path)
+            return function(get_task_details(self.id), **kwargs)
+        except:
+            return ''
 
     def __str__(self):
         return '{} - {}'.format(str(self.project), str(self.step.slug))
