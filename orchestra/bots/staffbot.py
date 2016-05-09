@@ -191,7 +191,7 @@ class StaffBot(BaseBot):
         # TODO(joshblum): handle urls if present in the detailed_description to
         # convert for slack
         detailed_description = (
-            staffing_request.task.step.get_detailed_description()
+            staffing_request.task.get_detailed_description()
         )
         context = Context({
             'username': username,
