@@ -118,6 +118,7 @@ def setup_orchestra(settings_module_name):
         'hijack',
         'compat',
         'hijack_admin',
+        'related_admin',
     )
 
     # Optionally toggle this to enable user hijack functionality.
