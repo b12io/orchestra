@@ -10,7 +10,6 @@ from orchestra.bots.tests.fixtures import get_mock_slack_data
 from orchestra.models import CommunicationPreference
 from orchestra.models import StaffingRequestInquiry
 from orchestra.models import Task
-from orchestra.models import TaskAssignment
 from orchestra.models import Worker
 from orchestra.models import WorkerCertification
 from orchestra.utils.task_lifecycle import assign_task
@@ -166,23 +165,12 @@ class StaffBotTest(OrchestraTestCase):
                 .first())
 
         # Get certified worker
-        worker = self._get_worker_for_task(
-            task, WorkerCertification.Role.ENTRY_LEVEL)
-        task = assign_task(worker.id, task.id)
-        command = 'restaff {} {}'.format(task.id, worker.user.username)
+        task = assign_task(self.worker.id, task.id)
+        command = 'restaff {} {}'.format(task.id, self.worker.user.username)
 
+        worker = self.workers[3]
         self._test_staffing_requests(worker, task, command,
-                                     can_slack=False, can_mail=False)
-
-        task.status = Task.Status.AWAITING_PROCESSING
-        task.save()
-        TaskAssignment.objects.filter(worker=worker,
-                                      task=task).delete()
-        task = assign_task(worker.id, task.id)
-        self._test_staffing_requests(worker, task, command,
-                                     can_slack=True, can_mail=True)
-        self.assertTrue(mock_mail.called)
-        self.assertTrue(mock_slack.called)
+                                     can_slack=False, can_mail=True)
 
     def test_restaff_command_errors(self):
         """

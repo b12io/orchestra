@@ -35,6 +35,8 @@ class StaffingTestCase(OrchestraTestCase):
     def test_handle_staffing_response_is_available(self):
         # Test StaffingResponse object creation
         old_count = StaffingResponse.objects.all().count()
+
+        # assign task is called
         response = handle_staffing_response(
             self.worker, self.staffing_request_inquiry.id,
             is_available=True)
@@ -70,6 +72,28 @@ class StaffingTestCase(OrchestraTestCase):
             new_worker, new_request_inquiry.id, is_available=True)
         self.assertTrue(response.is_winner)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
+
+        task_assignment = (
+            TaskAssignment.objects
+            .get(worker=new_worker,
+                 task=new_request_inquiry.request.task))
+        self.assertEquals(task_assignment.status,
+                          TaskAssignment.Status.PROCESSING)
+
+        # restaff
+        response.is_winner = False
+        response.save()
+
+        worker2 = WorkerFactory()
+        staffing_request_inquiry2 = StaffingRequestInquiryFactory(
+            communication_preference__worker=worker2,
+            request__task=new_request_inquiry.request.task
+        )
+        response = handle_staffing_response(
+            worker2, staffing_request_inquiry2.id, is_available=True)
+        self.assertTrue(response.is_winner)
+        task_assignment.refresh_from_db()
+        self.assertEquals(task_assignment.worker, worker2)
 
     def test_handle_staffing_response_not_is_available(self):
         # Test StaffingResponse object creation

@@ -4,6 +4,8 @@ from django.db import transaction
 from orchestra.bots.errors import StaffingResponseException
 from orchestra.models import StaffingRequestInquiry
 from orchestra.models import StaffingResponse
+from orchestra.models import TaskAssignment
+from orchestra.utils.task_lifecycle import reassign_assignment
 from orchestra.utils.task_lifecycle import assign_task
 
 
@@ -39,8 +41,19 @@ def handle_staffing_response(worker, staffing_request_inquiry_id,
                 request__request=staffing_request_inquiry.request,
                 is_winner=True).exists()):
         response.is_winner = True
-        assign_task(worker.id,
-                    staffing_request_inquiry.request.task.id)
 
+        request = staffing_request_inquiry.request
+        # if task assignment exists then reassign
+        task_assignment = get_object_or_None(
+            TaskAssignment,
+            task=request.task,
+            assignment_counter=request.required_role_counter
+        )
+
+        # otherwise assign task
+        if task_assignment is not None:
+            reassign_assignment(worker.id, task_assignment.id)
+        else:
+            assign_task(worker.id, request.task.id)
     response.save()
     return response

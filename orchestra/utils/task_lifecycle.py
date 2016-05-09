@@ -1,5 +1,4 @@
 import random
-from annoying.functions import get_object_or_None
 from pydoc import locate
 
 from django.conf import settings
@@ -17,7 +16,6 @@ from orchestra.core.errors import TaskStatusError
 from orchestra.core.errors import WorkerCertificationError
 from orchestra.models import Iteration
 from orchestra.models import Project
-from orchestra.models import StaffingResponse
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import Worker
@@ -174,37 +172,6 @@ def role_required_for_new_task(task):
 
 
 @transaction.atomic
-def remove_worker_from_task(worker_username, task_id):
-    worker = Worker.objects.get(user__username=worker_username)
-    task = Task.objects.get(id=task_id)
-    task_assignment = TaskAssignment.objects.get(worker=worker, task=task)
-
-    # mark currently active task assignment as submitted
-    (task.assignments
-     .filter(status=TaskAssignment.Status.PROCESSING)
-     .update(status=TaskAssignment.Status.SUBMITTED))
-
-    if task_assignment.is_reviewer():
-        task.status = Task.Status.PENDING_REVIEW
-    else:
-        task.status = Task.Status.AWAITING_PROCESSING
-    task_assignment.status = TaskAssignment.Status.FAILED
-    task_assignment.save()
-    task.save()
-
-    # if there is existing StaffingResponse mark it as not a winner
-    response = get_object_or_None(
-        StaffingResponse,
-        request__request__task=task,
-        request__communication_preference__worker=worker,
-        is_winner=True)
-    if response is not None:
-        response.is_winner = False
-        response.save()
-    return task
-
-
-@transaction.atomic
 def assign_task(worker_id, task_id):
     """
     Return a given task after assigning or reassigning it to the specified
@@ -303,18 +270,9 @@ def reassign_assignment(worker_id, assignment_id):
     if assignment.task.is_worker_assigned(worker):
         raise TaskAssignmentError('Worker already assigned to this task.')
 
-    if assignment.status == TaskAssignment.Status.FAILED:
-        is_complete = (assignment.task.assignments
-                       .filter(status=TaskAssignment.Status.PROCESSING)
-                       .exists())
-        if is_complete:
-            assignment.status = TaskAssignment.Status.COMPLETE
-        else:
-            assignment.status = TaskAssignment.Status.PROCESSING
     assignment.worker = worker
     assignment.save()
     add_worker_to_project_team(worker, assignment.task.project)
-
     return assignment
 
 
@@ -618,7 +576,7 @@ def get_next_task_status(task, iteration_status):
             raise IllegalTaskSubmission('Task not in rejectable state.')
 
 
-def check_worker_allowed_new_assignment(worker, task_status):
+def check_worker_allowed_new_assignment(worker):
     """
     Check if the worker can be assigned to a new task.
 
@@ -639,11 +597,7 @@ def check_worker_allowed_new_assignment(worker, task_status):
         orchestra.core.errors.TaskStatusError:
             New task assignment is not permitted for the given status.
     """
-    valid_statuses = [Task.Status.AWAITING_PROCESSING,
-                      Task.Status.PENDING_REVIEW]
-    if task_status not in valid_statuses:
-        raise TaskStatusError('Invalid status for new task assignment.')
-    elif worker_assigned_to_rejected_task(worker):
+    if worker_assigned_to_rejected_task(worker):
         raise TaskAssignmentError('Worker has pending reviewer feedback that '
                                   'must be addressed.')
     elif worker_assigned_to_max_tasks(worker):
@@ -673,7 +627,12 @@ def get_new_task_assignment(worker, task_status):
         orchestra.core.errors.NoTaskAvailable:
             No human tasks are available for the given task status.
     """
-    check_worker_allowed_new_assignment(worker, task_status)
+    valid_statuses = [Task.Status.AWAITING_PROCESSING,
+                      Task.Status.PENDING_REVIEW]
+    if task_status not in valid_statuses:
+        raise TaskStatusError('Invalid status for new task assignment.')
+
+    check_worker_allowed_new_assignment(worker)
 
     tasks = (Task.objects
              .filter(status=task_status)

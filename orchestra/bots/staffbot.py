@@ -20,7 +20,6 @@ from orchestra.models import TaskAssignment
 from orchestra.models import Worker
 from orchestra.models import WorkerCertification
 from orchestra.utils.task_lifecycle import get_role_from_counter
-from orchestra.utils.task_lifecycle import remove_worker_from_task
 from orchestra.utils.task_lifecycle import role_counter_required_for_new_task
 from orchestra.utils.task_lifecycle import is_worker_certified_for_task
 from orchestra.utils.task_lifecycle import check_worker_allowed_new_assignment
@@ -42,6 +41,8 @@ class StaffBot(BaseBot):
     task_does_not_exist_error = 'Task {} does not exist'
     task_assignment_error = 'Task {} got an error: "{}"'
     worker_does_not_exist = 'Worker with username {} does not exist'
+    staffing_is_not_allowed = (
+        'Staffing of task {} is not allowed at this state')
     task_assignment_does_not_exist_error = (
         'TaskAssignment associated with user {} and task {} does not exist.')
     not_authorized_error = 'You are not authorized to staff projects!'
@@ -79,6 +80,11 @@ class StaffBot(BaseBot):
             task = Task.objects.get(id=task_id)
             required_role_counter = role_counter_required_for_new_task(task)
             error_msg = None
+
+            valid_statuses = [Task.Status.AWAITING_PROCESSING,
+                              Task.Status.PENDING_REVIEW]
+            if task.status not in valid_statuses:
+                error_msg = self.staffing_is_not_allowed.format(task_id)
         except Task.DoesNotExist:
             error_msg = self.task_does_not_exist_error.format(task_id)
         except TaskAssignmentError as error:
@@ -98,8 +104,12 @@ class StaffBot(BaseBot):
         """
         # TODO(kkamalov): maybe username could also be slack_username
         try:
-            task = remove_worker_from_task(username, task_id)
-            required_role_counter = role_counter_required_for_new_task(task)
+            worker = Worker.objects.get(user__username=username)
+            task = Task.objects.get(id=task_id)
+            task_assignment = TaskAssignment.objects.get(worker=worker,
+                                                         task=task)
+            required_role_counter = task_assignment.assignment_counter
+
             error_msg = None
         except Worker.DoesNotExist:
             error_msg = self.worker_does_not_exist.format(username)
@@ -133,7 +143,7 @@ class StaffBot(BaseBot):
         required_role = get_role_from_counter(required_role_counter)
         for worker in workers:
             try:
-                check_worker_allowed_new_assignment(worker, task.status)
+                check_worker_allowed_new_assignment(worker)
                 if is_worker_certified_for_task(worker, task, required_role):
                     self._send_task_to_worker(
                         worker, staffbot_request)
