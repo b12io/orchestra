@@ -146,14 +146,12 @@ def role_counter_required_for_new_task(task):
                            Task.Status.PENDING_REVIEW]:
         raise TaskAssignmentError('Status incompatible with new assignment')
     elif (task.status == Task.Status.AWAITING_PROCESSING and
-          (task.assignments.filter(assignment_counter=0)
-           .exclude(status=TaskAssignment.Status.FAILED).exists())):
+          task.assignments.filter(assignment_counter=0).exists()):
         raise TaskAssignmentError('Task is in incorrect state')
     assignments_count = task.assignments.count()
     for assignment_counter in range(assignments_count):
         task_assignment = (task.assignments
-                           .filter(assignment_counter=assignment_counter)
-                           .exclude(status=TaskAssignment.Status.FAILED))
+                           .filter(assignment_counter=assignment_counter))
         if not task_assignment.exists():
             return assignment_counter
     return assignments_count

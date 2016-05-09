@@ -7,7 +7,9 @@ from orchestra.tests.helpers.fixtures import WorkerFactory
 from orchestra.bots.errors import SlackUserUnauthorized
 from orchestra.bots.staffbot import StaffBot
 from orchestra.bots.tests.fixtures import get_mock_slack_data
+from orchestra.communication.staffing import send_staffing_requests
 from orchestra.models import CommunicationPreference
+from orchestra.models import StaffBotRequest
 from orchestra.models import StaffingRequestInquiry
 from orchestra.models import Task
 from orchestra.models import Worker
@@ -38,6 +40,7 @@ class StaffBotTest(OrchestraTestCase):
 
     def _test_staffing_requests(self, worker, task, command,
                                 can_slack=False, can_mail=False):
+        StaffBotRequest.objects.all().delete()
         bot = StaffBot()
         communication_type = (CommunicationPreference.CommunicationType
                               .NEW_TASK_AVAILABLE.value)
@@ -47,11 +50,11 @@ class StaffBotTest(OrchestraTestCase):
         communication_preference.methods.slack = can_slack
         communication_preference.methods.email = can_mail
         communication_preference.save()
-
         data = get_mock_slack_data(
             text=command,
             user_id=self.worker.slack_user_id)
         bot.dispatch(data)
+        send_staffing_requests()
         self.assertEquals(StaffingRequestInquiry.objects.filter(
             communication_preference__worker_id=worker,
             request__task=task).count(), can_slack + can_mail)
@@ -107,9 +110,10 @@ class StaffBotTest(OrchestraTestCase):
             task, WorkerCertification.Role.ENTRY_LEVEL)
 
         self._test_staffing_requests(worker, task, 'staff {}'.format(task.id),
-                                     can_slack=False, can_mail=False)
-        self._test_staffing_requests(worker, task, 'staff {}'.format(task.id),
                                      can_slack=True, can_mail=True)
+
+        self._test_staffing_requests(worker, task, 'staff {}'.format(task.id),
+                                     can_slack=False, can_mail=False)
 
         # Change the task state to pending review
         task = assign_task(worker.id, task.id)
