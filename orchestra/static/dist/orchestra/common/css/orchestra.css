@@ -752,9 +752,8 @@ a.logo {
   margin-bottom: 15px; }
 
 .account-settings .account-tabs {
-  margin-bottom: -1px;
   position: relative;
-  z-index: 1; }
+  z-index: 3; }
   .account-settings .account-tabs .btn {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0; }
@@ -770,7 +769,7 @@ a.logo {
   font-size: 13px;
   font-weight: normal;
   letter-spacing: normal;
-  line-spacing: inherit; }
+  line-height: inherit; }
 
 .account-settings .card {
   position: relative;
@@ -794,13 +793,15 @@ a.logo {
   height: inherit;
   width: auto;
   display: inline-block;
-  margin-left: 3px; }
+  margin-left: 3px;
+  margin-right: 5px; }
 
 .account-settings #id_phone_0, .account-settings #id_phone_1 {
   display: inline; }
 
 .account-settings #id_phone_0 {
-  width: 30%; }
+  width: 29%;
+  margin-right: 1%; }
 
 .account-settings #id_phone_1 {
   width: 70%; }

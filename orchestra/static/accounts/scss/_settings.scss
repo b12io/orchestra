@@ -10,9 +10,8 @@
   }
 
   .account-tabs {
-    margin-bottom: -1px;
     position: relative;
-    z-index: 1;
+    z-index: 3;
     .btn {
       border-bottom-left-radius: 0;
       border-bottom-right-radius: 0;
@@ -32,7 +31,7 @@
       font-size: 13px;
       font-weight: normal;
       letter-spacing: normal;
-      line-spacing: inherit;
+      line-height: inherit;
     }
   }
 
@@ -62,6 +61,7 @@
     width: auto;
     display: inline-block;
     margin-left: 3px;
+    margin-right: 5px;
   }
 
   #id_phone_0, #id_phone_1 {
@@ -69,7 +69,8 @@
   }
 
   #id_phone_0 {
-    width: 30%;
+    width: 29%;
+    margin-right: 1%;
   }
 
   #id_phone_1 {
