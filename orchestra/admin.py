@@ -6,6 +6,7 @@ from django.core.urlresolvers import reverse
 from django.utils.html import format_html
 from phonenumber_field.modelfields import PhoneNumberField
 from phonenumber_field.widgets import PhoneNumberPrefixWidget
+from related_admin import RelatedFieldAdmin
 
 from orchestra.models import Certification
 from orchestra.models import Iteration
@@ -202,9 +203,9 @@ class CommunicationPreferenceAdmin(admin.ModelAdmin):
 
 
 @admin.register(StaffingRequestInquiry)
-class StaffingRequestInquiryAdmin(admin.ModelAdmin):
+class StaffingRequestInquiryAdmin(RelatedFieldAdmin):
     list_display = (
-        'id', 'project_description',
+        'id', 'project_description', 'communication_preference__worker'
     )
     search_fields = (
         'communication_preference__worker__user__username',
@@ -213,9 +214,10 @@ class StaffingRequestInquiryAdmin(admin.ModelAdmin):
 
 
 @admin.register(StaffingResponse)
-class StaffingResponseAdmin(admin.ModelAdmin):
+class StaffingResponseAdmin(RelatedFieldAdmin):
     list_display = (
-        'id', 'request'
+        'id', 'request__project_description',
+        'request__communication_preference__worker__user'
     )
     search_fields = (
         'request__communication_preference__worker__user__username',
