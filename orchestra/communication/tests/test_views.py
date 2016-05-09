@@ -14,10 +14,10 @@ class StaffRequestBase(OrchestraAuthenticatedTestCase):
         super().setUp()
         self.request_client, self.user = self.authenticate_user()
         self.staffing_response = StaffingResponseFactory(
-            request__task__step__is_human=True,
+            request__request__task__step__is_human=True,
             request__communication_preference__worker__user=self.user)
         self.url_kwargs = {
-            'staffing_request_id': self.staffing_response.request.pk
+            'staffing_request_inquiry_id': self.staffing_response.request.pk
         }
         self.url = reverse(self.url_reverse, kwargs=self.url_kwargs)
 
@@ -52,10 +52,10 @@ class StaffRequestBase(OrchestraAuthenticatedTestCase):
 class AcceptStaffRequestTest(StaffRequestBase):
     __test__ = True
     template = 'communication/staffing_request_accepted.html'
-    url_reverse = 'orchestra:communication:accept_staffing_request'
+    url_reverse = 'orchestra:communication:accept_staffing_request_inquiry'
 
 
 class RejectStaffRequestTest(StaffRequestBase):
     __test__ = True
     template = 'communication/staffing_request_rejected.html'
-    url_reverse = 'orchestra:communication:reject_staffing_request'
+    url_reverse = 'orchestra:communication:reject_staffing_request_inquiry'

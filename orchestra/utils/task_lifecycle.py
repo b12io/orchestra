@@ -133,6 +133,34 @@ def is_worker_certified_for_task(
     return certified_for_task
 
 
+def get_role_from_counter(role_counter):
+    if role_counter == 0:
+        return WorkerCertification.Role.ENTRY_LEVEL
+    return WorkerCertification.Role.REVIEWER
+
+
+def role_counter_required_for_new_task(task):
+    """
+    Given a task find a level of expert that is required
+    to be assigned for task.
+    """
+    if task.status not in [Task.Status.AWAITING_PROCESSING,
+                           Task.Status.PENDING_REVIEW]:
+        raise TaskAssignmentError('Status incompatible with new assignment')
+    elif (task.status == Task.Status.AWAITING_PROCESSING and
+          (task.assignments.filter(assignment_counter=0)
+           .exclude(status=TaskAssignment.Status.FAILED).exists())):
+        raise TaskAssignmentError('Task is in incorrect state')
+    assignments_count = task.assignments.count()
+    for assignment_counter in range(assignments_count):
+        task_assignment = (task.assignments
+                           .filter(assignment_counter=assignment_counter)
+                           .exclude(status=TaskAssignment.Status.FAILED))
+        if not task_assignment.exists():
+            return assignment_counter
+    return assignments_count
+
+
 def role_required_for_new_task(task):
     roles = {
         Task.Status.AWAITING_PROCESSING: WorkerCertification.Role.ENTRY_LEVEL,
@@ -151,6 +179,11 @@ def remove_worker_from_task(worker_username, task_id):
     task = Task.objects.get(id=task_id)
     task_assignment = TaskAssignment.objects.get(worker=worker, task=task)
 
+    # mark currently active task assignment as submitted
+    (task.assignments
+     .filter(status=TaskAssignment.Status.PROCESSING)
+     .update(status=TaskAssignment.Status.SUBMITTED))
+
     if task_assignment.is_reviewer():
         task.status = Task.Status.PENDING_REVIEW
     else:
@@ -162,7 +195,7 @@ def remove_worker_from_task(worker_username, task_id):
     # if there is existing StaffingResponse mark it as not a winner
     response = get_object_or_None(
         StaffingResponse,
-        request__task=task,
+        request__request__task=task,
         request__communication_preference__worker=worker,
         is_winner=True)
     if response is not None:
@@ -270,6 +303,14 @@ def reassign_assignment(worker_id, assignment_id):
     if assignment.task.is_worker_assigned(worker):
         raise TaskAssignmentError('Worker already assigned to this task.')
 
+    if assignment.status == TaskAssignment.Status.FAILED:
+        is_complete = (assignment.task.assignments
+                       .filter(status=TaskAssignment.Status.PROCESSING)
+                       .exists())
+        if is_complete:
+            assignment.status = TaskAssignment.Status.COMPLETE
+        else:
+            assignment.status = TaskAssignment.Status.PROCESSING
     assignment.worker = worker
     assignment.save()
     add_worker_to_project_team(worker, assignment.task.project)

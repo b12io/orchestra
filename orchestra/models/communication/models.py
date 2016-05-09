@@ -2,12 +2,12 @@ from bitfield import BitField
 from django.db import models
 
 from orchestra.models.communication.model_mixins import CommunicationPreferenceMixin  # noqa
+from orchestra.models.communication.model_mixins import StaffBotRequestMixin
 from orchestra.models.communication.model_mixins import StaffingRequestInquiryMixin  # noqa
 from orchestra.models.communication.model_mixins import StaffingResponseMixin
 from orchestra.models.communication.managers import CommunicationPreferenceManager  # noqa
 from orchestra.models.core.models import Task
 from orchestra.models.core.models import Worker
-from orchestra.models.core.models import WorkerCertification
 from orchestra.utils.models import BaseModel
 from orchestra.utils.models import ChoicesEnum
 
@@ -75,20 +75,24 @@ class CommunicationPreference(CommunicationPreferenceMixin, BaseModel):
         unique_together = (('worker', 'communication_type'),)
 
 
-class StaffingRequestInquiry(StaffingRequestInquiryMixin, BaseModel):
+class StaffBotRequest(StaffBotRequestMixin, BaseModel):
     """
-    A StaffingRequestInquiry object defines how a Worker was contacted to
-    work on a Task by staffbot.
+    A StaffBotRequest object defines a new task that needs
+    a worker for a specific role.
 
     Attributes:
-        communication_preference (orchestra.models.CommunicationPreference):
-            Django user that the request is sent to
         task (orchestra.models.Task):
             The task that needs a worker assignment
+        required_role_counter (int):
+            Counter that tells which expert is a new worker
+            going to be on a task
         request_cause (RequestCause):
             The cause for request
         project_description (str):
             Description of the project
+        status (Status)
+            Status of the request
+
     """
 
     class RequestCause(ChoicesEnum):
@@ -97,23 +101,40 @@ class StaffingRequestInquiry(StaffingRequestInquiryMixin, BaseModel):
         RESTAFF = 'restaff'
 
     class Status(ChoicesEnum):
-        PENDING = 'pending'
-        SENT = 'sent'
+        PROCESSING = 'processing'
+        COMPLETE = 'complete'
+
+    task = models.ForeignKey(Task, related_name='staffing_requests')
+    required_role_counter = models.IntegerField()
+    request_cause = models.IntegerField(choices=RequestCause.choices())
+    project_description = models.TextField(null=True, blank=True)
+    status = models.IntegerField(
+        default=Status.PROCESSING.value,
+        choices=Status.choices())
+
+
+class StaffingRequestInquiry(StaffingRequestInquiryMixin, BaseModel):
+    """
+    A StaffingRequestInquiry object defines how a Worker was contacted to
+    work on a StaffBotRequest
+
+    Attributes:
+        communication_preference (orchestra.models.CommunicationPreference):
+            Django user that the request is sent to
+        request (orchestra.models.StaffBotRequest):
+            Request object associated with inquiry
+        communication_method (CommunicationMethod):
+            Method by which a worker is going to be contacted
+    """
 
     class CommunicationMethod(ChoicesEnum):
         SLACK = 'slack'
         EMAIL = 'email'
 
+    request = models.ForeignKey(StaffBotRequest,
+                                null=True,
+                                related_name='inquiries')
     communication_preference = models.ForeignKey(CommunicationPreference)
-    task = models.ForeignKey(Task)
-    required_role = models.IntegerField(
-        default=WorkerCertification.Role.ENTRY_LEVEL,
-        choices=WorkerCertification.ROLE_CHOICES)
-    request_cause = models.IntegerField(choices=RequestCause.choices())
-    project_description = models.TextField(null=True, blank=True)
-    status = models.IntegerField(
-        default=Status.PENDING.value,
-        choices=Status.choices())
     communication_method = models.IntegerField(
         choices=CommunicationMethod.choices())
 
@@ -133,9 +154,8 @@ class StaffingResponse(StaffingResponseMixin, BaseModel):
         is_winner (bool):
             True if a Worker was selected to work on the Task
     """
-
-    request = models.ForeignKey(StaffingRequestInquiry,
-                                related_name='responses')
+    # TODO(kkamalov): next PR rename to request_inquiry
+    request = models.ForeignKey(StaffingRequestInquiry)
     response_text = models.TextField(blank=True, null=True)
     is_available = models.BooleanField()
     is_winner = models.NullBooleanField()
