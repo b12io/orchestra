@@ -8,17 +8,19 @@ from orchestra.utils.task_lifecycle import assign_task
 
 
 @transaction.atomic
-def handle_staffing_response(worker, staffing_request_id, is_available=False):
+def handle_staffing_response(worker, staffing_request_inquiry_id,
+                             is_available=False):
     # TODO(kkamalov): add proper docstring
-    staffing_request = get_object_or_None(
+    staffing_request_inquiry = get_object_or_None(
         StaffingRequestInquiry,
         communication_preference__worker=worker,
-        id=staffing_request_id
+        id=staffing_request_inquiry_id
     )
-    if staffing_request is None:
+    if staffing_request_inquiry is None:
         return None
 
-    response = StaffingResponse.objects.filter(request=staffing_request)
+    response = (StaffingResponse.objects
+                .filter(request=staffing_request_inquiry))
     if response.exists():
         response = response.first()
         if not is_available and response.is_winner:
@@ -29,17 +31,16 @@ def handle_staffing_response(worker, staffing_request_id, is_available=False):
 
     else:
         response = StaffingResponse.objects.create(
-            request=staffing_request,
+            request=staffing_request_inquiry,
             is_available=is_available)
 
     if (is_available and
             not StaffingResponse.objects.filter(
-                request__task=staffing_request.task,
-                request__required_role=staffing_request.required_role,
+                request__request=staffing_request_inquiry.request,
                 is_winner=True).exists()):
         response.is_winner = True
         assign_task(worker.id,
-                    staffing_request.task.id)
+                    staffing_request_inquiry.request.task.id)
 
     response.save()
     return response

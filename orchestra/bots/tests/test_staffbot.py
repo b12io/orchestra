@@ -55,7 +55,7 @@ class StaffBotTest(OrchestraTestCase):
         bot.dispatch(data)
         self.assertEquals(StaffingRequestInquiry.objects.filter(
             communication_preference__worker_id=worker,
-            task=task).count(), can_slack + can_mail)
+            request__task=task).count(), can_slack + can_mail)
 
     def test_assert_validate_error(self):
         bot = StaffBot()
