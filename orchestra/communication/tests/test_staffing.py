@@ -1,8 +1,10 @@
 from orchestra.bots.errors import StaffingResponseException
 from orchestra.communication.staffing import handle_staffing_response
+from orchestra.communication.staffing import send_staffing_request
 from orchestra.models import StaffingResponse
 from orchestra.models import TaskAssignment
 from orchestra.tests.helpers import OrchestraTestCase
+from orchestra.tests.helpers.fixtures import StaffBotRequestFactory
 from orchestra.tests.helpers.fixtures import StaffingRequestInquiryFactory
 from orchestra.tests.helpers.fixtures import WorkerFactory
 
@@ -128,3 +130,16 @@ class StaffingTestCase(OrchestraTestCase):
             new_worker, new_request_inquiry.id, is_available=True)
         self.assertFalse(response.is_winner)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
+
+    def test_send_staffing_requests(self):
+        request = StaffBotRequestFactory()
+        self.assertEquals(request.status,
+                          StaffBotRequest.Status.PROCESSING.value)
+
+        send_staffing_requests()
+        request.refresh_from_db()
+        self.assertEquals(request.status,
+                          StaffBotRequest.Status.COMPLETE.value)
+
+        self.assertTrue(
+            StaffingRequestInquiry.objects.filter(request=request).exists())

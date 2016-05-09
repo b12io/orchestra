@@ -9,7 +9,6 @@ from orchestra.communication.mail import send_mail
 from orchestra.communication.slack import format_slack_message
 from orchestra.bots.errors import SlackUserUnauthorized
 from orchestra.core.errors import TaskAssignmentError
-from orchestra.core.errors import TaskStatusError
 from orchestra.interface_api.project_management.decorators import \
     is_project_admin
 from orchestra.models import CommunicationPreference
@@ -92,7 +91,7 @@ class StaffBot(BaseBot):
             logger.exception(error_msg)
             return format_slack_message(error_msg)
 
-        staffbot_request = StaffBotRequest.objects.create(
+        StaffBotRequest.objects.create(
             task=task,
             required_role_counter=required_role_counter,
             request_cause=request_cause)
@@ -128,7 +127,7 @@ class StaffBot(BaseBot):
             logger.exception(error_msg)
             return format_slack_message(error_msg)
 
-        staffbot_request = StaffBotRequest.objects.create(
+        StaffBotRequest.objects.create(
             task=task,
             required_role_counter=required_role_counter,
             request_cause=request_cause)
