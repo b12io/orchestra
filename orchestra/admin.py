@@ -70,7 +70,6 @@ class PayRateAdmin(admin.ModelAdmin):
 class ProjectAdmin(admin.ModelAdmin):
     list_display = (
         'id', 'short_description', 'workflow_version', 'start_datetime')
-    ordering = ('start_datetime',)
     search_fields = ('short_description',
                      'workflow_version__slug',
                      'workflow_version__workflow__slug',)
