@@ -207,12 +207,12 @@ class StaffBot(BaseBot):
     def _send_staffing_request_by_mail(self, staffing_request, message):
         email = (
             staffing_request.communication_preference.worker.user.email)
-        logger_only = not settings.ORCHESTRA_SLACK_ACTIONS_ENABLED
+        mock_mail = not settings.ORCHESTRA_SLACK_ACTIONS_ENABLED
         send_mail('New task is available for claim',
                   message,
                   settings.ORCHESTRA_NOTIFICATIONS_FROM_EMAIL,
                   [email],
-                  logger_only=logger_only)
+                  mock_mail=mock_mail)
         staffing_request.status = StaffingRequestInquiry.Status.SENT.value
         staffing_request.save()
 
@@ -220,11 +220,11 @@ class StaffBot(BaseBot):
         worker = (
             staffing_request.communication_preference.worker)
         if worker.slack_user_id is None:
-            logger.error('Worker {} does not have a slack id'.format(
+            logger.warning('Worker {} does not have a slack id'.format(
                 worker))
             return
 
-        self.slack.post_message(worker.slack_user_id, message)
+        self.slack.chat.post_message(worker.slack_user_id, message)
         staffing_request.status = StaffingRequestInquiry.Status.SENT.value
         staffing_request.save()
 

@@ -17,7 +17,8 @@ class StaffBotAutoAssignTestCase(OrchestraTestCase):
         setup_models(self)
 
     @patch('orchestra.bots.staffbot.send_mail')
-    def test_preassign_workers(self, mock_mail):
+    @patch('orchestra.bots.staffbot.StaffBot._send_staffing_request_by_slack')
+    def test_preassign_workers(self, mock_mail, mock_slack):
         request_cause = StaffingRequestInquiry.RequestCause.AUTOSTAFF.value
         staffing_request_count = StaffingRequestInquiry.objects.filter(
             request_cause=request_cause).count()
@@ -38,6 +39,7 @@ class StaffBotAutoAssignTestCase(OrchestraTestCase):
 
         # Mock mail should be called if we autostaff
         self.assertTrue(mock_mail.called)
+        self.assertTrue(mock_slack.called)
         # Assert we created new StaffingRequestInquirys because of autostaff
         new_staffing_request_count = StaffingRequestInquiry.objects.filter(
             request_cause=request_cause).count()

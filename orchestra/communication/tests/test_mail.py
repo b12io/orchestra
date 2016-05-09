@@ -28,7 +28,13 @@ class ModelsTestCase(OrchestraTestCase):
                   from_email='test@test.com',
                   recipient_list=self.recipient_list
                   )
-        self.assertTrue(mock_mail.called)
+        mock_mail.assert_called_once_with(
+            'test_subject', 'test_message',
+            'test@test.com', self.recipient_list,
+            fail_silently=False, auth_user=None,
+            auth_password=None, connection=None,
+            html_message=None
+        )
 
     @patch('orchestra.communication.mail._send_mail')
     def test_email_logged_only(self, mock_mail):
@@ -41,9 +47,15 @@ class ModelsTestCase(OrchestraTestCase):
                   message='test_message',
                   from_email='test@test.com',
                   recipient_list=self.recipient_list,
-                  logger_only=True
+                  mock_mail=True
                   )
-        self.assertFalse(mock_mail.called)
+        mock_mail.assert_called_once_with(
+            'test_subject', 'test_message',
+            'test@test.com', ['test@test.com'],
+            fail_silently=False, auth_user=None,
+            auth_password=None, connection=None,
+            html_message=None
+        )
 
     @patch('orchestra.communication.mail._send_mail')
     def test_filtering_send_with_preference(self, mock_mail):
@@ -54,7 +66,13 @@ class ModelsTestCase(OrchestraTestCase):
                   recipient_list=self.recipient_list,
                   communication_type=self.comm_type
                   )
-        self.assertTrue(mock_mail.called)
+        mock_mail.assert_called_once_with(
+            'test_subject', 'test_message',
+            'test@test.com', self.recipient_list,
+            fail_silently=False, auth_user=None,
+            auth_password=None, connection=None,
+            html_message=None
+        )
 
     @patch('orchestra.communication.mail._send_mail')
     def test_filtering_no_send(self, mock_mail):

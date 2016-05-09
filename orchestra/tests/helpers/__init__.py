@@ -9,6 +9,7 @@ from django.test import TransactionTestCase
 from orchestra.tests.helpers.notifications import MockMail
 from orchestra.tests.helpers.fixtures import UserFactory
 from orchestra.communication.tests.helpers.slack import MockSlacker
+from orchestra.utils.load_json import load_encoded_json
 
 # Don't log logger errors.
 import logging
@@ -47,7 +48,7 @@ class OrchestraTestHelpersMixin(object):
                         expected_json_payload,
                         expected_status_code):
         self.assertEquals(response.status_code, expected_status_code)
-        returned = json.loads(response.content.decode('utf-8'))
+        returned = load_encoded_json(response.content)
         self.assertEquals(returned,
                           expected_json_payload)
 

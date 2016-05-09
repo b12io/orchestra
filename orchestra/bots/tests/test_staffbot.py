@@ -25,6 +25,11 @@ class StaffBotTest(OrchestraTestCase):
         self.worker = self.workers[0]
         self.worker.user.is_superuser = True
         self.worker.user.save()
+        patcher = patch(
+            ('orchestra.bots.staffbot.StaffBot'
+             '._send_staffing_request_by_slack'))
+        patcher.start()
+        self.addCleanup(patcher.stop)
 
     def _get_worker_for_task(self, task, role):
         # Get certified reviewer

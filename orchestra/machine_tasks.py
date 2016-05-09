@@ -68,7 +68,9 @@ def execute(project_id, step_slug):
     function = locate(step.execution_function['path'])
     kwargs = step.execution_function.get('kwargs', {})
     try:
-        task_data = function(project.project_data, prerequisites, **kwargs)
+        project_data = project.project_data
+        project_data['project_id'] = project_id
+        task_data = function(project_data, prerequisites, **kwargs)
     except:
         task_assignment.status = TaskAssignment.Status.FAILED
         logger.exception('Machine task has failed')
