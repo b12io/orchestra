@@ -58,7 +58,7 @@ class ClientTestCase(TestCase):
                 'kwarg1': 1, 'kwarg2': 2}})
 
     @override_settings(
-        BEANSTALK_EXECUTE_SYNCHRONOUS=True,
+        BEANSTALK_DISPATCH_EXECUTE_SYNCHRONOUSLY=True,
         **DISPATCH_SETTINGS
     )
     def test_sync_function_scheduling(self):

@@ -13,7 +13,7 @@ def schedule_function(queue_name, function_name, *args, **kwargs):
     function.
     """
     body = create_request_body(function_name, *args, **kwargs)
-    if getattr(settings, 'BEANSTALK_EXECUTE_SYNCHRONOUS', False):
+    if getattr(settings, 'BEANSTALK_DISPATCH_EXECUTE_SYNCHRONOUSLY', False):
         execute_function(json.loads(body))
     else:
         connection = boto.connect_sqs(
