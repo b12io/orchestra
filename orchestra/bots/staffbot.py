@@ -5,6 +5,7 @@ from django.template import Context
 from django.template.loader import render_to_string
 
 from orchestra.bots.basebot import BaseBot
+from orchestra.communication.errors import SlackError
 from orchestra.communication.mail import send_mail
 from orchestra.communication.slack import format_slack_message
 from orchestra.bots.errors import SlackUserUnauthorized
@@ -223,10 +224,13 @@ class StaffBot(BaseBot):
             logger.warning('Worker {} does not have a slack id'.format(
                 worker))
             return
-
-        self.slack.chat.post_message(worker.slack_user_id, message)
-        staffing_request.status = StaffingRequestInquiry.Status.SENT.value
-        staffing_request.save()
+        try:
+            self.slack.chat.post_message(worker.slack_user_id, message)
+            staffing_request.status = StaffingRequestInquiry.Status.SENT.value
+            staffing_request.save()
+        except SlackError:
+            logger.warning('Invalid slack id {} {}'.format(
+                worker.slack_user_id, message))
 
     def validate(self, data):
         """
