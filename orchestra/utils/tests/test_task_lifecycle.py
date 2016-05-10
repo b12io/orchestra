@@ -20,14 +20,13 @@ from orchestra.tests.helpers.fixtures import StepFactory
 from orchestra.tests.helpers.fixtures import TaskAssignmentFactory
 from orchestra.tests.helpers.fixtures import TaskFactory
 from orchestra.utils.task_lifecycle import AssignmentPolicyType
-from orchestra.utils.task_lifecycle import check_worker_allowed_new_assignment
 from orchestra.utils.task_lifecycle import is_worker_certified_for_task
 from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.task_lifecycle import create_subsequent_tasks
 from orchestra.utils.task_lifecycle import get_new_task_assignment
 from orchestra.utils.task_lifecycle import get_next_task_status
 from orchestra.utils.task_lifecycle import get_task_overview_for_worker
-from orchestra.utils.task_lifecycle import remove_worker_from_task
+from orchestra.utils.task_lifecycle import role_counter_required_for_new_task
 from orchestra.utils.task_lifecycle import submit_task
 from orchestra.utils.task_lifecycle import worker_assigned_to_rejected_task
 from orchestra.utils.task_lifecycle import worker_has_reviewer_status
@@ -58,7 +57,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
                                          task,
                                          WorkerCertification.Role.ENTRY_LEVEL))
 
-    def test_check_worker_allowed_new_assignment(self):
+    def test_not_allowed_new_assignment(self):
         invalid_statuses = [Task.Status.PROCESSING,
                             Task.Status.REVIEWING,
                             Task.Status.POST_REVIEW_PROCESSING,
@@ -66,7 +65,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
                             Task.Status.ABORTED]
         for status in invalid_statuses:
             with self.assertRaises(TaskStatusError):
-                check_worker_allowed_new_assignment(self.workers[2], status)
+                get_new_task_assignment(self.workers[2], status)
 
     def test_get_new_task_assignment_entry_level(self):
         # Entry-level assignment
@@ -170,31 +169,40 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         self.assertTrue(worker_has_reviewer_status(self.workers[5]))
         self.assertTrue(worker_has_reviewer_status(self.workers[6]))
 
-    def test_remove_worker_from_task(self):
-        entry_task = TaskFactory(
-            project=self.projects['base_test_project'],
-            status=Task.Status.AWAITING_PROCESSING,
-            step=self.test_step)
+    def test_role_counter_required_for_new_task(self):
+        task = TaskFactory(status=Task.Status.COMPLETE)
+        with self.assertRaises(TaskAssignmentError):
+            role_counter_required_for_new_task(task)
 
-        worker = self.workers[0]
-        self._test_remove_from_task(entry_task, worker,
-                                    Task.Status.AWAITING_PROCESSING)
+        project = self.projects['assignment_policy']
 
-        entry_task.status = Task.Status.PENDING_REVIEW
-        entry_task.save()
+        # Create first task in test project
+        create_subsequent_tasks(project)
+        self.assertEquals(project.tasks.count(), 1)
+        # Assign initial task to worker 0
+        task = project.tasks.first()
+        counter = role_counter_required_for_new_task(task)
+        self.assertEquals(counter, 0)
 
-        worker = self.workers[3]
-        self._test_remove_from_task(entry_task, worker,
-                                    Task.Status.PENDING_REVIEW)
+        initial_task = assign_task(self.workers[0].id,
+                                   task.id)
+        # Submit task; next task should be created
+        with patch('orchestra.utils.task_lifecycle._is_review_needed',
+                   return_value=True):
+            initial_task = submit_task(initial_task.id, {},
+                                       Iteration.Status.REQUESTED_REVIEW,
+                                       self.workers[0])
 
-    def _test_remove_from_task(self, task, worker, task_status):
-        task = assign_task(worker.id, task.id)
-        task = remove_worker_from_task(worker.user.username, task.id)
+            counter = role_counter_required_for_new_task(initial_task)
+            self.assertEquals(counter, 1)
 
-        self.assertEquals(task.status, task_status)
-        task_assignment = TaskAssignment.objects.get(task=task,
-                                                     worker=worker)
-        self.assertTrue(task_assignment.status, TaskAssignment.Status.FAILED)
+            initial_task = assign_task(self.workers[1].id,
+                                       task.id)
+            initial_task = submit_task(initial_task.id, {},
+                                       Iteration.Status.REQUESTED_REVIEW,
+                                       self.workers[1])
+            counter = role_counter_required_for_new_task(initial_task)
+            self.assertEquals(counter, 2)
 
     def test_assign_task(self):
         entry_task = TaskFactory(
