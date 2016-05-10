@@ -602,7 +602,7 @@ def check_worker_allowed_new_assignment(worker):
         raise TaskAssignmentError('Worker assigned to max number of tasks.')
 
 
-def new_task_assignment_valid_statuses(task_status):
+def assert_new_task_status_valid(task_status):
     valid_statuses = [Task.Status.AWAITING_PROCESSING,
                       Task.Status.PENDING_REVIEW]
     if task_status not in valid_statuses:
@@ -632,7 +632,7 @@ def get_new_task_assignment(worker, task_status):
         orchestra.core.errors.NoTaskAvailable:
             No human tasks are available for the given task status.
     """
-    new_task_assignment_valid_statuses(task_status)
+    assert_new_task_status_valid(task_status)
     check_worker_allowed_new_assignment(worker)
 
     tasks = (Task.objects

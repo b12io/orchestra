@@ -20,7 +20,7 @@ from orchestra.models import TaskAssignment
 from orchestra.models import Worker
 from orchestra.models import WorkerCertification
 from orchestra.utils.task_lifecycle import get_role_from_counter
-from orchestra.utils.task_lifecycle import new_task_assignment_valid_statuses
+from orchestra.utils.task_lifecycle import assert_new_task_status_valid
 from orchestra.utils.task_lifecycle import role_counter_required_for_new_task
 
 import logging
@@ -79,7 +79,7 @@ class StaffBot(BaseBot):
             task = Task.objects.get(id=task_id)
             required_role_counter = role_counter_required_for_new_task(task)
             error_msg = None
-            new_task_assignment_valid_statuses(task.status)
+            assert_new_task_status_valid(task.status)
         except TaskStatusError:
             error_msg = self.staffing_is_not_allowed.format(task_id)
         except Task.DoesNotExist:
