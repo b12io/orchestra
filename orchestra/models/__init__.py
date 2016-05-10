@@ -1,4 +1,5 @@
 from orchestra.models.communication.models import CommunicationPreference  # noqa
+from orchestra.models.communication.models import StaffBotRequest  # noqa
 from orchestra.models.communication.models import StaffingRequestInquiry  # noqa
 from orchestra.models.communication.models import StaffingResponse  # noqa
 from orchestra.models.core.models import Workflow  # noqa

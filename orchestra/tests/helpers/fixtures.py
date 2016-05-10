@@ -10,6 +10,7 @@ from django.utils import timezone
 
 from orchestra.models import CommunicationPreference
 from orchestra.models import Iteration
+from orchestra.models import StaffBotRequest
 from orchestra.models import StaffingRequestInquiry
 from orchestra.models import StaffingResponse
 from orchestra.models import Step
@@ -165,12 +166,21 @@ class CommunicationPreferenceFactory(factory.django.DjangoModelFactory):
         model = 'orchestra.CommunicationPreference'
 
 
+class StaffBotRequestFactory(factory.django.DjangoModelFactory):
+
+    task = factory.SubFactory(TaskFactory)
+    request_cause = StaffBotRequest.RequestCause.USER.value
+    required_role_counter = 0
+
+    class Meta:
+        model = StaffBotRequest
+
+
 class StaffingRequestInquiryFactory(factory.django.DjangoModelFactory):
 
     communication_preference = factory.SubFactory(
         CommunicationPreferenceFactory)
-    task = factory.SubFactory(TaskFactory)
-    request_cause = StaffingRequestInquiry.RequestCause.USER.value
+    request = factory.SubFactory(StaffBotRequestFactory)
     communication_method = (
         StaffingRequestInquiry.CommunicationMethod.SLACK.value)
 

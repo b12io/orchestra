@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 from orchestra.models import Iteration
 from orchestra.models import Task
+from orchestra.models import StaffBotRequest
 from orchestra.models import StaffingRequestInquiry
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_models
@@ -19,9 +20,9 @@ class StaffBotAutoAssignTestCase(OrchestraTestCase):
     @patch('orchestra.bots.staffbot.send_mail')
     @patch('orchestra.bots.staffbot.StaffBot._send_staffing_request_by_slack')
     def test_preassign_workers(self, mock_mail, mock_slack):
-        request_cause = StaffingRequestInquiry.RequestCause.AUTOSTAFF.value
+        request_cause = StaffBotRequest.RequestCause.AUTOSTAFF.value
         staffing_request_count = StaffingRequestInquiry.objects.filter(
-            request_cause=request_cause).count()
+            request__request_cause=request_cause).count()
         project = self.projects['staffbot_assignment_policy']
 
         # Create first task in test project
@@ -42,7 +43,7 @@ class StaffBotAutoAssignTestCase(OrchestraTestCase):
         self.assertTrue(mock_slack.called)
         # Assert we created new StaffingRequestInquirys because of autostaff
         new_staffing_request_count = StaffingRequestInquiry.objects.filter(
-            request_cause=request_cause).count()
+            request__request_cause=request_cause).count()
         self.assertTrue(staffing_request_count < new_staffing_request_count)
         self.assertEqual(project.tasks.count(), 2)
         related_task = project.tasks.exclude(id=initial_task.id).first()
