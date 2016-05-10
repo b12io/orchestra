@@ -9,7 +9,7 @@ django-registration-redux==1.4
 djrill==2.1.0
 ipython==4.2.0
 boto==2.39.0
-moto==0.4.23
+moto==0.4.24
 flake8==2.5.4
 djangorestframework==3.3.3
 djangorestframework-httpsignature==1.0.0
@@ -19,7 +19,7 @@ beautifulsoup4==4.4.1
 pyOpenSSL==16.0.0
 pycrypto==2.6.1
 google-api-python-client==1.5.0
-slacker==0.9.10
+slacker==0.9.15
 pandas==0.18.0
 python-dateutil==2.5.3
 django-hijack==2.1.1
@@ -31,7 +31,7 @@ django-bitfield==1.8.0
 django-phonenumber-field==1.1.0
 django-nose==1.4.3
 django-annoying==0.9.0
-django-gulp==2.3.0
+django-gulp==2.4.0
 django-related-admin==0.3.0
 
 # Journalism Workflow requirements
