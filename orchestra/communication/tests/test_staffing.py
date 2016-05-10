@@ -1,6 +1,9 @@
 from orchestra.bots.errors import StaffingResponseException
 from orchestra.communication.staffing import handle_staffing_response
-from orchestra.communication.staffing import send_staffing_request
+from orchestra.communication.staffing import send_staffing_requests
+from orchestra.models import CommunicationPreference
+from orchestra.models import StaffBotRequest
+from orchestra.models import StaffingRequestInquiry
 from orchestra.models import StaffingResponse
 from orchestra.models import TaskAssignment
 from orchestra.tests.helpers import OrchestraTestCase
@@ -13,8 +16,12 @@ class StaffingTestCase(OrchestraTestCase):
 
     def setUp(self):
         self.worker = WorkerFactory()
+
         self.staffing_request_inquiry = StaffingRequestInquiryFactory(
             communication_preference__worker=self.worker,
+            communication_preference__communication_type=(
+                CommunicationPreference.CommunicationType
+                .NEW_TASK_AVAILABLE.value),
             request__task__step__is_human=True
         )
         super().setUp()
@@ -132,14 +139,44 @@ class StaffingTestCase(OrchestraTestCase):
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
 
     def test_send_staffing_requests(self):
+        worker2 = WorkerFactory()
+
+        StaffingRequestInquiryFactory(
+            communication_preference__worker=worker2,
+            communication_preference__communication_type=(
+                CommunicationPreference.CommunicationType
+                .NEW_TASK_AVAILABLE.value),
+            request__task__step__is_human=True
+        )
+
         request = StaffBotRequestFactory()
         self.assertEquals(request.status,
                           StaffBotRequest.Status.PROCESSING.value)
 
-        send_staffing_requests()
+        send_staffing_requests(worker_batch_size=1)
+        request.refresh_from_db()
+        self.assertEquals(request.status,
+                          StaffBotRequest.Status.PROCESSING.value)
+
+        self.assertEquals(
+            StaffingRequestInquiry.objects.filter(request=request).count(),
+            2)
+
+        send_staffing_requests(worker_batch_size=1)
+        request.refresh_from_db()
+        self.assertEquals(request.status,
+                          StaffBotRequest.Status.PROCESSING.value)
+
+        self.assertEquals(
+            StaffingRequestInquiry.objects.filter(request=request).count(),
+            4)
+
+        # marked as complete and no new request inquiries sent.
+        send_staffing_requests(worker_batch_size=1)
         request.refresh_from_db()
         self.assertEquals(request.status,
                           StaffBotRequest.Status.COMPLETE.value)
 
-        self.assertTrue(
-            StaffingRequestInquiry.objects.filter(request=request).exists())
+        self.assertEquals(
+            StaffingRequestInquiry.objects.filter(request=request).count(),
+            4)

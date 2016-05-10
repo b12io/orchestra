@@ -54,7 +54,7 @@ class StaffBotTest(OrchestraTestCase):
             text=command,
             user_id=self.worker.slack_user_id)
         bot.dispatch(data)
-        send_staffing_requests()
+        send_staffing_requests(worker_batch_size=20)
         self.assertEquals(StaffingRequestInquiry.objects.filter(
             communication_preference__worker_id=worker,
             request__task=task).count(), can_slack + can_mail)

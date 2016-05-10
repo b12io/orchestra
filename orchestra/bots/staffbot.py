@@ -8,6 +8,7 @@ from orchestra.bots.basebot import BaseBot
 from orchestra.communication.mail import send_mail
 from orchestra.communication.slack import format_slack_message
 from orchestra.bots.errors import SlackUserUnauthorized
+from orchestra.core.errors import TaskStatusError
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.interface_api.project_management.decorators import \
     is_project_admin
@@ -19,6 +20,7 @@ from orchestra.models import TaskAssignment
 from orchestra.models import Worker
 from orchestra.models import WorkerCertification
 from orchestra.utils.task_lifecycle import get_role_from_counter
+from orchestra.utils.task_lifecycle import new_task_assignment_valid_statuses
 from orchestra.utils.task_lifecycle import role_counter_required_for_new_task
 
 import logging
@@ -77,11 +79,9 @@ class StaffBot(BaseBot):
             task = Task.objects.get(id=task_id)
             required_role_counter = role_counter_required_for_new_task(task)
             error_msg = None
-
-            valid_statuses = [Task.Status.AWAITING_PROCESSING,
-                              Task.Status.PENDING_REVIEW]
-            if task.status not in valid_statuses:
-                error_msg = self.staffing_is_not_allowed.format(task_id)
+            new_task_assignment_valid_statuses(task.status)
+        except TaskStatusError:
+            error_msg = self.staffing_is_not_allowed.format(task_id)
         except Task.DoesNotExist:
             error_msg = self.task_does_not_exist_error.format(task_id)
         except TaskAssignmentError as error:

@@ -17,7 +17,7 @@ from orchestra.utils.task_lifecycle import check_worker_allowed_new_assignment
 from orchestra.utils.task_lifecycle import get_role_from_counter
 from orchestra.utils.task_lifecycle import is_worker_certified_for_task
 
-NUM_WORKERS_TO_SEND = 5
+WORKER_BATCH_SIZE = 5
 
 
 @transaction.atomic
@@ -71,22 +71,21 @@ def handle_staffing_response(worker, staffing_request_inquiry_id,
     return response
 
 
-def send_staffing_requests(num_workers=NUM_WORKERS_TO_SEND):
+def send_staffing_requests(worker_batch_size=WORKER_BATCH_SIZE):
     staffbot = StaffBot()
     requests = (StaffBotRequest.objects.filter(
         status=StaffBotRequest.Status.PROCESSING.value))
 
     for request in requests:
-        send_request_inquiries(staffbot, request, num_workers)
+        send_request_inquiries(staffbot, request, worker_batch_size)
 
 
-def send_request_inquiries(staffbot, request, num_workers):
+def send_request_inquiries(staffbot, request, worker_batch_size):
 
     # get names of workers that that already received inquiry
     worker_usernames = (StaffingRequestInquiry.objects.filter(
         request=request).values_list(
             'communication_preference__worker__user__username', flat=True))
-
     workers = (Worker.objects
                .exclude(user__username__in=worker_usernames)
                .order_by('?'))
@@ -100,7 +99,7 @@ def send_request_inquiries(staffbot, request, num_workers):
                                             required_role):
                 staffbot.send_task_to_worker(worker, request)
                 inquiries_sent += 1
-            if inquiries_sent >= num_workers:
+            if inquiries_sent >= worker_batch_size:
                 break
 
         except TaskStatusError:
@@ -109,6 +108,6 @@ def send_request_inquiries(staffbot, request, num_workers):
             pass
 
     # check whether all inquiries have been sent out.
-    if inquiries_sent < num_workers:
+    if inquiries_sent < worker_batch_size:
         request.status = StaffBotRequest.Status.COMPLETE.value
         request.save()
