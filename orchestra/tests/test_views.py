@@ -20,6 +20,7 @@ from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.fixtures import UserFactory
 from orchestra.tests.helpers.fixtures import WorkerFactory
+from orchestra.utils.load_json import load_encoded_json
 from orchestra.views import bad_request
 from orchestra.views import forbidden
 from orchestra.views import not_found
@@ -30,7 +31,7 @@ class EndpointTests(OrchestraTestCase):
 
     def _verify_bad_request(self, response, message):
         self.assertEqual(response.status_code, 400)
-        data = json.loads(response.content.decode())
+        data = load_encoded_json(response.content)
         self.assertEqual(data['message'], message)
         self.assertEqual(data['error'], 400)
 
@@ -55,13 +56,13 @@ class TimeEntriesEndpointTests(EndpointTests):
 
     def _verify_missing_task(self, response):
         self.assertEqual(response.status_code, 400)
-        data = json.loads(response.content.decode())
+        data = load_encoded_json(response.content)
         self.assertEqual(data['message'], 'No task for given id')
         self.assertEqual(data['error'], 400)
 
     def _verify_worker_not_assigned(self, response):
         self.assertEqual(response.status_code, 400)
-        data = json.loads(response.content.decode())
+        data = load_encoded_json(response.content)
         self.assertEqual(data['message'],
                          'Worker is not assigned to this task id.')
         self.assertEqual(data['error'], 400)
@@ -73,27 +74,27 @@ class TimeEntriesEndpointTests(EndpointTests):
 
     def test_time_entries_get(self):
         resp = self.request_client.get(self.url)
-        data = json.loads(resp.content.decode())
+        data = load_encoded_json(resp.content)
         self.assertEqual(len(data), self.tasks.count())
         self._verify_time_entries(data)
 
     def test_time_entries_get_assignment_id(self):
         resp = self.request_client.get(self.url,
                                        data={'assignment': self.assignment.id})
-        data = json.loads(resp.content.decode())
+        data = load_encoded_json(resp.content)
         self.assertEqual(len(data), 1)
         self._verify_time_entries(data)
 
     def test_time_entries_assignment_missing(self):
         resp = self.request_client.get(self.url, data={'assignment': '111'})
-        data = json.loads(resp.content.decode())
+        data = load_encoded_json(resp.content)
         self.assertEqual(len(data), 0)
 
     def test_time_entries_post(self):
         resp = self.request_client.post(self.url,
                                         data=json.dumps(self.time_entry_data),
                                         content_type='application/json')
-        data = json.loads(resp.content.decode())
+        data = load_encoded_json(resp.content)
         time_entry = TimeEntry.objects.get(id=data['id'])
         self.assertEqual(time_entry.worker, self.worker)
         self.assertIsNone(time_entry.assignment)
@@ -122,7 +123,7 @@ class TimeEntriesEndpointTests(EndpointTests):
         resp = self.request_client.post(self.url,
                                         data=json.dumps(self.time_entry_data),
                                         content_type='application/json')
-        data = json.loads(resp.content.decode())
+        data = load_encoded_json(resp.content)
         time_entry = TimeEntry.objects.get(id=data['id'])
         self.assertNotEqual(time_entry.worker, worker)
         self.assertEqual(time_entry.worker, self.worker)
@@ -184,7 +185,7 @@ class TimerEndpointTests(EndpointTests):
             data=json.dumps({'assignment': '11'}),
             content_type='application/json')
         mock_start.assert_called_with(self.worker, assignment_id='11')
-        data = json.loads(resp.content.decode())
+        data = load_encoded_json(resp.content)
         serializer = TaskTimerSerializer(timer)
         self.assertEqual(data, serializer.data)
 
@@ -218,7 +219,7 @@ class TimerEndpointTests(EndpointTests):
             data=json.dumps({}),
             content_type='application/json')
         mock_stop.assert_called_with(self.worker)
-        data = json.loads(resp.content.decode())
+        data = load_encoded_json(resp.content)
         serializer = TimeEntrySerializer(time_entry)
         self.assertEqual(data, serializer.data)
 
@@ -241,7 +242,7 @@ class TimerEndpointTests(EndpointTests):
         resp = self.request_client.get(
             reverse('orchestra:orchestra:get_timer'))
         mock_get.assert_called_with(self.worker)
-        data = json.loads(resp.content.decode())
+        data = load_encoded_json(resp.content)
         expected = TaskTimerSerializer(timer).data
         expected['time_worked'] = '1:00:00'
         self.assertEqual(data, expected)

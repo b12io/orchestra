@@ -33,6 +33,7 @@ from orchestra.project_api.serializers import TaskTimerSerializer
 from orchestra.project_api.serializers import TimeEntrySerializer
 from orchestra.utils.s3 import upload_editor_image
 from orchestra.utils import time_tracking
+from orchestra.utils.load_json import load_encoded_json
 from orchestra.utils.task_lifecycle import save_task
 from orchestra.utils.task_lifecycle import submit_task
 from orchestra.utils.task_lifecycle import tasks_assigned_to_worker
@@ -140,7 +141,7 @@ def new_task_assignment(request, task_type):
 @json_view
 @login_required
 def upload_image(request):
-    upload_data = json.loads(request.body.decode())
+    upload_data = load_encoded_json(request.body)
     image_type = upload_data['image_type']
     image_data = base64.b64decode(upload_data['image_data'])
     prefix = upload_data.get('prefix') or ''
@@ -157,7 +158,7 @@ def task_assignment_information(request):
     try:
         worker = Worker.objects.get(user=request.user)
         return get_task_overview_for_worker(
-            json.loads(request.body.decode())['task_id'],
+            load_encoded_json(request.body)['task_id'],
             worker)
     except TaskAssignmentError as e:
         raise BadRequest(e)
@@ -168,7 +169,7 @@ def task_assignment_information(request):
 @json_view
 @login_required
 def save_task_assignment(request):
-    assignment_information = json.loads(request.body.decode())
+    assignment_information = load_encoded_json(request.body)
     worker = Worker.objects.get(user=request.user)
     try:
         save_task(assignment_information['task_id'],
@@ -184,7 +185,7 @@ def save_task_assignment(request):
 @json_view
 @login_required
 def submit_task_assignment(request):
-    assignment_information = json.loads(request.body.decode())
+    assignment_information = load_encoded_json(request.body)
     worker = Worker.objects.get(user=request.user)
     command_type = assignment_information['command_type']
 
@@ -217,7 +218,7 @@ def start_timer(request):
     worker = Worker.objects.get(user=request.user)
     try:
         if request.method == 'POST':
-            time_entry_data = json.loads(request.body.decode())
+            time_entry_data = load_encoded_json(request.body)
             assignment_id = None
             if 'assignment' in time_entry_data:
                 assignment_id = time_entry_data['assignment']
@@ -273,7 +274,7 @@ def update_timer(request):
     worker = Worker.objects.get(user=request.user)
     try:
         if request.method == 'POST':
-            data = json.loads(request.body.decode())
+            data = load_encoded_json(request.body)
             time_tracking.update_timer(
                 worker, data.get('description'), data.get('assignment'))
     except Exception as e:
