@@ -7,7 +7,7 @@
 [![PyPI](https://img.shields.io/pypi/dm/orchestra.svg)](https://pypi.python.org/pypi/orchestra)
 [![Requirements Status](https://requires.io/github/unlimitedlabs/orchestra/requirements.svg)](https://requires.io/github/unlimitedlabs/orchestra/requirements/)
 [![Apache License](https://img.shields.io/pypi/l/orchestra.svg)](https://github.com/unlimitedlabs/orchestra/blob/master/LICENSE)
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/unlimitedlabs/orchestra)
+[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg?maxAge=2592000)](https://gitter.im/unlimitedlabs/orchestra)
 
 Orchestra is a system for orchestrating project teams of experts and machines.
 Projects can include everything from design teams working on a client's project
