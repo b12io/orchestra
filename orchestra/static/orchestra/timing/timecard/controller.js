@@ -34,10 +34,6 @@
         });
       });
 
-      vm.expiredEntry = function(entry) {
-        return entry.date < moment().startOf('isoWeek');
-      };
-
       vm.datetimeFromKey = function(entries) {
         if (entries.$key) {
           return moment(entries.$key);

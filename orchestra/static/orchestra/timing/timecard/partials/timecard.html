@@ -45,7 +45,7 @@
               <div class="entry-row" ng-class="{'gray-stripe': $index % 2}" ng-repeat="entry in dateEntries | orderBy:'-id'">
                 <form class="container-fluid" novalidate name="entryForm" class="form-inline">
                   <div class="row">
-                    <div class="col-xs-2 edit-tools disable-select" ng-if="!vm.expiredEntry(entry)">
+                    <div class="col-xs-2 edit-tools disable-select">
                       <i ng-click="vm.timeEntries.deleteEntry(entry)" class="fa fa-times-circle"></i>
                       <i class="fa fa-pencil-square-o" ng-class="{active: entry.editing}" ng-click="vm.editEntry(entry)"></i>
                     </div>
