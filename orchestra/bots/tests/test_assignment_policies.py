@@ -4,6 +4,8 @@ from orchestra.models import Iteration
 from orchestra.models import Task
 from orchestra.models import StaffBotRequest
 from orchestra.models import StaffingRequestInquiry
+
+from orchestra.communication.staffing import send_staffing_requests
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.utils.task_lifecycle import assign_task
@@ -27,6 +29,7 @@ class StaffBotAutoAssignTestCase(OrchestraTestCase):
 
         # Create first task in test project
         create_subsequent_tasks(project)
+        send_staffing_requests()
         self.assertEqual(project.tasks.count(), 1)
         # Assign initial task to worker 0
         initial_task = assign_task(self.workers[0].id,

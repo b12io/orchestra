@@ -20,14 +20,12 @@ from orchestra.tests.helpers.fixtures import StepFactory
 from orchestra.tests.helpers.fixtures import TaskAssignmentFactory
 from orchestra.tests.helpers.fixtures import TaskFactory
 from orchestra.utils.task_lifecycle import AssignmentPolicyType
-from orchestra.utils.task_lifecycle import check_worker_allowed_new_assignment
 from orchestra.utils.task_lifecycle import is_worker_certified_for_task
 from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.task_lifecycle import create_subsequent_tasks
 from orchestra.utils.task_lifecycle import get_new_task_assignment
 from orchestra.utils.task_lifecycle import get_next_task_status
 from orchestra.utils.task_lifecycle import get_task_overview_for_worker
-from orchestra.utils.task_lifecycle import remove_worker_from_task
 from orchestra.utils.task_lifecycle import role_counter_required_for_new_task
 from orchestra.utils.task_lifecycle import submit_task
 from orchestra.utils.task_lifecycle import worker_assigned_to_rejected_task
@@ -59,7 +57,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
                                          task,
                                          WorkerCertification.Role.ENTRY_LEVEL))
 
-    def test_check_worker_allowed_new_assignment(self):
+    def test_not_allowed_new_assignment(self):
         invalid_statuses = [Task.Status.PROCESSING,
                             Task.Status.REVIEWING,
                             Task.Status.POST_REVIEW_PROCESSING,
@@ -67,7 +65,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
                             Task.Status.ABORTED]
         for status in invalid_statuses:
             with self.assertRaises(TaskStatusError):
-                check_worker_allowed_new_assignment(self.workers[2], status)
+                get_new_task_assignment(self.workers[2], status)
 
     def test_get_new_task_assignment_entry_level(self):
         # Entry-level assignment
@@ -205,39 +203,6 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
                                        self.workers[1])
             counter = role_counter_required_for_new_task(initial_task)
             self.assertEquals(counter, 2)
-
-            # if we remove entry level expert then
-            # assignment counter should go to 0.
-            initial_task = remove_worker_from_task(
-                self.workers[0].user.username,
-                initial_task.id)
-            counter = role_counter_required_for_new_task(initial_task)
-
-    def test_remove_worker_from_task(self):
-        entry_task = TaskFactory(
-            project=self.projects['base_test_project'],
-            status=Task.Status.AWAITING_PROCESSING,
-            step=self.test_step)
-
-        worker = self.workers[0]
-        self._test_remove_from_task(entry_task, worker,
-                                    Task.Status.AWAITING_PROCESSING)
-
-        entry_task.status = Task.Status.PENDING_REVIEW
-        entry_task.save()
-
-        worker = self.workers[3]
-        self._test_remove_from_task(entry_task, worker,
-                                    Task.Status.PENDING_REVIEW)
-
-    def _test_remove_from_task(self, task, worker, task_status):
-        task = assign_task(worker.id, task.id)
-        task = remove_worker_from_task(worker.user.username, task.id)
-
-        self.assertEquals(task.status, task_status)
-        task_assignment = TaskAssignment.objects.get(task=task,
-                                                     worker=worker)
-        self.assertTrue(task_assignment.status, TaskAssignment.Status.FAILED)
 
     def test_assign_task(self):
         entry_task = TaskFactory(
