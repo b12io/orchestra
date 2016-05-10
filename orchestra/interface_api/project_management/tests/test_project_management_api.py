@@ -18,6 +18,7 @@ from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.fixtures import UserFactory
 from orchestra.tests.helpers.fixtures import WorkerFactory
 from orchestra.tests.helpers.iterations import verify_iterations
+from orchestra.utils.load_json import load_encoded_json
 from orchestra.utils.revert import RevertChange
 from orchestra.utils.task_lifecycle import create_subsequent_tasks
 from orchestra.utils.task_properties import assignment_history
@@ -55,7 +56,7 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
             }),
             content_type='application/json')
         self.assertEquals(response.status_code, 200)
-        returned = json.loads(response.content.decode('utf-8'))
+        returned = load_encoded_json(response.content)
 
         # Skipping the `tasks` key/value pair for this test
         expected_project = {
@@ -174,7 +175,7 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
         self.assertEquals(response.status_code, 400)
         first_review_assignment.refresh_from_db()
         self.assertTrue(first_review_assignment.worker, self.workers[1])
-        returned = json.loads(response.content.decode('utf-8'))
+        returned = load_encoded_json(response.content)
         self.assertEquals(returned['message'],
                           'Worker already assigned to this task.')
 
@@ -191,7 +192,7 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
         self.assertEquals(response.status_code, 400)
         first_review_assignment.refresh_from_db()
         self.assertTrue(first_review_assignment.worker, self.workers[0])
-        returned = json.loads(response.content.decode('utf-8'))
+        returned = load_encoded_json(response.content)
         self.assertEquals(returned['message'],
                           'Worker not certified for this assignment.')
 
@@ -441,7 +442,7 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
             task, iteration, revert_before=revert_before, commit=False)
         self.assertEquals(response.status_code, 200)
         task.refresh_from_db()
-        fake_audit = json.loads(response.content.decode('utf-8'))
+        fake_audit = load_encoded_json(response.content)
         self.assertEqual(fake_audit, expected_audit)
 
         self.assertEquals(task.status, Task.Status.COMPLETE)
@@ -453,7 +454,7 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
             task, iteration, revert_before=revert_before, commit=True)
         self.assertEqual(response.status_code, 200)
         task.refresh_from_db()
-        audit = json.loads(response.content.decode('utf-8'))
+        audit = load_encoded_json(response.content)
         self.assertEqual(audit, fake_audit)
         task.refresh_from_db()
         self.assertEqual(task.status, task_status)
