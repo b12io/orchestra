@@ -205,7 +205,7 @@ class CommunicationPreferenceAdmin(admin.ModelAdmin):
 @admin.register(StaffingRequestInquiry)
 class StaffingRequestInquiryAdmin(RelatedFieldAdmin):
     list_display = (
-        'id', 'project_description', 'communication_preference__worker'
+        'id', 'communication_preference__worker'
     )
     search_fields = (
         'communication_preference__worker__user__username',
