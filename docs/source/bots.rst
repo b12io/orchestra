@@ -8,15 +8,15 @@ Below, we'll walk through the various bots available in Orchestra.
 StaffBot
 *********
 
-``StaffBot`` provides a simple way to ask a group of Workers if they would like
+``StaffBot`` provides a simple way to ask a group of workers if they would like
 to work on a particular ``Task``. The goal is reduce the human load when
 finding a ``Worker`` for  a ``Task``. ``StaffBot`` allows a user to interact
 with Orchestra via `Slack`_ or can be configured to automatically find workers for
 a ``Task`` when it is available by setting up an `Assignment Policy`_.
 
-``StaffBot`` works by reaching out to qualified workers and offering them the
-``Task`` to work on. Workers can then accept or reject the task and starting
-working on it.
+``StaffBot`` works by reaching out to qualified workers and offering them a
+``Task`` to work on. Workers can then either accept or reject the task and
+start working on it.
 
 
 Slack
@@ -37,7 +37,7 @@ important to keep this token secret since otherwise anyone may make a ``HTTP
 POST`` and execute the staffing logic!
 
 In addition to the ``ORCHESTRA_SLACK_STAFFBOT_TOKEN`` setting, you can further
-restrict access to the endpoint by specifying the following setting::
+restrict access to the endpoint by specifying the following::
 
  STAFFBOT_CONFIG = {
             'allowed_team_ids': ['allowed_team_ids'],
@@ -55,13 +55,13 @@ accepted by default.
 
 
 Once this configuration is complete, you can test by typing ``/staffbot staff
-<task-id>`` where ``<task-id>`` is an unassigned task.
+<task-id>`` where ``<task-id>`` is an unassigned task id.
 
 Assignment Policy
 ================
 
 ``StaffBot`` can also work without user interaction by specifying an Assignment
-Policy. Orchestra supports custom logic for assigning workers to tasks,
+Policy. Orchestra supports custom logic for assigning workers to tasks, and
 ``StaffBot`` leverages this by asking qualified workers if they would like to
 work on a ``Task`` as soon as the ``Task`` is available. To specify the
 ``StaffBot`` auto assignment policy, add the following to the ``Step``
@@ -80,7 +80,8 @@ Example we have::
 
 Now, for entry-level tasks within the defined step, ``StaffBot`` will
 automatically try to staff this ``Task``. If the task requires review, manual
-assignment is necessary unless we add a reviewer key to the policy function::
+assignment is necessary unless we add a ``reviewer`` key to the policy
+function::
 
   [...step definition...]
   "assignment_policy": {
@@ -99,7 +100,7 @@ Detailed Description Function
 =============================
 
 The ``detailed_scription_function`` is used to dynamically describe a ``Task``
-when ``StaffBot`` makes requests to workers offering them the opportunity to
+when ``StaffBot`` makes requests to workers, offering them the opportunity to
 work on the ``Task``. The function is given a ``task_details`` dictionary and
 can be passed extra ``kwargs`` as shown below::
 
