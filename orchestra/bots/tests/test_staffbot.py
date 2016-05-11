@@ -7,10 +7,11 @@ from orchestra.tests.helpers.fixtures import WorkerFactory
 from orchestra.bots.errors import SlackUserUnauthorized
 from orchestra.bots.staffbot import StaffBot
 from orchestra.bots.tests.fixtures import get_mock_slack_data
+from orchestra.communication.staffing import send_staffing_requests
 from orchestra.models import CommunicationPreference
+from orchestra.models import StaffBotRequest
 from orchestra.models import StaffingRequestInquiry
 from orchestra.models import Task
-from orchestra.models import TaskAssignment
 from orchestra.models import Worker
 from orchestra.models import WorkerCertification
 from orchestra.utils.task_lifecycle import assign_task
@@ -39,6 +40,7 @@ class StaffBotTest(OrchestraTestCase):
 
     def _test_staffing_requests(self, worker, task, command,
                                 can_slack=False, can_mail=False):
+        StaffBotRequest.objects.all().delete()
         bot = StaffBot()
         communication_type = (CommunicationPreference.CommunicationType
                               .NEW_TASK_AVAILABLE.value)
@@ -48,14 +50,14 @@ class StaffBotTest(OrchestraTestCase):
         communication_preference.methods.slack = can_slack
         communication_preference.methods.email = can_mail
         communication_preference.save()
-
         data = get_mock_slack_data(
             text=command,
             user_id=self.worker.slack_user_id)
         bot.dispatch(data)
+        send_staffing_requests(worker_batch_size=20)
         self.assertEquals(StaffingRequestInquiry.objects.filter(
             communication_preference__worker_id=worker,
-            task=task).count(), can_slack + can_mail)
+            request__task=task).count(), can_slack + can_mail)
 
     def test_assert_validate_error(self):
         bot = StaffBot()
@@ -108,9 +110,10 @@ class StaffBotTest(OrchestraTestCase):
             task, WorkerCertification.Role.ENTRY_LEVEL)
 
         self._test_staffing_requests(worker, task, 'staff {}'.format(task.id),
-                                     can_slack=False, can_mail=False)
-        self._test_staffing_requests(worker, task, 'staff {}'.format(task.id),
                                      can_slack=True, can_mail=True)
+
+        self._test_staffing_requests(worker, task, 'staff {}'.format(task.id),
+                                     can_slack=False, can_mail=False)
 
         # Change the task state to pending review
         task = assign_task(worker.id, task.id)
@@ -166,23 +169,12 @@ class StaffBotTest(OrchestraTestCase):
                 .first())
 
         # Get certified worker
-        worker = self._get_worker_for_task(
-            task, WorkerCertification.Role.ENTRY_LEVEL)
-        task = assign_task(worker.id, task.id)
-        command = 'restaff {} {}'.format(task.id, worker.user.username)
+        task = assign_task(self.worker.id, task.id)
+        command = 'restaff {} {}'.format(task.id, self.worker.user.username)
 
+        worker = self.workers[3]
         self._test_staffing_requests(worker, task, command,
-                                     can_slack=False, can_mail=False)
-
-        task.status = Task.Status.AWAITING_PROCESSING
-        task.save()
-        TaskAssignment.objects.filter(worker=worker,
-                                      task=task).delete()
-        task = assign_task(worker.id, task.id)
-        self._test_staffing_requests(worker, task, command,
-                                     can_slack=True, can_mail=True)
-        self.assertTrue(mock_mail.called)
-        self.assertTrue(mock_slack.called)
+                                     can_slack=False, can_mail=True)
 
     def test_restaff_command_errors(self):
         """

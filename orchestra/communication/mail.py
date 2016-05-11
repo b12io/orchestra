@@ -1,4 +1,6 @@
+from django.conf import settings
 from django.core.mail import send_mail as _send_mail
+
 from orchestra.models import CommunicationPreference
 from orchestra.models import Worker
 
@@ -22,7 +24,8 @@ def send_mail(subject, message, from_email,
         ]
     if mock_mail:
         # Send the mail to as many people as we normally would
-        recipient_list = [from_email] * len(recipient_list)
+        recipient_list = [
+            settings.ORCHESTRA_MOCK_TO_EMAIL] * len(recipient_list)
     if len(recipient_list):
         return _send_mail(subject, message, from_email,
                           recipient_list, fail_silently=fail_silently,

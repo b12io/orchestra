@@ -33,16 +33,25 @@ class CommunicationPreferenceMixin(object):
         )
 
 
-class StaffingRequestInquiryMixin(object):
+class StaffBotRequestMixin(object):
 
     def get_request_cause_description(self):
         return self.RequestCause(self.request_cause).description
 
     def __str__(self):
         return '{} - {} - {}'.format(
-            self.communication_preference.worker,
             self.task.id,
-            self.get_request_cause_description()
+            self.get_request_cause_description(),
+            self.required_role_counter
+        )
+
+
+class StaffingRequestInquiryMixin(object):
+
+    def __str__(self):
+        return '{} - {}'.format(
+            self.communication_preference.worker,
+            self.request.task.id
         )
 
 
