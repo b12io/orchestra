@@ -9,7 +9,6 @@ from orchestra.models import CommunicationPreference
 from orchestra.models import StaffingRequestInquiry
 from orchestra.models import Project
 from orchestra.models import Task
-from orchestra.models import TaskAssignment
 from orchestra.models import Worker
 
 UserModel = get_user_model()
@@ -105,7 +104,9 @@ class StaffingRequestInquiryLookup(FormatedItemMixin, LookupChannel):
 
     def get_query(self, q, request):
         return self.model.objects.filter(
-            Q(communication_preference__worker__user__first_name__icontains=q) |
+            Q(
+                communication_preference__worker__user__first_name__icontains=q
+            ) |
             Q(communication_preference__worker__user__last_name__icontains=q) |
             Q(communication_preference__worker__user__email__icontains=q) |
             Q(communication_preference__worker__user__username__icontains=q) |
