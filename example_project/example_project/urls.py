@@ -5,6 +5,7 @@ Registers all of the orchestra URLs so orchestra is usable when
 `example_project` gets run. Additional URLs for other apps should be installed
 here as well.
 """
+from ajax_select import urls as ajax_select_urls
 from django.conf.urls import include
 from django.conf.urls import url
 from django.conf.urls import (
@@ -23,6 +24,8 @@ urlpatterns = [
     # Admin Views
     url(r'^orchestra/admin/',
         include(admin.site.urls)),
+    url(r'^ajax_select/', include(ajax_select_urls)),
+
 
     # Registration Views
     # Eventually these will be auto-registered with the Orchestra URLs, but for

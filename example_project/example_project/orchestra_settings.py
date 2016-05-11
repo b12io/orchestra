@@ -42,6 +42,7 @@ def setup_orchestra(settings_module_name):
         'beanstalk_dispatch',
         'registration',
         'widget_tweaks',
+        'ajax_select',
     )
 
     settings.STATICFILES_FINDERS += (
