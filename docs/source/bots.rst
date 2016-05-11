@@ -119,6 +119,8 @@ dictionary and can be passed extra ``kwargs`` as shown below::
 ::
 
   # my_project/orchestra_helpers.py
+
   def get_detailed_description(task_details **kwargs):
     return '''A new task is available!
-              Find out more about {} at example.com/projects/!'''.format(kwargs.get('text'))
+              Find out more about {} at example.com/projects/{}!'''.format(
+              kwargs.get('text'), task_details['project']['id'])
