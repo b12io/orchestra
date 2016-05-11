@@ -8,15 +8,16 @@ Below, we'll walk through the various bots available in Orchestra.
 StaffBot
 *********
 
-``StaffBot`` provides a simple way to ask a group of workers if they would like
-to work on a particular ``Task``. The goal is reduce the human load when
+``StaffBot`` provides a simple way to ask a group of ``Workers`` if they would
+like to work on a particular ``Task``. The goal is reduce the human load when
 finding a ``Worker`` for  a ``Task``. ``StaffBot`` allows a user to interact
-with Orchestra via `Slack`_ or can be configured to automatically find workers for
-a ``Task`` when it is available by setting up an `Assignment Policy`_.
+with Orchestra via `Slack`_ or can be configured to automatically find
+``Workers`` for a ``Task`` when it is available by setting up an `Assignment
+Policy`_.
 
-``StaffBot`` works by reaching out to qualified workers and offering them a
-``Task`` to work on. Workers can then either accept or reject the task and
-start working on it.
+``StaffBot`` works by reaching out to qualified ``Workers`` and offering them a
+``Task`` to work on. ``Workers`` can then either accept or reject the task (via
+Slack or email) and start working on it.
 
 
 Slack
@@ -53,20 +54,22 @@ restrict access to the endpoint by specifying the following::
 match items in the list. If a parameter is not specified, all values are
 accepted by default.
 
-
-Once this configuration is complete, you can test by typing ``/staffbot staff
-<task-id>`` where ``<task-id>`` is an unassigned task id.
+Once this configuration is complete, you can test it by typing ``/staffbot
+staff <task-id>`` where ``<task-id>`` is an unassigned task id.  By default,
+``StaffBot`` will reach out to ``Workers`` who have the appropriate
+``WorkerCertification`` for the task you are staffing, in batches of ``5
+Workers`` every ``1`` minutes.
 
 Assignment Policy
 ================
 
-``StaffBot`` can also work without user interaction by specifying an Assignment
-Policy. Orchestra supports custom logic for assigning workers to tasks, and
-``StaffBot`` leverages this by asking qualified workers if they would like to
-work on a ``Task`` as soon as the ``Task`` is available. To specify the
-``StaffBot`` auto assignment policy, add the following to the ``Step``
-configuration in your ``version.json`` file. Following the Journalism Workflow
-Example we have::
+``StaffBot`` can also automatically staff projects by specifying an Assignment
+Policy. Orchestra supports custom logic for assigning ``Workers`` to tasks, and
+``StaffBot`` leverages this by asking qualified ``Workers`` if they would like
+to work on a ``Task`` as soon as the ``Task`` is available. To specify the
+``StaffBot`` auto-assignment policy, which uses the same logic as the
+``/staffbot staff`` command, add the following to the ``Step`` configuration in
+your ``version.json`` file. Following the Journalism Workflow Example we have::
 
   [...step definition...]
   "assignment_policy": {
@@ -99,16 +102,23 @@ function::
 Detailed Description Function
 =============================
 
-The ``detailed_scription_function`` is used to dynamically describe a ``Task``
-when ``StaffBot`` makes requests to workers, offering them the opportunity to
-work on the ``Task``. The function is given a ``task_details`` dictionary and
-can be passed extra ``kwargs`` as shown below::
+The ``detailed_description_function`` is used to dynamically describe a
+``Task`` when ``StaffBot`` makes requests to ``Workers``, offering them the
+opportunity to work on the ``Task``. The function is given a ``task_details``
+dictionary and can be passed extra ``kwargs`` as shown below::
 
   [...step definition...]
   "detailed_description_function": {
-       "path": "orchestra.tests.helpers.fixtures.get_detailed_description",
+       "path": "my_project.orchestra_helpers.get_detailed_description",
        "kwargs": {
-           "text": "step 2 text"
+           "text": "Task text"
        }
   }
   [...step definition...]
+
+::
+
+  # my_project/orchestra_helpers.py
+  def get_detailed_description(task_details **kwargs):
+    return '''A new task is available!
+              Find out more about {} at example.com/projects/!'''.format(kwargs.get('text'))
