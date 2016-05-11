@@ -160,6 +160,8 @@ def setup_orchestra(settings_module_name):
 
     # Notification-specific email for message bundling and searching
     settings.ORCHESTRA_NOTIFICATIONS_FROM_EMAIL = settings.DEFAULT_FROM_EMAIL
+    # Used to test email sending in development/staging environments
+    settings.ORCHESTRA_MOCK_TO_EMAIL = ''
 
     # 3rd Party Integrations
     #########################

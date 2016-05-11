@@ -1,5 +1,8 @@
 from unittest.mock import patch
 
+from django.conf import settings
+from django.test import override_settings
+
 from orchestra.communication.mail import send_mail
 from orchestra.models import CommunicationPreference
 from orchestra.tests.helpers import OrchestraTestCase
@@ -36,11 +39,11 @@ class ModelsTestCase(OrchestraTestCase):
             html_message=None
         )
 
+    @override_settings(ORCHESTRA_MOCK_TO_EMAIL='to-email@test.com')
     @patch('orchestra.communication.mail._send_mail')
-    def test_email_logged_only(self, mock_mail):
+    def test_email_mocked(self, mock_mail):
         """
-            Verify that we correctly filter users based on their email
-            preferences.
+            Verify that we mock email sending.
         """
         # Test when no comm_type is given
         send_mail(subject='test_subject',
@@ -51,7 +54,7 @@ class ModelsTestCase(OrchestraTestCase):
                   )
         mock_mail.assert_called_once_with(
             'test_subject', 'test_message',
-            'test@test.com', ['test@test.com'],
+            'test@test.com', [settings.ORCHESTRA_MOCK_TO_EMAIL],
             fail_silently=False, auth_user=None,
             auth_password=None, connection=None,
             html_message=None
