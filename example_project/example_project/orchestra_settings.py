@@ -199,7 +199,7 @@ def setup_orchestra(settings_module_name):
 
     # Settings for orchestra bots Each bot needs a slack token to
     # authenticate the command.
-    settings.SLACK_STAFFBOT_TOKEN = ''  # StaffBot slash command token
+    settings.ORCHESTRA_SLACK_STAFFBOT_TOKEN = ''
 
     # Optionally add a path for a template to support third party scripts
     # (such as Google Analytics)
