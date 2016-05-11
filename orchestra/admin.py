@@ -23,6 +23,7 @@ from orchestra.models import WorkerCertification
 from orchestra.models import Workflow
 from orchestra.models import WorkflowVersion
 from orchestra.models import CommunicationPreference
+from orchestra.models import StaffBotRequest
 from orchestra.models import StaffingRequestInquiry
 from orchestra.models import StaffingResponse
 from orchestra.communication.slack import get_slack_user_id
@@ -229,15 +230,25 @@ class CommunicationPreferenceAdmin(AjaxSelectAdmin):
     search_fields = ('worker__user__username', 'methods', 'communication_type')
     list_filter = ('worker__user__username', ('methods', BitFieldListFilter))
 
+@admin.register(StaffBotRequest)
+class StaffBotRequestAdmin(RelatedFieldAdmin, AjaxSelectAdmin):
+    form = make_ajax_form(StaffBotRequest, {
+        'task': 'tasks',
+    })
+    list_display = (
+        'id', 'project_description', 'task'
+    )
+    search_fields = (
+        'project_description',
+    )
 
 @admin.register(StaffingRequestInquiry)
 class StaffingRequestInquiryAdmin(RelatedFieldAdmin, AjaxSelectAdmin):
     form = make_ajax_form(StaffingRequestInquiry, {
         'communication_preference': 'communication_preferences',
-        'task': 'tasks',
     })
     list_display = (
-        'id', 'project_description', 'communication_preference__worker'
+        'id', 'communication_preference__worker'
     )
     search_fields = (
         'communication_preference__worker__user__username',
