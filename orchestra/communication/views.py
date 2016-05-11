@@ -11,13 +11,9 @@ from orchestra.communication.staffing import handle_staffing_response
 def accept_staffing_request_inquiry(request,
                                     staffing_request_inquiry_id):
     worker = Worker.objects.get(user=request.user)
-    try:
-        response = handle_staffing_response(
-            worker, staffing_request_inquiry_id, is_available=True)
-    except StaffingResponseException:
-        return render(request,
-                      'communication/staffing_response_not_permitted.html',
-                      {})
+    response = handle_staffing_response(
+        worker, staffing_request_inquiry_id, is_available=True)
+
     if response is None:
         raise Http404
     return render(request, 'communication/staffing_request_accepted.html',
@@ -30,8 +26,13 @@ def accept_staffing_request_inquiry(request,
 def reject_staffing_request_inquiry(request,
                                     staffing_request_inquiry_id):
     worker = Worker.objects.get(user=request.user)
-    response = handle_staffing_response(
-        worker, staffing_request_inquiry_id, is_available=False)
+    try:
+        response = handle_staffing_response(
+            worker, staffing_request_inquiry_id, is_available=False)
+    except StaffingResponseException:
+        return render(request,
+                      'communication/staffing_response_not_permitted.html',
+                      {})
     if response is None:
         raise Http404
     return render(request, 'communication/staffing_request_rejected.html',
