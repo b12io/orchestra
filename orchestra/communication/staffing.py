@@ -52,7 +52,6 @@ def handle_staffing_response(worker, staffing_request_inquiry_id,
                 request__request=staffing_request_inquiry.request,
                 is_winner=True).exists()):
         response.is_winner = True
-
         request = staffing_request_inquiry.request
 
         task_assignment = get_object_or_None(

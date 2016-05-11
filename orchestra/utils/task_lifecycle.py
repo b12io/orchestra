@@ -268,6 +268,14 @@ def reassign_assignment(worker_id, assignment_id):
     if assignment.task.is_worker_assigned(worker):
         raise TaskAssignmentError('Worker already assigned to this task.')
 
+    if assignment.status == TaskAssignment.Status.FAILED:
+        is_complete = (assignment.task.assignments
+                       .filter(status=TaskAssignment.Status.PROCESSING)
+                       .exists())
+        if is_complete:
+            assignment.status = TaskAssignment.Status.COMPLETE
+        else:
+            assignment.status = TaskAssignment.Status.PROCESSING
     assignment.worker = worker
     assignment.save()
     add_worker_to_project_team(worker, assignment.task.project)

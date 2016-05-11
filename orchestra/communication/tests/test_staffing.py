@@ -16,7 +16,6 @@ class StaffingTestCase(OrchestraTestCase):
 
     def setUp(self):
         self.worker = WorkerFactory()
-
         self.staffing_request_inquiry = StaffingRequestInquiryFactory(
             communication_preference__worker=self.worker,
             communication_preference__communication_type=(
