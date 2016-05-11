@@ -42,6 +42,7 @@ def setup_orchestra(settings_module_name):
         'beanstalk_dispatch',
         'registration',
         'widget_tweaks',
+        'ajax_select',
     )
 
     settings.STATICFILES_FINDERS += (
@@ -160,6 +161,8 @@ def setup_orchestra(settings_module_name):
 
     # Notification-specific email for message bundling and searching
     settings.ORCHESTRA_NOTIFICATIONS_FROM_EMAIL = settings.DEFAULT_FROM_EMAIL
+    # Used to test email sending in development/staging environments
+    settings.ORCHESTRA_MOCK_TO_EMAIL = ''
 
     # 3rd Party Integrations
     #########################
@@ -198,7 +201,7 @@ def setup_orchestra(settings_module_name):
 
     # Settings for orchestra bots Each bot needs a slack token to
     # authenticate the command.
-    settings.SLACK_STAFFBOT_TOKEN = ''  # StaffBot slash command token
+    settings.ORCHESTRA_SLACK_STAFFBOT_TOKEN = ''
 
     # Optionally add a path for a template to support third party scripts
     # (such as Google Analytics)

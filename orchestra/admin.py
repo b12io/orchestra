@@ -1,3 +1,5 @@
+from ajax_select import make_ajax_form
+from ajax_select.admin import AjaxSelectAdmin
 from bitfield import BitField
 from bitfield.admin import BitFieldListFilter
 from bitfield.forms import BitFieldCheckboxSelectMultiple
@@ -21,6 +23,7 @@ from orchestra.models import WorkerCertification
 from orchestra.models import Workflow
 from orchestra.models import WorkflowVersion
 from orchestra.models import CommunicationPreference
+from orchestra.models import StaffBotRequest
 from orchestra.models import StaffingRequestInquiry
 from orchestra.models import StaffingResponse
 from orchestra.communication.slack import get_slack_user_id
@@ -39,7 +42,10 @@ class CertificationAdmin(admin.ModelAdmin):
 
 
 @admin.register(Iteration)
-class IterationAdmin(admin.ModelAdmin):
+class IterationAdmin(AjaxSelectAdmin):
+    form = make_ajax_form(Iteration, {
+        'assignment': 'task_assignments'
+    })
     list_display = (
         'id', 'edit_assignment', 'start_datetime', 'end_datetime',
         'status')
@@ -55,7 +61,10 @@ class IterationAdmin(admin.ModelAdmin):
 
 
 @admin.register(PayRate)
-class PayRateAdmin(admin.ModelAdmin):
+class PayRateAdmin(AjaxSelectAdmin):
+    form = make_ajax_form(PayRate, {
+        'worker': 'workers'
+    })
     list_display = (
         'id', 'edit_worker', 'hourly_rate', 'hourly_multiplier', 'start_date',
         'end_date')
@@ -87,7 +96,10 @@ class StepAdmin(admin.ModelAdmin):
 
 
 @admin.register(Task)
-class TaskAdmin(admin.ModelAdmin):
+class TaskAdmin(AjaxSelectAdmin):
+    form = make_ajax_form(Task, {
+        'project': 'projects',
+    })
     list_display = (
         'id', 'edit_project', 'step_name', 'workflow_version',
         'start_datetime')
@@ -106,7 +118,11 @@ class TaskAdmin(admin.ModelAdmin):
 
 
 @admin.register(TaskAssignment)
-class TaskAssignmentAdmin(admin.ModelAdmin):
+class TaskAssignmentAdmin(AjaxSelectAdmin):
+    form = make_ajax_form(TaskAssignment, {
+        'worker': 'workers',
+        'task': 'tasks',
+    })
     list_display = (
         'id', 'edit_project', 'edit_task', 'assignment_counter', 'edit_worker',
         'workflow_version', 'start_datetime')
@@ -130,7 +146,11 @@ class TaskAssignmentAdmin(admin.ModelAdmin):
 
 
 @admin.register(TimeEntry)
-class TimeEntryAdmin(admin.ModelAdmin):
+class TimeEntryAdmin(AjaxSelectAdmin):
+    form = make_ajax_form(TimeEntry, {
+        'worker': 'workers',
+        'assignment': 'task_assignments',
+    })
     list_display = ('id', 'date', 'worker', 'time_worked', 'assignment')
     search_fields = (
         'id', 'worker__user__username', 'assignment__task__step__name',
@@ -139,7 +159,10 @@ class TimeEntryAdmin(admin.ModelAdmin):
 
 
 @admin.register(Worker)
-class WorkerAdmin(admin.ModelAdmin):
+class WorkerAdmin(AjaxSelectAdmin):
+    form = make_ajax_form(Worker, {
+        'user': 'users'
+    })
     list_display = ('id', 'edit_user', 'email', 'slack_username', 'phone')
     ordering = ('user__username',)
     readonly_fields = ('slack_user_id',)
@@ -163,7 +186,10 @@ class WorkerAdmin(admin.ModelAdmin):
 
 
 @admin.register(WorkerCertification)
-class WorkerCertificationAdmin(admin.ModelAdmin):
+class WorkerCertificationAdmin(AjaxSelectAdmin):
+    form = make_ajax_form(WorkerCertification, {
+        'worker': 'workers'
+    })
     list_display = ('id', 'worker', 'certification', 'role', 'task_class')
     search_fields = (
         'worker__user__username', 'certification__slug', 'certification__name',
@@ -191,7 +217,10 @@ class WorkflowVersionAdmin(admin.ModelAdmin):
 
 
 @admin.register(CommunicationPreference)
-class CommunicationPreferenceAdmin(admin.ModelAdmin):
+class CommunicationPreferenceAdmin(AjaxSelectAdmin):
+    form = make_ajax_form(CommunicationPreference, {
+        'worker': 'workers'
+    })
     formfield_overrides = {
         BitField: {'widget': BitFieldCheckboxSelectMultiple},
     }
@@ -201,11 +230,25 @@ class CommunicationPreferenceAdmin(admin.ModelAdmin):
     search_fields = ('worker__user__username', 'methods', 'communication_type')
     list_filter = ('worker__user__username', ('methods', BitFieldListFilter))
 
+@admin.register(StaffBotRequest)
+class StaffBotRequestAdmin(RelatedFieldAdmin, AjaxSelectAdmin):
+    form = make_ajax_form(StaffBotRequest, {
+        'task': 'tasks',
+    })
+    list_display = (
+        'id', 'project_description', 'task'
+    )
+    search_fields = (
+        'project_description',
+    )
 
 @admin.register(StaffingRequestInquiry)
-class StaffingRequestInquiryAdmin(RelatedFieldAdmin):
+class StaffingRequestInquiryAdmin(RelatedFieldAdmin, AjaxSelectAdmin):
+    form = make_ajax_form(StaffingRequestInquiry, {
+        'communication_preference': 'communication_preferences',
+    })
     list_display = (
-        'id', 'project_description', 'communication_preference__worker'
+        'id', 'communication_preference__worker'
     )
     search_fields = (
         'communication_preference__worker__user__username',
@@ -214,7 +257,10 @@ class StaffingRequestInquiryAdmin(RelatedFieldAdmin):
 
 
 @admin.register(StaffingResponse)
-class StaffingResponseAdmin(RelatedFieldAdmin):
+class StaffingResponseAdmin(RelatedFieldAdmin, AjaxSelectAdmin):
+    form = make_ajax_form(StaffingResponse, {
+        'request': 'staffing_request_inquiries',
+    })
     list_display = (
         'id', 'request__project_description',
         'request__communication_preference__worker__user'

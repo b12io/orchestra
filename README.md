@@ -1,13 +1,13 @@
 # Orchestra
 
-[![PyPI version](https://badge.fury.io/py/orchestra.svg)](https://badge.fury.io/py/orchestra)
+[![PyPI version](https://badge.fury.io/py/orchestra.svg?maxAge=2592000)](https://badge.fury.io/py/orchestra)
 [![Documentation Status](https://readthedocs.org/projects/orchestra/badge/?version=latest)](http://orchestra.readthedocs.org/en/stable/?badge=latest)
-[![Circle CI](https://circleci.com/gh/unlimitedlabs/orchestra.svg?style=shield)](https://circleci.com/gh/unlimitedlabs/orchestra)
-[![Coverage Status](https://coveralls.io/repos/github/unlimitedlabs/orchestra/badge.svg?branch=master)](https://coveralls.io/github/unlimitedlabs/orchestra?branch=master)
-[![PyPI](https://img.shields.io/pypi/dm/orchestra.svg)](https://pypi.python.org/pypi/orchestra)
-[![Requirements Status](https://requires.io/github/unlimitedlabs/orchestra/requirements.svg)](https://requires.io/github/unlimitedlabs/orchestra/requirements/)
-[![Apache License](https://img.shields.io/pypi/l/orchestra.svg)](https://github.com/unlimitedlabs/orchestra/blob/master/LICENSE)
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/unlimitedlabs/orchestra)
+[![Circle CI](https://circleci.com/gh/unlimitedlabs/orchestra.svg?maxAge=2592000&style=shield)](https://circleci.com/gh/unlimitedlabs/orchestra)
+[![Coverage Status](https://coveralls.io/repos/github/unlimitedlabs/orchestra/badge.svg?maxAge=2592000&branch=master)](https://coveralls.io/github/unlimitedlabs/orchestra?branch=master)
+[![PyPI](https://img.shields.io/pypi/dm/orchestra.svg?maxAge=2592000)](https://pypi.python.org/pypi/orchestra)
+[![Requirements Status](https://requires.io/github/unlimitedlabs/orchestra/requirements.svg?maxAge=2592000)](https://requires.io/github/unlimitedlabs/orchestra/requirements/)
+[![Apache License](https://img.shields.io/pypi/l/orchestra.svg?maxAge=2592000)](https://github.com/unlimitedlabs/orchestra/blob/master/LICENSE)
+[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg?maxAge=2592000)](https://gitter.im/unlimitedlabs/orchestra)
 
 Orchestra is a system for orchestrating project teams of experts and machines.
 Projects can include everything from design teams working on a client's project
