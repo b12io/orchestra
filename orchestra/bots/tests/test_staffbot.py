@@ -243,7 +243,18 @@ class StaffBotTest(OrchestraTestCase):
             'communication/new_task_available_slack.txt')
 
         self.assertEqual(message,
-                         "Hello!\n\nA new task is available for you to work on, if you'd like!  Here are the details:\n\nProject type: the workflow\nTask type: the step\nMore details: No text given stepslug\n\n<http://127.0.0.1:8000/orchestra/communication/accept_staffing_request_inquiry/{}/|Accept the Task>\n<http://127.0.0.1:8000/orchestra/communication/reject_staffing_request_inquiry/{}/|Reject the Task>\n\n".format(staffing_request_inquiry.id, staffing_request_inquiry.id))  # noqa
+                         '''Hello!
+
+A new task is available for you to work on, if you'd like!  Here are the details:
+
+Project type: the workflow
+Task type: the step
+More details: No text given stepslug
+
+<http://127.0.0.1:8000/orchestra/communication/accept_staffing_request_inquiry/{}/|Accept the Task>
+<http://127.0.0.1:8000/orchestra/communication/reject_staffing_request_inquiry/{}/|Reject the Task>
+
+'''.format(staffing_request_inquiry.id, staffing_request_inquiry.id))  # noqa
 
         task = _task_factory(
             Task.Status.PENDING_REVIEW,
@@ -255,4 +266,15 @@ class StaffBotTest(OrchestraTestCase):
             staffing_request_inquiry,
             'communication/new_task_available_email.txt')
         self.assertEqual(message,
-                         "Hello!\n\nA new task is available for you to work on, if you'd like!  Here are the details:\n\nProject type: the workflow\nTask type: the step [Review]\n\n\n<a href=\"http://127.0.0.1:8000/orchestra/communication/accept_staffing_request_inquiry/{}/\">Accept the Task</a>\n<a href=\"http://127.0.0.1:8000/orchestra/communication/reject_staffing_request_inquiry/{}/\">Reject the Task</a>\n\n".format(staffing_request_inquiry.id, staffing_request_inquiry.id))  # noqa
+                         '''Hello!
+
+A new task is available for you to work on, if you'd like!  Here are the details:
+
+Project type: the workflow
+Task type: the step [Review]
+
+
+<a href="http://127.0.0.1:8000/orchestra/communication/accept_staffing_request_inquiry/{}/">Accept the Task</a>
+<a href="http://127.0.0.1:8000/orchestra/communication/reject_staffing_request_inquiry/{}/">Reject the Task</a>
+
+'''.format(staffing_request_inquiry.id, staffing_request_inquiry.id))  # noqa
