@@ -19,8 +19,6 @@ from orchestra.models import StaffingRequestInquiry
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import Worker
-from orchestra.models import WorkerCertification
-from orchestra.utils.task_lifecycle import get_role_from_counter
 from orchestra.utils.task_lifecycle import assert_new_task_status_valid
 from orchestra.utils.task_lifecycle import role_counter_required_for_new_task
 
@@ -190,18 +188,21 @@ class StaffBot(BaseBot):
 
         # TODO(joshblum): handle urls if present in the detailed_description to
         # convert for slack
+        staffbot_request = staffing_request_inquiry.request
         detailed_description = (
-            staffing_request_inquiry.request.task.get_detailed_description()
+            staffbot_request.task.get_detailed_description()
         )
         workflow_description = (
-            staffing_request_inquiry.task.project
+            staffbot_request.task.project
             .workflow_version.workflow.description
         )
+        step_description = (
+            staffbot_request.task.step.description)
         context = Context({
             'accept_url': accept_url,
             'reject_url': reject_url,
-            'role_counter': staffing_request_inquiry.required_role_counter,
-            'step_description': staffing_request_inquiry.task.step.description,
+            'role_counter': staffbot_request.required_role_counter,
+            'step_description': step_description,
             'workflow_description': workflow_description,
             'detailed_description': detailed_description
         })

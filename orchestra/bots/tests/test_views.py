@@ -13,10 +13,6 @@ from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.load_json import load_encoded_json
 
 
-def _noop_details(task_details):
-    return ''
-
-
 class StaffBotViewTest(OrchestraTestCase):
 
     def setUp(self):

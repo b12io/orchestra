@@ -3,7 +3,7 @@ from unittest.mock import patch
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.fixtures import ProjectFactory
-from orchestra.tests.helpers.fixtures import StaffbotRequestFactory
+from orchestra.tests.helpers.fixtures import StaffBotRequestFactory
 from orchestra.tests.helpers.fixtures import StaffingRequestInquiryFactory
 from orchestra.tests.helpers.fixtures import StepFactory
 from orchestra.tests.helpers.fixtures import TaskFactory
@@ -22,6 +22,10 @@ from orchestra.models import Worker
 from orchestra.models import WorkerCertification
 from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.task_lifecycle import is_worker_certified_for_task
+
+
+def _noop_details(task_details):
+    return ''
 
 
 class StaffBotTest(OrchestraTestCase):
@@ -214,6 +218,7 @@ class StaffBotTest(OrchestraTestCase):
         self.assertEquals(response.get('text'),
                           (bot.task_assignment_does_not_exist_error
                            .format(worker.user.username, task.id)))
+
     def test_get_staffing_request_messsage(self):
         def _task_factory(status, path):
             description_no_kwargs = {'path': path}
@@ -231,16 +236,24 @@ class StaffBotTest(OrchestraTestCase):
             Task.Status.AWAITING_PROCESSING,
             'orchestra.tests.helpers.fixtures.get_detailed_description')
         staffing_request_inquiry = StaffingRequestInquiryFactory(
-            request=StaffbotRequestFactory(
+            request=StaffBotRequestFactory(
                 task=task))
-        message = self._get_staffing_request_message(
+        message = StaffBot()._get_staffing_request_message(
                 staffing_request_inquiry,
                 'communication/new_task_available_slack.txt')
 
         self.assertEqual(message,
-                         "Hello!\n\nA new task is available for you to work on, if you'd like!  Here are the details:\n\nProject type: the workflow\nTask type: the step \nMore details: No text given stepslug\n\n<http://127.0.0.1:8000/orchestra/communication/accept_staffing_request/14/|Accept the Task>\n<http://127.0.0.1:8000/orchestra/communication/reject_staffing_request/14/|Reject the Task>\n\n")  # noqa
+                         "Hello!\n\nA new task is available for you to work on, if you'd like!  Here are the details:\n\nProject type: the workflow\nTask type: the step\nMore details: No text given stepslug\n\n<http://127.0.0.1:8000/orchestra/communication/accept_staffing_request_inquiry/1/|Accept the Task>\n<http://127.0.0.1:8000/orchestra/communication/reject_staffing_request_inquiry/1/|Reject the Task>\n\n")  # noqa
 
-        """
-        self.assertEqual(mock_mail.call_args[0][1],
-                         "Hello!\n\nA new task is available for you to work on, if you'd like!  Here are the details:\n\nProject type: the workflow\nTask type: the step [Review]\n\n<a href=\"http://127.0.0.1:8000/orchestra/communication/accept_staffing_request/14/\">|Accept the Task></a>\n<a href=\"http://127.0.0.1:8000/orchestra/communication/reject_staffing_request/14/\">Reject the Task></a>\n\n")  # noqa
-        """
+
+        task = _task_factory(
+            Task.Status.PENDING_REVIEW,
+            'orchestra.bots.tests.test_staffbot._noop_details')
+        staffing_request_inquiry = StaffingRequestInquiryFactory(
+            request=StaffBotRequestFactory(
+                task=task, required_role_counter=1))
+        message = StaffBot()._get_staffing_request_message(
+                staffing_request_inquiry,
+                'communication/new_task_available_email.txt')
+        self.assertEqual(message,
+                         "Hello!\n\nA new task is available for you to work on, if you'd like!  Here are the details:\n\nProject type: the workflow\nTask type: the step [Review]\n\n\n<a href=\"http://127.0.0.1:8000/orchestra/communication/accept_staffing_request_inquiry/2/\">Accept the Task</a>\n<a href=\"http://127.0.0.1:8000/orchestra/communication/reject_staffing_request_inquiry/2/\">Reject the Task</a>\n\n")  # noqa
