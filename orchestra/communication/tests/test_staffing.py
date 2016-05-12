@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from orchestra.bots.errors import StaffingResponseException
 from orchestra.communication.staffing import handle_staffing_response
 from orchestra.communication.staffing import send_staffing_requests
@@ -137,7 +139,8 @@ class StaffingTestCase(OrchestraTestCase):
         self.assertFalse(response.is_winner)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
 
-    def test_send_staffing_requests(self):
+    @patch('orchestra.communication.staffing.message_experts_slack_group')
+    def test_send_staffing_requests(self, mock_slack):
         worker2 = WorkerFactory()
 
         StaffingRequestInquiryFactory(
@@ -153,6 +156,7 @@ class StaffingTestCase(OrchestraTestCase):
                           StaffBotRequest.Status.PROCESSING.value)
 
         send_staffing_requests(worker_batch_size=1)
+        mock_slack.assert_not_called()
         request.refresh_from_db()
         self.assertEquals(request.status,
                           StaffBotRequest.Status.PROCESSING.value)
@@ -162,6 +166,7 @@ class StaffingTestCase(OrchestraTestCase):
             2)
 
         send_staffing_requests(worker_batch_size=1)
+        mock_slack.assert_not_called()
         request.refresh_from_db()
         self.assertEquals(request.status,
                           StaffBotRequest.Status.PROCESSING.value)
@@ -172,6 +177,7 @@ class StaffingTestCase(OrchestraTestCase):
 
         # marked as complete and no new request inquiries sent.
         send_staffing_requests(worker_batch_size=1)
+        self.assertTrue(mock_slack.called)
         request.refresh_from_db()
         self.assertEquals(request.status,
                           StaffBotRequest.Status.COMPLETE.value)

@@ -54,6 +54,20 @@ class AcceptStaffRequestTest(StaffRequestBase):
     template = 'communication/staffing_request_accepted.html'
     url_reverse = 'orchestra:communication:accept_staffing_request_inquiry'
 
+    def test_reject_after_accept(self):
+        response = self.request_client.get(self.url)
+        self.assert_response(response)
+
+        reject_url = reverse(
+            'orchestra:communication:reject_staffing_request_inquiry',
+            kwargs=self.url_kwargs)
+
+        response = self.request_client.get(reject_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response,
+            'communication/staffing_response_not_permitted.html')
+
 
 class RejectStaffRequestTest(StaffRequestBase):
     __test__ = True

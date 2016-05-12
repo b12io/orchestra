@@ -10,6 +10,7 @@ from orchestra.models import StaffingRequestInquiry
 from orchestra.models import StaffingResponse
 from orchestra.models import TaskAssignment
 from orchestra.models import Worker
+from orchestra.utils.notifications import message_experts_slack_group
 from orchestra.utils.task_lifecycle import reassign_assignment
 from orchestra.utils.task_lifecycle import assign_task
 
@@ -109,5 +110,9 @@ def send_request_inquiries(staffbot, request, worker_batch_size):
 
     # check whether all inquiries have been sent out.
     if inquiries_sent < worker_batch_size:
+        message_experts_slack_group(
+            request.task.project.slack_group_id,
+            ('All staffing requests for task {} have been sent!'
+             .format(request.task)))
         request.status = StaffBotRequest.Status.COMPLETE.value
         request.save()
