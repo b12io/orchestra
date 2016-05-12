@@ -238,14 +238,14 @@ class StaffBotTest(OrchestraTestCase):
             Task.Status.AWAITING_PROCESSING,
             'orchestra.tests.helpers.fixtures.get_detailed_description')
         staffing_request_inquiry = StaffingRequestInquiryFactory(
-            communication_preference__worker__user__username='test-username',
+            communication_preference__worker__user__first_name='test-name',
             request__task=task)
         message = StaffBot()._get_staffing_request_message(
             staffing_request_inquiry,
             'communication/new_task_available_slack.txt')
 
         self.assertEqual(message,
-                         '''Hello test-username!
+                         '''Hello test-name!
 
 A new task is available for you to work on, if you'd like!  Here are the details:
 
@@ -263,14 +263,14 @@ More details: No text given stepslug
             Task.Status.PENDING_REVIEW,
             'orchestra.bots.tests.test_staffbot._noop_details')
         staffing_request_inquiry = StaffingRequestInquiryFactory(
-            communication_preference__worker__user__username='test-username2',
+            communication_preference__worker__user__first_name='test-name2',
             request=StaffBotRequestFactory(
                 task=task, required_role_counter=1))
         message = StaffBot()._get_staffing_request_message(
             staffing_request_inquiry,
             'communication/new_task_available_email.txt')
         self.assertEqual(message,
-                         '''Hello test-username2!
+                         '''Hello test-name2!
 
 A new task is available for you to work on, if you'd like!  Here are the details:
 

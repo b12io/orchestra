@@ -199,10 +199,10 @@ class StaffBot(BaseBot):
         )
         step_description = (
             staffbot_request.task.step.description)
-        username = (staffing_request_inquiry.communication_preference.
-                    worker.user.username)
+        user = (staffing_request_inquiry.communication_preference.
+                worker.user)
         context = Context({
-            'username': username,
+            'user': user,
             'accept_url': accept_url,
             'reject_url': reject_url,
             'role_counter': staffbot_request.required_role_counter,
