@@ -10,7 +10,6 @@ def send_mail(subject, message, from_email,
               recipient_list, fail_silently=False,
               auth_user=None, auth_password=None,
               connection=None, html_message=None,
-              mock_mail=False,
               communication_type=None):
     """
     Light wrapper over Django's send_mail which filters out recipients who
@@ -23,7 +22,7 @@ def send_mail(subject, message, from_email,
             email for email in recipient_list
             if _can_email(communication_type, email)
         ]
-    if mock_mail:
+    if settings.ORCHESTRA_MOCK_EMAILS:
         # Send the mail to as many people as we normally would
         recipient_list = [
             settings.ORCHESTRA_MOCK_TO_EMAIL] * len(recipient_list)

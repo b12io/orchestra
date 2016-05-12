@@ -290,6 +290,5 @@ Task type: the step [Review]
             message,
             settings.ORCHESTRA_NOTIFICATIONS_FROM_EMAIL,
             ['test@test.com'],
-            mock_mail=True,
             html_message=html_from_plaintext(message)
         )
