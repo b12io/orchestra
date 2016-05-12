@@ -2,8 +2,14 @@ from unittest.mock import patch
 
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_models
+from orchestra.tests.helpers.fixtures import ProjectFactory
+from orchestra.tests.helpers.fixtures import StaffbotRequestFactory
+from orchestra.tests.helpers.fixtures import StaffingRequestInquiryFactory
+from orchestra.tests.helpers.fixtures import StepFactory
 from orchestra.tests.helpers.fixtures import TaskFactory
 from orchestra.tests.helpers.fixtures import WorkerFactory
+from orchestra.tests.helpers.fixtures import WorkflowFactory
+from orchestra.tests.helpers.fixtures import WorkflowVersionFactory
 from orchestra.bots.errors import SlackUserUnauthorized
 from orchestra.bots.staffbot import StaffBot
 from orchestra.bots.tests.fixtures import get_mock_slack_data
@@ -208,3 +214,33 @@ class StaffBotTest(OrchestraTestCase):
         self.assertEquals(response.get('text'),
                           (bot.task_assignment_does_not_exist_error
                            .format(worker.user.username, task.id)))
+    def test_get_staffing_request_messsage(self):
+        def _task_factory(status, path):
+            description_no_kwargs = {'path': path}
+            return TaskFactory(
+                status=status,
+                step=StepFactory(
+                    slug='stepslug',
+                    description='the step',
+                    detailed_description_function=description_no_kwargs),
+                project=ProjectFactory(
+                    workflow_version=WorkflowVersionFactory(
+                        workflow=WorkflowFactory(description='the workflow'))))
+
+        task = _task_factory(
+            Task.Status.AWAITING_PROCESSING,
+            'orchestra.tests.helpers.fixtures.get_detailed_description')
+        staffing_request_inquiry = StaffingRequestInquiryFactory(
+            request=StaffbotRequestFactory(
+                task=task))
+        message = self._get_staffing_request_message(
+                staffing_request_inquiry,
+                'communication/new_task_available_slack.txt')
+
+        self.assertEqual(message,
+                         "Hello!\n\nA new task is available for you to work on, if you'd like!  Here are the details:\n\nProject type: the workflow\nTask type: the step \nMore details: No text given stepslug\n\n<http://127.0.0.1:8000/orchestra/communication/accept_staffing_request/14/|Accept the Task>\n<http://127.0.0.1:8000/orchestra/communication/reject_staffing_request/14/|Reject the Task>\n\n")  # noqa
+
+        """
+        self.assertEqual(mock_mail.call_args[0][1],
+                         "Hello!\n\nA new task is available for you to work on, if you'd like!  Here are the details:\n\nProject type: the workflow\nTask type: the step [Review]\n\n<a href=\"http://127.0.0.1:8000/orchestra/communication/accept_staffing_request/14/\">|Accept the Task></a>\n<a href=\"http://127.0.0.1:8000/orchestra/communication/reject_staffing_request/14/\">Reject the Task></a>\n\n")  # noqa
+        """

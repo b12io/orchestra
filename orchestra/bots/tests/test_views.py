@@ -8,11 +8,7 @@ from orchestra.bots.staffbot import StaffBot
 from orchestra.models import Task
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_models
-from orchestra.tests.helpers.fixtures import ProjectFactory
 from orchestra.tests.helpers.fixtures import TaskFactory
-from orchestra.tests.helpers.fixtures import StepFactory
-from orchestra.tests.helpers.fixtures import WorkflowFactory
-from orchestra.tests.helpers.fixtures import WorkflowVersionFactory
 from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.load_json import load_encoded_json
 
@@ -76,36 +72,15 @@ class StaffBotViewTest(OrchestraTestCase):
     @patch('orchestra.bots.staffbot.StaffBot._send_staffing_request_by_mail')
     @patch('orchestra.bots.staffbot.StaffBot._send_staffing_request_by_slack')
     def test_staff_command(self, mock_slack, mock_mail):
-        def _task_factory(status, path):
-            description_no_kwargs = {'path': path}
-            return TaskFactory(
-                status=status,
-                step=StepFactory(
-                    slug='stepslug',
-                    description='the step',
-                    detailed_description_function=description_no_kwargs),
-                project=ProjectFactory(
-                    workflow_version=WorkflowVersionFactory(
-                        workflow=WorkflowFactory(description='the workflow'))))
-
-        task = _task_factory(
-            Task.Status.AWAITING_PROCESSING,
-            'orchestra.tests.helpers.fixtures.get_detailed_description')
+        task = TaskFactory(status=Task.Status.AWAITING_PROCESSING)
         data = get_mock_slack_data(
             text='staff {}'.format(task.id),
             user_id=self.worker.slack_user_id)
         response = self.request_client.post(self.url, data)
         self.assertEqual(load_encoded_json(response.content).get('text'),
                          'Staffed task {}!'.format(task.id))
-        self.assertEqual(mock_slack.call_args[0][1],
-                         "Hello!\n\nA new task is available for you to work on, if you'd like!  Here are the details:\n\nProject type: the workflow\nTask type: the step \nMore details: No text given stepslug\n\n<http://127.0.0.1:8000/orchestra/communication/accept_staffing_request/14/|Accept the Task>\n<http://127.0.0.1:8000/orchestra/communication/reject_staffing_request/14/|Reject the Task>\n\n")  # noqa
 
-        mock_mail.reset()
-        mock_slack.reset()
-
-        task = _task_factory(
-            Task.Status.PENDING_REVIEW,
-            'orchestra.bots.tests.test_views._noop_details')
+        task = TaskFactory(status=Task.Status.PENDING_REVIEW)
         data = get_mock_slack_data(
             text='staff {}'.format(task.id),
             user_id=self.worker.slack_user_id)
@@ -113,10 +88,6 @@ class StaffBotViewTest(OrchestraTestCase):
         response = self.request_client.post(self.url, data)
         self.assertEqual(load_encoded_json(response.content).get('text'),
                          'Staffed task {}!'.format(task.id))
-        self.assertEqual(mock_mail.call_args[0][1],
-                         "Hello!\n\nA new task is available for you to work on, if you'd like!  Here are the details:\n\nProject type: the workflow\nTask type: the step [Review]\n\n<a href=\"http://127.0.0.1:8000/orchestra/communication/accept_staffing_request/14/\">|Accept the Task></a>\n<a href=\"http://127.0.0.1:8000/orchestra/communication/reject_staffing_request/14/\">Reject the Task></a>\n\n")  # noqa
-
-
 
     @patch('orchestra.bots.staffbot.StaffBot._send_staffing_request_by_mail')
     @patch('orchestra.bots.staffbot.StaffBot._send_staffing_request_by_slack')
