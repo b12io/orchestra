@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.core.mail import send_mail as _send_mail
+from markdown2 import markdown
 
 from orchestra.models import CommunicationPreference
 from orchestra.models import Worker
@@ -31,6 +32,14 @@ def send_mail(subject, message, from_email,
                           recipient_list, fail_silently=fail_silently,
                           auth_user=auth_user, auth_password=auth_password,
                           connection=connection, html_message=html_message)
+
+
+def html_from_plaintext(plaintext):
+    """
+    Convert a plaintext message to html by rendering it as markdown.  We add
+    extra newlines so that markdown inserts the appropriate <p> tags
+    """
+    return markdown(plaintext.replace('\n', '\n\n'))
 
 
 def _can_email(communication_type, email):

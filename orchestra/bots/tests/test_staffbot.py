@@ -1,5 +1,4 @@
 from django.conf import settings
-from markdown2 import markdown
 from unittest.mock import patch
 
 from orchestra.tests.helpers import OrchestraTestCase
@@ -13,6 +12,7 @@ from orchestra.bots.errors import SlackUserUnauthorized
 from orchestra.bots.staffbot import StaffBot
 from orchestra.bots.tests.fixtures import get_mock_slack_data
 from orchestra.communication.staffing import send_staffing_requests
+from orchestra.communication.mail import html_from_plaintext
 from orchestra.models import CommunicationPreference
 from orchestra.models import StaffBotRequest
 from orchestra.models import StaffingRequestInquiry
@@ -289,5 +289,5 @@ Task type: the step [Review]
             settings.ORCHESTRA_NOTIFICATIONS_FROM_EMAIL,
             ['test@test.com'],
             mock_mail=True,
-            html_message=markdown(message)
+            html_message=html_from_plaintext(message)
         )
