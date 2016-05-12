@@ -32,7 +32,7 @@ def get_slack_user_id(slack_username):
     return slack_user_id
 
 
-@run_if('ORCHESTRA_SLACK_EXPERTS_ENABLED', 'ORCHESTRA_SLACK_ACTIONS_ENABLED')
+@run_if('ORCHESTRA_SLACK_EXPERTS_ENABLED')
 def add_worker_to_project_team(worker, project):
     slack = OrchestraSlackService()
     try:
@@ -49,7 +49,7 @@ def add_worker_to_project_team(worker, project):
         pass
 
 
-@run_if('ORCHESTRA_SLACK_EXPERTS_ENABLED', 'ORCHESTRA_SLACK_ACTIONS_ENABLED')
+@run_if('ORCHESTRA_SLACK_EXPERTS_ENABLED')
 def create_project_slack_group(project):
     """
     Create slack channel for project team communication

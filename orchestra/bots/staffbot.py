@@ -215,7 +215,7 @@ class StaffBot(BaseBot):
         return message_body
 
     def _send_staffing_request_by_mail(self, email, message):
-        mock_mail = not settings.ORCHESTRA_SLACK_ACTIONS_ENABLED
+        mock_mail = settings.ORCHESTRA_MOCK_EMAILS
         html_message = html_from_plaintext(message)
         # Slack does not accept html tags, so we want to let markdown add some
         # simple things like <p>

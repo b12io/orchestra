@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.test import override_settings
 from unittest.mock import patch
 
 from orchestra.tests.helpers import OrchestraTestCase
@@ -218,6 +219,7 @@ class StaffBotTest(OrchestraTestCase):
                           (bot.task_assignment_does_not_exist_error
                            .format(worker.user.username, task.id)))
 
+    @override_settings(ORCHESTRA_MOCK_EMAILS=True)
     @patch('orchestra.bots.staffbot.send_mail')
     def test_get_staffing_request_messsage(self, mock_mail):
         def _task_factory(status, path):

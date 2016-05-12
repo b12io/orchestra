@@ -198,7 +198,6 @@ class StaffingResponseFactory(factory.django.DjangoModelFactory):
 
 
 @override_settings(ORCHESTRA_SLACK_EXPERTS_ENABLED=True)
-@override_settings(ORCHESTRA_SLACK_ACTIONS_ENABLED=True)
 def setup_models(test_case):
     """ Set up models that we'll use in multiple tests """
 
