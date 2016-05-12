@@ -4,7 +4,7 @@
  * This partial provides common variables and mixins useful for various view and
  * component styles.
  */
-.disable-select, .project-management .task-view .add-assignment, .project-management .task-view .worker-name, .project-management .vis-wrapper .freeze-pane-left, .project-management .project-actions {
+.disable-select, .project-management .task-view .add-assignment, .project-management .task-view .worker-name, .project-management .project-actions {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -124,7 +124,7 @@ a.logo {
  * This partial provides common variables and mixins useful for various view and
  * component styles.
  */
-.disable-select, .project-management .task-view .add-assignment, .project-management .task-view .worker-name, .project-management .vis-wrapper .freeze-pane-left, .project-management .project-actions {
+.disable-select, .project-management .task-view .add-assignment, .project-management .task-view .worker-name, .project-management .project-actions {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -324,7 +324,7 @@ a.logo {
  * This partial provides common variables and mixins useful for various view and
  * component styles.
  */
-.disable-select, .project-management .task-view .add-assignment, .project-management .task-view .worker-name, .project-management .vis-wrapper .freeze-pane-left, .project-management .project-actions {
+.disable-select, .project-management .task-view .add-assignment, .project-management .task-view .worker-name, .project-management .project-actions {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -505,7 +505,7 @@ a.logo {
  * This partial provides common variables and mixins useful for various view and
  * component styles.
  */
-.disable-select, .project-management .task-view .add-assignment, .project-management .task-view .worker-name, .project-management .vis-wrapper .freeze-pane-left, .project-management .project-actions {
+.disable-select, .project-management .task-view .add-assignment, .project-management .task-view .worker-name, .project-management .project-actions {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -565,8 +565,6 @@ a.logo {
   .project-management .x.label {
     color: black;
     position: absolute; }
-  .project-management .step-slug {
-    cursor: pointer; }
   .project-management svg {
     vertical-align: top;
     overflow: visible; }
@@ -617,6 +615,8 @@ a.logo {
     cursor: pointer; }
     .project-management .project-actions .project-actions-menu {
       font-size: 2em; }
+  .project-management .task-rect {
+    cursor: pointer; }
 
 .error-page {
   text-align: center;
