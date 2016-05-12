@@ -185,3 +185,27 @@ class StaffingTestCase(OrchestraTestCase):
         self.assertEquals(
             StaffingRequestInquiry.objects.filter(request=request).count(),
             4)
+
+    @patch('orchestra.communication.staffing.message_experts_slack_group')
+    def test_handle_staffing_response_all_rejected(self, mock_slack):
+        worker2 = WorkerFactory()
+
+        StaffingRequestInquiryFactory(
+            communication_preference__worker=worker2,
+            communication_preference__communication_type=(
+                CommunicationPreference.CommunicationType
+                .NEW_TASK_AVAILABLE.value),
+            request__task__step__is_human=True
+        )
+
+        response = handle_staffing_response(
+            self.worker, self.staffing_request_inquiry.id,
+            is_available=False)
+        self.assertFalse(response.is_winner)
+        mock_slack.assert_not_called()
+
+        handle_staffing_response(
+            worker2, self.staffing_request_inquiry.id,
+            is_available=False)
+
+        self.assertTrue(mock_slack.called)

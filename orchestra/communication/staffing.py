@@ -67,8 +67,24 @@ def handle_staffing_response(worker, staffing_request_inquiry_id,
         # otherwise assign task
         else:
             assign_task(worker.id, request.task.id)
+
     response.save()
+    check_responses_complete(staffing_request_inquiry.request)
     return response
+
+
+def check_responses_complete(request):
+    # check all responses have been complete
+    responses = StaffingResponse.objects.filter(request__request=request)
+    request_inquiries = StaffingRequestInquiry.objects.filter(
+        request=request)
+    if (responses.count() == request_inquiries.count() and
+        not responses.filter(is_winner=True).exists()):
+        # notify that all workers have rejected a task
+        message_experts_slack_group(
+            request.task.project.slack_group_id,
+            ('All workers have rejected inquiry for task {}'
+             .format(request.task)))
 
 
 def send_staffing_requests(worker_batch_size=WORKER_BATCH_SIZE):
