@@ -1,4 +1,4 @@
-Hello {{username}}!
+Hello {{user.first_name}}!
 
 A new task is available for you to work on, if you'd like!  Here are the details:
 

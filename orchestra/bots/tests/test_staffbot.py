@@ -1,5 +1,5 @@
 from django.conf import settings
-from markdown2 import markdown
+from django.test import override_settings
 from unittest.mock import patch
 
 from orchestra.tests.helpers import OrchestraTestCase
@@ -13,6 +13,7 @@ from orchestra.bots.errors import SlackUserUnauthorized
 from orchestra.bots.staffbot import StaffBot
 from orchestra.bots.tests.fixtures import get_mock_slack_data
 from orchestra.communication.staffing import send_staffing_requests
+from orchestra.communication.mail import html_from_plaintext
 from orchestra.models import CommunicationPreference
 from orchestra.models import StaffBotRequest
 from orchestra.models import StaffingRequestInquiry
@@ -218,6 +219,7 @@ class StaffBotTest(OrchestraTestCase):
                           (bot.task_assignment_does_not_exist_error
                            .format(worker.user.username, task.id)))
 
+    @override_settings(ORCHESTRA_MOCK_EMAILS=True)
     @patch('orchestra.bots.staffbot.send_mail')
     def test_get_staffing_request_messsage(self, mock_mail):
         def _task_factory(status, path):
@@ -236,14 +238,14 @@ class StaffBotTest(OrchestraTestCase):
             Task.Status.AWAITING_PROCESSING,
             'orchestra.tests.helpers.fixtures.get_detailed_description')
         staffing_request_inquiry = StaffingRequestInquiryFactory(
-            communication_preference__worker__user__username='test-username',
+            communication_preference__worker__user__first_name='test-name',
             request__task=task)
         message = StaffBot()._get_staffing_request_message(
             staffing_request_inquiry,
             'communication/new_task_available_slack.txt')
 
         self.assertEqual(message,
-                         '''Hello test-username!
+                         '''Hello test-name!
 
 A new task is available for you to work on, if you'd like!  Here are the details:
 
@@ -261,14 +263,14 @@ More details: No text given stepslug
             Task.Status.PENDING_REVIEW,
             'orchestra.bots.tests.test_staffbot._noop_details')
         staffing_request_inquiry = StaffingRequestInquiryFactory(
-            communication_preference__worker__user__username='test-username2',
+            communication_preference__worker__user__first_name='test-name2',
             request=StaffBotRequestFactory(
                 task=task, required_role_counter=1))
         message = StaffBot()._get_staffing_request_message(
             staffing_request_inquiry,
             'communication/new_task_available_email.txt')
         self.assertEqual(message,
-                         '''Hello test-username2!
+                         '''Hello test-name2!
 
 A new task is available for you to work on, if you'd like!  Here are the details:
 
@@ -288,6 +290,5 @@ Task type: the step [Review]
             message,
             settings.ORCHESTRA_NOTIFICATIONS_FROM_EMAIL,
             ['test@test.com'],
-            mock_mail=True,
-            html_message=markdown(message)
+            html_message=html_from_plaintext(message)
         )

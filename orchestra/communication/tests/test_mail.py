@@ -40,6 +40,7 @@ class ModelsTestCase(OrchestraTestCase):
         )
 
     @override_settings(ORCHESTRA_MOCK_TO_EMAIL='to-email@test.com')
+    @override_settings(ORCHESTRA_MOCK_EMAILS=True)
     @patch('orchestra.communication.mail._send_mail')
     def test_email_mocked(self, mock_mail):
         """
@@ -50,7 +51,6 @@ class ModelsTestCase(OrchestraTestCase):
                   message='test_message',
                   from_email='test@test.com',
                   recipient_list=self.recipient_list,
-                  mock_mail=True
                   )
         mock_mail.assert_called_once_with(
             'test_subject', 'test_message',

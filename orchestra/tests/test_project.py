@@ -32,7 +32,6 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
             project.team_messages_url, 'http://a.google.com/link')
 
     @override_settings(ORCHESTRA_SLACK_EXPERTS_ENABLED=True)
-    @override_settings(ORCHESTRA_SLACK_ACTIONS_ENABLED=True)
     def test_create_project_slack_group(self):
         groups = self.slack.data['groups']
         num_groups = len(groups)

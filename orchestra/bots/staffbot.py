@@ -3,11 +3,11 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.template import Context
 from django.template.loader import render_to_string
-from markdown2 import markdown
 
 from orchestra.bots.basebot import BaseBot
 from orchestra.communication.errors import SlackError
 from orchestra.communication.mail import send_mail
+from orchestra.communication.mail import html_from_plaintext
 from orchestra.communication.slack import format_slack_message
 from orchestra.bots.errors import SlackUserUnauthorized
 from orchestra.core.errors import TaskStatusError
@@ -199,10 +199,10 @@ class StaffBot(BaseBot):
         )
         step_description = (
             staffbot_request.task.step.description)
-        username = (staffing_request_inquiry.communication_preference.
-                    worker.user.username)
+        user = (staffing_request_inquiry.communication_preference.
+                worker.user)
         context = Context({
-            'username': username,
+            'user': user,
             'accept_url': accept_url,
             'reject_url': reject_url,
             'role_counter': staffbot_request.required_role_counter,
@@ -215,15 +215,14 @@ class StaffBot(BaseBot):
         return message_body
 
     def _send_staffing_request_by_mail(self, email, message):
-        mock_mail = not settings.ORCHESTRA_SLACK_ACTIONS_ENABLED
+        html_message = html_from_plaintext(message)
         # Slack does not accept html tags, so we want to let markdown add some
         # simple things like <p>
         send_mail('A new task is available for you',
                   message,
                   settings.ORCHESTRA_NOTIFICATIONS_FROM_EMAIL,
                   [email],
-                  mock_mail=mock_mail,
-                  html_message=markdown(message))
+                  html_message=html_message)
 
     def _send_staffing_request_by_slack(self, worker, message):
         if worker.slack_user_id is None:

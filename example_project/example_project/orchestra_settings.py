@@ -161,6 +161,9 @@ def setup_orchestra(settings_module_name):
 
     # Notification-specific email for message bundling and searching
     settings.ORCHESTRA_NOTIFICATIONS_FROM_EMAIL = settings.DEFAULT_FROM_EMAIL
+    # Feature flag for mocking emails during staffing. Should be disabled for
+    # production but enabled otherwise.
+    settings.ORCHESTRA_MOCK_EMAILS = False
     # Used to test email sending in development/staging environments
     settings.ORCHESTRA_MOCK_TO_EMAIL = ''
 
@@ -187,9 +190,6 @@ def setup_orchestra(settings_module_name):
     # Feature flags for toggling optional slack integration
     settings.ORCHESTRA_SLACK_INTERNAL_ENABLED = False
     settings.ORCHESTRA_SLACK_EXPERTS_ENABLED = False
-    # Feature flag for sending messages/creating slack groups. Can be enabled
-    # for production but disabled otherwise.
-    settings.ORCHESTRA_SLACK_ACTIONS_ENABLED = False
 
     # Settings for slack notifications. Notifications are shared internally
     # upon task status change; the experts team organizes project
