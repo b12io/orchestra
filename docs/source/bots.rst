@@ -8,6 +8,9 @@ Below, we'll walk through the various bots available in Orchestra.
 StaffBot
 *********
 
+Setup
+-----
+
 ``StaffBot`` provides a simple way to ask a group of ``Workers`` if they would
 like to work on a particular ``Task``. The goal is reduce the human load when
 finding a ``Worker`` for  a ``Task``. ``StaffBot`` allows a user to interact
@@ -124,3 +127,53 @@ dictionary and can be passed extra ``kwargs`` as shown below::
     return '''A new task is available!
               Find out more about {} at example.com/projects/{}!'''.format(
               kwargs.get('text'), task_details['project']['id'])
+Usage
+-----
+
+Automatic Task Staffing in Orchestra
+====================================
+
+``StaffBot`` allows interaction with Orchestra via Slack to assign or reassign an
+expert to a task. To use ``StaffBot``, simply type ``/staffbot`` into your slack
+window, and will see an auto complete similar to:
+
+.. image:: ../static/img/bots/slash_command_window.png
+
+
+You can send two different commands to ``StaffBot``: 1) ``staff``, and  2)
+``restaff``.
+
+Using the ``staff`` command
+==========================
+
+To use the ``staff`` command, you need to specify a ``<task-id>`` of a task
+that is unassigned. You can find the ``<task-id>`` in the project view (shown
+below) or from notification emails/Slack messages about a project.
+
+.. image:: ../static/img/bots/task_id_example.png
+
+In this example, you have just finished the ``client_interview`` task and need
+to add someone to the ``communication_delivery`` task with id ``518``, so
+you can type::
+
+  /staffbot staff 518
+
+``Staffbot`` will then reach out to eligible experts asking them if they would
+like to work on the task. Once one of them accepts, they will be added to the
+private Slack channel for the project and can begin working on the task.
+
+If a task has a review step, you can use ``StaffBot`` to assign an expert to
+the review step once the entry level work has been completed.
+
+Using the ``restaff`` command
+=============================
+
+You can also use the ``restaff`` command to offer a task to a different expert.
+This will be useful if a expert is unable to complete the task. Following the
+example above, assume that the worker ``joshblum`` accepted the task ``518``.
+To restaff this task you can type::
+
+  /staffbot restaff 518 joshblum
+
+This will offer the task again to eligible experts, and once a new expert
+accepts, ``joshblum`` will be removed and the new expert will be added.
