@@ -68,6 +68,7 @@ class AcceptStaffRequestTest(StaffRequestBase):
             response,
             'communication/staffing_response_not_permitted.html')
 
+
 class RejectStaffRequestTest(StaffRequestBase):
     __test__ = True
     template = 'communication/staffing_request_rejected.html'

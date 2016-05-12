@@ -139,7 +139,7 @@ class StaffingTestCase(OrchestraTestCase):
         self.assertFalse(response.is_winner)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
 
-    @patch('orchestra.communication.staffing.notify_channel_slack')
+    @patch('orchestra.communication.staffing.message_experts_slack_group')
     def test_send_staffing_requests(self, mock_slack):
         worker2 = WorkerFactory()
 

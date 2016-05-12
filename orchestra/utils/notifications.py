@@ -162,9 +162,9 @@ def _notify_experts_slack_status_change(task, current_worker):
                                 with_slack_link=False,
                                 with_user_mention=True)
 
+
 @run_if('ORCHESTRA_SLACK_EXPERTS_ENABLED')
-def notify_channel_slack(slack_channel, text):
+def message_experts_slack_group(slack_channel, text):
     slack = OrchestraSlackService(settings.SLACK_EXPERTS_API_KEY)
-    slack_channel = task.project.slack_group_id,
     slack_message = format_slack_message(text)
     slack.chat.post_message(slack_channel, slack_message)
