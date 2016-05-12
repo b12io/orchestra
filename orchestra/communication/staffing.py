@@ -83,7 +83,7 @@ def check_responses_complete(request):
         # notify that all workers have rejected a task
         message_experts_slack_group(
             request.task.project.slack_group_id,
-            ('All workers have rejected inquiry for task {}'
+            ('No worker has accepted to work on task {}'
              .format(request.task)))
 
 
