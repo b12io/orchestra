@@ -243,7 +243,7 @@ class StaffBotTest(OrchestraTestCase):
                 'communication/new_task_available_slack.txt')
 
         self.assertEqual(message,
-                         "Hello!\n\nA new task is available for you to work on, if you'd like!  Here are the details:\n\nProject type: the workflow\nTask type: the step\nMore details: No text given stepslug\n\n<http://127.0.0.1:8000/orchestra/communication/accept_staffing_request_inquiry/1/|Accept the Task>\n<http://127.0.0.1:8000/orchestra/communication/reject_staffing_request_inquiry/1/|Reject the Task>\n\n")  # noqa
+                         "Hello!\n\nA new task is available for you to work on, if you'd like!  Here are the details:\n\nProject type: the workflow\nTask type: the step\nMore details: No text given stepslug\n\n<http://127.0.0.1:8000/orchestra/communication/accept_staffing_request_inquiry/{}/|Accept the Task>\n<http://127.0.0.1:8000/orchestra/communication/reject_staffing_request_inquiry/{}/|Reject the Task>\n\n".format(staffing_request_inquiry.id, staffing_request_inquiry.id))  # noqa
 
 
         task = _task_factory(
@@ -256,4 +256,4 @@ class StaffBotTest(OrchestraTestCase):
                 staffing_request_inquiry,
                 'communication/new_task_available_email.txt')
         self.assertEqual(message,
-                         "Hello!\n\nA new task is available for you to work on, if you'd like!  Here are the details:\n\nProject type: the workflow\nTask type: the step [Review]\n\n\n<a href=\"http://127.0.0.1:8000/orchestra/communication/accept_staffing_request_inquiry/2/\">Accept the Task</a>\n<a href=\"http://127.0.0.1:8000/orchestra/communication/reject_staffing_request_inquiry/2/\">Reject the Task</a>\n\n")  # noqa
+                         "Hello!\n\nA new task is available for you to work on, if you'd like!  Here are the details:\n\nProject type: the workflow\nTask type: the step [Review]\n\n\n<a href=\"http://127.0.0.1:8000/orchestra/communication/accept_staffing_request_inquiry/{}/\">Accept the Task</a>\n<a href=\"http://127.0.0.1:8000/orchestra/communication/reject_staffing_request_inquiry/{}/\">Reject the Task</a>\n\n".format(staffing_request_inquiry.id, staffing_request_inquiry.id))  # noqa
