@@ -77,7 +77,6 @@ class StaffBotViewTest(OrchestraTestCase):
                          'Staffed task {}!'.format(task.id))
 
         task = TaskFactory(status=Task.Status.PENDING_REVIEW)
-
         data = get_mock_slack_data(
             text='staff {}'.format(task.id),
             user_id=self.worker.slack_user_id)

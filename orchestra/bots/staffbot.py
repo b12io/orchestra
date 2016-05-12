@@ -19,8 +19,6 @@ from orchestra.models import StaffingRequestInquiry
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import Worker
-from orchestra.models import WorkerCertification
-from orchestra.utils.task_lifecycle import get_role_from_counter
 from orchestra.utils.task_lifecycle import assert_new_task_status_valid
 from orchestra.utils.task_lifecycle import role_counter_required_for_new_task
 
@@ -178,11 +176,6 @@ class StaffBot(BaseBot):
 
     def _get_staffing_request_message(self, staffing_request_inquiry,
                                       template):
-        staffbot_request = staffing_request_inquiry.request
-        username = (
-            staffing_request_inquiry
-            .communication_preference.worker.user.username)
-
         url_kwargs = {
             'staffing_request_inquiry_id': staffing_request_inquiry.pk
         }
@@ -193,21 +186,25 @@ class StaffBot(BaseBot):
             'orchestra:communication:reject_staffing_request_inquiry',
             url_kwargs)
 
-        roles = dict(WorkerCertification.ROLE_CHOICES)
-        required_role = get_role_from_counter(
-            staffbot_request.required_role_counter)
-
         # TODO(joshblum): handle urls if present in the detailed_description to
         # convert for slack
+        staffbot_request = staffing_request_inquiry.request
         detailed_description = (
-            staffing_request_inquiry.request.task.get_detailed_description()
+            staffbot_request.task.get_detailed_description()
         )
+        workflow_description = (
+            staffbot_request.task.project
+            .workflow_version.workflow.description
+        )
+        step_description = (
+            staffbot_request.task.step.description)
         context = Context({
-            'username': username,
             'accept_url': accept_url,
             'reject_url': reject_url,
-            'required_role': roles.get(required_role),
-            'detailed_description': detailed_description,
+            'role_counter': staffbot_request.required_role_counter,
+            'step_description': step_description,
+            'workflow_description': workflow_description,
+            'detailed_description': detailed_description
         })
 
         message_body = render_to_string(template, context)
@@ -215,11 +212,12 @@ class StaffBot(BaseBot):
 
     def _send_staffing_request_by_mail(self, email, message):
         mock_mail = not settings.ORCHESTRA_SLACK_ACTIONS_ENABLED
-        send_mail('New task is available for claim',
+        send_mail('A new task is available for you',
                   message,
                   settings.ORCHESTRA_NOTIFICATIONS_FROM_EMAIL,
                   [email],
-                  mock_mail=mock_mail)
+                  mock_mail=mock_mail,
+                  html_message=message)
 
     def _send_staffing_request_by_slack(self, worker, message):
         if worker.slack_user_id is None:
