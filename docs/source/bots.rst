@@ -133,9 +133,9 @@ Usage
 Automatic Task Staffing in Orchestra
 ====================================
 
-``StaffBot`` allows interaction with Orchestra via Slack to assign or reassign an
-expert to a task. To use ``StaffBot``, simply type ``/staffbot`` into your slack
-window, and will see an auto complete similar to:
+``StaffBot`` allows interaction with Orchestra via Slack to assign or reassign
+an expert to a task. To use ``StaffBot``, simply type ``/staffbot`` into your
+slack window, and will see an autocomplete similar to:
 
 .. image:: ../static/img/bots/slash_command_window.png
 
@@ -153,27 +153,27 @@ below) or from notification emails/Slack messages about a project.
 .. image:: ../static/img/bots/task_id_example.png
 
 In this example, you have just finished the ``client_interview`` task and need
-to add someone to the ``communication_delivery`` task with id ``518``, so
+to add someone to the ``communication_delivery`` task with id ``4``, so
 you can type::
 
-  /staffbot staff 518
+  /staffbot staff 4
 
 ``Staffbot`` will then reach out to eligible experts asking them if they would
 like to work on the task. Once one of them accepts, they will be added to the
 private Slack channel for the project and can begin working on the task.
 
 If a task has a review step, you can use ``StaffBot`` to assign an expert to
-the review step once the entry level work has been completed.
+the review step once the first expert has submitted their work for review.
 
 Using the ``restaff`` command
 =============================
 
 You can also use the ``restaff`` command to offer a task to a different expert.
 This will be useful if a expert is unable to complete the task. Following the
-example above, assume that the worker ``joshblum`` accepted the task ``518``.
+example above, assume that the worker ``joshblum`` accepted the task ``4``.
 To restaff this task you can type::
 
-  /staffbot restaff 518 joshblum
+  /staffbot restaff 4 joshblum
 
 This will offer the task again to eligible experts, and once a new expert
 accepts, ``joshblum`` will be removed and the new expert will be added.
