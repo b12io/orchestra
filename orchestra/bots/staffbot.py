@@ -216,7 +216,8 @@ class StaffBot(BaseBot):
                   message,
                   settings.ORCHESTRA_NOTIFICATIONS_FROM_EMAIL,
                   [email],
-                  mock_mail=mock_mail)
+                  mock_mail=mock_mail,
+                  html_message=message)
 
     def _send_staffing_request_by_slack(self, worker, message):
         if worker.slack_user_id is None:
