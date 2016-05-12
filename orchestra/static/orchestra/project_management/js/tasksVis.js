@@ -161,7 +161,7 @@
 
         taskNames.selectAll('.step-slug').text(function(slug) {
           var task = dataService.taskFromKey(slug);
-          return task.step_slug;
+          return task.step_slug + ' ' + task.id;
         });
 
         taskNames.selectAll('.step-status').text(function(slug) {

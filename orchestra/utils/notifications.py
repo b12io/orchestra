@@ -104,11 +104,12 @@ def _task_information(task, with_slack_link=True):
                              reverse('orchestra:index'))
     task_information = ('\n\n'
                         'Project: {} | {}\n'
-                        'Task: {}\n\n'
+                        'Task: {} {}\n\n'
                         'View dashboard: {}\n').format(
                             task.project.workflow_version.slug,
                             task.project.short_description,
                             task.step.slug,
+                            task.id,
                             dashboard_link)
 
     if task.project.slack_group_id and with_slack_link:

@@ -80,10 +80,6 @@
     position: absolute;
   }
 
-  .step-slug {
-    cursor: pointer;
-  }
-
   svg {
     // Ensure SVG is correct height (otherwise, +6px inexplicably are added).
     vertical-align: top;
@@ -125,8 +121,6 @@
       position: relative;
     }
     .freeze-pane-left {
-      @extend .disable-select;
-
       position: absolute;
       top: 0;
       bottom: 0;
@@ -162,5 +156,9 @@
     .project-actions-menu {
       font-size: 2em;
     }
+  }
+
+  .task-rect {
+    cursor: pointer;
   }
 }
