@@ -79,7 +79,7 @@ def check_responses_complete(request):
     request_inquiries = StaffingRequestInquiry.objects.filter(
         request=request)
     if (responses.count() == request_inquiries.count() and
-        not responses.filter(is_winner=True).exists()):
+            not responses.filter(is_winner=True).exists()):
         # notify that all workers have rejected a task
         message_experts_slack_group(
             request.task.project.slack_group_id,
