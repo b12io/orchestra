@@ -153,8 +153,8 @@ below) or from notification emails/Slack messages about a project.
 .. image:: ../static/img/bots/task_id_example.png
 
 In this example, you have just finished the ``client_interview`` task and need
-to add someone to the ``communication_delivery`` task with id ``4``, so
-you can type::
+to add someone to the ``communication_delivery`` task with id ``4`` (shown in
+red), so you can type::
 
   /staffbot staff 4
 
