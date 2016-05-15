@@ -154,8 +154,7 @@ class StaffingResponse(StaffingResponseMixin, BaseModel):
         is_winner (bool):
             True if a Worker was selected to work on the Task
     """
-    # TODO(kkamalov): next PR rename to request_inquiry
-    request = models.ForeignKey(StaffingRequestInquiry)
+    request_inquiry = models.ForeignKey(StaffingRequestInquiry)
     response_text = models.TextField(blank=True, null=True)
     is_available = models.BooleanField()
     is_winner = models.NullBooleanField()

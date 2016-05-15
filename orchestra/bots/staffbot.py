@@ -20,6 +20,7 @@ from orchestra.models import StaffingRequestInquiry
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import Worker
+from orchestra.utils.notifications import message_experts_slack_group
 from orchestra.utils.task_lifecycle import assert_new_task_status_valid
 from orchestra.utils.task_lifecycle import role_counter_required_for_new_task
 
@@ -45,6 +46,8 @@ class StaffBot(BaseBot):
     task_assignment_does_not_exist_error = (
         'TaskAssignment associated with user {} and task {} does not exist.')
     not_authorized_error = 'You are not authorized to staff projects!'
+    staffing_success = 'Got it! I will start staffing task {}!'
+    restaffing_success = 'Got it! I will start restaffing task {}!'
 
     def __init__(self, **kwargs):
         default_config = getattr(settings, 'STAFFBOT_CONFIG', {})
@@ -95,7 +98,11 @@ class StaffBot(BaseBot):
             task=task,
             required_role_counter=required_role_counter,
             request_cause=request_cause)
-        return format_slack_message('Staffed task {}!'.format(task_id))
+        slack_message = format_slack_message(
+            self.staffing_success.format(task_id))
+
+        message_experts_slack_group(task.project.slack_group_id, slack_message)
+        return slack_message
 
     def restaff(self, task_id, username,
                 request_cause=StaffBotRequest.RequestCause.USER.value):
@@ -131,7 +138,10 @@ class StaffBot(BaseBot):
             task=task,
             required_role_counter=required_role_counter,
             request_cause=request_cause)
-        return format_slack_message('Restaffed task {}!'.format(task_id))
+        slack_message = format_slack_message(
+            self.restaffing_success.format(task_id))
+        message_experts_slack_group(task.project.slack_group_id, slack_message)
+        return slack_message
 
     def send_task_to_worker(self, worker, staffbot_request):
         """

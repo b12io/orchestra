@@ -250,7 +250,7 @@ class StaffingRequestInquiryAdmin(RelatedFieldAdmin, AjaxSelectAdmin):
         'communication_preference': 'communication_preferences',
     })
     list_display = (
-        'id', 'communication_preference__worker'
+        'id', 'communication_preference__worker', 'communication_method'
     )
     search_fields = (
         'communication_preference__worker__user__username',
@@ -261,7 +261,7 @@ class StaffingRequestInquiryAdmin(RelatedFieldAdmin, AjaxSelectAdmin):
 @admin.register(StaffingResponse)
 class StaffingResponseAdmin(RelatedFieldAdmin, AjaxSelectAdmin):
     form = make_ajax_form(StaffingResponse, {
-        'request': 'staffing_request_inquiries',
+        'request_inquiry': 'staffing_request_inquiries',
     })
     list_display = (
         'id', 'request__project_description',

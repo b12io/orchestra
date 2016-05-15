@@ -190,7 +190,7 @@ class StaffingRequestInquiryFactory(factory.django.DjangoModelFactory):
 
 class StaffingResponseFactory(factory.django.DjangoModelFactory):
 
-    request = factory.SubFactory(StaffingRequestInquiryFactory)
+    request_inquiry = factory.SubFactory(StaffingRequestInquiryFactory)
     is_available = False
 
     class Meta:

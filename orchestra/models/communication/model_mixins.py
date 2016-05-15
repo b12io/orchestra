@@ -59,7 +59,7 @@ class StaffingResponseMixin(object):
 
     def __str__(self):
         return '{} - {} - {}'.format(
-            self.request,
+            self.request_inquiry,
             self.is_available,
             self.is_winner
         )

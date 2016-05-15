@@ -25,6 +25,7 @@ class StaffBotViewTest(OrchestraTestCase):
         self.request_client = RequestClient(username=self.worker.user.username,
                                             password='defaultpassword')
         self.url = reverse('orchestra:bots:staffbot')
+        self.staffbot = StaffBot()
 
     def assert_response(self, response, default_error_text=None):
         self.assertEqual(response.status_code, 200)
@@ -74,7 +75,7 @@ class StaffBotViewTest(OrchestraTestCase):
             user_id=self.worker.slack_user_id)
         response = self.request_client.post(self.url, data)
         self.assertEqual(load_encoded_json(response.content).get('text'),
-                         'Staffed task {}!'.format(task.id))
+                         self.staffbot.staffing_success.format(task.id))
 
         task = TaskFactory(status=Task.Status.PENDING_REVIEW)
         data = get_mock_slack_data(
@@ -83,7 +84,7 @@ class StaffBotViewTest(OrchestraTestCase):
 
         response = self.request_client.post(self.url, data)
         self.assertEqual(load_encoded_json(response.content).get('text'),
-                         'Staffed task {}!'.format(task.id))
+                         self.staffbot.staffing_success.format(task.id))
 
     @patch('orchestra.bots.staffbot.StaffBot._send_staffing_request_by_mail')
     @patch('orchestra.bots.staffbot.StaffBot._send_staffing_request_by_slack')
@@ -102,4 +103,4 @@ class StaffBotViewTest(OrchestraTestCase):
 
         response = self.request_client.post(self.url, data)
         self.assertEqual(load_encoded_json(response.content).get('text'),
-                         'Restaffed task {}!'.format(task.id))
+                         self.staffbot.restaffing_success.format(task.id))
