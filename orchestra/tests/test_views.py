@@ -5,7 +5,6 @@ from unittest.mock import patch
 from unittest.mock import MagicMock
 
 from django.core.urlresolvers import reverse
-from django.test import Client as RequestClient
 from django.utils import timezone
 
 from orchestra.core.errors import TimerError
@@ -41,7 +40,6 @@ class TimeEntriesEndpointTests(EndpointTests):
     def setUp(self):
         super().setUp()
         setup_models(self)
-        self.request_client = RequestClient()
         self.worker = Worker.objects.get(user__username='test_user_6')
         self.request_client.login(username=self.worker.user.username,
                                   password='defaultpassword')
@@ -170,7 +168,6 @@ class TimerEndpointTests(EndpointTests):
         super().setUp()
         user = UserFactory(username='test_user')
         self.worker = WorkerFactory(user=user)
-        self.request_client = RequestClient()
         self.request_client.login(username=self.worker.user.username,
                                   password='defaultpassword')
         self.time = timezone.now()

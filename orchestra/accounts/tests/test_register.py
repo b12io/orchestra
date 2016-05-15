@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
-from django.test import Client as RequestClient
 
 from rest_framework import status
 
@@ -15,7 +14,6 @@ class OrchestraRegistrationViewTests(OrchestraTestCase):
 
     def setUp(self):
         super().setUp()
-        self.client = RequestClient()
         self.url = reverse('orchestra:registration_register')
 
     def get_valid_post_data(self):
@@ -49,14 +47,14 @@ class OrchestraRegistrationViewTests(OrchestraTestCase):
 
     def test_worker_created(self):
         post_data = self.get_valid_post_data()
-        resp = self.client.post(self.url, post_data)
+        resp = self.request_client.post(self.url, post_data)
 
         self.assert_valid_form(resp)
         self.assert_models(post_data)
 
     def test_multiple_workers_created(self):
         post_data = self.get_valid_post_data()
-        resp = self.client.post(self.url, post_data)
+        resp = self.request_client.post(self.url, post_data)
 
         self.assert_valid_form(resp)
         self.assert_models(post_data)
@@ -67,7 +65,7 @@ class OrchestraRegistrationViewTests(OrchestraTestCase):
         post_data['password1'] = 'new_{}'.format(post_data.get('password1'))
         post_data['password2'] = 'new_{}'.format(post_data.get('password2'))
 
-        resp = self.client.post(self.url, post_data)
+        resp = self.request_client.post(self.url, post_data)
 
         self.assert_valid_form(resp)
         self.assert_models(post_data, count=2)
@@ -75,17 +73,17 @@ class OrchestraRegistrationViewTests(OrchestraTestCase):
     def test_invalid_no_worker(self):
         post_data = self.get_valid_post_data()
         post_data['username'] = ''
-        self.client.post(self.url, post_data)
+        self.request_client.post(self.url, post_data)
         self.assert_related_obj_count(0)
 
     def test_duplicate_register(self):
         post_data = self.get_valid_post_data()
 
-        resp = self.client.post(self.url, post_data)
+        resp = self.request_client.post(self.url, post_data)
 
         self.assert_valid_form(resp)
         self.assert_models(post_data)
 
-        resp = self.client.post(self.url, post_data)
+        resp = self.request_client.post(self.url, post_data)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assert_related_obj_count(1)

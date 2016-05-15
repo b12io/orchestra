@@ -1,7 +1,6 @@
 import json
 from unittest.mock import patch
 
-from django.test import Client as RequestClient
 from django.test import override_settings
 from django.test import TestCase
 from django.test import TransactionTestCase
@@ -20,6 +19,8 @@ class OrchestraTestHelpersMixin(object):
 
     def setUp(self):  # noqa
         super().setUp()
+        # Rename the django Client to request_client
+        self.request_client = self.client
         # maxDiff prevents the test runner from suppressing the diffs on
         # assertEquals, which is nice when you have large string comparisons as
         # we do in this test to assert the expected JSON blob responses.
@@ -52,14 +53,14 @@ class OrchestraTestHelpersMixin(object):
         self.assertEquals(returned,
                           expected_json_payload)
 
-    def _submit_assignment(self, client, task_id, data=None,
+    def _submit_assignment(self, request_client, task_id, data=None,
                            seconds=1, command='submit'):
         if data is None:
             data = {'test': 'test'}
         request = json.dumps(
             {'task_id': task_id, 'task_data': data, 'command_type': command})
 
-        return client.post(
+        return request_client.post(
             '/orchestra/api/interface/submit_task_assignment/',
             request,
             content_type='application/json')
@@ -86,7 +87,6 @@ class OrchestraTestHelpersMixin(object):
 class AuthenticatedUserMixin(object):
 
     def authenticate_user(self):
-        request_client = RequestClient()
         password = 'test'
         auth_user = UserFactory(
             username='test_user',
@@ -95,9 +95,9 @@ class AuthenticatedUserMixin(object):
             last_name='last name',
             is_active=True,
             password=password)
-        self.assertTrue(request_client.login(
+        self.assertTrue(self.request_client.login(
             username=auth_user.username, password=password))
-        return request_client, auth_user
+        return auth_user
 
 
 @override_settings(ORCHESTRA_SLACK_STAFFBOT_TOKEN='test-token')
