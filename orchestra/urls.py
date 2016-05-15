@@ -1,7 +1,5 @@
-from django.conf import settings
 from django.conf.urls import include
 from django.conf.urls import url
-from django.views.generic import RedirectView
 
 from orchestra.views import index
 from orchestra.views import status
@@ -18,10 +16,4 @@ urlpatterns = [
 
     # Health check status
     url(r'^status/', status, name='status'),
-
-    # Favicon redirect for crawlers
-    url(r'^favicon.ico/$', RedirectView.as_view(
-        url=settings.STATIC_URL + 'orchestra/icons/favicon.ico',
-        permanent=True),
-        name='favicon'),
 ]

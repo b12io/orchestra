@@ -6,6 +6,7 @@ Registers all of the orchestra URLs so orchestra is usable when
 here as well.
 """
 from ajax_select import urls as ajax_select_urls
+from django.conf import settings
 from django.conf.urls import include
 from django.conf.urls import url
 from django.conf.urls import (
@@ -13,6 +14,7 @@ from django.conf.urls import (
 )
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
+from django.views.generic import RedirectView
 
 handler400 = 'orchestra.views.bad_request'  # noqa
 handler403 = 'orchestra.views.forbidden'  # noqa
@@ -49,4 +51,10 @@ urlpatterns = [
     # Beanstalk Dispatch URLs
     url(r'^beanstalk_dispatch/',
         include('beanstalk_dispatch.urls')),
+
+    # Favicon redirect for crawlers
+    url(r'^favicon.ico/$', RedirectView.as_view(
+        url=settings.STATIC_URL + 'orchestra/icons/favicon.ico',
+        permanent=True),
+        name='favicon'),
 ]
