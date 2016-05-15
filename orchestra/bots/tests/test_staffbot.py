@@ -105,8 +105,9 @@ class StaffBotTest(OrchestraTestCase):
         self.assertTrue(bot.default_error_text in response.get('text', ''))
 
     @patch('orchestra.bots.staffbot.send_mail')
+    @patch('orchestra.bots.staffbot.message_experts_slack_group')
     @patch('orchestra.bots.staffbot.StaffBot._send_staffing_request_by_slack')
-    def test_staff_command(self, mock_slack, mock_mail):
+    def test_staff_command(self, mock_slack, mock_experts_slack, mock_mail):
         """
         Test that the staffing logic is properly executed for the
         staff command.
@@ -139,6 +140,7 @@ class StaffBotTest(OrchestraTestCase):
         self._test_staffing_requests(worker, task, 'staff {}'.format(task.id),
                                      can_slack=True, can_mail=True)
         self.assertTrue(mock_mail.called)
+        self.assertTrue(mock_experts_slack.called)
         self.assertTrue(mock_slack.called)
 
     def test_staff_command_errors(self):
@@ -168,8 +170,9 @@ class StaffBotTest(OrchestraTestCase):
                                   'Status incompatible with new assignment'))
 
     @patch('orchestra.bots.staffbot.send_mail')
+    @patch('orchestra.bots.staffbot.message_experts_slack_group')
     @patch('orchestra.bots.staffbot.StaffBot._send_staffing_request_by_slack')
-    def test_restaff_command(self, mock_slack, mock_mail):
+    def test_restaff_command(self, mock_slack, mock_experts_slack, mock_mail):
         """
         Test that the restaffing logic is properly executed for the
         restaff command.
@@ -185,6 +188,9 @@ class StaffBotTest(OrchestraTestCase):
         worker = self.workers[3]
         self._test_staffing_requests(worker, task, command,
                                      can_slack=False, can_mail=True)
+        self.assertTrue(mock_mail.called)
+        self.assertTrue(mock_experts_slack.called)
+        self.assertTrue(mock_slack.called)
 
     def test_restaff_command_errors(self):
         """
