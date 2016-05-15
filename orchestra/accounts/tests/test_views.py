@@ -11,7 +11,7 @@ class AccountSettingsTest(OrchestraAuthenticatedTestCase):
 
     def setUp(self):
         super().setUp()
-        self.request_client, self.user = self.authenticate_user()
+        self.user = self.authenticate_user()
         self.url = reverse('orchestra:account_settings')
         self.worker = WorkerFactory(user=self.user)
 
@@ -64,7 +64,7 @@ class CommunicationPreferenceSettingsTest(OrchestraAuthenticatedTestCase):
         super().setUp()
         setup_models(self)
         self.url = reverse('orchestra:communication_preference_settings')
-        self.request_client, self.user = self.authenticate_user()
+        self.user = self.authenticate_user()
 
         worker = self.workers[0]
         worker.user = self.user
