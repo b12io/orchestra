@@ -261,7 +261,7 @@ class StaffingRequestInquiryAdmin(RelatedFieldAdmin, AjaxSelectAdmin):
 @admin.register(StaffingResponse)
 class StaffingResponseAdmin(RelatedFieldAdmin, AjaxSelectAdmin):
     form = make_ajax_form(StaffingResponse, {
-        'request': 'staffing_request_inquiries',
+        'request_inquiry': 'staffing_request_inquiries',
     })
     list_display = (
         'id', 'request__project_description',

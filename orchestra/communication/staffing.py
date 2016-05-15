@@ -34,7 +34,7 @@ def handle_staffing_response(worker, staffing_request_inquiry_id,
         return None
 
     response = (StaffingResponse.objects
-                .filter(request=staffing_request_inquiry))
+                .filter(request_inquiry=staffing_request_inquiry))
     if response.exists():
         response = response.first()
         if not is_available and response.is_winner:
@@ -45,12 +45,12 @@ def handle_staffing_response(worker, staffing_request_inquiry_id,
 
     else:
         response = StaffingResponse.objects.create(
-            request=staffing_request_inquiry,
+            request_inquiry=staffing_request_inquiry,
             is_available=is_available)
 
     if (is_available and
             not StaffingResponse.objects.filter(
-                request__request=staffing_request_inquiry.request,
+                request_inquiry__request=staffing_request_inquiry.request,
                 is_winner=True).exists()):
         response.is_winner = True
         request = staffing_request_inquiry.request
@@ -75,7 +75,8 @@ def handle_staffing_response(worker, staffing_request_inquiry_id,
 
 def check_responses_complete(request):
     # check all responses have been complete
-    responses = StaffingResponse.objects.filter(request__request=request)
+    responses = StaffingResponse.objects.filter(
+        request_inquiry__request=request)
     request_inquiries = StaffingRequestInquiry.objects.filter(
         request=request)
     if (responses.count() == request_inquiries.count() and
