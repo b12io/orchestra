@@ -250,7 +250,7 @@ class StaffingRequestInquiryAdmin(RelatedFieldAdmin, AjaxSelectAdmin):
         'communication_preference': 'communication_preferences',
     })
     list_display = (
-        'id', 'communication_preference__worker'
+        'id', 'communication_preference__worker', 'communication_method'
     )
     search_fields = (
         'communication_preference__worker__user__username',
