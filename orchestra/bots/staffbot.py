@@ -98,11 +98,10 @@ class StaffBot(BaseBot):
             task=task,
             required_role_counter=required_role_counter,
             request_cause=request_cause)
-        slack_message = format_slack_message(
-            self.staffing_success.format(task_id))
 
+        slack_message = self.staffing_success.format(task_id)
         message_experts_slack_group(task.project.slack_group_id, slack_message)
-        return slack_message
+        return format_slack_message(slack_message)
 
     def restaff(self, task_id, username,
                 request_cause=StaffBotRequest.RequestCause.USER.value):
@@ -138,10 +137,10 @@ class StaffBot(BaseBot):
             task=task,
             required_role_counter=required_role_counter,
             request_cause=request_cause)
-        slack_message = format_slack_message(
-            self.restaffing_success.format(task_id))
+        slack_message = self.restaffing_success.format(task_id)
+
         message_experts_slack_group(task.project.slack_group_id, slack_message)
-        return slack_message
+        return format_slack_message(slack_message)
 
     def send_task_to_worker(self, worker, staffbot_request):
         """
