@@ -33,7 +33,7 @@ def handle_staffing_response(worker, staffing_request_inquiry_id,
         is_available (boolean):
             Boolean that tells whether worker accepted an inquiry or not
     Returns:
-        response (orchestra.models.StaffingResponse
+        response (orchestra.models.StaffingResponse):
             StaffingResponse object that has been created for the worker
     """
 
