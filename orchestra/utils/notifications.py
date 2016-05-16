@@ -6,7 +6,6 @@ from django.core.urlresolvers import reverse
 from orchestra.models import Task
 from orchestra.models import CommunicationPreference
 from orchestra.communication.slack import OrchestraSlackService
-from orchestra.communication.slack import format_slack_message
 from orchestra.communication.mail import send_mail
 from orchestra.utils.decorators import run_if
 from orchestra.utils.task_properties import assignment_history
@@ -165,7 +164,6 @@ def _notify_experts_slack_status_change(task, current_worker):
 
 
 @run_if('ORCHESTRA_SLACK_EXPERTS_ENABLED')
-def message_experts_slack_group(slack_channel, text):
+def message_experts_slack_group(slack_channel, slack_message):
     slack = OrchestraSlackService(settings.SLACK_EXPERTS_API_KEY)
-    slack_message = format_slack_message(text)
     slack.chat.post_message(slack_channel, slack_message)
