@@ -24,6 +24,19 @@ WORKER_BATCH_SIZE = 5
 @transaction.atomic
 def handle_staffing_response(worker, staffing_request_inquiry_id,
                              is_available=False):
+    """
+    Args:
+        worker (orchestra.models.Worker):
+            Worker instance that responsed to a staffing request inquiry
+        staffing_request_inquiry_id (int):
+            Id of a staffing_request_inquiry that is associated with a response
+        is_available (boolean):
+            Boolean that tells whether worker accepted an inquiry or not
+    Returns:
+        response (orchestra.models.StaffingResponse):
+            StaffingResponse object that has been created for the worker
+    """
+
     # TODO(kkamalov): add proper docstring
     staffing_request_inquiry = get_object_or_None(
         StaffingRequestInquiry,
