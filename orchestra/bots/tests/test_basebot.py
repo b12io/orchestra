@@ -45,7 +45,7 @@ class BaseBotTest(OrchestraTestCase):
         )
 
         def test_command(test_param):
-            return text
+            return test_param
         bot.test_command = test_command
 
         # Assign the testing command
@@ -55,7 +55,7 @@ class BaseBotTest(OrchestraTestCase):
         text = 'test_command 5'
         mock_slack_data = get_mock_slack_data(text=text)
         result = bot.dispatch(mock_slack_data)
-        self.assertEqual(text, result)
+        self.assertEqual('5', result)
 
         # Test a valid command with missing param
         text = 'test_command'
