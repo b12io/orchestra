@@ -1,4 +1,5 @@
 from annoying.functions import get_object_or_None
+from django.db.models import Q
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.template import Context
@@ -35,8 +36,9 @@ VALID_RESPONSE_TYPES = {'ephemeral', 'in_channel'}
 class StaffBot(BaseBot):
 
     commands = (
-        (r'staff (?P<task_id>[0-9]+)', 'staff'),
-        (r'restaff (?P<task_id>[0-9]+) (?P<username>[\w.@+-]+)', 'restaff'),
+        (r'staff\s+(?P<task_id>[0-9]+)', 'staff'),
+        (r'restaff\s+(?P<task_id>[0-9]+)\s+(?P<username>[\w.@+-]+)',
+         'restaff'),
     )
     task_does_not_exist_error = 'Task {} does not exist'
     task_assignment_error = 'Task {} got an error: "{}"'
@@ -78,6 +80,7 @@ class StaffBot(BaseBot):
         """
         This function handles staffing a request for the given task_id.
         """
+        command = 'staff {}'.format(task_id)
         try:
             task = Task.objects.get(id=task_id)
             required_role_counter = role_counter_required_for_new_task(task)
@@ -92,7 +95,13 @@ class StaffBot(BaseBot):
 
         if error_msg is not None:
             logger.exception(error_msg)
-            return format_slack_message(error_msg)
+            return format_slack_message(
+                command,
+                attachments=[{
+                    'color': 'danger',
+                    'title': 'Error',
+                    'text': error_msg
+                }])
 
         StaffBotRequest.objects.create(
             task=task,
@@ -101,7 +110,13 @@ class StaffBot(BaseBot):
 
         slack_message = self.staffing_success.format(task_id)
         message_experts_slack_group(task.project.slack_group_id, slack_message)
-        return format_slack_message(slack_message)
+        return format_slack_message(
+            command,
+            attachments=[{
+                'color': 'good',
+                'title': 'Success',
+                'text': slack_message
+            }])
 
     def restaff(self, task_id, username,
                 request_cause=StaffBotRequest.RequestCause.USER.value):
@@ -110,17 +125,29 @@ class StaffBot(BaseBot):
         The current user for the given username is removed, and a new user
         is found.
         """
-        # TODO(kkamalov): maybe username could also be slack_username
+        command = 'restaff {} {}'.format(task_id, username)
         try:
-            worker = Worker.objects.get(user__username=username)
+            error_msg = None
+
+            worker = Worker.objects.filter(
+                Q(user__username=username) | Q(slack_username=username))
+
+            if worker.exists():
+                worker = worker.first()
+            else:
+                error_msg = self.worker_does_not_exist.format(username)
+                return format_slack_message(
+                    command,
+                    attachments=[{
+                        'color': 'danger',
+                        'title': 'Error',
+                        'text': error_msg
+                    }])
             task = Task.objects.get(id=task_id)
             task_assignment = TaskAssignment.objects.get(worker=worker,
                                                          task=task)
             required_role_counter = task_assignment.assignment_counter
 
-            error_msg = None
-        except Worker.DoesNotExist:
-            error_msg = self.worker_does_not_exist.format(username)
         except Task.DoesNotExist:
             error_msg = self.task_does_not_exist_error.format(task_id)
         except TaskAssignment.DoesNotExist:
@@ -131,7 +158,13 @@ class StaffBot(BaseBot):
 
         if error_msg is not None:
             logger.exception(error_msg)
-            return format_slack_message(error_msg)
+            return format_slack_message(
+                command,
+                attachments=[{
+                    'color': 'danger',
+                    'title': 'Error',
+                    'text': error_msg
+                }])
 
         StaffBotRequest.objects.create(
             task=task,
@@ -140,7 +173,13 @@ class StaffBot(BaseBot):
         slack_message = self.restaffing_success.format(task_id)
 
         message_experts_slack_group(task.project.slack_group_id, slack_message)
-        return format_slack_message(slack_message)
+        return format_slack_message(
+            command,
+            attachments=[{
+                'color': 'good',
+                'title': 'Success',
+                'text': slack_message
+            }])
 
     def send_task_to_worker(self, worker, staffbot_request):
         """

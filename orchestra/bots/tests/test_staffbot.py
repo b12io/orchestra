@@ -154,7 +154,7 @@ class StaffBotTest(OrchestraTestCase):
             user_id=self.worker.slack_user_id)
 
         response = bot.dispatch(data)
-        self.assertEqual(response.get('text'),
+        self.assertEqual(response['attachments'][0]['text'],
                          bot.task_does_not_exist_error.format('999999999999'))
 
         data['text'] = 'staff'
@@ -164,7 +164,7 @@ class StaffBotTest(OrchestraTestCase):
         task = TaskFactory(status=Task.Status.COMPLETE)
         data['text'] = 'staff {}'.format(task.id)
         response = bot.dispatch(data)
-        self.assertEquals(response.get('text'),
+        self.assertEquals(response['attachments'][0]['text'],
                           bot.task_assignment_error
                           .format(task.id,
                                   'Status incompatible with new assignment'))
@@ -198,18 +198,30 @@ class StaffBotTest(OrchestraTestCase):
         staff command.
         """
         bot = StaffBot()
+        command = 'restaff 999999999999 unknown'
         data = get_mock_slack_data(
-            text='restaff 999999999999 unknown',
+            text=command,
             user_id=self.worker.slack_user_id)
 
         response = bot.dispatch(data)
         self.assertEqual(response.get('text'),
+                         command)
+
+        self.assertEqual(response['attachments'][0]['text'],
                          bot.worker_does_not_exist.format('unknown'))
 
-        worker = WorkerFactory(user__username='slackusername')
+        worker = WorkerFactory(user__username='username')
+        data['text'] = 'restaff 999999999999 username'
+        response = bot.dispatch(data)
+        self.assertEqual(response['attachments'][0]['text'],
+                         bot.task_does_not_exist_error.format('999999999999'))
+
+        # making sure it works with slack username as well.
+        worker.slack_username = 'slackusername'
+        worker.save()
         data['text'] = 'restaff 999999999999 slackusername'
         response = bot.dispatch(data)
-        self.assertEqual(response.get('text'),
+        self.assertEqual(response['attachments'][0]['text'],
                          bot.task_does_not_exist_error.format('999999999999'))
 
         data['text'] = 'restaff'
@@ -221,7 +233,7 @@ class StaffBotTest(OrchestraTestCase):
 
         data['text'] = command
         response = bot.dispatch(data)
-        self.assertEquals(response.get('text'),
+        self.assertEquals(response['attachments'][0]['text'],
                           (bot.task_assignment_does_not_exist_error
                            .format(worker.user.username, task.id)))
 
