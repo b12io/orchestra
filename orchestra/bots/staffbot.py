@@ -1,4 +1,5 @@
 from annoying.functions import get_object_or_None
+from django.db.models import Q
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.template import Context
@@ -127,12 +128,13 @@ class StaffBot(BaseBot):
         command = 'restaff {} {}'.format(task_id, username)
         try:
             error_msg = None
-            worker = get_object_or_None(Worker,
-                                        user__username=username)
-            if worker is None:
-                worker = get_object_or_None(Worker,
-                                            slack_username=username)
-            if worker is None:
+
+            worker = Worker.objects.filter(
+                Q(user__username=username) | Q(slack_username=username))
+
+            if worker.exists():
+                worker = worker.first()
+            else:
                 error_msg = self.worker_does_not_exist.format(username)
                 return format_slack_message(
                     command,

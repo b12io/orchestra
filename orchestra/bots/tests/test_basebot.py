@@ -44,7 +44,7 @@ class BaseBotTest(OrchestraTestCase):
             (r'test_command (?P<test_param>[0-9]+)', 'test_command'),
         )
 
-        def test_command(test_param, command=None):
+        def test_command(test_param):
             return text
         bot.test_command = test_command
 
