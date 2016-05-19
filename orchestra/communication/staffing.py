@@ -111,13 +111,12 @@ def send_staffing_requests(worker_batch_size=WORKER_BATCH_SIZE):
 
 
 def send_request_inquiries(staffbot, request, worker_batch_size):
-
-    # get names of workers that that already received inquiry
-    worker_usernames = (StaffingRequestInquiry.objects.filter(
-        request=request).distinct().values_list(
-            'communication_preference__worker__user__username', flat=True))
+    # Get Workers that haven't already received an inquiry.
+    workers_with_inquiries = (StaffingRequestInquiry.objects.filter(
+        request=request).values_list(
+            'communication_preference__id', flat=True))
     workers = (Worker.objects
-               .exclude(user__username__in=worker_usernames)
+               .exclude(id__in=workers_with_inquiries)
                .order_by('?'))
     required_role = get_role_from_counter(request.required_role_counter)
     inquiries_sent = 0
