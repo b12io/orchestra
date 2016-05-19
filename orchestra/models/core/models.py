@@ -198,6 +198,7 @@ class Worker(WorkerMixin, models.Model):
     slack_username = models.CharField(max_length=200, blank=True, null=True)
     slack_user_id = models.CharField(max_length=200, blank=True, null=True)
     phone = PhoneNumberField(null=True)
+    staffing_priority = models.IntegerField(default=0)
 
     class Meta:
         app_label = 'orchestra'
