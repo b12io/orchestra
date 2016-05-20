@@ -3,6 +3,7 @@ Hello {{user.first_name}}!
 A new task is available for you to work on, if you'd like!  Here are the details:
 
 Project type: {{ workflow_description }}
+Project short description: {{ project_description }}
 Task type: {{ step_description }}{% if role_counter > 0 %} [Review]{% endif %}
 {% if detailed_description %}More details: {{ detailed_description }}{% endif %}
 {% block accept_reject %}

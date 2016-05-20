@@ -248,7 +248,8 @@ class StaffBotTest(OrchestraTestCase):
                     slug='stepslug',
                     description='the step',
                     detailed_description_function=description_no_kwargs),
-                project__workflow_version__workflow__description='the workflow'
+                project__workflow_version__workflow__description='the workflow',
+                project__short_description='the coolest project'
             )
 
         # Test slack without review and with a detailed_description_function
@@ -268,6 +269,7 @@ class StaffBotTest(OrchestraTestCase):
 A new task is available for you to work on, if you'd like!  Here are the details:
 
 Project type: the workflow
+Project short description: the coolest project
 Task type: the step
 More details: No text given stepslug
 
@@ -293,6 +295,7 @@ More details: No text given stepslug
 A new task is available for you to work on, if you'd like!  Here are the details:
 
 Project type: the workflow
+Project short description: the coolest project
 Task type: the step [Review]
 
 
