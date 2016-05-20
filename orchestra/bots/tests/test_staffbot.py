@@ -270,7 +270,7 @@ class StaffBotTest(OrchestraTestCase):
 A new task is available for you to work on, if you'd like!  Here are the details:
 
 Project type: the workflow
-Project short description: the coolest project
+Project description: the coolest project
 Task type: the step
 More details: No text given stepslug
 
@@ -296,7 +296,7 @@ More details: No text given stepslug
 A new task is available for you to work on, if you'd like!  Here are the details:
 
 Project type: the workflow
-Project short description: the coolest project
+Project description: the coolest project
 Task type: the step [Review]
 
 
