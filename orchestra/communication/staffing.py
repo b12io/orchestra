@@ -111,14 +111,15 @@ def send_staffing_requests(worker_batch_size=WORKER_BATCH_SIZE):
 
 
 def send_request_inquiries(staffbot, request, worker_batch_size):
-
-    # get names of workers that that already received inquiry
-    worker_usernames = (StaffingRequestInquiry.objects.filter(
+    # Get Workers that haven't already received an inquiry.
+    workers_with_inquiries = (StaffingRequestInquiry.objects.filter(
         request=request).distinct().values_list(
-            'communication_preference__worker__user__username', flat=True))
+            'communication_preference__worker__id', flat=True))
+    # Sort Workers by their staffing priority first, and then randomly
+    # within competing staffing priorities.
     workers = (Worker.objects
-               .exclude(user__username__in=worker_usernames)
-               .order_by('?'))
+               .exclude(id__in=workers_with_inquiries)
+               .order_by('-staffing_priority', '?'))
     required_role = get_role_from_counter(request.required_role_counter)
     inquiries_sent = 0
 
@@ -126,7 +127,8 @@ def send_request_inquiries(staffbot, request, worker_batch_size):
         try:
             check_worker_allowed_new_assignment(worker)
             if (is_worker_certified_for_task(worker, request.task,
-                                             required_role) and
+                                             required_role,
+                                             require_staffbot_enabled=True) and
                     not request.task.is_worker_assigned(worker)):
                 staffbot.send_task_to_worker(worker, request)
                 inquiries_sent += 1

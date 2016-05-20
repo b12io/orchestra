@@ -100,7 +100,8 @@ def worker_has_reviewer_status(worker,
 
 
 def is_worker_certified_for_task(
-        worker, task, role, task_class=WorkerCertification.TaskClass.REAL):
+        worker, task, role, task_class=WorkerCertification.TaskClass.REAL,
+        require_staffbot_enabled=False):
     """
     Check whether worker is certified for a given task, role, and task
     class.
@@ -112,6 +113,8 @@ def is_worker_certified_for_task(
             The specified task object.
         task_class (orchestra.models.WorkerCertification.TaskClass):
             The specified task class.
+        require_staffbot_enabled (bool):
+            Whether to require that the `staffbot_enabled` flag be `True`.
 
     Returns:
         certified_for_task (bool):
@@ -119,15 +122,19 @@ def is_worker_certified_for_task(
             class.
     """
     step = task.step
-    match_count = (
+
+    worker_certifications = (
         WorkerCertification
         .objects
         .filter(worker=worker,
                 role=role,
                 task_class=task_class,
-                certification__in=step.required_certifications.all())
-        .count())
-    certified_for_task = step.required_certifications.count() == match_count
+                certification__in=step.required_certifications.all()))
+    if require_staffbot_enabled:
+        worker_certifications = worker_certifications.filter(
+            staffbot_enabled=True)
+    certified_for_task = (
+        step.required_certifications.count() == worker_certifications.count())
     return certified_for_task
 
 
@@ -595,7 +602,8 @@ def check_worker_allowed_new_assignment(worker):
         orchestra.core.errors.TaskStatusError:
             New task assignment is not permitted for the given status.
     """
-    if worker_assigned_to_rejected_task(worker):
+    if (worker_assigned_to_rejected_task(worker)
+            and settings.ORCHESTRA_ENFORCE_NO_NEW_TASKS_DURING_REVIEW):
         raise TaskAssignmentError('Worker has pending reviewer feedback that '
                                   'must be addressed.')
     elif worker_assigned_to_max_tasks(worker):

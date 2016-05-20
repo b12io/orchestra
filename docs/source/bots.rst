@@ -63,6 +63,19 @@ staff <task-id>`` where ``<task-id>`` is an unassigned task id.  By default,
 ``WorkerCertification`` for the task you are staffing, in batches of ``5
 Workers`` every ``1`` minutes.
 
+``StaffBot`` looks at two fields when prioritizing ``Workers`` to
+reach out to when a task is available.  The
+``WorkerCertification.staffbot_enabled`` field (``True`` by default)
+tells ``StaffBot`` whether to reach out to a ``Worker`` because they
+have a given certification.  If you set it to ``False``, the
+``Worker`` will still be able to pick up tasks requiring certification
+(e.g., you can still manually assign tasks to that ``Worker``), but
+``StaffBot`` will not reach out to them for those tasks.  The
+``Worker.staffing_priority`` integer field (``0`` by default) helps
+``StaffBot`` prioritize amongst certified ``Workers``.  If ``Workers``
+have the same ``staffing_priority``, ``StaffBot`` will prioritize them
+randomly.
+
 Assignment Policy
 ================
 
