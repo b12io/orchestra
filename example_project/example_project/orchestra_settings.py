@@ -213,6 +213,10 @@ def setup_orchestra(settings_module_name):
     # Pass the Google Analytics key to templates with a context processor.
     install_context_processors(settings)
 
+    # Set to True if you want to block Workers from picking up new
+    # tasks while existing ones are returned by reviewers.
+    settings.ORCHESTRA_ENFORCE_NO_NEW_TASKS_DURING_REVIEW = True
+
 
 def install_context_processors(settings):
     try:

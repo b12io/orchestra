@@ -595,7 +595,8 @@ def check_worker_allowed_new_assignment(worker):
         orchestra.core.errors.TaskStatusError:
             New task assignment is not permitted for the given status.
     """
-    if worker_assigned_to_rejected_task(worker):
+    if (worker_assigned_to_rejected_task(worker)
+            and settings.ORCHESTRAENFORCE_NO_NEW_TASKS_DURING_REVIEW):
         raise TaskAssignmentError('Worker has pending reviewer feedback that '
                                   'must be addressed.')
     elif worker_assigned_to_max_tasks(worker):
