@@ -248,7 +248,8 @@ class StaffBotTest(OrchestraTestCase):
                     slug='stepslug',
                     description='the step',
                     detailed_description_function=description_no_kwargs),
-                project__workflow_version__workflow__description='the workflow',
+                project__workflow_version__workflow__description=(
+                    'the workflow'),
                 project__short_description='the coolest project'
             )
 
