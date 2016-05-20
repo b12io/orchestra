@@ -245,6 +245,10 @@ class StaffBot(BaseBot):
             staffbot_request.task.project
             .workflow_version.workflow.description
         )
+        project_description = (
+            staffbot_request.task.project
+            .short_description
+        )
         step_description = (
             staffbot_request.task.step.description)
         user = (staffing_request_inquiry.communication_preference.
@@ -256,6 +260,7 @@ class StaffBot(BaseBot):
             'role_counter': staffbot_request.required_role_counter,
             'step_description': step_description,
             'workflow_description': workflow_description,
+            'project_description': project_description,
             'detailed_description': detailed_description
         })
 
