@@ -192,6 +192,9 @@ class Worker(WorkerMixin, models.Model):
             The worker's Slack id if Slack integration is enabled.
         phone (str):
             The worker's phone number
+        staffing_priority (int):
+            The worker's priority when new tasks are being staffed by
+            tools like StaffBot.
     """
     user = models.OneToOneField(settings.AUTH_USER_MODEL)
     start_datetime = models.DateTimeField(default=timezone.now)
@@ -219,6 +222,9 @@ class WorkerCertification(WorkerCertificationMixin, models.Model):
         role (orchestra.models.WorkerCertification.Role):
             Represents whather the worker is an entry-level or review
             worker for the given certification.
+        staffbot_enabled (bool):
+            Whether the Worker's certification should trigger
+            StaffBot's inquiried for this Worker.
 
     Constraints:
         `certification`, `worker`, `task_class`, and `role` are taken
@@ -254,6 +260,7 @@ class WorkerCertification(WorkerCertificationMixin, models.Model):
     worker = models.ForeignKey(Worker, related_name='certifications')
     task_class = models.IntegerField(choices=TASK_CLASS_CHOICES)
     role = models.IntegerField(choices=ROLE_CHOICES)
+    staffbot_enabled = models.BooleanField(default=True)
 
 
 class Project(ProjectMixin, models.Model):
