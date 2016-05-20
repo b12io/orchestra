@@ -45,11 +45,22 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
     def test_is_worker_certified_for_task(self):
         task = Task.objects.filter(status=Task.Status.AWAITING_PROCESSING)[0]
 
+        for worker_certification in (
+                WorkerCertification.objects.filter(worker=self.workers[0])):
+            worker_certification.staffbot_enabled = False
+            worker_certification.save()
+
         # workers[0] has a certification
         self.assertTrue(
             is_worker_certified_for_task(self.workers[0],
                                          task,
                                          WorkerCertification.Role.ENTRY_LEVEL))
+
+        self.assertFalse(
+            is_worker_certified_for_task(self.workers[0],
+                                         task,
+                                         WorkerCertification.Role.ENTRY_LEVEL,
+                                         require_staffbot_enabled=True))
 
         # workers[2] has no certification
         self.assertFalse(

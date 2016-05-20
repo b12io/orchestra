@@ -127,7 +127,8 @@ def send_request_inquiries(staffbot, request, worker_batch_size):
         try:
             check_worker_allowed_new_assignment(worker)
             if (is_worker_certified_for_task(worker, request.task,
-                                             required_role) and
+                                             required_role,
+                                             require_staffbot_enabled=True) and
                     not request.task.is_worker_assigned(worker)):
                 staffbot.send_task_to_worker(worker, request)
                 inquiries_sent += 1
