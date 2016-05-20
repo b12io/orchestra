@@ -130,6 +130,7 @@ def send_request_inquiries(staffbot, request, worker_batch_size):
                                              required_role,
                                              require_staffbot_enabled=True) and
                     not request.task.is_worker_assigned(worker)):
+                print('wat')
                 staffbot.send_task_to_worker(worker, request)
                 inquiries_sent += 1
             if inquiries_sent >= worker_batch_size:
