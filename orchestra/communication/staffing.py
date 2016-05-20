@@ -114,7 +114,7 @@ def send_request_inquiries(staffbot, request, worker_batch_size):
     # Get Workers that haven't already received an inquiry.
     workers_with_inquiries = (StaffingRequestInquiry.objects.filter(
         request=request).values_list(
-            'communication_preference__id', flat=True))
+            'communication_preference__worker__id', flat=True))
     # Sort Workers by their staffing priority first, and then randomly
     # within competing staffing priorities.
     workers = (Worker.objects
