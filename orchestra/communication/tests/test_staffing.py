@@ -9,6 +9,7 @@ from orchestra.models import StaffingRequestInquiry
 from orchestra.models import StaffingResponse
 from orchestra.models import TaskAssignment
 from orchestra.tests.helpers import OrchestraTestCase
+from orchestra.tests.helpers.fixtures import CommunicationPreferenceFactory
 from orchestra.tests.helpers.fixtures import StaffBotRequestFactory
 from orchestra.tests.helpers.fixtures import StaffingRequestInquiryFactory
 from orchestra.tests.helpers.fixtures import WorkerFactory
@@ -141,15 +142,14 @@ class StaffingTestCase(OrchestraTestCase):
 
     @patch('orchestra.communication.staffing.message_experts_slack_group')
     def test_send_staffing_requests(self, mock_slack):
-        worker2 = WorkerFactory()
 
-        StaffingRequestInquiryFactory(
-            communication_preference__worker=worker2,
-            communication_preference__communication_type=(
+        worker2 = WorkerFactory()
+        CommunicationPreferenceFactory(
+            worker=worker2,
+            communication_type=(
                 CommunicationPreference.CommunicationType
-                .NEW_TASK_AVAILABLE.value),
-            request__task__step__is_human=True
-        )
+                .NEW_TASK_AVAILABLE.value))
+
 
         request = StaffBotRequestFactory()
         self.assertEquals(request.status,
@@ -161,6 +161,8 @@ class StaffingTestCase(OrchestraTestCase):
         self.assertEquals(request.status,
                           StaffBotRequest.Status.PROCESSING.value)
 
+        # Inquiries increase by two because we send a Slack and an
+        # email notification.
         self.assertEquals(
             StaffingRequestInquiry.objects.filter(request=request).count(),
             2)
@@ -187,16 +189,49 @@ class StaffingTestCase(OrchestraTestCase):
             4)
 
     @patch('orchestra.communication.staffing.message_experts_slack_group')
+    def test_send_staffing_request_priorities(self, mock_slack):
+
+        worker2 = WorkerFactory(staffing_priority=-1)
+        CommunicationPreferenceFactory(
+            worker=worker2,
+            communication_type=(
+                CommunicationPreference.CommunicationType
+                .NEW_TASK_AVAILABLE.value))
+
+        worker3 = WorkerFactory(staffing_priority=1)
+        CommunicationPreferenceFactory(
+            worker=worker3,
+            communication_type=(
+                CommunicationPreference.CommunicationType
+                .NEW_TASK_AVAILABLE.value))
+
+        request = StaffBotRequestFactory()
+        self.assertEquals(request.status,
+                          StaffBotRequest.Status.PROCESSING.value)
+
+        # Workers should be contacted in priority order.
+        excluded = []
+        for worker in (worker3, self.worker, worker2):
+            send_staffing_requests(worker_batch_size=1)
+            inquiries = (
+                StaffingRequestInquiry.objects
+                .filter(request=request)
+                .exclude(communication_preference__worker__in=excluded))
+            for inquiry in inquiries:
+                self.assertEquals(worker.id,
+                                  inquiry.communication_preference.worker.id)
+            excluded.append(worker)
+
+
+    @patch('orchestra.communication.staffing.message_experts_slack_group')
     def test_handle_staffing_response_all_rejected(self, mock_slack):
         worker2 = WorkerFactory()
 
-        StaffingRequestInquiryFactory(
-            communication_preference__worker=worker2,
-            communication_preference__communication_type=(
+        CommunicationPreferenceFactory(
+            worker=worker2,
+            communication_type=(
                 CommunicationPreference.CommunicationType
-                .NEW_TASK_AVAILABLE.value),
-            request__task__step__is_human=True
-        )
+                .NEW_TASK_AVAILABLE.value))
 
         response = handle_staffing_response(
             self.worker, self.staffing_request_inquiry.id,

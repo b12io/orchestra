@@ -115,9 +115,11 @@ def send_request_inquiries(staffbot, request, worker_batch_size):
     workers_with_inquiries = (StaffingRequestInquiry.objects.filter(
         request=request).values_list(
             'communication_preference__id', flat=True))
+    # Sort Workers by their staffing priority first, and then randomly
+    # within competing staffing priorities.
     workers = (Worker.objects
                .exclude(id__in=workers_with_inquiries)
-               .order_by('?'))
+               .order_by('-staffing_priority', '?'))
     required_role = get_role_from_counter(request.required_role_counter)
     inquiries_sent = 0
 
