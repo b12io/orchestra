@@ -150,7 +150,6 @@ class StaffingTestCase(OrchestraTestCase):
                 CommunicationPreference.CommunicationType
                 .NEW_TASK_AVAILABLE.value))
 
-
         request = StaffBotRequestFactory()
         self.assertEquals(request.status,
                           StaffBotRequest.Status.PROCESSING.value)
@@ -221,7 +220,6 @@ class StaffingTestCase(OrchestraTestCase):
                 self.assertEquals(worker.id,
                                   inquiry.communication_preference.worker.id)
             excluded.append(worker)
-
 
     @patch('orchestra.communication.staffing.message_experts_slack_group')
     def test_handle_staffing_response_all_rejected(self, mock_slack):
