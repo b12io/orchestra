@@ -237,10 +237,10 @@ class StaffBotRequestAdmin(RelatedFieldAdmin, AjaxSelectAdmin):
         'task': 'tasks',
     })
     list_display = (
-        'id', 'project_description', 'task'
+        'id', 'task', 'created_at', 'project_description',
     )
     search_fields = (
-        'project_description',
+        'project_description', 'task__id'
     )
 
 
@@ -250,11 +250,13 @@ class StaffingRequestInquiryAdmin(RelatedFieldAdmin, AjaxSelectAdmin):
         'communication_preference': 'communication_preferences',
     })
     list_display = (
-        'id', 'communication_preference__worker', 'communication_method'
+        'id', 'communication_preference__worker', 'communication_method',
+        'created_at',
     )
     search_fields = (
         'communication_preference__worker__user__username',
-        'communication_type', 'project_description'
+        'communication_method', 'request__project_description',
+        'request__task__id'
     )
 
 
@@ -264,12 +266,16 @@ class StaffingResponseAdmin(RelatedFieldAdmin, AjaxSelectAdmin):
         'request_inquiry': 'staffing_request_inquiries',
     })
     list_display = (
-        'id', 'request__project_description',
-        'request__communication_preference__worker__user'
+        'id', 'request_inquiry__project_description',
+        'request_inquiry__request__task__id',
+        'request_inquiry__communication_preference__worker__user',
+        'created_at',
     )
     search_fields = (
-        'request__communication_preference__worker__user__username',
-        'request__communication_type', 'request__project_description'
+        'request_inquiry__communication_preference__worker__user__username',
+        'request_inquiry__communication_method',
+        'request_inquiry__request__project_description',
+        'request_inquiry__request__task__id'
     )
 
 

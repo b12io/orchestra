@@ -114,7 +114,7 @@ def send_request_inquiries(staffbot, request, worker_batch_size):
 
     # get names of workers that that already received inquiry
     worker_usernames = (StaffingRequestInquiry.objects.filter(
-        request=request).values_list(
+        request=request).distinct().values_list(
             'communication_preference__worker__user__username', flat=True))
     workers = (Worker.objects
                .exclude(user__username__in=worker_usernames)
