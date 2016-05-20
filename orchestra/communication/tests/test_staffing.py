@@ -178,7 +178,7 @@ class StaffingTestCase(OrchestraTestCase):
         send_staffing_requests(worker_batch_size=1)
         # self.assertTrue(mock_slack.called)
         request.refresh_from_db()
-        #self.assertEquals(request.status,
+        # self.assertEquals(request.status,
         #                  StaffBotRequest.Status.COMPLETE.value)
         self.assertEquals(
             StaffingRequestInquiry.objects.filter(request=request).count(),
