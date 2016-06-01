@@ -1,6 +1,6 @@
 Django==1.9.6
 jsonfield==1.0.3
-django-jsonview==0.5.0
+django-jsonview==1.0.0
 requests==2.10.0
 factory_boy==2.7.0
 coverage==4.1
