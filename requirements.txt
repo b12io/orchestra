@@ -1,4 +1,4 @@
-Django==1.9.6
+Django==1.9.7
 jsonfield==1.0.3
 django-jsonview==1.0.0
 requests==2.10.0
@@ -19,7 +19,7 @@ beautifulsoup4==4.4.1
 pyOpenSSL==16.0.0
 pycrypto==2.6.1
 google-api-python-client==1.5.1
-slacker==0.9.15
+slacker==0.9.16
 pandas==0.18.1
 python-dateutil==2.5.3
 django-hijack==2.1.1
