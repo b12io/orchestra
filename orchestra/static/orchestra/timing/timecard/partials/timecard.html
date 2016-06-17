@@ -8,10 +8,13 @@
               <span class="edit-label">
                 Date range
               </span>
-              <date-picker date="vm.minDate" max-date="vm.maxDate.toDate()"></date-picker> – <date-picker date="vm.maxDate" min-date="vm.minDate.toDate()" max-date="vm.weekEnd.toDate()"></date-picker>
+              <date-picker date="vm.minDate" max-date="vm.maxDate.toDate()"></date-picker>–
+              <date-picker date="vm.maxDate" min-date="vm.minDate.toDate()"
+              max-date="vm.weekEnd.toDate()"></date-picker>
             </div>
             <div class="col-xs-12 col-md-2">
-              <a href="//orchestra.readthedocs.org/en/stable/features.html#time-tracking" target="_blank" class="pull-right help-icon"><i class="fa fa-question-circle"></i></a>
+              <a href="//orchestra.readthedocs.org/en/stable/features.html#time-tracking" target="_blank"
+              class="pull-right help-icon"><i class="fa fa-question-circle"></i></a>
             </div>
           </div>
         </div>
@@ -43,7 +46,7 @@
                 </div>
               </div>
               <div class="entry-row" ng-class="{'gray-stripe': $index % 2}" ng-repeat="entry in dateEntries | orderBy:'-id'">
-                <form class="container-fluid" novalidate name="entryForm" class="form-inline">
+                <form class="container-fluid form-inline" novalidate name="entryForm">
                   <div class="row">
                     <div class="col-xs-2 edit-tools disable-select">
                       <i ng-click="vm.timeEntries.deleteEntry(entry)" class="fa fa-times-circle"></i>
@@ -73,28 +76,17 @@
 
                     <!-- Editable view for description and time worked -->
                     <div class="col-xs-6" ng-if="entry.editing">
-                      <input class="form-control"
-                             type="text"
-                             ng-model="entry.editData.description"
-                             placeholder="What did you work on?">
+                      <input class="form-control" type="text" ng-model="entry.editData.description" placeholder="What did you work on?">
                     </div>
                     <div class="col-xs-4 edit-time" ng-if="entry.editing">
                       <div class="time-component">
-                        <input class="form-control"
-                               type="number"
-                               ng-model="entry.editData.timeWorked.h"
-                               min="0"
-                               max="23"
-                               enforce-integers>
+                        <input class="form-control" type="number" ng-model="entry.editData.timeWorked.h"
+                        min="0" max="23" enforce-integers>
                         <label>hours</label>
                       </div>
                       <div class="time-component">
-                        <input class="form-control"
-                               type="number"
-                               ng-model="entry.editData.timeWorked.m"
-                               min="0"
-                               max="59"
-                               enforce-integers>
+                        <input class="form-control" type="number" ng-model="entry.editData.timeWorked.m"
+                        min="0" max="59" enforce-integers>
                         <label>minutes</label>
                       </div>
                     </div>
@@ -119,7 +111,8 @@
                         <div class="edit-cancel-handle" ng-click="vm.cancelChanges(entry)">
                           Cancel
                         </div>
-                        <div class="btn btn-primary btn-sm edit-save-handle" ng-disabled="vm.entryUnchanged(entry)" ng-click="vm.saveChanges(entry)">
+                        <div class="btn btn-primary btn-sm edit-save-handle" ng-disabled="vm.entryUnchanged(entry)"
+                        ng-click="vm.saveChanges(entry)">
                           Save changes
                         </div>
                       </div>

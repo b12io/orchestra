@@ -14,6 +14,9 @@
   var jshint = require('gulp-jshint');
   var stylish = require('jshint-stylish');
 
+  // html
+  var htmlhint = require("gulp-htmlhint");
+
   // json
   var jsonlint = require("gulp-jsonlint");
 
@@ -41,6 +44,7 @@
       '!node_modules/**',
       '**/*.json',
     ],
+    htmllint: [],
   };
 
   var installedApps = [
@@ -54,6 +58,9 @@
     // jslint
     files.jslint.push(appName + '/static/**/*.js');
     files.jslint.push('!' + appName + '/static/**/*.min.js');
+
+    // htmllint
+    files.htmllint.push(appName + '/static/**/*.html');
   }
 
   gulp.task('scss', function() {
@@ -93,11 +100,19 @@
       .pipe(gulpif(argv.production, jsonlint.failOnError()));
   });
 
+  gulp.task('htmllint', function() {
+    return gulp.src(files.htmllint)
+      .pipe(cache('htmllint'))
+      .pipe(htmlhint('.htmlhintrc'))
+      .pipe(htmlhint.reporter())
+      .pipe(gulpif(argv.production, htmlhint.failReporter()));
+  });
+
   // TODO(joshblum): add css and scss linting
-  gulp.task('lint', ['jslint', 'jsonlint']);
+  gulp.task('lint', ['jslint', 'jsonlint', 'htmllint']);
 
   gulp.task('watch', function() {
-    var all_lint_files = [].concat.apply([], [files.jslint], [files.jsonlint]);
+    var all_lint_files = [].concat.apply([], [files.jslint, files.jsonlint]);
     gulp.watch(all_lint_files, ['lint']);
     gulp.watch(files.all_scss, ['scss']);
   });
