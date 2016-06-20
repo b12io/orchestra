@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from django.db import migrations, models
 import django.db.models.deletion
 import django.utils.timezone
-import orchestra.models.communication.model_mixins
+import orchestra.models.communication.mixins
 import orchestra.utils.models
 
 
@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
-            bases=(orchestra.models.communication.model_mixins.StaffBotRequestMixin, orchestra.utils.models.DeleteMixin, models.Model),
+            bases=(orchestra.models.communication.mixins.StaffBotRequestMixin, orchestra.utils.models.DeleteMixin, models.Model),
         ),
         migrations.RemoveField(  # manually-reviewed
             model_name='staffingrequestinquiry',

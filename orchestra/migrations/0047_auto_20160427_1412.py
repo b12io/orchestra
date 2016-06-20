@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from django.db import migrations, models
 import django.db.models.deletion
 import django.utils.timezone
-import orchestra.models.communication.model_mixins
+import orchestra.models.communication.mixins
 import orchestra.utils.models
 
 
@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
-            bases=(orchestra.models.communication.model_mixins.StaffingRequestInquiryMixin, orchestra.utils.models.DeleteMixin, models.Model),
+            bases=(orchestra.models.communication.mixins.StaffingRequestInquiryMixin, orchestra.utils.models.DeleteMixin, models.Model),
         ),
         migrations.CreateModel(
             name='StaffingResponse',
@@ -46,7 +46,7 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
-            bases=(orchestra.models.communication.model_mixins.StaffingResponseMixin, orchestra.utils.models.DeleteMixin, models.Model),
+            bases=(orchestra.models.communication.mixins.StaffingResponseMixin, orchestra.utils.models.DeleteMixin, models.Model),
         ),
         migrations.AddField(
             model_name='communicationpreference',

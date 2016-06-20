@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 import bitfield.models
 from django.db import migrations, models
 import django.db.models.deletion
-import orchestra.models.communication.model_mixins
+import orchestra.models.communication.mixins
 
 
 class Migration(migrations.Migration):
@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 ('communication_type', models.IntegerField(choices=[(0, 'task_status_change')])),
                 ('worker', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='orchestra.Worker')),
             ],
-            bases=(orchestra.models.communication.model_mixins.CommunicationPreferenceMixin, models.Model),
+            bases=(orchestra.models.communication.mixins.CommunicationPreferenceMixin, models.Model),
         ),
         migrations.AlterUniqueTogether(  # manually-reviewed
             name='communicationpreference',
