@@ -4,10 +4,10 @@ django-jsonview==1.0.0
 requests==2.10.0
 factory_boy==2.7.0
 coverage==4.1
-psycopg2==2.6.1
+psycopg2==2.6.2
 django-registration-redux==1.4
 djrill==2.1.0
-ipython==4.2.1
+ipython==5.0.0
 boto==2.41.0
 moto==0.4.25
 flake8==2.6.2
