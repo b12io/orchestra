@@ -19,7 +19,7 @@ from orchestra.utils.decorators import run_if
 
 
 logger = logging.getLogger(__name__)
-_image_mimetype_regex = re.compile('(image/(?:jpg|jpeg|gif|png))',
+_image_mimetype_regex = re.compile('(image/(?:jpg|jpeg|gif|png|svg))',
                                    re.IGNORECASE)
 TEAM_MESSAGES_TEMPLATE_ID = '1d0kIgq8G_Su6j5abP-tP6yJ2sp-sFDk6vZiREil0_70'
 
