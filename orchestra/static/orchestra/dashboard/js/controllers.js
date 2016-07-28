@@ -15,6 +15,8 @@
     // Surface service to interpolator
     vm.orchestraTasks = orchestraTasks;
 
+    vm.enableNewTaskButtons = window.orchestra.enable_new_task_buttons;
+
     vm.waiting = true;
     orchestraTasks.data.finally(function() {
       vm.waiting = false;
