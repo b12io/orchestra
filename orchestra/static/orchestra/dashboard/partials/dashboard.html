@@ -9,12 +9,13 @@
                     ng-if="vm.enableNewTaskButtons"
                     ng-click="vm.newTask('entry_level')"
                     ng-class="{'disabled': vm.orchestraTasks.preventNew ||
-                              vm.noTaskTimer}"
+                                           vm.noTaskTimer}"
                     class="btn btn-primary btn-new-entry-task">
               New delivery task
             </button>
             <button type="button"
-                    ng-if="vm.orchestraTasks.reviewerStatus && vm.enableNewTaskButtons"
+                    ng-if="vm.orchestraTasks.reviewerStatus &&
+                           vm.enableNewTaskButtons"
                     ng-click="vm.newTask('reviewer')"
                     ng-class="{'disabled': vm.orchestraTasks.preventNew ||
                                            vm.noTaskTimer}"
