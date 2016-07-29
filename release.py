@@ -212,7 +212,7 @@ def pypi_release(tag_str, fake=False):
 
     # Clone the git repo for release
     print('Cloning Orchestra into the new release directory.')
-    clone_cmd = ['git', 'clone', 'https://github.com/unlimitedlabs/orchestra',
+    clone_cmd = ['git', 'clone', 'https://github.com/b12io/orchestra',
                  '-b', tag_str]
     wrap_command(clone_cmd, fake)  # This is safe to always run.
     if not fake:

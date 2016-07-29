@@ -30,7 +30,7 @@ master_doc = 'index'
 
 project = u'Orchestra'
 copyright = u'2015, Unlimited Labs'
-author = u'Unlimited Labs'
+author = u'B12'
 
 version = '0.1'
 release = '0.1.2'

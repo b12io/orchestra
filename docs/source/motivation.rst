@@ -1,7 +1,7 @@
 Our Motivation
 ==============
 
-`Unlimited Labs <http://unlimitedlabs.com/>`_ has open sourced Orchestra as part of our goal to build a brighter future of work.
+`B12 <http://b12.io/>`_ has open sourced Orchestra as part of our goal to build a brighter future of work.
 
 We are a startup based in NYC that is passionate about improving how people do creative and analytical work. We have a strong team of engineers and designers who have worked extensively on systems that help people work productively online.
 
