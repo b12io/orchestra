@@ -23,12 +23,12 @@ To learn more about Orchestra with some examples and a getting
 started guide, or to reach out to the Orchestra team, take
 a look at some of these resources:
 
-* [Orchestra website](http://orchestra.unlimitedlabs.com)
-* [A blog post introducing Orchestra v0.1.0 to the world](http://blog.unlimitedlabs.com/post/130097884236/introducing-orchestra)
+* [Orchestra website](http://orchestra.b12.io)
+* [A blog post introducing Orchestra v0.1.0 to the world](http://blog.b12.io/post/130097884236/introducing-orchestra)
 * [Subscribe to the Orchestra mailing list](https://groups.google.com/forum/#!forum/orchestra-devel)
 
-# About Unlimited Labs
-[Unlimited Labs](http://unlimitedlabs.com/) has open sourced Orchestra as part
+# About B12
+[B12](http://b12.io/) has open sourced Orchestra as part
 of our goal to build a brighter future of work.
 
 We are a startup based in NYC that is passionate about improving how people do

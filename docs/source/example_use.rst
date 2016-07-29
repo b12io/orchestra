@@ -5,7 +5,7 @@ Example Use Case: The Newsroom
 Below we'll walk you through an example of how Orchestra could be used in a
 newsroom by journalists, editors, and photographers to craft a story. The code
 for this example can be found `in our github repo
-<https://github.com/unlimitedlabs/orchestra/tree/stable/journalism_workflow>`_.
+<https://github.com/b12io/orchestra/tree/stable/journalism_workflow>`_.
 
 ************
 The workflow
@@ -173,7 +173,7 @@ The code
 
 All of the code used to create the new room workflow is located `in our
 github repo
-<https://github.com/unlimitedlabs/orchestra/tree/stable/journalism_workflow>`_.
+<https://github.com/b12io/orchestra/tree/stable/journalism_workflow>`_.
 There are three main components to the code: The workflow definition, the
 interface implementations for the human steps, and the python code for the
 machine steps.
@@ -184,11 +184,11 @@ machine steps.
 The workflow definition
 =======================
 
-The workflow is defined in `journalism_workflow/workflow.json <https://github.com/unlimitedlabs/orchestra/blob/stable/journalism_workflow/workflow.json>`_,
-and its latest version (version 1) is defined in `journalism_workflow/v1/version.json <https://github.com/unlimitedlabs/orchestra/blob/stable/journalism_workflow/v1/version.json>`_.
+The workflow is defined in `journalism_workflow/workflow.json <https://github.com/b12io/orchestra/blob/stable/journalism_workflow/workflow.json>`_,
+and its latest version (version 1) is defined in `journalism_workflow/v1/version.json <https://github.com/b12io/orchestra/blob/stable/journalism_workflow/v1/version.json>`_.
 These files declaratively defines the steps listed above, in programmatic form.
 
-`workflow.json <https://github.com/unlimitedlabs/orchestra/blob/stable/journalism_workflow/workflow.json>`_
+`workflow.json <https://github.com/b12io/orchestra/blob/stable/journalism_workflow/workflow.json>`_
 defines the workflow with a name and short description::
 
   {
@@ -233,7 +233,7 @@ And provides the location of a python function to load sample data::
     }
   }
 
-``version.json`` defines the steps of the workflow. Check out `the source <https://github.com/unlimitedlabs/orchestra/blob/stable/journalism_workflow/v1/version.json>`_
+``version.json`` defines the steps of the workflow. Check out `the source <https://github.com/b12io/orchestra/blob/stable/journalism_workflow/v1/version.json>`_
 for all of the step definitions, but here we'll list two.
 
 Below is the definition of the human step that takes an editor's story idea and
@@ -300,7 +300,7 @@ The interface implementations
 In order for our workflows to be usable by experts, we need to display an
 interface for each human step. Orchestra uses `angular.js
 <https://angularjs.org/>`_ for all of our interfaces. The interfaces all live
-under `journalism_workflow/static/journalism_workflow <https://github.com/unlimitedlabs/orchestra/tree/stable/journalism_workflow/static/journalism_workflow>`_.
+under `journalism_workflow/static/journalism_workflow <https://github.com/b12io/orchestra/tree/stable/journalism_workflow/static/journalism_workflow>`_.
 
 Remember that in our :ref:`workflow definition <workflow_def>`, we specified
 user interfaces with JSON that looked like this::
@@ -350,14 +350,14 @@ but here are a couple of things to keep in mind:
   which will get the taskAssignment for the previous step called ``step_slug``
   (and optionally the data specified by ``data_key``).
 
-And of course, please refer to `the newsroom workflow step interfaces <https://github.com/unlimitedlabs/orchestra/tree/stable/journalism_workflow/static/journalism_workflow>`_
+And of course, please refer to `the newsroom workflow step interfaces <https://github.com/b12io/orchestra/tree/stable/journalism_workflow/static/journalism_workflow>`_
 as examples.
 
 The machine steps
 =================
 
-Our workflow has two machine steps, `one for creating documents and folders <https://github.com/unlimitedlabs/orchestra/blob/stable/journalism_workflow/v1/documents.py>`_,
-and `one for adjusting images <https://github.com/unlimitedlabs/orchestra/blob/stable/journalism_workflow/v1/adjust_photos.py>`_.
+Our workflow has two machine steps, `one for creating documents and folders <https://github.com/b12io/orchestra/blob/stable/journalism_workflow/v1/documents.py>`_,
+and `one for adjusting images <https://github.com/b12io/orchestra/blob/stable/journalism_workflow/v1/adjust_photos.py>`_.
 
 A machine step is just a Python function with a simple signature::
 
@@ -373,7 +373,7 @@ available to future steps (in the ``prerequisites`` argument for a machine
 step, and in the angular scope for a human interface).
 
 For example, our image adjustment step (in `journalism_workflow/v1/adjust_photos.py
-<https://github.com/unlimitedlabs/orchestra/blob/stable/journalism_workflow/v1/adjust_photos.py>`_)
+<https://github.com/b12io/orchestra/blob/stable/journalism_workflow/v1/adjust_photos.py>`_)
 gets the global project directory from ``project_data``, uses Orchestra's
 Google Apps integration to create a new subfolder for processed photos,
 downloads all the raw photos, uses `pillow <https://python-pillow.github.io/>`_

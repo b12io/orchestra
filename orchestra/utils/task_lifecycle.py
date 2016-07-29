@@ -694,7 +694,7 @@ def save_task(task_id, task_data, worker):
         raise TaskAssignmentError('Worker is not associated with task')
 
     # Use select_for_update to prevent concurrency issues with submit_task.
-    # See https://github.com/unlimitedlabs/orchestra/issues/2.
+    # See https://github.com/b12io/orchestra/issues/2.
     assignment = (TaskAssignment.objects.select_for_update()
                                 .get(task=task, worker=worker))
 
@@ -788,7 +788,7 @@ def submit_task(task_id, task_data, iteration_status, worker):
         raise TaskStatusError('Task already completed')
 
     # Use select_for_update to prevent concurrency issues with save_task.
-    # See https://github.com/unlimitedlabs/orchestra/issues/2.
+    # See https://github.com/b12io/orchestra/issues/2.
     assignments = (TaskAssignment.objects.select_for_update()
                                  .filter(worker=worker, task=task))
 

@@ -37,7 +37,7 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
                             first_name='project_management',
                             last_name='project_management',
                             password='project_management',
-                            email='project_management@unlimitedlabs.com'))
+                            email='project_management@b12.io'))
         self.worker = WorkerFactory(user=user)
         user.groups.add(self.project_admin_group)
 

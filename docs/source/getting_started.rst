@@ -27,7 +27,7 @@ development setup.
 Orchestra requires a number of Python dependencies to run. You can install them
 by simply pulling down and installing our ``requirements.txt`` file::
 
-  wget https://raw.githubusercontent.com/unlimitedlabs/orchestra/stable/requirements.txt
+  wget https://raw.githubusercontent.com/b12io/orchestra/stable/requirements.txt
   pip install -r requirements.txt
 
 
@@ -56,7 +56,7 @@ Orchestra has a number of custom settings that require configuration before
 use. First, download the default Orchestra settings file and place it next to
 the project settings file::
 
-  wget https://raw.githubusercontent.com/unlimitedlabs/orchestra/stable/example_project/example_project/orchestra_settings.py
+  wget https://raw.githubusercontent.com/b12io/orchestra/stable/example_project/example_project/orchestra_settings.py
   mv orchestra_settings.py your_project/your_project
 
 Next, edit the ``orchestra_settings.py`` file:
@@ -91,7 +91,7 @@ settings::
 You'll also need to set up Orchestra's URLs, so that Django knows where to
 route users when they view Orchestra in the browser. If you don't have any URLs
 of your own yet, you can just download our barebones example file with
-``wget https://raw.githubusercontent.com/unlimitedlabs/orchestra/stable/example_project/example_project/urls.py``.
+``wget https://raw.githubusercontent.com/b12io/orchestra/stable/example_project/example_project/urls.py``.
 
 Alternatively, just make sure to add the following code inside the
 ``urlpatterns`` variable in ``your_project/your_project/urls.py``::
@@ -164,7 +164,7 @@ enable this setting, ensure that the following setting is set
 referenced above.
 
 Now Orchestra should be ready to go! If you're confused about any of the above,
-check out our barebones `example project <https://github.com/unlimitedlabs/orchestra/tree/stable/example_project>`_.
+check out our barebones `example project <https://github.com/b12io/orchestra/tree/stable/example_project>`_.
 
 *************
 Run Orchestra
@@ -190,7 +190,7 @@ end, we've included a very simple example workflow with two steps, one
 machine and one human. The machine step takes a URL and extracts a random
 image from the page. The human step asks an expert to rate how "awesome" the
 image is on a scale from one to five. If you're interested in how we defined
-the workflow, take a look at `the code <https://raw.githubusercontent.com/unlimitedlabs/orchestra/stable/simple_workflow/v1/version.json>`_,
+the workflow, take a look at `the code <https://raw.githubusercontent.com/b12io/orchestra/stable/simple_workflow/v1/version.json>`_,
 though we walk through a more interesting example in
 :doc:`this documentation <example_use>`.
 
