@@ -217,6 +217,10 @@ def setup_orchestra(settings_module_name):
     # tasks while existing ones are returned by reviewers.
     settings.ORCHESTRA_ENFORCE_NO_NEW_TASKS_DURING_REVIEW = True
 
+    # Set to True if you want to enable buttons to pull new
+    # delivery/review tasks in the dashboard.
+    settings.ORCHESTRA_ENABLE_NEW_TASK_BUTTONS = True
+
 
 def install_context_processors(settings):
     try:
