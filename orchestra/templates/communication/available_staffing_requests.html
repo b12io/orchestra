@@ -1,18 +1,57 @@
 {% extends 'orchestra/base.html' %}
 {% load staticfiles %}
 
+
+{% block title %} Available Staffing Requests {% endblock %}
+
+<!--
+- left-align the labels and the content
+.communication-container {
+    /* text-align: center; */
+}
+
+- accept/reject should be on same line, aligned to the top
+
+- Accept / Ignore
+
+- Remove "type" from labels
+
+- Bigger text: Larry's lobster
+
+- More details -> Details
+
+- Sort oldest first
+
+- new windows
+
+
+
+
+-->
 {% block main %}
 <div class="container-fluid main-content communication-container">
-  <div class="col-lg-10 col-lg-offset-1">
-      <table>
-      {% for request in requests %}
-      <tr>
-        <div class="card">
-
-        {{ request }}
-        </div>
-      </tr>
-      {% endfor %}
+  <div class="col-lg-12">
+    <div class="card">
+      <table class="table">
+        <tr>
+          <th>Project type</th>
+          <th>Project description</th>
+          <th>Task type</th>
+          <th>More details</th>
+          <th>Actions</th>
+        </tr>
+        {% for request in requests %}
+        <tr>
+          <td>{{ request.workflow_description }}</td>
+          <td>{{ request.project_description }}</td>
+          <td>{% if request.role_counter > 0 %}[Review] {% endif %}{{ request.step_description }}</td>
+          <td>{{ request.detailed_description }}</td>
+          <td>
+            <a href="{{ request.accept_url }}" target="_blank" class="btn btn-primary btn-sm">Accept</a>
+            <a href="{{ request.reject_url }}" target="_blank" class="btn btn-primary btn-sm">Reject</a>
+          </td>
+        </tr>
+        {% endfor %}
       </table>
     </div>
   </div>
