@@ -146,8 +146,8 @@ class StaffingResponse(StaffingResponseMixin, BaseModel):
     whether the worker got the task.
 
     Attributes:
-        request (orchestra.models.StaffingRequestInquiry):
-            Request object associated with a response
+        request_inquiry (orchestra.models.StaffingRequestInquiry):
+            Request inquiry associated with a response
         response_text (str):
             Response text that a Worker provided
         is_available (bool):
@@ -155,7 +155,8 @@ class StaffingResponse(StaffingResponseMixin, BaseModel):
         is_winner (bool):
             True if a Worker was selected to work on the Task
     """
-    request_inquiry = models.ForeignKey(StaffingRequestInquiry)
+    request_inquiry = models.ForeignKey(StaffingRequestInquiry,
+                                        related_name='responses')
     response_text = models.TextField(blank=True, null=True)
     is_available = models.BooleanField()
     is_winner = models.NullBooleanField()

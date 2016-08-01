@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 from orchestra.bots.errors import StaffingResponseException
+from orchestra.communication.staffing import get_available_requests
 from orchestra.communication.staffing import handle_staffing_response
 from orchestra.communication.staffing import send_staffing_requests
 from orchestra.models import CommunicationPreference
@@ -239,3 +240,42 @@ class StaffingTestCase(OrchestraTestCase):
             is_available=False)
 
         self.assertTrue(mock_slack.called)
+
+    @patch('orchestra.communication.staffing.message_experts_slack_group')
+    def test_get_available_request(self, mock_slack):
+        # Complete all open requests so new worker doesn't receive them.
+        send_staffing_requests(worker_batch_size=2)
+
+        self.assertEquals(len(get_available_requests(self.worker)), 1)
+
+        worker2 = WorkerFactory()
+        CommunicationPreferenceFactory(
+            worker=worker2,
+            communication_type=(
+                CommunicationPreference.CommunicationType
+                .NEW_TASK_AVAILABLE.value))
+        request = StaffBotRequestFactory(task__step__is_human=True)
+
+        send_staffing_requests(worker_batch_size=2)
+        inquiry = (
+            StaffingRequestInquiry.objects
+            .filter(communication_preference__worker=worker2)
+            .filter(request=request)[0])
+
+        # `self.worker` now has two available tasks, whereas `worker2`
+        # just has access to the new task.
+        self.assertEquals(len(get_available_requests(self.worker)), 2)
+        self.assertEquals(len(get_available_requests(worker2)), 1)
+        handle_staffing_response(
+            self.worker, self.staffing_request_inquiry.id,
+            is_available=True)
+        # `self.worker` lost an available task (they accepted it),
+        # whereas `worker2` is unchanged.
+        self.assertEquals(len(get_available_requests(self.worker)), 1)
+        self.assertEquals(len(get_available_requests(worker2)), 1)
+        handle_staffing_response(
+            worker2, inquiry.id,
+            is_available=True)
+        # `worker2` took the last task.
+        self.assertEquals(len(get_available_requests(self.worker)), 0)
+        self.assertEquals(len(get_available_requests(worker2)), 0)

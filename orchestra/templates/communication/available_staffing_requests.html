@@ -1,0 +1,20 @@
+{% extends 'orchestra/base.html' %}
+{% load staticfiles %}
+
+{% block main %}
+<div class="container-fluid main-content communication-container">
+  <div class="col-lg-10 col-lg-offset-1">
+      <table>
+      {% for request in requests %}
+      <tr>
+        <div class="card">
+
+        {{ request }}
+        </div>
+      </tr>
+      {% endfor %}
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

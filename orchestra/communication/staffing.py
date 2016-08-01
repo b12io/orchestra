@@ -148,3 +148,32 @@ def send_request_inquiries(staffbot, request, worker_batch_size):
              .format(request.task)))
         request.status = StaffBotRequest.Status.COMPLETE.value
         request.save()
+
+
+def get_available_requests(worker):
+    staffbot = StaffBot()
+    worker_requests = (
+        StaffBotRequest.objects
+        .filter(inquiries__communication_preference__worker=worker)
+        .distinct())
+    won_responses = StaffingResponse.objects.filter(is_winner=True)
+    unwon_requests = (
+        StaffBotRequest.objects
+        .filter(id__in=worker_requests)
+        .exclude(inquiries__responses__in=won_responses))
+    inquiries = (
+        StaffingRequestInquiry.objects
+        .filter(request__in=unwon_requests)
+        .filter(communication_preference__worker=worker))
+    # Because we might send multiple request inquiries to the same
+    # worker for the same request (e.g., email and slack), we
+    # deduplicate the inquiries so that we will return at most one
+    # inquiry's worth of content here.
+    request_ids = set()
+    contexts = []
+    for inquiry in inquiries:
+        if inquiry.request.id in request_ids:
+            continue
+        request_ids.add(inquiry.request.id)
+        contexts.append(staffbot.get_staffing_request_metadata(inquiry))
+    return contexts
