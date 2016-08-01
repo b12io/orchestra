@@ -228,8 +228,7 @@ And provides the location of a python function to load sample data::
 
   {
     "sample_data_load_function": {
-      "module": "journalism_workflow.load_sample_data",
-      "name": "load"
+      "path": "journalism_workflow.load_sample_data.load"
     }
   }
 
