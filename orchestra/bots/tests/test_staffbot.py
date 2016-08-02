@@ -263,7 +263,6 @@ class StaffBotTest(OrchestraTestCase):
         message = StaffBot()._get_staffing_request_message(
             staffing_request_inquiry,
             'communication/new_task_available_slack.txt')
-
         self.assertEqual(message,
                          '''Hello test-name!
 
@@ -276,6 +275,7 @@ Details: No text given stepslug
 
 <http://127.0.0.1:8000/orchestra/communication/accept_staffing_request_inquiry/{}/|Accept the Task>
 <http://127.0.0.1:8000/orchestra/communication/reject_staffing_request_inquiry/{}/|Ignore the Task>
+<http://127.0.0.1:8000/orchestra/communication/available_staffing_requests/|View All Available Tasks>
 
 '''.format(staffing_request_inquiry.id, staffing_request_inquiry.id))  # noqa
 
@@ -302,6 +302,7 @@ Task: the step [Review]
 
 <a href="http://127.0.0.1:8000/orchestra/communication/accept_staffing_request_inquiry/{}/">Accept the Task</a>
 <a href="http://127.0.0.1:8000/orchestra/communication/reject_staffing_request_inquiry/{}/">Ignore the Task</a>
+<a href="http://127.0.0.1:8000/orchestra/communication/available_staffing_requests/">View All Available Tasks</a>
 
 '''.format(staffing_request_inquiry.id, staffing_request_inquiry.id))  # noqa
 
