@@ -153,19 +153,20 @@ def send_request_inquiries(staffbot, request, worker_batch_size):
 
 
 def get_available_requests(worker):
-    staffbot = StaffBot()
-    worker_requests = (
+    # We want to show a worker only requests for which there is no
+    # winner or for which they have not already replied.
+    won_responses = StaffingResponse.objects.filter(is_winner=True)
+    worker_provided_responses = StaffingResponse.objects.filter(
+        request_inquiry__communication_preference__worker=worker)
+    remaining_requests = (
         StaffBotRequest.objects
         .filter(inquiries__communication_preference__worker=worker)
+        .exclude(inquiries__responses__in=won_responses)
+        .exclude(inquiries__responses__in=worker_provided_responses)
         .distinct())
-    won_responses = StaffingResponse.objects.filter(is_winner=True)
-    unwon_requests = (
-        StaffBotRequest.objects
-        .filter(id__in=worker_requests)
-        .exclude(inquiries__responses__in=won_responses))
     inquiries = (
         StaffingRequestInquiry.objects
-        .filter(request__in=unwon_requests)
+        .filter(request__in=remaining_requests)
         .filter(communication_preference__worker=worker)
         .order_by('request__task__start_datetime'))
     # Because we might send multiple request inquiries to the same
@@ -174,6 +175,7 @@ def get_available_requests(worker):
     # inquiry's worth of content here.
     request_ids = set()
     contexts = []
+    staffbot = StaffBot()
     for inquiry in inquiries:
         if inquiry.request.id in request_ids:
             continue

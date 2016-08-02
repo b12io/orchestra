@@ -254,36 +254,54 @@ class StaffingTestCase(OrchestraTestCase):
             communication_type=(
                 CommunicationPreference.CommunicationType
                 .NEW_TASK_AVAILABLE.value))
-        request = StaffBotRequestFactory(task__step__is_human=True)
+        request1 = StaffBotRequestFactory(task__step__is_human=True)
+        request2 = StaffBotRequestFactory(task__step__is_human=True)
 
         send_staffing_requests(worker_batch_size=2)
-        inquiry = (
+        inquiry1 = (
+            StaffingRequestInquiry.objects
+            .filter(communication_preference__worker=self.worker)
+            .filter(request=request1)[0])
+        inquiry2 = (
             StaffingRequestInquiry.objects
             .filter(communication_preference__worker=worker2)
-            .filter(request=request)[0])
+            .filter(request=request2)[0])
 
-        # `self.worker` now has two available tasks, whereas `worker2`
-        # just has access to the new task.
+        # `self.worker` now has three available tasks, whereas `worker2`
+        # just has access to the two new tasks.
         available_requests = get_available_requests(self.worker)
-        self.assertEquals(len(available_requests), 2)
-        self.assertEquals(len(get_available_requests(worker2)), 1)
+        self.assertEquals(len(available_requests), 3)
+        self.assertEquals(len(get_available_requests(worker2)), 2)
+
+        # Tasks should be sorted by start_datetime in ascending order.
+
+        first_task, second_task, third_task = (
+            available_requests[0]['task'], available_requests[1]['task'],
+            available_requests[2]['task'])
+        self.assertLess(
+            first_task.start_datetime, second_task.start_datetime)
+        self.assertLess(
+            second_task.start_datetime, third_task.start_datetime)
+
+        # `self.worker` will lose an available task (they accept it),
+        # whereas `worker2` is unchanged.
         handle_staffing_response(
             self.worker, self.staffing_request_inquiry.id,
             is_available=True)
+        self.assertEquals(len(get_available_requests(self.worker)), 2)
+        self.assertEquals(len(get_available_requests(worker2)), 2)
 
-        # Tasks should be sorted by start_datetime in ascending order.
-        first_task, second_task = (
-            available_requests[0]['task'], available_requests[1]['task'])
-        self.assertLess(
-            first_task.start_datetime, second_task.start_datetime)
-
-        # `self.worker` lost an available task (they accepted it),
+        # `self.worker` will lose an available task (they ignore it),
         # whereas `worker2` is unchanged.
-        self.assertEquals(len(get_available_requests(self.worker)), 1)
-        self.assertEquals(len(get_available_requests(worker2)), 1)
         handle_staffing_response(
-            worker2, inquiry.id,
+            self.worker, inquiry1.id,
+            is_available=False)
+        self.assertEquals(len(get_available_requests(self.worker)), 1)
+        self.assertEquals(len(get_available_requests(worker2)), 2)
+
+        # `worker2` takes a task.
+        handle_staffing_response(
+            worker2, inquiry2.id,
             is_available=True)
-        # `worker2` took the last task.
         self.assertEquals(len(get_available_requests(self.worker)), 0)
-        self.assertEquals(len(get_available_requests(worker2)), 0)
+        self.assertEquals(len(get_available_requests(worker2)), 1)
