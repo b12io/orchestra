@@ -16,5 +16,27 @@
 
 
 .staffing-container {
-  height: initial;
+  font-size: 1.2em;
+  .card {
+    height: initial;
+
+    table {
+      table-layout: fixed;
+      .row-project {
+        width: 15%;
+      }
+      .row-project-description {
+        width: 20%;
+      }
+      .row-task {
+        width: 20%;
+      }
+      .row-details {
+        width: 30%;
+      }
+      .row-actions {
+        width: 15%;
+      }
+    }
+  }
 }
