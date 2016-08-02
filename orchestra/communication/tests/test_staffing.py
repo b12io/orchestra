@@ -264,11 +264,18 @@ class StaffingTestCase(OrchestraTestCase):
 
         # `self.worker` now has two available tasks, whereas `worker2`
         # just has access to the new task.
-        self.assertEquals(len(get_available_requests(self.worker)), 2)
+        available_requests = get_available_requests(self.worker)
+        self.assertEquals(len(available_requests), 2)
         self.assertEquals(len(get_available_requests(worker2)), 1)
         handle_staffing_response(
             self.worker, self.staffing_request_inquiry.id,
             is_available=True)
+
+        # Tasks should be sorted by start_datetime in ascending order.
+        first_task, second_task = (
+            available_requests[0]['task'], available_requests[1]['task'])
+        self.assertLessThan(first_task.start_datetime < second_task.start_datetime)
+
         # `self.worker` lost an available task (they accepted it),
         # whereas `worker2` is unchanged.
         self.assertEquals(len(get_available_requests(self.worker)), 1)

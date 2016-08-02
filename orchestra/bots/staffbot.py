@@ -260,7 +260,8 @@ class StaffBot(BaseBot):
             'step_description': step_description,
             'workflow_description': workflow_description,
             'project_description': project_description,
-            'detailed_description': detailed_description
+            'detailed_description': detailed_description,
+            'task': staffbot_request.task
         }
 
     def _get_staffing_request_message(self, staffing_request_inquiry,

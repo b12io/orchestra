@@ -2,5 +2,5 @@
 
 {% block accept_reject %}
 <a href="{{accept_url}}">Accept the Task</a>
-<a href="{{reject_url}}">Reject the Task</a>
+<a href="{{reject_url}}">Ignore the Task</a>
 {% endblock accept_reject %}

@@ -269,13 +269,13 @@ class StaffBotTest(OrchestraTestCase):
 
 A new task is available for you to work on, if you'd like!  Here are the details:
 
-Project type: the workflow
+Project: the workflow
 Project description: the coolest project
-Task type: the step
-More details: No text given stepslug
+Task: the step
+Details: No text given stepslug
 
 <http://127.0.0.1:8000/orchestra/communication/accept_staffing_request_inquiry/{}/|Accept the Task>
-<http://127.0.0.1:8000/orchestra/communication/reject_staffing_request_inquiry/{}/|Reject the Task>
+<http://127.0.0.1:8000/orchestra/communication/reject_staffing_request_inquiry/{}/|Ignore the Task>
 
 '''.format(staffing_request_inquiry.id, staffing_request_inquiry.id))  # noqa
 
@@ -295,13 +295,13 @@ More details: No text given stepslug
 
 A new task is available for you to work on, if you'd like!  Here are the details:
 
-Project type: the workflow
+Project: the workflow
 Project description: the coolest project
-Task type: the step [Review]
+Task: the step [Review]
 
 
 <a href="http://127.0.0.1:8000/orchestra/communication/accept_staffing_request_inquiry/{}/">Accept the Task</a>
-<a href="http://127.0.0.1:8000/orchestra/communication/reject_staffing_request_inquiry/{}/">Reject the Task</a>
+<a href="http://127.0.0.1:8000/orchestra/communication/reject_staffing_request_inquiry/{}/">Ignore the Task</a>
 
 '''.format(staffing_request_inquiry.id, staffing_request_inquiry.id))  # noqa
 
