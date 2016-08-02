@@ -1,5 +1,6 @@
 from annoying.functions import get_object_or_None
 from django.db import transaction
+from markdown2 import markdown
 
 from orchestra.bots.errors import StaffingResponseException
 from orchestra.core.errors import TaskStatusError
@@ -17,6 +18,7 @@ from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.task_lifecycle import check_worker_allowed_new_assignment
 from orchestra.utils.task_lifecycle import get_role_from_counter
 from orchestra.utils.task_lifecycle import is_worker_certified_for_task
+
 
 WORKER_BATCH_SIZE = 5
 
@@ -176,5 +178,8 @@ def get_available_requests(worker):
         if inquiry.request.id in request_ids:
             continue
         request_ids.add(inquiry.request.id)
-        contexts.append(staffbot.get_staffing_request_metadata(inquiry))
+        metadata = staffbot.get_staffing_request_metadata(inquiry)
+        metadata['detailed_description'] = markdown(
+            metadata['detailed_description'])
+        contexts.append(metadata)
     return contexts
