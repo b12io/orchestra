@@ -23,8 +23,8 @@
           <td>{% if request.role_counter > 0 %}[Review] {% endif %}{{ request.step_description }}</td>
           <td>{{ request.detailed_description }}</td>
           <td>
-            <a href="{{ request.accept_url }}" class="btn btn-primary btn-sm">Accept</a>
-            <a href="{{ request.reject_url }}" class="btn btn-primary btn-sm">Ignore</a>
+            <a href="{{ request.accept_url }}" class="btn btn-primary btn-sm" role="button">Accept</a>
+            <a href="{{ request.reject_url }}" class="btn btn-primary btn-sm" role="button">Ignore</a>
           </td>
         </tr>
         {% endfor %}
