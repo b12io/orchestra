@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
 from orchestra.bots.errors import StaffingResponseException
@@ -36,8 +37,13 @@ def reject_staffing_request_inquiry(request,
                       {})
     if response is None:
         raise Http404
-    return render(request, 'communication/staffing_request_rejected.html',
-                  {})
+
+    next_path = request.GET.get('next')
+    if next_path:
+        return HttpResponseRedirect(next_path)
+    else:
+        return render(request, 'communication/staffing_request_rejected.html',
+                      {})
 
 
 @login_required

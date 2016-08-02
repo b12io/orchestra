@@ -1,4 +1,5 @@
 from annoying.functions import get_object_or_None
+from django.core.urlresolvers import reverse
 from django.db import transaction
 from markdown2 import markdown
 
@@ -183,5 +184,7 @@ def get_available_requests(worker):
         metadata = staffbot.get_staffing_request_metadata(inquiry)
         metadata['detailed_description'] = markdown(
             metadata['detailed_description'])
+        metadata['reject_url'] += '?next={}'.format(
+            reverse('orchestra:communication:available_staffing_requests'))
         contexts.append(metadata)
     return contexts
