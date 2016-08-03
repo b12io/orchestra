@@ -1,5 +1,7 @@
 from annoying.functions import get_object_or_None
+from django.core.urlresolvers import reverse
 from django.db import transaction
+from markdown2 import markdown
 
 from orchestra.bots.errors import StaffingResponseException
 from orchestra.core.errors import TaskStatusError
@@ -17,6 +19,7 @@ from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.task_lifecycle import check_worker_allowed_new_assignment
 from orchestra.utils.task_lifecycle import get_role_from_counter
 from orchestra.utils.task_lifecycle import is_worker_certified_for_task
+
 
 WORKER_BATCH_SIZE = 5
 
@@ -148,3 +151,40 @@ def send_request_inquiries(staffbot, request, worker_batch_size):
              .format(request.task)))
         request.status = StaffBotRequest.Status.COMPLETE.value
         request.save()
+
+
+def get_available_requests(worker):
+    # We want to show a worker only requests for which there is no
+    # winner or for which they have not already replied.
+    won_responses = StaffingResponse.objects.filter(is_winner=True)
+    worker_provided_responses = StaffingResponse.objects.filter(
+        request_inquiry__communication_preference__worker=worker)
+    remaining_requests = (
+        StaffBotRequest.objects
+        .filter(inquiries__communication_preference__worker=worker)
+        .exclude(inquiries__responses__in=won_responses)
+        .exclude(inquiries__responses__in=worker_provided_responses)
+        .distinct())
+    inquiries = (
+        StaffingRequestInquiry.objects
+        .filter(request__in=remaining_requests)
+        .filter(communication_preference__worker=worker)
+        .order_by('request__task__start_datetime'))
+    # Because we might send multiple request inquiries to the same
+    # worker for the same request (e.g., email and slack), we
+    # deduplicate the inquiries so that we will return at most one
+    # inquiry's worth of content here.
+    request_ids = set()
+    contexts = []
+    staffbot = StaffBot()
+    for inquiry in inquiries:
+        if inquiry.request.id in request_ids:
+            continue
+        request_ids.add(inquiry.request.id)
+        metadata = staffbot.get_staffing_request_metadata(inquiry)
+        metadata['detailed_description'] = markdown(
+            metadata['detailed_description'])
+        metadata['reject_url'] += '?next={}'.format(
+            reverse('orchestra:communication:available_staffing_requests'))
+        contexts.append(metadata)
+    return contexts

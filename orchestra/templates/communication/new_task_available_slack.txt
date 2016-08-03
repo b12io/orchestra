@@ -2,5 +2,6 @@
 
 {% block accept_reject %}
 <{{accept_url}}|Accept the Task>
-<{{reject_url}}|Reject the Task>
+<{{reject_url}}|Ignore the Task>
+<{{available_requests_url}}|View All Available Tasks>
 {% endblock accept_reject %}

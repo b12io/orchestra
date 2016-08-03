@@ -13,3 +13,40 @@
     padding-top: 15px;
   }
 }
+
+
+.staffing-container {
+  font-size: 1.2em;
+  .card {
+    height: initial;
+
+    h2 {
+      padding: 125px 0px 125px 0px;
+      text-align: center;
+    }
+
+    table {
+      table-layout: fixed;
+
+      td:first-child, th:first-child {
+        padding-left: 20px;
+      }
+
+      .row-project {
+        width: 15%;
+      }
+      .row-project-description {
+        width: 20%;
+      }
+      .row-task {
+        width: 25%;
+      }
+      .row-details {
+        width: 25%;
+      }
+      .row-actions {
+        width: 15%;
+      }
+    }
+  }
+}

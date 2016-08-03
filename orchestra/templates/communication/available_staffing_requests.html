@@ -1,0 +1,42 @@
+{% extends 'orchestra/base.html' %}
+{% load staticfiles %}
+
+{% block title %} Available Tasks {% endblock %}
+
+{% block header %}
+<meta http-equiv="refresh" content="600" />
+{% endblock %}
+
+{% block main %}
+<div class="container-fluid main-content staffing-container">
+  <div class="col-lg-12">
+    <div class="card">
+      {% if requests|length > 0 %}
+      <table class="table">
+        <tr>
+          <th class="row-project">Project</th>
+          <th class="row-project-description">Project description</th>
+          <th class="row-task">Task</th>
+          <th class="row-details">Details</th>
+          <th class="row-actions">Actions</th>
+        </tr>
+        {% for request in requests %}
+        <tr>
+          <td>{{ request.workflow_description }}</td>
+          <td>{{ request.project_description }}</td>
+          <td>{% if request.role_counter > 0 %}[Review] {% endif %}{{ request.step_description }}</td>
+          <td>{{ request.detailed_description | safe }}</td>
+          <td>
+            <a href="{{ request.accept_url }}" class="btn btn-primary btn-sm" role="button">Accept</a>
+            <a href="{{ request.reject_url }}" class="btn btn-primary btn-sm" role="button">Ignore</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+      {% else %}
+      <h2>There are no tasks available at the moment.</h2>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

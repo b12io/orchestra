@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 from orchestra.bots.errors import StaffingResponseException
+from orchestra.communication.staffing import get_available_requests
 from orchestra.communication.staffing import handle_staffing_response
 from orchestra.communication.staffing import send_staffing_requests
 from orchestra.models import CommunicationPreference
@@ -239,3 +240,68 @@ class StaffingTestCase(OrchestraTestCase):
             is_available=False)
 
         self.assertTrue(mock_slack.called)
+
+    @patch('orchestra.communication.staffing.message_experts_slack_group')
+    def test_get_available_request(self, mock_slack):
+        # Complete all open requests so new worker doesn't receive them.
+        send_staffing_requests(worker_batch_size=2)
+
+        self.assertEquals(len(get_available_requests(self.worker)), 1)
+
+        worker2 = WorkerFactory()
+        CommunicationPreferenceFactory(
+            worker=worker2,
+            communication_type=(
+                CommunicationPreference.CommunicationType
+                .NEW_TASK_AVAILABLE.value))
+        request1 = StaffBotRequestFactory(task__step__is_human=True)
+        request2 = StaffBotRequestFactory(task__step__is_human=True)
+
+        send_staffing_requests(worker_batch_size=2)
+        inquiry1 = (
+            StaffingRequestInquiry.objects
+            .filter(communication_preference__worker=self.worker)
+            .filter(request=request1).first())
+        inquiry2 = (
+            StaffingRequestInquiry.objects
+            .filter(communication_preference__worker=worker2)
+            .filter(request=request2).first())
+
+        # `self.worker` now has three available tasks, whereas `worker2`
+        # just has access to the two new tasks.
+        available_requests = get_available_requests(self.worker)
+        self.assertEquals(len(available_requests), 3)
+        self.assertEquals(len(get_available_requests(worker2)), 2)
+
+        # Tasks should be sorted by start_datetime in ascending order.
+
+        first_task, second_task, third_task = (
+            available_requests[0]['task'], available_requests[1]['task'],
+            available_requests[2]['task'])
+        self.assertLess(
+            first_task.start_datetime, second_task.start_datetime)
+        self.assertLess(
+            second_task.start_datetime, third_task.start_datetime)
+
+        # `self.worker` will lose an available task (they accept it),
+        # whereas `worker2` is unchanged.
+        handle_staffing_response(
+            self.worker, self.staffing_request_inquiry.id,
+            is_available=True)
+        self.assertEquals(len(get_available_requests(self.worker)), 2)
+        self.assertEquals(len(get_available_requests(worker2)), 2)
+
+        # `self.worker` will lose an available task (they ignore it),
+        # whereas `worker2` is unchanged.
+        handle_staffing_response(
+            self.worker, inquiry1.id,
+            is_available=False)
+        self.assertEquals(len(get_available_requests(self.worker)), 1)
+        self.assertEquals(len(get_available_requests(worker2)), 2)
+
+        # `worker2` takes a task.
+        handle_staffing_response(
+            worker2, inquiry2.id,
+            is_available=True)
+        self.assertEquals(len(get_available_requests(self.worker)), 0)
+        self.assertEquals(len(get_available_requests(worker2)), 1)

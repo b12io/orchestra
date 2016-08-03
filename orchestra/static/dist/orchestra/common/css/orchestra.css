@@ -883,3 +883,25 @@ a.logo {
     color: #FFF; }
   .communication-container .spaced {
     padding-top: 15px; }
+
+.staffing-container {
+  font-size: 1.2em; }
+  .staffing-container .card {
+    height: initial; }
+    .staffing-container .card h2 {
+      padding: 125px 0px 125px 0px;
+      text-align: center; }
+    .staffing-container .card table {
+      table-layout: fixed; }
+      .staffing-container .card table td:first-child, .staffing-container .card table th:first-child {
+        padding-left: 20px; }
+      .staffing-container .card table .row-project {
+        width: 15%; }
+      .staffing-container .card table .row-project-description {
+        width: 20%; }
+      .staffing-container .card table .row-task {
+        width: 25%; }
+      .staffing-container .card table .row-details {
+        width: 25%; }
+      .staffing-container .card table .row-actions {
+        width: 15%; }

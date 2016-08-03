@@ -1,3 +1,5 @@
+import re
+
 from annoying.functions import get_object_or_None
 from django.db.models import Q
 from django.conf import settings
@@ -31,6 +33,11 @@ logger = logging.getLogger(__name__)
 
 # Types of responses we can send to slack
 VALID_RESPONSE_TYPES = {'ephemeral', 'in_channel'}
+
+# A regex for markdown links, which are of the form [link text](url).
+# We capture link text and url as an text that isn't a closing ] or )
+# respectively.
+MARKDOWN_LINK_REGEX = re.compile('\[(?P<text>[^\]]*)\]\((?P<url>[^\)]*)\)')
 
 
 class StaffBot(BaseBot):
@@ -223,8 +230,7 @@ class StaffBot(BaseBot):
             settings.ORCHESTRA_URL,
             reverse(reverse_string, kwargs=url_kwargs))
 
-    def _get_staffing_request_message(self, staffing_request_inquiry,
-                                      template):
+    def get_staffing_request_metadata(self, staffing_request_inquiry):
         url_kwargs = {
             'staffing_request_inquiry_id': staffing_request_inquiry.pk
         }
@@ -253,7 +259,7 @@ class StaffBot(BaseBot):
             staffbot_request.task.step.description)
         user = (staffing_request_inquiry.communication_preference.
                 worker.user)
-        context = Context({
+        return {
             'user': user,
             'accept_url': accept_url,
             'reject_url': reject_url,
@@ -261,9 +267,16 @@ class StaffBot(BaseBot):
             'step_description': step_description,
             'workflow_description': workflow_description,
             'project_description': project_description,
-            'detailed_description': detailed_description
-        })
+            'detailed_description': detailed_description,
+            'task': staffbot_request.task
+        }
 
+    def _get_staffing_request_message(self, staffing_request_inquiry,
+                                      template):
+        metadata = self.get_staffing_request_metadata(staffing_request_inquiry)
+        metadata['available_requests_url'] = self._get_staffing_url(
+            'orchestra:communication:available_staffing_requests', {})
+        context = Context(metadata)
         message_body = render_to_string(template, context)
         return message_body
 
@@ -283,6 +296,8 @@ class StaffBot(BaseBot):
                 worker))
             return
         try:
+            # Replace any Markdown-style links with Slack-style links.
+            message = MARKDOWN_LINK_REGEX.sub(r'<\g<url>|\g<text>>', message)
             self.slack.chat.post_message(worker.slack_user_id, message)
         except SlackError:
             logger.warning('Invalid slack id {} {}'.format(
