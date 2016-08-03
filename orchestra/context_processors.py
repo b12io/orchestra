@@ -28,6 +28,8 @@ def base_context(request):
     """
     Provide context variables for use across all views.
     """
+    if not hasattr(request, 'user'):
+        return {}
     return {
         'is_project_admin': is_project_admin(request.user)
     }
