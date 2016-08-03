@@ -1,3 +1,5 @@
+import re
+
 from annoying.functions import get_object_or_None
 from django.db.models import Q
 from django.conf import settings
@@ -31,6 +33,7 @@ logger = logging.getLogger(__name__)
 
 # Types of responses we can send to slack
 VALID_RESPONSE_TYPES = {'ephemeral', 'in_channel'}
+MARKDOWN_LINK_REGEX = re.compile('\[([^\]]*)\]\(([^\)]*)\)')
 
 
 class StaffBot(BaseBot):
@@ -289,6 +292,8 @@ class StaffBot(BaseBot):
                 worker))
             return
         try:
+            # Replace any Markdown-style links with Slack-style links.
+            message = MARKDOWN_LINK_REGEX.sub(r'<\2|\1>', message)
             self.slack.chat.post_message(worker.slack_user_id, message)
         except SlackError:
             logger.warning('Invalid slack id {} {}'.format(
