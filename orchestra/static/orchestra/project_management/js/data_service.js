@@ -29,17 +29,20 @@
         });
         return dataService.ready;
       },
+      setSelectedProject: function() {
+        $route.updateParams({projectId: this.currentProject.id});
+        this.resetData();
+        return this.updateData();
+      },
       changeProject: function(projectId) {
         this.ready.then(function() {
-          if (projectId !== undefined) {
-            this.currentProject = this.allProjects[projectId];
+          if (!projectId || !this.allProjects[projectId]) {
+            $route.updateParams({projectId: undefined});
+            return;
           }
 
-          if (this.currentProject) {
-            $route.updateParams({projectId: this.currentProject.id});
-            this.resetData();
-            return this.updateData();
-          }
+          this.currentProject = this.allProjects[projectId];
+          return this.setSelectedProject();
         }.bind(this));
       },
       updateData: function() {

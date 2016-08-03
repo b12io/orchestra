@@ -4,7 +4,7 @@
       <div class="row padded">
         <div class="col-lg-12 col-md-12 col-sm-12">
           <ui-select class="project-description" ng-model="vis.dataService.currentProject"
-              ng-change="vis.dataService.changeProject()"
+              ng-change="vis.dataService.setSelectedProject()"
               ng-disabled="vis.dataService.loading">
             <ui-select-match>
               <span ng-bind="$select.selected.short_description"></span>
@@ -13,17 +13,17 @@
               <span ng-bind="item.short_description"></span>
             </ui-select-choices>
           </ui-select>
-          <div class="project-actions">
-            <button type="button" ng-click="vis.createSubsequentTasks()" class="btn btn-default">
+          <div class="project-actions" ng-show="vis.dataService.currentProject.id">
+            <button type="button" ng-disabled="vis.dataService.loading" ng-click="vis.createSubsequentTasks()" class="btn btn-default">
               Create subsequent tasks
             </button>
-            <button type="button" ng-click="vis.showSlackActions()" class="btn btn-default">
+            <button type="button" ng-disabled="vis.dataService.loading" ng-click="vis.showSlackActions()" class="btn btn-default">
               Edit Slack users
             </button>
-            <button type="button" ng-click="vis.showProjectData()" class="btn btn-default">
+            <button type="button" ng-disabled="vis.dataService.loading" ng-click="vis.showProjectData()" class="btn btn-default">
               View project data
             </button>
-            <a href="{{vis.dataService.data.project.admin_url}}" target="_blank">
+            <a ng-href="{{vis.dataService.data.project.admin_url}}" ng-disabled="vis.dataService.loading" target="_blank">
               <button type="button" class="btn btn-default">View in admin</button>
             </a>
             <button ng-click="vis.endProject()" class="btn btn-danger">Abort project</button>

@@ -21,7 +21,7 @@
             'bottom': 25
           },
           'marginLeft': 200,
-          'marginRight': 10,
+          'marginRight': 50,
           'scaleWidth': 1350
         };
 
@@ -50,7 +50,8 @@
 
         scope.$on('orchestra:projectManagement:dataUpdate', vis.draw);
         dataService.ready.then(function() {
-          if (projectId !== undefined) {
+          if (projectId) {
+            dataService.changeProject(projectId);
             visUtils.parentContainer.node().scrollLeft = 100;
           }
         });
