@@ -30,7 +30,7 @@
         controllerAs: 'vm',
         templateUrl: $static('/static/orchestra/task/partials/task.html')
       })
-      .when('/project/:projectId', {
+      .when('/project/:projectId?', {
         title: 'Project',
         controller: 'ProjectManagementController',
         controllerAs: 'vm',

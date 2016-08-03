@@ -49,9 +49,14 @@
   font-size: 1.5rem;
   position: relative;
 
-  .project-description {
-    font-size: 3rem;
-    margin: 0 10px;
+  .project-description.ui-select-bootstrap {
+    margin: 10px 0;
+    > .ui-select-match > .btn {
+      height: auto;
+      width: auto;
+      font-size: 30px;
+      padding-right: 40px;
+    }
   }
 
   .axis-wrapper {
@@ -113,6 +118,29 @@
   .vis-wrapper {
     position: relative;
     margin-bottom: 75px;
+    min-height: 200px;
+
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: white;
+      opacity: 0.75;
+      z-index: 100;
+
+      .spinner {
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        @extend %loading-spinner;
+      }
+    }
+
     .svg-wrapper {
       overflow-x: auto;
 

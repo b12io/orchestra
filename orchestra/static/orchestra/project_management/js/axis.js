@@ -34,7 +34,9 @@
         var numHours = Math.ceil((maxDatetime - minDatetime) / hourInMilliseconds);
         maxDatetime = new Date(minDatetime.getTime() + numHours * hourInMilliseconds);
 
-        var hourTicks = d3.range(0, numHours + 1).map(function(hourIndex) {
+        var hourStep = Math.ceil(numHours * 10 / visUtils.params.scaleWidth);
+
+        var hourTicks = d3.range(0, numHours + 1, hourStep).map(function(hourIndex) {
           return new Date(minDatetime.getTime() + hourIndex * hourInMilliseconds);
         });
 
@@ -42,25 +44,25 @@
           .domain([minDatetime, maxDatetime])
           .range([0, visUtils.params.scaleWidth]);
 
+        var tickSize = 6;
         var xAxis = d3.svg.axis()
           .scale(this.timeScale)
-          .tickSize(10);
+          .tickSize(tickSize)
+          .tickPadding(2 * tickSize)
+          .tickValues(hourTicks);
 
-        var tickSpread = 5;
+        var tickSpread = 10;
         var xLabelText;
         if (this.relativeTime) {
-          xAxis.tickValues(hourTicks)
-            .tickFormat(function(d, i) {
+            xAxis.tickFormat(function(d, i) {
               if (hourTicks.length < tickSpread || i % tickSpread === 0) {
                 return (d - minDatetime) / hourInMilliseconds;
               }
             });
           xLabelText = 'Time (hours)';
         } else {
-          xAxis.ticks(d3.time.hour, 1);
-          var defaultFormat = this.timeScale.tickFormat();
           xAxis.tickFormat(function(d, i) {
-            return i % tickSpread === 0 ? defaultFormat(d) : '';
+            return i % tickSpread === 0 ? moment(d).format('M/DD ha') : '';
           });
           xLabelText = 'Time (local)';
         }
@@ -69,10 +71,16 @@
           .text(xLabelText)
           .style('right', visUtils.getSvgWidth() + 5 + 'px');
 
-        visUtils.parentContainer.select('.x.axis').transition().call(xAxis);
+        visUtils.parentContainer.select('.x.axis').call(xAxis);
         visUtils.parentContainer.select('.x.axis')
           .style('opacity', 1)
           .attr('width', visUtils.getSvgWidth());
+
+        visUtils.parentContainer.select('.x.axis')
+          .selectAll('.tick line')
+          .attr('y2', function(d, i) {
+            return i % tickSpread === 0 ? 1.5 * tickSize : tickSize;
+          });
       },
       getOffset: function(datetime) {
         /**

@@ -8,6 +8,9 @@ serviceModule.factory('orchestraApi', function($http) {
   }
 
   return {
+    allProjects: function(projectId) {
+      return $http.get(getApiUrl('projects'));
+    },
 
     projectInformation: function(projectId) {
       return $http.post(getApiUrl('project_information'), {
