@@ -88,12 +88,14 @@
                 </a>
               </li>
 
+              {% if is_project_admin %}
               <li>
                 <a href="/orchestra/app/project/">
                   <i class="fa fa-map-o"></i>
                   <span>Project Management</span>
                 </a>
               </li>
+              {% endif %}
 
               <li>
                 <a href="/orchestra/accounts/settings/">

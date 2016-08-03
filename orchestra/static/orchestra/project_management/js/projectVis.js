@@ -49,11 +49,9 @@
           .attr('class', 'x label');
 
         scope.$on('orchestra:projectManagement:dataUpdate', vis.draw);
-        dataService.dataReady.then(function() {
+        dataService.ready.then(function() {
           if (projectId !== undefined) {
-            dataService.changeProject(projectId).then(function() {
-              visUtils.parentContainer.node().scrollLeft = 100;
-            });            
+            visUtils.parentContainer.node().scrollLeft = 100;
           }
         });
       },

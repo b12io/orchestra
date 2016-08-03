@@ -1,5 +1,8 @@
 from django.conf import settings
 
+from orchestra.interface_api.project_management.decorators import \
+    is_project_admin
+
 
 def google_analytics(request):
     """
@@ -18,4 +21,13 @@ def third_party_scripts(request):
     return {
         'ORCHESTRA_THIRD_PARTY_SCRIPTS_TEMPLATE':
         settings.ORCHESTRA_THIRD_PARTY_SCRIPTS_TEMPLATE
+    }
+
+
+def base_context(request):
+    """
+    Provide context variables for use across all views.
+    """
+    return {
+        'is_project_admin': is_project_admin(request.user)
     }

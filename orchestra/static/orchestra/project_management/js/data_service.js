@@ -1,5 +1,5 @@
 (function() {
-  // 'use strict';
+  'use strict';
 
   var serviceModule = angular.module('orchestra.project_management');
 
@@ -16,30 +16,31 @@
       dataReady: null,
       allProjects: {},
       resetData: function(projectId) {
-        ds = this;
         _meta = {
           'tasks': {}
         };
       },
       getAllProjects: function() {
         var dataService = this;
-        dataService.dataReady = orchestraApi.allProjects().then(function(response) {
+        dataService.ready = orchestraApi.allProjects().then(function(response) {
           response.data.forEach(function(project) {
             dataService.allProjects[project.id] = project;
           });
         });
-        return dataService.dataReady;
+        return dataService.ready;
       },
       changeProject: function(projectId) {
-        if (projectId !== undefined) {
-          this.currentProject = this.allProjects[projectId];
-        }
+        this.ready.then(function() {
+          if (projectId !== undefined) {
+            this.currentProject = this.allProjects[projectId];
+          }
 
-        if (this.currentProject) {
-          $route.updateParams({projectId: this.currentProject.id});
-          this.resetData();
-          return this.updateData();
-        }
+          if (this.currentProject) {
+            $route.updateParams({projectId: this.currentProject.id});
+            this.resetData();
+            return this.updateData();
+          }
+        }.bind(this));
       },
       updateData: function() {
         /**
@@ -47,7 +48,7 @@
          */
         var dataService = this;
         dataService.loading = true;
-        return orchestraApi.projectInformation(this.currentProject.id)
+        dataService.ready = orchestraApi.projectInformation(this.currentProject.id)
           .then(function(response) {
             dataService.setData(response.data);
             if (dataService.data.project.status === 'Aborted') {
@@ -64,6 +65,7 @@
             }
             alert(errorMessage);
           });
+        return dataService.ready;
       },
       setData: function(data) {
         /**

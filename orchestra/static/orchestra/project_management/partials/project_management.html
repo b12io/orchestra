@@ -3,7 +3,9 @@
     <div class="container-fluid">
       <div class="row padded">
         <div class="col-lg-12 col-md-12 col-sm-12">
-          <ui-select class="project-description" ng-model="vis.dataService.currentProject" ng-change="vis.dataService.changeProject()">
+          <ui-select class="project-description" ng-model="vis.dataService.currentProject"
+              ng-change="vis.dataService.changeProject()"
+              ng-disabled="vis.dataService.loading">
             <ui-select-match>
               <span ng-bind="$select.selected.short_description"></span>
             </ui-select-match>

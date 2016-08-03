@@ -23,7 +23,6 @@ from orchestra.core.errors import NoTaskAvailable
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import IllegalTaskSubmission
 from orchestra.filters import TimeEntryFilter
-from orchestra.interface_api.project_management.views import is_project_admin
 from orchestra.models import Iteration
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
@@ -96,8 +95,7 @@ def index(request):
     return render(request, 'orchestra/index.html', {
         'javascript_includes': javascript_includes,
         'stylesheet_includes': stylesheet_includes,
-        'orchestra_arguments': json.dumps(orchestra_arguments),
-        'project_admin': is_project_admin(request.user)})
+        'orchestra_arguments': json.dumps(orchestra_arguments)})
 
 
 @json_view
