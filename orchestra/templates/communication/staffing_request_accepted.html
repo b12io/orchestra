@@ -26,6 +26,11 @@
           <h2>
             Unfortunately, task has already been taken :(
           </h2>
+          <div class="row spaced">
+            <a href="{% url "orchestra:communication:available_staffing_requests" %}" class="btn btn-primary btn-lg">
+              View All Available Tasks
+            </a>
+          </div>
         {% endif %}
     </div>
   </div>

@@ -261,11 +261,11 @@ class StaffingTestCase(OrchestraTestCase):
         inquiry1 = (
             StaffingRequestInquiry.objects
             .filter(communication_preference__worker=self.worker)
-            .filter(request=request1)[0])
+            .filter(request=request1).first())
         inquiry2 = (
             StaffingRequestInquiry.objects
             .filter(communication_preference__worker=worker2)
-            .filter(request=request2)[0])
+            .filter(request=request2).first())
 
         # `self.worker` now has three available tasks, whereas `worker2`
         # just has access to the two new tasks.

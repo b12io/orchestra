@@ -33,7 +33,11 @@ logger = logging.getLogger(__name__)
 
 # Types of responses we can send to slack
 VALID_RESPONSE_TYPES = {'ephemeral', 'in_channel'}
-MARKDOWN_LINK_REGEX = re.compile('\[([^\]]*)\]\(([^\)]*)\)')
+
+# A regex for markdown links, which are of the form [link text](url).
+# We capture link text and url as an text that isn't a closing ] or )
+# respectively.
+MARKDOWN_LINK_REGEX = re.compile('\[(?P<text>[^\]]*)\]\((?P<url>[^\)]*)\)')
 
 
 class StaffBot(BaseBot):
@@ -293,7 +297,7 @@ class StaffBot(BaseBot):
             return
         try:
             # Replace any Markdown-style links with Slack-style links.
-            message = MARKDOWN_LINK_REGEX.sub(r'<\2|\1>', message)
+            message = MARKDOWN_LINK_REGEX.sub(r'<\g<url>|\g<text>>', message)
             self.slack.chat.post_message(worker.slack_user_id, message)
         except SlackError:
             logger.warning('Invalid slack id {} {}'.format(
