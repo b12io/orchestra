@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterUniqueTogether(
+        migrations.AlterUniqueTogether(  # manually-reviewed
             name='taskassignment',
             unique_together=set([]),
         ),
