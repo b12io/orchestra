@@ -386,7 +386,11 @@ class TaskAssignment(TaskAssignmentMixin, BaseModel):
     """
     class Meta:
         app_label = 'orchestra'
-        unique_together = ('task', 'assignment_counter')
+        # TODO(marcua): Bring back this uniqueness/integrity
+        # constraint once we can delete task assignments (marked as
+        # `is_deleted=True`) and have new undeleted ones still be
+        # considered unique.
+        # unique_together = ('task', 'assignment_counter')
 
     class Status:
         PROCESSING = 0
