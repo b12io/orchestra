@@ -93,9 +93,9 @@ class StaffBotRequest(StaffBotRequestMixin, BaseModel):
             Description of the project
         status (Status)
             Status of the request
-
+        last_inquiry_sent (DateTimeField):
+            The datetime the most recent inquiry was sent.
     """
-
     class RequestCause(ChoicesEnum):
         USER = 'user'
         AUTOSTAFF = 'autostaff'
@@ -112,6 +112,7 @@ class StaffBotRequest(StaffBotRequestMixin, BaseModel):
     status = models.IntegerField(
         default=Status.PROCESSING.value,
         choices=Status.choices())
+    last_inquiry_sent = models.DateTimeField(null=True)
 
 
 class StaffingRequestInquiry(StaffingRequestInquiryMixin, BaseModel):
