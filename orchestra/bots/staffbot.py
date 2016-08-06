@@ -62,7 +62,7 @@ class StaffBot(BaseBot):
         default_config = getattr(settings, 'STAFFBOT_CONFIG', {})
         default_config.update(kwargs)
         token = settings.ORCHESTRA_SLACK_STAFFBOT_TOKEN
-        super().__init__(token, **kwargs)
+        super().__init__(token, **default_config)
 
     def help(self):
         return format_slack_message(

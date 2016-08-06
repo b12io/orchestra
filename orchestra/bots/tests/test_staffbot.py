@@ -1,3 +1,4 @@
+from datetime import timedelta
 from django.conf import settings
 from django.test import override_settings
 from unittest.mock import patch
@@ -64,7 +65,8 @@ class StaffBotTest(OrchestraTestCase):
             text=command,
             user_id=self.worker.slack_user_id)
         bot.dispatch(data)
-        send_staffing_requests(worker_batch_size=20)
+        send_staffing_requests(worker_batch_size=20,
+                               frequency=timedelta(minutes=0))
         self.assertEquals(StaffingRequestInquiry.objects.filter(
             communication_preference__worker_id=worker,
             request__task=task).count(), can_slack + can_mail)

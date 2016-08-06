@@ -2,6 +2,7 @@ from annoying.functions import get_object_or_None
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import transaction
+from django.db.models import Q
 from django.utils import timezone
 from markdown2 import markdown
 
@@ -111,14 +112,14 @@ def send_staffing_requests(
     requests = (
         StaffBotRequest.objects
         .filter(status=StaffBotRequest.Status.PROCESSING.value)
-        .filter(last_inquiry_sent__lt=cutoff_datetime))
+        .filter(Q(last_inquiry_sent__isnull=True) |
+                Q(last_inquiry_sent__lt=cutoff_datetime)))
 
     for request in requests:
         send_request_inquiries(staffbot, request, worker_batch_size)
 
 
-def send_request_inquiries(staffbot, request, worker_batch_size,
-                           request_frequency):
+def send_request_inquiries(staffbot, request, worker_batch_size):
     # Get Workers that haven't already received an inquiry.
     workers_with_inquiries = (StaffingRequestInquiry.objects.filter(
         request=request).distinct().values_list(

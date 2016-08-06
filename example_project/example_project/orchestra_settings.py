@@ -204,7 +204,6 @@ def setup_orchestra(settings_module_name):
     # Settings for orchestra bots Each bot needs a slack token to
     # authenticate the command.
     settings.ORCHESTRA_SLACK_STAFFBOT_TOKEN = ''
-
     settings.ORCHESTRA_STAFFBOT_WORKER_BATCH_SIZE = 5
     settings.ORCHESTRA_STAFFBOT_BATCH_FREQUENCY = timedelta(minutes=2)
 
