@@ -113,7 +113,7 @@ def send_staffing_requests(
         StaffBotRequest.objects
         .filter(status=StaffBotRequest.Status.PROCESSING.value)
         .filter(Q(last_inquiry_sent__isnull=True) |
-                Q(last_inquiry_sent__lt=cutoff_datetime)))
+                Q(last_inquiry_sent__lte=cutoff_datetime)))
 
     for request in requests:
         send_request_inquiries(staffbot, request, worker_batch_size)
