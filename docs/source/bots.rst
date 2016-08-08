@@ -57,11 +57,14 @@ restrict access to the endpoint by specifying the following::
 match items in the list. If a parameter is not specified, all values are
 accepted by default.
 
-Once this configuration is complete, you can test it by typing ``/staffbot
-staff <task-id>`` where ``<task-id>`` is an unassigned task id.  By default,
-``StaffBot`` will reach out to ``Workers`` who have the appropriate
-``WorkerCertification`` for the task you are staffing, in batches of ``5
-Workers`` every ``1`` minutes.
+Once this configuration is complete, you can test it by typing
+``/staffbot staff <task-id>`` where ``<task-id>`` is an unassigned
+task id.  By default, ``StaffBot`` will reach out to ``Workers`` who
+have the appropriate ``WorkerCertification`` for the task you are
+staffing, in batches of
+``settings.ORCHESTRA_STAFFBOT_WORKER_BATCH_SIZE Workers`` every
+``settings.ORCHESTRA_STAFFBOT_BATCH_FREQUENCY`` time units (the
+frequency is a ``datetime.timedelta`` object).
 
 ``StaffBot`` looks at two fields when prioritizing ``Workers`` to
 reach out to when a task is available.  The

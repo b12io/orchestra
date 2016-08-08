@@ -13,6 +13,8 @@ to the bottom of `settings.py`.
 import os
 import sys
 
+from datetime import timedelta
+
 
 def setup_orchestra(settings_module_name):
     settings = sys.modules[settings_module_name]
@@ -202,6 +204,8 @@ def setup_orchestra(settings_module_name):
     # Settings for orchestra bots Each bot needs a slack token to
     # authenticate the command.
     settings.ORCHESTRA_SLACK_STAFFBOT_TOKEN = ''
+    settings.ORCHESTRA_STAFFBOT_WORKER_BATCH_SIZE = 5
+    settings.ORCHESTRA_STAFFBOT_BATCH_FREQUENCY = timedelta(minutes=2)
 
     # Optionally add a path for a template to support third party scripts
     # (such as Google Analytics)
