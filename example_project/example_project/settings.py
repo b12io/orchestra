@@ -130,4 +130,9 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = 'staticfiles'
 
+
+TESTING = sys.argv[1:2] == ['test']
+if TESTING:
+    PASSWORD_HASHERS = ('django.contrib.auth.hashers.MD5PasswordHasher',)
+
 setup_orchestra(__name__)
