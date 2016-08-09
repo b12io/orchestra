@@ -143,6 +143,7 @@ dictionary and can be passed extra ``kwargs`` as shown below::
     return '''A new task is available!
               Find out more about {} at example.com/projects/{}!'''.format(
               kwargs.get('text'), task_details['project']['id'])
+
 Usage
 -----
 
