@@ -36,6 +36,7 @@ class BotMixin(View):
         except SlackUserUnauthorized as e:
             logger.exception('Unauthorized slack user')
             response_data = format_slack_message(str(e))
+
         return JsonResponse(response_data)
 
 
