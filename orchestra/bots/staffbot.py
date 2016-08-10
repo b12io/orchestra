@@ -312,14 +312,15 @@ class StaffBot(BaseBot):
         username = data.get('user_name')
 
         workers = Worker.objects.filter(slack_user_id=slack_user_id)
+        worker = workers.first()
         if workers.count() > 1:
             raise SlackUserUnauthorized(
                 self.nonunique_slack_id.format(slack_user_id))
-        elif workers.count() == 0:
+        elif worker is None:
             raise SlackUserUnauthorized(
                 'Worker {} not found. slack_user_id: {}'.format(
                     username, slack_user_id))
-        elif not is_project_admin(workers.first().user):
+        elif not is_project_admin(worker.user):
             raise SlackUserUnauthorized(self.not_authorized_error)
         data = super().validate(data)
         return data
