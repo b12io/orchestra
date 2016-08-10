@@ -1,6 +1,5 @@
 import re
 
-from annoying.functions import get_object_or_None
 from django.db.models import Q
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -50,6 +49,7 @@ class StaffBot(BaseBot):
     task_does_not_exist_error = 'Task {} does not exist'
     task_assignment_error = 'Task {} got an error: "{}"'
     worker_does_not_exist = 'Worker with username {} does not exist'
+    nonunique_slack_id = 'There are multiple workers with slack_user_id {}'
     staffing_is_not_allowed = (
         'Staffing of task {} is not allowed at this state')
     task_assignment_does_not_exist_error = (
@@ -311,8 +311,12 @@ class StaffBot(BaseBot):
         slack_user_id = data.get('user_id')
         username = data.get('user_name')
 
-        worker = get_object_or_None(Worker, slack_user_id=slack_user_id)
-        if worker is None:
+        workers = Worker.objects.filter(slack_user_id=slack_user_id)
+        worker = workers.first()
+        if workers.count() > 1:
+            raise SlackUserUnauthorized(
+                self.nonunique_slack_id.format(slack_user_id))
+        elif worker is None:
             raise SlackUserUnauthorized(
                 'Worker {} not found. slack_user_id: {}'.format(
                     username, slack_user_id))

@@ -56,9 +56,8 @@ class BaseBot(object):
             if whitelist is None:
                 continue
             else:
-                if hasattr(data, fieldname):
-                    value = data[fieldname]
-                else:
+                value = data.get(fieldname)
+                if value is None:
                     raise SlackCommandInvalidRequest(
                         '{} is missing'.format(fieldname))
 

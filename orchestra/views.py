@@ -45,7 +45,6 @@ from orchestra.utils.task_lifecycle import worker_has_reviewer_status
 from orchestra.utils.view_helpers import IsAssociatedWorker
 
 import logging
-
 logger = logging.getLogger(__name__)
 UserModel = get_user_model()
 

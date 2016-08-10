@@ -9,6 +9,9 @@ from orchestra.bots.basebot import BaseBot
 from orchestra.bots.staffbot import StaffBot
 from orchestra.communication.slack import format_slack_message
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class BotMixin(View):
@@ -28,9 +31,12 @@ class BotMixin(View):
         try:
             response_data = self.bot.dispatch(data)
         except SlackCommandInvalidRequest as e:
+            logger.exception('Invalid slack command')
             response_data = format_slack_message(str(e))
         except SlackUserUnauthorized as e:
+            logger.exception('Unauthorized slack user')
             response_data = format_slack_message(str(e))
+
         return JsonResponse(response_data)
 
 

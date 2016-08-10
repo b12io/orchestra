@@ -37,6 +37,10 @@ class BaseBotTest(OrchestraTestCase):
             bot = BaseBot(self.token, **config)
             with self.assertRaises(SlackCommandInvalidRequest):
                 bot.validate(mock_slack_data)
+        config = {'allowed_{}s'.format(field): [mock_slack_data.get(field)]
+                  for field in validated_fields}
+        bot = BaseBot(self.token, **config)
+        self.assertEqual(mock_slack_data, bot.validate(mock_slack_data))
 
     def test_dispatch(self):
         bot = BaseBot(self.token)
