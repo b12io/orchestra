@@ -70,6 +70,8 @@ def handle_staffing_response(worker, staffing_request_inquiry_id,
                 is_winner=True).exists()):
         response.is_winner = True
         request = staffing_request_inquiry.request
+        request.status = StaffBotRequest.Status.COMPLETE.value
+        request.save()
 
         task_assignment = get_object_or_None(
             TaskAssignment,

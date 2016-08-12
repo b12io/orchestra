@@ -55,6 +55,8 @@ class StaffingTestCase(OrchestraTestCase):
             self.worker, self.staffing_request_inquiry.id,
             is_available=True)
         self.assertTrue(response.is_winner)
+        self.assertEqual(response.request_inquiry.request.status,
+                         StaffBotRequest.Status.COMPLETE.value)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
 
         task_assignment = (
@@ -69,6 +71,8 @@ class StaffingTestCase(OrchestraTestCase):
         response = handle_staffing_response(
             self.worker, self.staffing_request_inquiry.id, is_available=True)
         self.assertTrue(response.is_winner)
+        self.assertEqual(response.request_inquiry.request.status,
+                         StaffBotRequest.Status.COMPLETE.value)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
 
         # Change mind to `is_available=False` does not do anything
@@ -85,6 +89,8 @@ class StaffingTestCase(OrchestraTestCase):
         response = handle_staffing_response(
             new_worker, new_request_inquiry.id, is_available=True)
         self.assertTrue(response.is_winner)
+        self.assertEqual(response.request_inquiry.request.status,
+                         StaffBotRequest.Status.COMPLETE.value)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
 
         task_assignment = (
@@ -106,6 +112,8 @@ class StaffingTestCase(OrchestraTestCase):
         response = handle_staffing_response(
             worker2, staffing_request_inquiry2.id, is_available=True)
         self.assertTrue(response.is_winner)
+        self.assertEqual(response.request_inquiry.request.status,
+                         StaffBotRequest.Status.COMPLETE.value)
         task_assignment.refresh_from_db()
         self.assertEquals(task_assignment.worker, worker2)
 
@@ -116,6 +124,8 @@ class StaffingTestCase(OrchestraTestCase):
             self.worker, self.staffing_request_inquiry.id,
             is_available=False)
         self.assertFalse(response.is_winner)
+        self.assertEqual(response.request_inquiry.request.status,
+                         StaffBotRequest.Status.PROCESSING.value)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
 
         # Replay of same request
@@ -123,6 +133,8 @@ class StaffingTestCase(OrchestraTestCase):
             self.worker, self.staffing_request_inquiry.id,
             is_available=False)
         self.assertFalse(response.is_winner)
+        self.assertEqual(response.request_inquiry.request.status,
+                         StaffBotRequest.Status.PROCESSING.value)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
 
         # Change mind to `is_available=True`
@@ -130,6 +142,8 @@ class StaffingTestCase(OrchestraTestCase):
             self.worker, self.staffing_request_inquiry.id,
             is_available=True)
         self.assertTrue(response.is_winner)
+        self.assertEqual(response.request_inquiry.request.status,
+                         StaffBotRequest.Status.COMPLETE.value)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
 
         # Task is not available to claim
@@ -141,6 +155,8 @@ class StaffingTestCase(OrchestraTestCase):
         response = handle_staffing_response(
             new_worker, new_request_inquiry.id, is_available=True)
         self.assertFalse(response.is_winner)
+        self.assertEqual(response.request_inquiry.request.status,
+                         StaffBotRequest.Status.COMPLETE.value)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
 
     @patch('orchestra.communication.staffing.message_experts_slack_group')
@@ -239,6 +255,8 @@ class StaffingTestCase(OrchestraTestCase):
             self.worker, self.staffing_request_inquiry.id,
             is_available=False)
         self.assertFalse(response.is_winner)
+        self.assertEqual(response.request_inquiry.request.status,
+                         StaffBotRequest.Status.PROCESSING.value)
         mock_slack.assert_not_called()
 
         handle_staffing_response(
