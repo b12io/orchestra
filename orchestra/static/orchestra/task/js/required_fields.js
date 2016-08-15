@@ -10,13 +10,11 @@
     var requiredFields = {
       validators: {
         'input-checkbox': [
-
           function(elem) {
             return elem.checked;
           }
         ],
         'input-text': [
-
           function(elem) {
             return elem.value && elem.value.length > 0;
           }
@@ -50,7 +48,7 @@
         var requiredFields = this;
         requiredFields.invalid = [];
 
-         /*jshint -W083 */
+        /*jshint -W083 */
         // Hide error for creating a function in a loop
         for (var fieldType in requiredFields.fields) {
           var validators = requiredFields.validators[fieldType];
@@ -104,7 +102,7 @@
    *     error with `data-error-class="error-class"` on the directive
    *     element; otherwise, a default is provided for the input type.
    */
-   angular.module('orchestra.task')
+  angular.module('orchestra.task')
   .directive('orchestraRequiredField', function($compile, requiredFields) {
       return {
         restrict: 'EA',

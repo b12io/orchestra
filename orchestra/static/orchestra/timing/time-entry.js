@@ -66,7 +66,7 @@
   angular.module('orchestra.timing')
     .factory('TimeEntry', function($http) {
       var TimeEntry = function(data) {
-          this.initWithData(data);
+        this.initWithData(data);
       };
 
       /**

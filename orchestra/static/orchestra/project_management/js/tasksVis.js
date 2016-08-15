@@ -43,7 +43,6 @@
       return cls;
     };
 
-
     return {
       reverting: false,
       draw: function() {

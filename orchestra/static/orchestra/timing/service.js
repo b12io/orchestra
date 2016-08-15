@@ -46,7 +46,6 @@
           });
         },
 
-
         /**
          * Creates a new TimeEntry server-side and initializes with returned data.
          */
@@ -65,7 +64,6 @@
             alert('Could not add new time entry.');
           });
         },
-
 
         /**
          * Calculate the total work time for a given date.

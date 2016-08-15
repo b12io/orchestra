@@ -12,8 +12,10 @@ angular.module('orchestra.common')
   // Modified from github.com/petebacondarwin/angular-toArrayFilter
   .filter('toArray', function () {
     return function (obj, addKey) {
-      if (!angular.isObject(obj)) return obj;
-      if ( addKey === false ) {
+      if (!angular.isObject(obj)) {
+        return obj;
+      }
+      if (addKey === false) {
         return Object.keys(obj).map(function(key) {
           return obj[key];
         });
