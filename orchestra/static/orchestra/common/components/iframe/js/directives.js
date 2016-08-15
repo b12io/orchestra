@@ -21,7 +21,7 @@
         // The iframe is actually added only after everything is loaded.
         // This way the webpage does not stall for a couple of seconds until
         // all the iframe directives load.
-        $timeout(function(){
+        $timeout(function() {
           var iframe = document.createElement('iframe');
           var iframeAttrs = {
             'name': '{{title}}',

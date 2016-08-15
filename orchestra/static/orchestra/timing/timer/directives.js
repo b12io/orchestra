@@ -85,12 +85,12 @@
               var entry = timeEntries.addEntry(response.data);
               resetTimer();
               if (entry.isIncomplete()) {
-                if (confirm("Your new time entry is missing a description or assignment. Would you like to view your timecard and edit it there?")) {
+                if (confirm('Your new time entry is missing a description or assignment. Would you like to view your timecard and edit it there?')) {
                   workTimer.viewTimecard();
                 }
               }
             }, function() {
-                alert('Could not stop timer');
+              alert('Could not stop timer');
             });
           };
 
@@ -103,7 +103,7 @@
             };
             $http.post(url, data)
             .catch(function() {
-                alert('Could not update timer description');
+              alert('Could not update timer description');
             });
           };
 

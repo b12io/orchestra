@@ -15,10 +15,10 @@
   var stylish = require('jshint-stylish');
 
   // html
-  var htmlhint = require("gulp-htmlhint");
+  var htmlhint = require('gulp-htmlhint');
 
   // json
-  var jsonlint = require("gulp-jsonlint");
+  var jsonlint = require('gulp-jsonlint');
 
   // scss
   var sourcemaps = require('gulp-sourcemaps');

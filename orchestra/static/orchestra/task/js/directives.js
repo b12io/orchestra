@@ -5,7 +5,6 @@
     .module('orchestra.task')
     .directive('dynamicLoad', dynamicLoad);
 
-
   dynamicLoad.$inject = ['$compile'];
 
   function dynamicLoad($compile) {

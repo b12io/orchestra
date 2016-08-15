@@ -44,7 +44,6 @@
           }
         });
 
-
         // Editor set to read-only upon initialization.
         if (scope.readonly) {
           scope.editor.editor.disable();
@@ -183,7 +182,6 @@
           return contents.length() + caretPosition.offset;
         }
 
-
         // Post image data to an API endpoint that returns an image URL, then
         // adding it to the editor (replacing the given character range)
         function uploadImage(file, range, e) {
@@ -211,7 +209,7 @@
           reader.onload = function(e) {
             var rawData = e.target.result;
             // Remove prepended image type from data string
-            var imageData = rawData.substring(rawData.indexOf(",") + 1, rawData.length);
+            var imageData = rawData.substring(rawData.indexOf(',') + 1, rawData.length);
 
             // Calculate data size of b64-encoded string
             var imageSize = imageData.length * 3 / 4;

@@ -83,7 +83,7 @@
 
         this.data.steps = steps;
 
-         /*jshint -W083 */
+        /*jshint -W083 */
         // Hide error for creating a function in a loop
         for (var step_slug in this.data.tasks) {
           var task = this.data.tasks[step_slug];

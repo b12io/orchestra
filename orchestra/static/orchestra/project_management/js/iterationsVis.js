@@ -19,7 +19,7 @@
           .data(function(assignmentKey) {
             var iterations = [];
             dataService.assignmentFromKey(assignmentKey).iterations.forEach(function(iteration, i) {
-                iterations.push(dataService.keyFromIteration(iteration));
+              iterations.push(dataService.keyFromIteration(iteration));
             });
             return iterations;
           });

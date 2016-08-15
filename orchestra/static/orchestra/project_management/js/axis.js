@@ -54,11 +54,11 @@
         var tickSpread = 10;
         var xLabelText;
         if (this.relativeTime) {
-            xAxis.tickFormat(function(d, i) {
-              if (hourTicks.length < tickSpread || i % tickSpread === 0) {
-                return (d - minDatetime) / hourInMilliseconds;
-              }
-            });
+          xAxis.tickFormat(function(d, i) {
+            if (hourTicks.length < tickSpread || i % tickSpread === 0) {
+              return (d - minDatetime) / hourInMilliseconds;
+            }
+          });
           xLabelText = 'Time (hours)';
         } else {
           xAxis.tickFormat(function(d, i) {

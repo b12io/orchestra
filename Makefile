@@ -1,5 +1,6 @@
 COVERAGE_ANNOTATION=coverage_annotations
 TEST_CMD=manage.py test orchestra beanstalk_dispatch --with-xunit --parallel=4 --exclude=assert_test*
+GULP := $(shell command -v gulp 2> /dev/null)
 
 clean:
 	find . -name '*.pyo' -delete
@@ -23,7 +24,9 @@ coveralls:
 	cd example_project && coveralls
 
 npm_install:
+ifndef GULP
 	npm install -g gulp
+endif
 	npm install
 
 gulp_build: npm_install
