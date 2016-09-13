@@ -20,8 +20,11 @@ class SafeTask(object):
                  timeout_seconds=120, num_retries=0, verbose=True):
         """
         runnable: optional function to run
-        args: list of arguments for the `runnable`
-        kwargs: dictionary of arguments for the `runnable`
+        task_args: list of arguments for the `runnable`
+        task_kwargs: dictionary of arguments for the `runnable`
+        timeout_seconds: maximum number of seconds task can run
+        num_retries: number of times to try a failed task again
+        verbose: boolean specifying if failures are logged
         """
         if runnable is not None:
             self.run = runnable
@@ -46,7 +49,8 @@ class SafeTask(object):
         """
         Runs if an exception occurs
         """
-        logger.warning(e, exc_info=True)
+        if self.verbose:
+            logger.warning(e, exc_info=True)
 
     def on_success(self):
         """
