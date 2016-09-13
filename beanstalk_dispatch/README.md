@@ -55,15 +55,14 @@ must be a queue for which a beanstalk worker is configured.
 ## Using SafeTasks
 
 By default, every function run by `beanstalk_dispatch` is wrapped in a
-`SafeTask` class which sets a `@timeout` decorator on the function and catches
+`SafeTask` class that sets a `@timeout` decorator on the function and catches
 any exceptions for logging. If you would like to customize the behavior of the
-`SafeTask`, you can pass in an instance in to `schedule_function` which
-contains your function and have this run.
+`SafeTask`, pass an instance in to `schedule_function` which contains your
+function and have this run.
 
 The following parameters/functions are configurable on a `SafeTask`
 
-`timeout`: time in seconds the task may run
-`num_retries`: number of times to retry the task if an error occurs
+`timeout_timedelta`: timedelta specifying how long the task may run
 `on_error`: run if the task fails for any reason
 `on_success`: run after the task completes successfully
-`finally`: run after each task (after `on_error` or `on_complete`)
+`on_completion`: run after each task (after `on_error` or `on_success`)

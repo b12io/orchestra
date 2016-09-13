@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+from datetime import timedelta
 from timeout_decorator import timeout as timeout_decorator
 from timeout_decorator import TimeoutError
 
@@ -16,32 +17,28 @@ class SafeTask(object):
     Runs a function within a `@timeout` decorator and catches any exceptions.
     """
 
-    def __init__(self, runnable=None, task_args=None, task_kwargs=None,
-                 timeout_seconds=120, num_retries=0, verbose=True):
+    timeout_timedelta = timedelta(minutes=2)
+    verbose = True
+
+    def __init__(self, args=None, kwargs=None):
         """
-        runnable: optional function to run
-        task_args: list of arguments for the `runnable`
-        task_kwargs: dictionary of arguments for the `runnable`
-        timeout_seconds: maximum number of seconds task can run
-        num_retries: number of times to try a failed task again
+        args: list of arguments for the `runnable`
+        kwargs: dictionary of arguments for the `runnable`
+        timeout_timedelta: maximum number of seconds task can run
         verbose: boolean specifying if failures are logged
         """
-        if runnable is not None:
-            self.run = runnable
-        if task_args is None:
-            task_args = []
-        if task_kwargs is None:
-            task_kwargs = {}
-        self.task_args = task_args
-        self.task_kwargs = task_kwargs
 
-        self.timeout_seconds = timeout_seconds
-        self.num_retries = num_retries
-        self.verbose = verbose
+        if args is None:
+            args = []
+        self.args = args
+
+        if kwargs is None:
+            kwargs = {}
+        self.kwargs = kwargs
 
     def run(self, *args, **kwargs):
         """
-        Default run method which runs the `runnable` function.
+        Abstract method to fill in with task work.
         """
         pass
 
@@ -49,8 +46,7 @@ class SafeTask(object):
         """
         Runs if an exception occurs
         """
-        if self.verbose:
-            logger.warning(e, exc_info=True)
+        pass
 
     def on_success(self):
         """
@@ -58,13 +54,7 @@ class SafeTask(object):
         """
         pass
 
-    def reschedule(self):
-        """
-        Abstract method for retrying a task
-        """
-        pass
-
-    def on_complete(self):
+    def on_completion(self):
         """
         Runs upon task success
         """
@@ -72,16 +62,17 @@ class SafeTask(object):
 
     def process(self):
         try:
-            with timeout(self.run, self.timeout_seconds) as run:
-                run(*self.task_args, **self.task_kwargs)
+            timeout_seconds = self.timeout_timedelta.total_seconds()
+            with timeout(self.run, timeout_seconds) as run:
+                run(*self.args, **self.kwargs)
         except Exception as e:
-            self.on_error(e)
-            if self.num_retries > 0:
-                self.num_retries -= 1
-                self.reschedule()
             if self.verbose:
                 if isinstance(e, TimeoutError):
-                    logger.warning('Task timed out %s', e, exc_info=True)
+                    logger.error('SafeTask timed out: %s', e, exc_info=True)
+                else:
+                    logger.error('Error running SafeTask: %s',
+                                 e, exc_info=True)
+            self.on_error(e)
         else:
             self.on_success()
         finally:

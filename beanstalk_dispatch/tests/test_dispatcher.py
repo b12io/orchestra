@@ -5,6 +5,7 @@ from beanstalk_dispatch import ARGS
 from beanstalk_dispatch import FUNCTION
 from beanstalk_dispatch import KWARGS
 from beanstalk_dispatch.common import create_request_body
+from beanstalk_dispatch.safe_task import SafeTask
 from django.core.urlresolvers import reverse
 from django.test import Client
 from django.test import TestCase
@@ -20,10 +21,23 @@ def counter_incrementer(first_arg, second_arg=None):
         CALL_COUNTER += second_arg
 
 
+class CounterIncrementerTask(SafeTask):
+
+    def run(self, *args, **kwargs):
+        counter_incrementer(*args, **kwargs)
+
+
+class BadTaskClass(object):
+    pass
+
 DISPATCH_SETTINGS = {
     'BEANSTALK_DISPATCH_TABLE': {
         'the_counter': ('beanstalk_dispatch.tests.'
-                        'test_dispatcher.counter_incrementer')
+                        'test_dispatcher.counter_incrementer'),
+        'the_counter_task': ('beanstalk_dispatch.tests.'
+                             'test_dispatcher.CounterIncrementerTask'),
+        'bad_task': ('beanstalk_dispatch.tests.'
+                     'test_dispatcher.BadTaskClass'),
     }
 }
 
@@ -67,7 +81,25 @@ class DispatcherTestCase(TestCase):
         self.assertEquals(response.status_code, 400)
         self.assertEquals(
             json.loads(response.content.decode()),
-            {'message': 'Requested function not found: nonexistent_func',
+            {
+                'message': ('(\'Requested function not found: %s\','
+                            ' \'nonexistent_func\')'),
+                'error': 400
+            })
+
+    @override_settings(**DISPATCH_SETTINGS)
+    def test_invalid_task_class(self):
+        response = self.client.post(
+            self.url,
+            b64encode(create_request_body(
+                'bad_task', 'test-queue', {}).encode('ascii')),
+            content_type='application/json')
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(
+            json.loads(response.content.decode()),
+            {
+                'message': ('(\'Requested task is not a SafeTask subclass:'
+                            ' %s\', \'bad_task\')'),
                 'error': 400})
 
     @override_settings(**DISPATCH_SETTINGS)
@@ -108,3 +140,28 @@ class DispatcherTestCase(TestCase):
         self.assertEquals(json.loads(response.content.decode()),
                           {})
         self.assertEquals(CALL_COUNTER, 2)
+
+    @override_settings(**DISPATCH_SETTINGS)
+    def test_just_args_task(self):
+        body = b64encode(create_request_body(
+            'the_counter_task', 2).encode('ascii'))
+        response = self.client.post(self.url,
+                                    body,
+                                    content_type='application/json')
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(json.loads(response.content.decode()),
+                          {})
+        self.assertEquals(CALL_COUNTER, 2)
+
+    @override_settings(**DISPATCH_SETTINGS)
+    def test_both_args_kwargs_task(self):
+        body = b64encode(
+            create_request_body('the_counter_task', 1, second_arg=5)
+            .encode('ascii'))
+        response = self.client.post(self.url,
+                                    body,
+                                    content_type='application/json')
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(json.loads(response.content.decode()),
+                          {})
+        self.assertEquals(CALL_COUNTER, 6)
