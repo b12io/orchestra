@@ -6,13 +6,13 @@ from django.test import TestCase
 from unittest.mock import MagicMock
 
 
-def get_mock_task(*args, **kwargs):
+def get_mock_task():
     MockSafeTask = SafeTask
     MockSafeTask.run = MagicMock()
     MockSafeTask.on_error = MagicMock()
     MockSafeTask.on_success = MagicMock()
     MockSafeTask.on_completion = MagicMock()
-    return MockSafeTask(*args, **kwargs)
+    return MockSafeTask()
 
 
 def _sleep_too_long():
@@ -23,6 +23,8 @@ def _sleep_too_long():
 class SafeTaskTestCase(TestCase):
 
     test_error = Exception('Test exception')
+    test_args = ['test', 'args']
+    test_kwargs = {'test': 'kwargs'}
 
     """
     Test the basic SafeTask functionality
@@ -41,15 +43,15 @@ class SafeTaskTestCase(TestCase):
         task.on_completion.assert_called_once_with()
 
     def test_task_success_args_kwargs(self):
-        test_args = ['test', 'args']
-        test_kwargs = {'test': 'kwargs'}
-        task = get_mock_task(args=test_args, kwargs=test_kwargs)
-        task.process()
+        task = get_mock_task()
+        task.process(*self.test_args, **self.test_kwargs)
 
-        task.run.assert_called_once_with(*test_args, **test_kwargs)
-        task.on_success.assert_called_once_with()
+        task.run.assert_called_once_with(*self.test_args, **self.test_kwargs)
+        task.on_success.assert_called_once_with(
+            *self.test_args, **self.test_kwargs)
         task.on_error.assert_not_called()
-        task.on_completion.assert_called_once_with()
+        task.on_completion.assert_called_once_with(
+            *self.test_args, **self.test_kwargs)
 
     def test_task_error(self):
         """
@@ -65,16 +67,16 @@ class SafeTaskTestCase(TestCase):
         task.on_completion.assert_called_once_with()
 
     def test_task_error_args_kwargs(self):
-        test_args = ['test', 'args']
-        test_kwargs = {'test': 'kwargs'}
-        task = get_mock_task(args=test_args, kwargs=test_kwargs)
+        task = get_mock_task()
         task.run.side_effect = self.test_error
-        task.process()
+        task.process(*self.test_args, **self.test_kwargs)
 
-        task.run.assert_called_once_with(*test_args, **test_kwargs)
+        task.run.assert_called_once_with(*self.test_args, **self.test_kwargs)
         task.on_success.assert_not_called()
-        task.on_error.assert_called_once_with(self.test_error)
-        task.on_completion.assert_called_once_with()
+        task.on_error.assert_called_once_with(
+            self.test_error, *self.test_args, **self.test_kwargs)
+        task.on_completion.assert_called_once_with(
+            *self.test_args, **self.test_kwargs)
 
     def test_task_error_timeout(self):
         # Test timeout

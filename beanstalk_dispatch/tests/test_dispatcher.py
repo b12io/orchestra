@@ -82,8 +82,7 @@ class DispatcherTestCase(TestCase):
         self.assertEquals(
             json.loads(response.content.decode()),
             {
-                'message': ('(\'Requested function not found: %s\','
-                            ' \'nonexistent_func\')'),
+                'message': 'Requested function not found: nonexistent_func',
                 'error': 400
             })
 
@@ -98,9 +97,10 @@ class DispatcherTestCase(TestCase):
         self.assertEquals(
             json.loads(response.content.decode()),
             {
-                'message': ('(\'Requested task is not a SafeTask subclass:'
-                            ' %s\', \'bad_task\')'),
-                'error': 400})
+                'message': ('Requested task is not a SafeTask'
+                            ' subclass: bad_task'),
+                'error': 400
+            })
 
     @override_settings(**DISPATCH_SETTINGS)
     def test_malformed_request(self):

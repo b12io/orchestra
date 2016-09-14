@@ -37,16 +37,16 @@ def execute_function(function_request):
         kwargs = function_request[KWARGS]
         if inspect.isclass(runnable):
             if issubclass(runnable, SafeTask):
-                task = runnable(args=args, kwargs=kwargs)
+                task = runnable()
             else:
                 raise BeanstalkDispatchError(
-                    'Requested task is not a SafeTask subclass: %s',
-                    function_request[FUNCTION])
+                    'Requested task is not a SafeTask subclass: {}'.format(
+                        function_request[FUNCTION]))
         else:
-            task = SafeTask(args=args, kwargs=kwargs)
+            task = SafeTask()
             task.run = runnable
-        task.process()
+        task.process(*args, **kwargs)
     else:
         raise BeanstalkDispatchError(
-            'Requested function not found: %s',
-            function_request[FUNCTION])
+            'Requested function not found: {}'.format(
+                function_request[FUNCTION]))

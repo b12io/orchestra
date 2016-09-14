@@ -16,6 +16,8 @@ def timeout(function, time):
 class SafeTask(object):
     """
     Runs a function within a `@timeout` decorator and catches any exceptions.
+    timeout_timedelta: maximum number of seconds task can run
+    verbose: boolean specifying if failures are logged
     """
 
     timeout_timedelta = getattr(settings,
@@ -23,51 +25,39 @@ class SafeTask(object):
                                 timedelta(minutes=2))
     verbose = True
 
-    def __init__(self, args=None, kwargs=None):
-        """
-        args: list of arguments for the `runnable`
-        kwargs: dictionary of arguments for the `runnable`
-        timeout_timedelta: maximum number of seconds task can run
-        verbose: boolean specifying if failures are logged
-        """
-
-        if args is None:
-            args = []
-        self.args = args
-
-        if kwargs is None:
-            kwargs = {}
-        self.kwargs = kwargs
-
     def run(self, *args, **kwargs):
         """
         Abstract method to fill in with task work.
         """
         pass
 
-    def on_error(self, e):
+    def on_error(self, e, *args, **kwargs):
         """
         Runs if an exception occurs
         """
         pass
 
-    def on_success(self):
+    def on_success(self, *args, **kwargs):
         """
         Runs upon successful task success
         """
         pass
 
-    def on_completion(self):
+    def on_completion(self, *args, **kwargs):
         """
         Runs upon task success
         """
         pass
 
-    def process(self):
+    def process(self, *args, **kwargs):
+        """
+        args: list of arguments for the `runnable`
+        kwargs: dictionary of arguments for the `runnable`
+        """
         try:
             timeout_seconds = self.timeout_timedelta.total_seconds()
             with timeout(self.run, timeout_seconds) as run:
-                run(*self.args, **self.kwargs)
+                run(*args, **kwargs)
         except Exception as e:
             if self.verbose:
                 if isinstance(e, TimeoutError):
@@ -75,8 +65,8 @@ class SafeTask(object):
                 else:
                     logger.error('Error running SafeTask: %s',
                                  e, exc_info=True)
-            self.on_error(e)
+            self.on_error(e, *args, **kwargs)
         else:
-            self.on_success()
+            self.on_success(*args, **kwargs)
         finally:
-            self.on_completion()
+            self.on_completion(*args, **kwargs)
