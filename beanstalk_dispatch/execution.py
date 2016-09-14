@@ -1,3 +1,5 @@
+import inspect
+
 from pydoc import locate
 from django.conf import settings
 
@@ -5,6 +7,7 @@ from beanstalk_dispatch import ARGS
 from beanstalk_dispatch import FUNCTION
 from beanstalk_dispatch import KWARGS
 from beanstalk_dispatch import BeanstalkDispatchError
+from beanstalk_dispatch.safe_task import SafeTask
 
 
 def execute_function(function_request):
@@ -27,10 +30,24 @@ def execute_function(function_request):
     )
 
     if function_path:
-        # TODO(marcua): Catch import errors and rethrow them as
-        # BeanstalkDispatchErrors.
-        function = locate(function_path)
-        function(*function_request[ARGS], **function_request[KWARGS])
+        runnable = locate(function_path)
+        if not runnable:
+            raise BeanstalkDispatchError(
+                'Unable to locate function: {}'.format(function_path))
+
+        args = function_request[ARGS]
+        kwargs = function_request[KWARGS]
+        if inspect.isclass(runnable):
+            if issubclass(runnable, SafeTask):
+                task = runnable()
+            else:
+                raise BeanstalkDispatchError(
+                    'Requested task is not a SafeTask subclass: {}'.format(
+                        function_request[FUNCTION]))
+        else:
+            task = SafeTask()
+            task.run = runnable
+        task.process(*args, **kwargs)
     else:
         raise BeanstalkDispatchError(
             'Requested function not found: {}'.format(
