@@ -30,9 +30,11 @@ def execute_function(function_request):
     )
 
     if function_path:
-        # TODO(marcua): Catch import errors and rethrow them as
-        # BeanstalkDispatchErrors.
         runnable = locate(function_path)
+        if not runnable:
+            raise BeanstalkDispatchError(
+                'Unable to locate function: {}'.format(function_path))
+
         args = function_request[ARGS]
         kwargs = function_request[KWARGS]
         if inspect.isclass(runnable):

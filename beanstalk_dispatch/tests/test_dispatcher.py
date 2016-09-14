@@ -36,12 +36,14 @@ DISPATCH_SETTINGS = {
                         'test_dispatcher.counter_incrementer'),
         'the_counter_task': ('beanstalk_dispatch.tests.'
                              'test_dispatcher.CounterIncrementerTask'),
-        'bad_task': ('beanstalk_dispatch.tests.'
-                     'test_dispatcher.BadTaskClass'),
+        'bad_task_class': ('beanstalk_dispatch.tests.'
+                           'test_dispatcher.BadTaskClass'),
+        'bad_function_pointer': 'nothing-to-see-here',
     }
 }
 
 
+@override_settings(**DISPATCH_SETTINGS)
 class DispatcherTestCase(TestCase):
 
     """ Test the server-side function dispatcher.
@@ -56,7 +58,6 @@ class DispatcherTestCase(TestCase):
         self.client = Client()
         self.url = reverse('beanstalk_dispatcher')
 
-    @override_settings(**DISPATCH_SETTINGS)
     def test_no_get(self):
         response = self.client.get(self.url)
         self.assertEquals(response.status_code, 405)
@@ -72,7 +73,6 @@ class DispatcherTestCase(TestCase):
                           {'message': 'No beanstalk dispatch table configured',
                            'error': 400})
 
-    @override_settings(**DISPATCH_SETTINGS)
     def test_missing_function(self):
         response = self.client.post(
             self.url,
@@ -86,23 +86,35 @@ class DispatcherTestCase(TestCase):
                 'error': 400
             })
 
-    @override_settings(**DISPATCH_SETTINGS)
     def test_invalid_task_class(self):
         response = self.client.post(
             self.url,
             b64encode(create_request_body(
-                'bad_task', 'test-queue', {}).encode('ascii')),
+                'bad_task_class', 'test-queue', {}).encode('ascii')),
             content_type='application/json')
         self.assertEquals(response.status_code, 400)
         self.assertEquals(
             json.loads(response.content.decode()),
             {
                 'message': ('Requested task is not a SafeTask'
-                            ' subclass: bad_task'),
+                            ' subclass: bad_task_class'),
                 'error': 400
             })
 
-    @override_settings(**DISPATCH_SETTINGS)
+    def test_invalid_function_pointer(self):
+        response = self.client.post(
+            self.url,
+            b64encode(create_request_body(
+                'bad_function_pointer', 'test-queue', {}).encode('ascii')),
+            content_type='application/json')
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(
+            json.loads(response.content.decode()),
+            {
+                'message': 'Unable to locate function: nothing-to-see-here',
+                'error': 400
+            })
+
     def test_malformed_request(self):
         keys = {FUNCTION, ARGS, KWARGS}
         for missing_key in keys:
@@ -117,7 +129,6 @@ class DispatcherTestCase(TestCase):
                 'message': 'Please provide a {} argument'.format(missing_key),
                 'error': 400})
 
-    @override_settings(**DISPATCH_SETTINGS)
     def test_both_args_kwargs(self):
         body = b64encode(
             create_request_body('the_counter', 1, second_arg=5)
@@ -130,7 +141,6 @@ class DispatcherTestCase(TestCase):
                           {})
         self.assertEquals(CALL_COUNTER, 6)
 
-    @override_settings(**DISPATCH_SETTINGS)
     def test_just_args(self):
         body = b64encode(create_request_body('the_counter', 2).encode('ascii'))
         response = self.client.post(self.url,
@@ -141,7 +151,6 @@ class DispatcherTestCase(TestCase):
                           {})
         self.assertEquals(CALL_COUNTER, 2)
 
-    @override_settings(**DISPATCH_SETTINGS)
     def test_just_args_task(self):
         body = b64encode(create_request_body(
             'the_counter_task', 2).encode('ascii'))
@@ -153,7 +162,6 @@ class DispatcherTestCase(TestCase):
                           {})
         self.assertEquals(CALL_COUNTER, 2)
 
-    @override_settings(**DISPATCH_SETTINGS)
     def test_both_args_kwargs_task(self):
         body = b64encode(
             create_request_body('the_counter_task', 1, second_arg=5)
