@@ -27,25 +27,25 @@ class SafeTask(object):
 
     def run(self, *args, **kwargs):
         """
-        Abstract method to fill in with task work.
+        Abstract method to fill in with task work
         """
         pass
 
     def on_error(self, e, *args, **kwargs):
         """
-        Runs if an exception occurs
+        Run if the task fails for any reason
         """
         pass
 
     def on_success(self, *args, **kwargs):
         """
-        Runs upon successful task success
+        Run after the task completes successfully
         """
         pass
 
     def on_completion(self, *args, **kwargs):
         """
-        Runs upon task success
+        Run after each task (after `on_error` or `on_success`)
         """
         pass
 

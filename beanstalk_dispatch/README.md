@@ -64,6 +64,7 @@ The following parameters/functions are configurable on a `SafeTask`
 
 `timeout_timedelta`: maximum number of seconds task can run
 `verbose`: boolean specifying if failures are logged
+`run`: abstract method to fill in with task work
 `on_error`: run if the task fails for any reason
 `on_success`: run after the task completes successfully
 `on_completion`: run after each task (after `on_error` or `on_success`)
