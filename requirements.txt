@@ -1,4 +1,4 @@
-Django==1.9.9
+Django==1.9.10
 jsonfield==1.0.3
 django-jsonview==1.0.0
 requests==2.11.1
