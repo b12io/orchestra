@@ -13,24 +13,24 @@ moto==0.4.27
 flake8==3.0.4
 djangorestframework==3.4.7
 djangorestframework-httpsignature==1.0.0
-djangocms-admin-style==1.2.4
+djangocms-admin-style==1.2.5
 lxml==3.6.4
 beautifulsoup4==4.5.1
 pyOpenSSL==16.1.0
 pycrypto==2.6.1
 google-api-python-client==1.5.3
-slacker==0.9.25
+slacker==0.9.28
 pandas==0.18.1
 python-dateutil==2.5.3
 django-hijack==2.1.2
 django-hijack-admin==2.1.2
 django-money==0.9.1
-django-filter==0.15.0
+django-filter==0.15.2
 django-widget-tweaks==1.4.1
 django-bitfield==1.8.0
 django-phonenumber-field==1.1.0
 django-nose==1.4.4
-django-annoying==0.10.1
+django-annoying==0.10.3
 django-gulp==2.5.0
 django-related-admin==0.3.1
 django-ajax-selects==1.5.0
@@ -39,4 +39,4 @@ markdown2==2.3.1
 timeout-decorator==0.3.2
 
 # Journalism Workflow requirements
-Pillow==3.3.1
+Pillow==3.4.1
