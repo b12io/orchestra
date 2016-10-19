@@ -124,6 +124,7 @@
       },
       getDescription: function(task) {
         if (task) {
+          console.log(task);
           return task.detail + ' (' + task.step + ')';
         }
       }
