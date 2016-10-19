@@ -3,7 +3,7 @@
   <ui-select-match>
     <span ng-bind="taskSelect.orchestraTasks.getDescription($select.selected)"></span>
   </ui-select-match>
-  <ui-select-choices repeat="item in (taskSelect.orchestraTasks.allTasks() | filter: $select.search) track by item.id">
+  <ui-select-choices repeat="item in (taskSelect.orchestraTasks.activeAndRecentTasks(5) | filter: $select.search) track by item.id">
     <span ng-bind="taskSelect.orchestraTasks.getDescription(item)"></span>
   </ui-select-choices>
 </ui-select>

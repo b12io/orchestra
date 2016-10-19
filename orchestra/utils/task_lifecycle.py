@@ -461,13 +461,13 @@ def tasks_assigned_to_worker(worker):
             inactive_review_task_assignments.append(task_assignment)
 
     # TODO(marcua): Do a better job of paginating than cutting off to the most
-    # recent 20 tasks.
+    # recent 200 tasks.
     complete_task_assignments = (
         valid_task_assignments
         .filter(worker=worker,
                 task__status=Task.Status.COMPLETE)
         .order_by('-task__project__priority',
-                  '-task__project__start_datetime')[:20])
+                  '-task__project__start_datetime')[:200])
 
     # TODO(jrbotros): convert this to a filterable list
     task_assignments_overview = {
