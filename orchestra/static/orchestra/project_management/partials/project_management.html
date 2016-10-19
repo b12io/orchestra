@@ -7,10 +7,10 @@
               ng-change="vis.dataService.setSelectedProject()"
               ng-disabled="vis.dataService.loading">
             <ui-select-match>
-              <span ng-bind="$select.selected.short_description"></span>
+              <span ng-bind="projectDescription($select.selected)"></span>
             </ui-select-match>
             <ui-select-choices repeat="item in (vis.dataService.allProjects | toArray | filter: $select.search) track by item.id">
-              <span ng-bind="item.short_description"></span>
+              <span ng-bind="projectDescription(item)"></span>
             </ui-select-choices>
           </ui-select>
           <div class="project-actions" ng-show="vis.dataService.currentProject.id">
