@@ -110,17 +110,23 @@
         }
         return tasks;
       },
-      tasksForType: function(taskType) {
-        return this.tasks[taskType];
-      },
-      numActiveTasks: function() {
-        var numTasks = 0;
-        for (var taskType in this.tasks) {
-          if (taskType != 'complete') {
-            numTasks += this.tasksForType(taskType).length;
+      activeTasks: function() {
+        var tasks = [];
+        for (var type in this.tasks) {
+          if (type != 'complete') {
+            tasks = tasks.concat(this.tasks[type]);
           }
         }
-        return numTasks;
+        return tasks;
+      },
+      activeAndRecentTasks: function(numRecent) {
+        // Return all active tasks, as well as `numRecent` of the most
+        // recently completed tasks.
+        var tasks = this.activeTasks();
+        return tasks.concat(this.tasks.complete.slice(0, numRecent));
+      },
+      tasksForType: function(taskType) {
+        return this.tasks[taskType];
       },
       getDescription: function(task) {
         if (task) {
