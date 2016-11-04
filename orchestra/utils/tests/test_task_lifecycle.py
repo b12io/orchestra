@@ -611,3 +611,32 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         first_step.assignment_policy = {}
         first_step.save()
         project.tasks.all().delete()
+
+    @patch('orchestra.utils.task_lifecycle.schedule_machine_task')
+    def test_schedule_machine_task(self, mock_schedule):
+        project = self.projects['test_human_and_machine']
+
+        # Assign initial task to worker 0 and mark as complete
+        initial_task = assign_task(self.workers[0].id,
+                                   project.tasks.first().id)
+        initial_task.status = Task.Status.COMPLETE
+        initial_task.save()
+
+        create_subsequent_tasks(project)
+        self.assertEqual(mock_schedule.call_count, 1)
+        self.assertEqual(mock_schedule.call_args[0][1], project)
+
+    @patch('orchestra.utils.task_lifecycle._preassign_workers')
+    @patch('orchestra.utils.task_lifecycle.schedule_machine_task')
+    def test_schedule_machine_task_failed(self, mock_schedule, mock_preassign):
+        mock_preassign.side_effect = Exception
+        project = self.projects['test_human_and_machine']
+
+        # Assign initial task to worker 0 and mark as complete
+        initial_task = assign_task(self.workers[0].id,
+                                   project.tasks.first().id)
+        initial_task.status = Task.Status.COMPLETE
+        initial_task.save()
+
+        create_subsequent_tasks(project)
+        mock_schedule.assert_not_called()

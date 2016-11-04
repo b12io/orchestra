@@ -965,7 +965,17 @@ def _preassign_workers(task, policy_type):
     return task
 
 
+def schedule_machine_task(project, step):
+    machine_step_scheduler_class = locate(
+        settings.MACHINE_STEP_SCHEDULER['path']
+    )
+    kwargs = settings.MACHINE_STEP_SCHEDULER.get('kwargs', {})
+    machine_step_scheduler = machine_step_scheduler_class(**kwargs)
+    machine_step_scheduler.schedule(project.id, step.slug)
+
+
 # TODO(kkamalov): make a periodic job that runs this function periodically
+@transaction.atomic
 def create_subsequent_tasks(project):
     """
     Create tasks for a given project whose dependencies have been
@@ -979,14 +989,6 @@ def create_subsequent_tasks(project):
         project (orchestra.models.Project):
             The modified project object.
     """
-    def schedule_machine_task(project, step):
-        machine_step_scheduler_class = locate(
-            settings.MACHINE_STEP_SCHEDULER['path']
-        )
-        kwargs = settings.MACHINE_STEP_SCHEDULER.get('kwargs', {})
-        machine_step_scheduler = machine_step_scheduler_class(**kwargs)
-        machine_step_scheduler.schedule(project.id, step.slug)
-
     workflow_version = project.workflow_version
     all_steps = workflow_version.steps.all()
 
