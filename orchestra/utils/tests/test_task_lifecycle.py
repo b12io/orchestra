@@ -14,7 +14,7 @@ from orchestra.models import Project
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import WorkerCertification
-from orchestra.tests.helpers import OrchestraTestCase
+from orchestra.tests.helpers import OrchestraTransactionTestCase
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.fixtures import StepFactory
 from orchestra.tests.helpers.fixtures import TaskAssignmentFactory
@@ -33,7 +33,7 @@ from orchestra.utils.task_lifecycle import worker_has_reviewer_status
 from orchestra.utils.task_properties import current_assignment
 
 
-class BasicTaskLifeCycleTestCase(OrchestraTestCase):
+class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
     """
     Test modular functions in the task_lifecycle
     """
@@ -616,6 +616,9 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
     def test_schedule_machine_task(self, mock_schedule):
         project = self.projects['test_human_and_machine']
 
+        # Create first task in project
+        create_subsequent_tasks(project)
+
         # Assign initial task to worker 0 and mark as complete
         initial_task = assign_task(self.workers[0].id,
                                    project.tasks.first().id)
@@ -624,13 +627,15 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
 
         create_subsequent_tasks(project)
         self.assertEqual(mock_schedule.call_count, 1)
-        self.assertEqual(mock_schedule.call_args[0][1], project)
+        self.assertEqual(mock_schedule.call_args[0][0], project)
 
     @patch('orchestra.utils.task_lifecycle._preassign_workers')
     @patch('orchestra.utils.task_lifecycle.schedule_machine_task')
     def test_schedule_machine_task_failed(self, mock_schedule, mock_preassign):
-        mock_preassign.side_effect = Exception
         project = self.projects['test_human_and_machine']
+
+        # Create first task in project
+        create_subsequent_tasks(project)
 
         # Assign initial task to worker 0 and mark as complete
         initial_task = assign_task(self.workers[0].id,
@@ -638,5 +643,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         initial_task.status = Task.Status.COMPLETE
         initial_task.save()
 
-        create_subsequent_tasks(project)
+        mock_preassign.side_effect = Exception
+        with self.assertRaises(Exception):
+            create_subsequent_tasks(project)
         mock_schedule.assert_not_called()
