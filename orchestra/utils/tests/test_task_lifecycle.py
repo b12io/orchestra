@@ -612,8 +612,8 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
         first_step.save()
         project.tasks.all().delete()
 
-    @patch('orchestra.utils.task_lifecycle.schedule_machine_task')
-    def test_schedule_machine_task(self, mock_schedule):
+    @patch('orchestra.utils.task_lifecycle.schedule_machine_tasks')
+    def test_schedule_machine_tasks(self, mock_schedule):
         project = self.projects['test_human_and_machine']
 
         # Create first task in project
@@ -632,8 +632,8 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
         self.assertEqual(mock_schedule.call_args[0][1], steps)
 
     @patch('orchestra.utils.task_lifecycle._preassign_workers')
-    @patch('orchestra.utils.task_lifecycle.schedule_machine_task')
-    def test_schedule_machine_task_failed(self, mock_schedule, mock_preassign):
+    @patch('orchestra.utils.task_lifecycle.schedule_machine_tasks')
+    def test_schedule_machine_tasks_failed(self, mock_schedule, mock_preassign):
         project = self.projects['test_human_and_machine']
 
         # Create first task in project

@@ -965,7 +965,7 @@ def _preassign_workers(task, policy_type):
     return task
 
 
-def schedule_machine_task(project, steps):
+def schedule_machine_tasks(project, steps):
     machine_step_scheduler_class = locate(
         settings.MACHINE_STEP_SCHEDULER['path']
     )
@@ -1019,5 +1019,5 @@ def create_subsequent_tasks(project):
                 machine_tasks_to_schedule.append(step)
 
     if len(machine_tasks_to_schedule) > 0:
-        connection.on_commit(lambda: schedule_machine_task(
+        connection.on_commit(lambda: schedule_machine_tasks(
             project, machine_tasks_to_schedule))
