@@ -4,14 +4,14 @@ from django.test import override_settings
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import Step
-from orchestra.tests.helpers import OrchestraTestCase
+from orchestra.tests.helpers import OrchestraTransactionTestCase
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.iterations import verify_iterations
 from orchestra.utils.load_json import load_encoded_json
 from orchestra.utils.task_lifecycle import create_subsequent_tasks
 
 
-class DashboardTestCase(OrchestraTestCase):
+class DashboardTestCase(OrchestraTransactionTestCase):
 
     def setUp(self):  # noqa
         super().setUp()
