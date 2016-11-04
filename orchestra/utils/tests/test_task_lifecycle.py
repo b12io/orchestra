@@ -628,7 +628,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
         create_subsequent_tasks(project)
         self.assertEqual(mock_schedule.call_count, 1)
         self.assertEqual(mock_schedule.call_args[0][0], project)
-        steps = project.workflow_version.steps.filter(is_human=False)
+        steps = list(project.workflow_version.steps.filter(is_human=False))
         self.assertEqual(mock_schedule.call_args[0][1], steps)
 
     @patch('orchestra.utils.task_lifecycle._preassign_workers')

@@ -1018,5 +1018,6 @@ def create_subsequent_tasks(project):
             if not step.is_human:
                 machine_tasks_to_schedule.append(step)
 
-    connection.on_commit(lambda: schedule_machine_task(
-        project, machine_tasks_to_schedule))
+    if len(machine_tasks_to_schedule) > 0:
+        connection.on_commit(lambda: schedule_machine_task(
+            project, machine_tasks_to_schedule))
