@@ -633,7 +633,8 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
 
     @patch('orchestra.utils.task_lifecycle._preassign_workers')
     @patch('orchestra.utils.task_lifecycle.schedule_machine_tasks')
-    def test_schedule_machine_tasks_failed(self, mock_schedule, mock_preassign):
+    def test_schedule_machine_tasks_failed(self, mock_schedule,
+                                           mock_preassign):
         project = self.projects['test_human_and_machine']
 
         # Create first task in project
