@@ -965,13 +965,14 @@ def _preassign_workers(task, policy_type):
     return task
 
 
-def schedule_machine_task(project, step):
+def schedule_machine_task(project, steps):
     machine_step_scheduler_class = locate(
         settings.MACHINE_STEP_SCHEDULER['path']
     )
     kwargs = settings.MACHINE_STEP_SCHEDULER.get('kwargs', {})
     machine_step_scheduler = machine_step_scheduler_class(**kwargs)
-    machine_step_scheduler.schedule(project.id, step.slug)
+    for step in steps:
+        machine_step_scheduler.schedule(project.id, step.slug)
 
 
 # TODO(kkamalov): make a periodic job that runs this function periodically
@@ -998,6 +999,7 @@ def create_subsequent_tasks(project):
     completed_step_slugs = set(completed_tasks.values_list('step__slug',
                                                            flat=True))
 
+    machine_tasks_to_schedule = []
     for step in all_steps:
         if step.slug in completed_step_slugs or Task.objects.filter(
                 project=project, step=step).exists():
@@ -1014,5 +1016,7 @@ def create_subsequent_tasks(project):
             _preassign_workers(task, AssignmentPolicyType.ENTRY_LEVEL)
 
             if not step.is_human:
-                connection.on_commit(lambda: schedule_machine_task(
-                    project, step))
+                machine_tasks_to_schedule.append(step)
+
+    connection.on_commit(lambda: schedule_machine_task(
+        project, machine_tasks_to_schedule))
