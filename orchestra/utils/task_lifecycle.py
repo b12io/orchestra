@@ -2,6 +2,7 @@ import random
 from pydoc import locate
 
 from django.conf import settings
+from django.db import connection
 from django.db import transaction
 from django.utils import timezone
 
@@ -978,6 +979,14 @@ def create_subsequent_tasks(project):
         project (orchestra.models.Project):
             The modified project object.
     """
+    def schedule_machine_task(project, step):
+        machine_step_scheduler_class = locate(
+            settings.MACHINE_STEP_SCHEDULER['path']
+        )
+        kwargs = settings.MACHINE_STEP_SCHEDULER.get('kwargs', {})
+        machine_step_scheduler = machine_step_scheduler_class(**kwargs)
+        machine_step_scheduler.schedule(project.id, step.slug)
+
     workflow_version = project.workflow_version
     all_steps = workflow_version.steps.all()
 
@@ -986,6 +995,7 @@ def create_subsequent_tasks(project):
                                           project=project)
     completed_step_slugs = set(completed_tasks.values_list('step__slug',
                                                            flat=True))
+
     for step in all_steps:
         if step.slug in completed_step_slugs or Task.objects.filter(
                 project=project, step=step).exists():
@@ -1000,10 +1010,7 @@ def create_subsequent_tasks(project):
             task.save()
 
             _preassign_workers(task, AssignmentPolicyType.ENTRY_LEVEL)
+
             if not step.is_human:
-                machine_step_scheduler_class = locate(
-                    settings.MACHINE_STEP_SCHEDULER['path']
-                )
-                kwargs = settings.MACHINE_STEP_SCHEDULER.get('kwargs', {})
-                machine_step_scheduler = machine_step_scheduler_class(**kwargs)
-                machine_step_scheduler.schedule(project.id, step.slug)
+                connection.on_commit(lambda: schedule_machine_task(
+                    project, step))
