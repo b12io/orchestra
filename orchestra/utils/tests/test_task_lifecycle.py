@@ -40,7 +40,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
     Test modular functions in the task_lifecycle
     """
 
-    def setUp(self):  # noqa
+    def setUp(self):
         super().setUp()
         setup_models(self)
 
@@ -549,9 +549,6 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
         self.assertTrue(
             related_task.is_worker_assigned(self.workers[4]))
 
-        # Reset project
-        project.tasks.all().delete()
-
     def test_malformed_assignment_policy(self):
         project = self.projects['assignment_policy']
         workflow_version = project.workflow_version
@@ -610,11 +607,6 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
         with self.assertRaises(AssignmentPolicyError):
             create_subsequent_tasks(project)
 
-        # Reset workflow and project
-        first_step.assignment_policy = {}
-        first_step.save()
-        project.tasks.all().delete()
-
     def test_malformed_creation_policy(self):
         project = self.projects['creation_policy']
         workflow_version = project.workflow_version
@@ -643,9 +635,6 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
         # Cannot have an invalid blob for the creation_policy
         with self.assertRaises(CreationPolicyError):
             create_subsequent_tasks(project)
-
-        # Reset project
-        project.tasks.all().delete()
 
     @patch('orchestra.utils.task_lifecycle.schedule_machine_tasks')
     def test_schedule_machine_tasks(self, mock_schedule):

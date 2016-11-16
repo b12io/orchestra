@@ -36,6 +36,3 @@ class CreationPolicyTestCase(OrchestraTestCase):
                                        self.workers[0])
 
         self.assertEqual(project.tasks.count(), 1)
-
-        # Reset project
-        project.tasks.all().delete()

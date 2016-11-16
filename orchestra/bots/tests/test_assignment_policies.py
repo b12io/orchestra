@@ -53,6 +53,3 @@ class StaffBotAutoAssignTestCase(OrchestraTestCase):
         # auto-assigned
         self.assertEqual(related_task.assignments.count(), 0)
         self.assertEqual(related_task.status, Task.Status.AWAITING_PROCESSING)
-
-        # Reset project
-        project.tasks.all().delete()

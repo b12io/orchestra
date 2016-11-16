@@ -13,7 +13,7 @@ from orchestra.utils.task_lifecycle import create_subsequent_tasks
 
 class DashboardTestCase(OrchestraTransactionTestCase):
 
-    def setUp(self):  # noqa
+    def setUp(self):
         super().setUp()
         setup_models(self)
 

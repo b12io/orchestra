@@ -16,7 +16,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
     """
     Test project module helper functions.
     """
-    def setUp(self):  # noqa
+    def setUp(self):
         super().setUp()
         setup_models(self)
 

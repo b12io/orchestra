@@ -10,7 +10,8 @@ from orchestra.utils.task_lifecycle import submit_task
 
 
 class ProjectPropertiesTestCase(OrchestraTestCase):
-    def setUp(self):  # noqa
+
+    def setUp(self):
         super().setUp()
         setup_models(self)
 

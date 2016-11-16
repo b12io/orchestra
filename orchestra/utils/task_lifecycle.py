@@ -928,8 +928,8 @@ def end_project(project_id):
 
 def _check_creation_policy(step, project):
     """
-    Check the creation policy of the given step allows the task to be completed
-    with the given step and project information.
+    Check the creation policy of the given step, which will determine whether
+    to create the task.
 
     Args:
         step (orchestra.models.Step)
@@ -948,11 +948,10 @@ def _check_creation_policy(step, project):
         policy_function = locate(policy_path)
         prerequisite_data = get_previously_completed_task_data(step, project)
         project_data = project.project_data
-        success = policy_function(
+        return policy_function(
             prerequisite_data, project_data, **policy_kwargs)
     except Exception as e:
         raise CreationPolicyError(e)
-    return success
 
 
 def _preassign_workers(task, policy_type):
