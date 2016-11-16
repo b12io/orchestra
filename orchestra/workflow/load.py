@@ -7,6 +7,7 @@ from orchestra.models import Workflow
 from orchestra.models import Step
 from orchestra.models import WorkflowVersion
 from orchestra.workflow.defaults import get_default_assignment_policy
+from orchestra.workflow.defaults import get_default_creation_policy
 from orchestra.workflow.defaults import get_default_review_policy
 from orchestra.workflow.directory import parse_workflow_directory
 from orchestra.core.errors import WorkflowError
@@ -139,12 +140,15 @@ def load_workflow_version(version_data, workflow, force=False):
                 'detailed_description_function': step_data.get(
                     'detailed_description_function', {}),
                 'execution_function': step_data.get('execution_function', {}),
-                'assignment_policy': step_data.get(
-                    'assignment_policy',
-                    get_default_assignment_policy(is_human)),
                 'review_policy': step_data.get(
                     'review_policy',
                     get_default_review_policy(is_human)),
+                'assignment_policy': step_data.get(
+                    'assignment_policy',
+                    get_default_assignment_policy(is_human)),
+                'creation_policy': step_data.get(
+                    'creation_policy',
+                    get_default_creation_policy()),
                 'user_interface': step_data.get('user_interface', {}),
             }
         )

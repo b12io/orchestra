@@ -21,6 +21,14 @@ def get_default_assignment_policy(is_human):
     }
 
 
+def get_default_creation_policy():
+    return {
+            'policy_function': {
+                'path': 'orchestra.creation_policies.always_create',
+            }
+    }
+
+
 def get_default_review_policy(is_human):
     """ Return the default review policy.
 

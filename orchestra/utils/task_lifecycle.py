@@ -7,6 +7,7 @@ from django.db import transaction
 from django.utils import timezone
 
 from orchestra.core.errors import AssignmentPolicyError
+from orchestra.core.errors import CreationPolicyError
 from orchestra.core.errors import IllegalTaskSubmission
 from orchestra.core.errors import ModelSaveError
 from orchestra.core.errors import NoTaskAvailable
@@ -318,9 +319,10 @@ def get_task_details(task_id):
     task = Task.objects.select_related('step__workflow_version__workflow').get(
         id=task_id)
     step = task.step
+    project = task.project
     workflow_version = step.workflow_version
     workflow = workflow_version.workflow
-    prerequisites = previously_completed_task_data(task)
+    prerequisites = get_previously_completed_task_data(step, project)
 
     task_details = {
         'workflow': {
@@ -337,10 +339,10 @@ def get_task_details(task_id):
         },
         'task_id': task.id,
         'project': {
-            'id': task.project.id,
-            'details': task.project.short_description,
-            'team_messages_url': task.project.team_messages_url,
-            'project_data': task.project.project_data
+            'id': project.id,
+            'details': project.short_description,
+            'team_messages_url': project.team_messages_url,
+            'project_data': project.project_data
         },
         'prerequisites': prerequisites
     }
@@ -840,22 +842,22 @@ def submit_task(task_id, task_data, iteration_status, worker):
     return task
 
 
-def previously_completed_task_data(task):
+def get_previously_completed_task_data(step, project):
     """
     Returns a dict mapping task prerequisites onto their
     latest task assignment information.  The dict is of the form:
     {'previous-slug': {latest_assignment_data}, ...}
 
     Args:
-        task (orchestra.models.Task): The specified task object.
-
+        step (orchestra.models.Step): The specified step object.
+        project (orchestra.models.Project): The specified project object.
     Returns:
         prerequisites (dict):
             A dict mapping task prerequisites onto their latest task
             assignment information.
     """
     # Find all prerequisite steps in graph
-    to_visit = list(task.step.creation_depends_on.all())
+    to_visit = list(step.creation_depends_on.all())
     prerequisite_steps = set(to_visit)
     while to_visit:
         current_step = to_visit.pop()
@@ -866,7 +868,7 @@ def previously_completed_task_data(task):
 
     prerequisite_data = {}
     for step in prerequisite_steps:
-        required_task = Task.objects.get(step=step, project=task.project)
+        required_task = Task.objects.get(step=step, project=project)
 
         if required_task.status != Task.Status.COMPLETE:
             raise TaskDependencyError('Task depenency is not satisfied')
@@ -922,6 +924,35 @@ def end_project(project_id):
         task.status = Task.Status.ABORTED
         task.save()
         notify_status_change(task, assignment_history(task))
+
+
+def _check_creation_policy(step, project):
+    """
+    Check the creation policy of the given step allows the task to be completed
+    with the given step and project information.
+
+    Args:
+        step (orchestra.models.Step)
+        project (orchestra.models.Project)
+    Returns:
+        success (boolean) if the task should be created.
+    Raises:
+        orchestra.core.errors.CreationPolicyError:
+            The specified creation policy type is not supported or the policy
+            failed during execution.
+    """
+    policy = step.creation_policy.get('policy_function', {})
+    policy_path = policy.get('path', '')
+    policy_kwargs = policy.get('kwargs', {})
+    try:
+        policy_function = locate(policy_path)
+        prerequisite_data = get_previously_completed_task_data(step, project)
+        project_data = project.project_data
+        success = policy_function(
+            prerequisite_data, project_data, **policy_kwargs)
+    except Exception as e:
+        raise CreationPolicyError(e)
+    return success
 
 
 def _preassign_workers(task, policy_type):
@@ -1007,16 +1038,17 @@ def create_subsequent_tasks(project):
 
         if _are_desired_steps_completed_on_project(
                 step.creation_depends_on, completed_tasks=completed_tasks):
-            # create new task and task_assignment
-            task = Task(step=step,
-                        project=project,
-                        status=Task.Status.AWAITING_PROCESSING)
-            task.save()
+            if _check_creation_policy(step, project):
+                # create new task and task_assignment
+                task = Task(step=step,
+                            project=project,
+                            status=Task.Status.AWAITING_PROCESSING)
+                task.save()
 
-            _preassign_workers(task, AssignmentPolicyType.ENTRY_LEVEL)
+                _preassign_workers(task, AssignmentPolicyType.ENTRY_LEVEL)
 
-            if not step.is_human:
-                machine_tasks_to_schedule.append(step)
+                if not step.is_human:
+                    machine_tasks_to_schedule.append(step)
 
     if len(machine_tasks_to_schedule) > 0:
         connection.on_commit(lambda: schedule_machine_tasks(

@@ -11,7 +11,7 @@ from orchestra.models import Project
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import Step
-from orchestra.utils.task_lifecycle import previously_completed_task_data
+from orchestra.utils.task_lifecycle import get_previously_completed_task_data
 from orchestra.utils.task_lifecycle import create_subsequent_tasks
 from orchestra.utils.task_properties import get_latest_iteration
 
@@ -63,7 +63,7 @@ def execute(project_id, step_slug):
                 raise MachineExecutionError(
                     'Task already picked up by another machine')
 
-    prerequisites = previously_completed_task_data(task)
+    prerequisites = get_previously_completed_task_data(task.step, task.project)
 
     function = locate(step.execution_function['path'])
     kwargs = step.execution_function.get('kwargs', {})

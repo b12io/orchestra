@@ -1,10 +1,11 @@
 from unittest.mock import patch
 from unittest.mock import MagicMock
 
-from orchestra.core.errors import IllegalTaskSubmission
-from orchestra.core.errors import NoTaskAvailable
 from orchestra.core.errors import AssignmentPolicyError
+from orchestra.core.errors import CreationPolicyError
+from orchestra.core.errors import IllegalTaskSubmission
 from orchestra.core.errors import ModelSaveError
+from orchestra.core.errors import NoTaskAvailable
 from orchestra.core.errors import ReviewPolicyError
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import TaskStatusError
@@ -31,6 +32,7 @@ from orchestra.utils.task_lifecycle import submit_task
 from orchestra.utils.task_lifecycle import worker_assigned_to_rejected_task
 from orchestra.utils.task_lifecycle import worker_has_reviewer_status
 from orchestra.utils.task_properties import current_assignment
+from orchestra.workflow.defaults import get_default_creation_policy
 
 
 class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
@@ -571,6 +573,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
                     }
                 }
             },
+            creation_policy=get_default_creation_policy(),
         )
         malformed_step.creation_depends_on.add(first_step)
 
@@ -610,6 +613,38 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
         # Reset workflow and project
         first_step.assignment_policy = {}
         first_step.save()
+        project.tasks.all().delete()
+
+    def test_malformed_creation_policy(self):
+        project = self.projects['creation_policy']
+        workflow_version = project.workflow_version
+        first_step = self.workflow_steps[
+            workflow_version.slug]['creation_policy_step_0']
+
+        # Create an invalid machine step with an assignment policy
+        malformed_step = StepFactory(
+            workflow_version=workflow_version,
+            slug='machine_step',
+            is_human=False,
+            creation_policy={},
+        )
+        malformed_step.creation_depends_on.add(first_step)
+
+        # Create first task in project
+        create_subsequent_tasks(project)
+        self.assertEquals(project.tasks.count(), 1)
+
+        # Assign initial task to worker 0 and mark as complete
+        initial_task = assign_task(self.workers[4].id,
+                                   project.tasks.first().id)
+        initial_task.status = Task.Status.COMPLETE
+        initial_task.save()
+
+        # Cannot have an invalid blob for the creation_policy
+        with self.assertRaises(CreationPolicyError):
+            create_subsequent_tasks(project)
+
+        # Reset project
         project.tasks.all().delete()
 
     @patch('orchestra.utils.task_lifecycle.schedule_machine_tasks')
