@@ -140,6 +140,9 @@ class Step(StepMixin, models.Model):
         review_policy (str):
             A JSON blob used to decide whether or not to review this step
             (only valid for human steps).
+        creation_policy (str):
+            A JSON blob used to describe if the task should be created,
+            allowing tasks to conditionally be created.
         user_interface (str):
             A JSON blob used to describe the files used in the user interface
             for this step (only valid for human steps).
@@ -170,6 +173,7 @@ class Step(StepMixin, models.Model):
     required_certifications = models.ManyToManyField(Certification, blank=True)
     assignment_policy = JSONField(default={})
     review_policy = JSONField(default={})
+    creation_policy = JSONField(default={})
     user_interface = JSONField(default={})
 
     class Meta:
@@ -278,6 +282,8 @@ class Project(ProjectMixin, models.Model):
             A short description of the project.
         priority (int):
             Represents the relative priority of the project.
+        project_data (str):
+            A JSON blob used to describe the project_data.
         task_class (int):
             Represents whether the project is a worker training exercise
             or a deliverable project.

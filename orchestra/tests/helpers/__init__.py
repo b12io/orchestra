@@ -17,7 +17,7 @@ logging.disable(logging.CRITICAL)
 
 class OrchestraTestHelpersMixin(object):
 
-    def setUp(self):  # noqa
+    def setUp(self):
         super().setUp()
         # Rename the django Client to request_client
         self.request_client = self.client

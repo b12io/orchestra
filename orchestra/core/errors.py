@@ -2,6 +2,10 @@ class AssignmentPolicyError(Exception):
     pass
 
 
+class CreationPolicyError(Exception):
+    pass
+
+
 class IllegalTaskSubmission(Exception):
     pass
 

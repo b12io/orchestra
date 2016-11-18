@@ -28,6 +28,7 @@ from orchestra.utils.task_properties import get_iteration_history
 from orchestra.tests.helpers.iterations import verify_iterations
 from orchestra.tests.helpers.workflow import workflow_fixtures
 from orchestra.workflow.defaults import get_default_assignment_policy
+from orchestra.workflow.defaults import get_default_creation_policy
 from orchestra.workflow.defaults import get_default_review_policy
 
 BASE_DATETIME = parse('2015-10-12T00:00:00+00:00')
@@ -274,6 +275,7 @@ def setup_models(test_case):
         'assignment_policy': 'assignment_policy_workflow',
         'project_management_project': 'test_workflow',
         'staffbot_assignment_policy': 'staffbot_assignment_policy_workflow',
+        'creation_policy': 'creation_policy_workflow',
     }
 
     # Task generation data
@@ -398,6 +400,9 @@ def _setup_workflows(test_case, workflows):
                         'assignment_policy',
                         get_default_assignment_policy(is_human)
                     ),
+                    creation_policy=step_details.get(
+                        'creation_policy',
+                        get_default_creation_policy()),
                     user_interface=step_details.get('user_interface', {}),
                     execution_function=step_details.get('execution_function',
                                                         {}),

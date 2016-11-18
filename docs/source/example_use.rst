@@ -254,6 +254,11 @@ asks a reporter to write an article based on it::
       "rate": 1,
       "max_reviews": 1
     },
+    "creation_policy": {
+      "policy_function": {
+        "path": "orchestra.creation_policies.always_create",
+      }
+    },
     "user_interface": {
       "angular_module": "journalism_workflow.v1.reporter",
       "angular_directive": "reporter",
@@ -268,8 +273,10 @@ asks a reporter to write an article based on it::
 Note that we've specified step dependencies with ``creation_depends_on``,
 required worker skills with ``required_certifications``, and user interface
 javascript files with ``user_interface``. In addition, we've asked that all
-reporters have their work reviewed by a senior reporter by specifying a
-sampled ``review_policy`` with a rate of 100% (``rate`` goes from 0 to 1).
+reporters have their work reviewed by a senior reporter by specifying a sampled
+``review_policy`` with a rate of 100% (``rate`` goes from 0 to 1).  We've also
+specified a ``creation_policy``. Creation policies can be used to conditionally
+create a task based on previous step and project information.
 
 Next, we show a machine step, in this case the step that takes our
 photographers' output (a directory of images), and processes those images for

@@ -272,12 +272,12 @@ workflow_fixtures = [
                             'path': ('orchestra.tests.helpers.'
                                      'fixtures.get_detailed_description'),
                             'kwargs': {
-                                'text': 'step 2 text',
+                                'text': 'step 1 text',
                             },
                         },
                         'is_human': True,
                         'creation_depends_on': ['staffbot_step_0'],
-                        'required_certifications': ['certification2_ap'],
+                        'required_certifications': ['certification1_ap'],
                         'review_policy': {
                             'policy': 'sampled_review',
                             'rate': 1,
@@ -299,8 +299,83 @@ workflow_fixtures = [
                         'user_interface': {
                             'javascript_includes': ['/path/to/some.js'],
                             'stylesheet_includes': ['/path/to/some.css'],
-                            'angular_module': 'step2',
-                            'angular_directive': 'step2_directive',
+                            'angular_module': 'step1',
+                            'angular_directive': 'step1_directive',
+                        },
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        'slug': 'creation_policy',
+        'name': 'Creation Policy Workflow',
+        'versions': [
+            {
+                'slug': 'creation_policy_workflow',
+                'name': 'The workflow',
+                'description': 'A description of the workflow',
+                'steps': [
+                    {
+                        'slug': 'creation_policy_step_0',
+                        'name': 'The first step',
+                        'description': ('The longer description of the '
+                                        'first step'),
+                        'detailed_description_function': {
+                            'path': ('orchestra.tests.helpers.'
+                                     'fixtures.get_detailed_description')
+                        },
+                        'is_human': True,
+                        'creation_depends_on': [],
+                        'required_certifications': [],
+                        'review_policy': {
+                            'policy': 'no_review',
+                        },
+                        'creation_policy': {
+                            'policy_function': {
+                                'path': ('orchestra.creation_policies'
+                                         '.always_create'),
+                            }
+                        },
+                        'user_interface': {
+                            'javascript_includes': ['/path/to/some.js'],
+                            'stylesheet_includes': ['/path/to/some.css'],
+                            'angular_module': 'step1',
+                            'angular_directive': 'step1_directive',
+                        },
+                    },
+                    {
+                        'slug': 'creation_policy_step_1',
+                        'name': 'The second step',
+                        'description': ('The longer description of the '
+                                        'second step'),
+                        'detailed_description_function': {
+                            'path': ('orchestra.tests.helpers.'
+                                     'fixtures.get_detailed_description'),
+                            'kwargs': {
+                                'text': 'step 1 text',
+                            },
+                        },
+                        'is_human': True,
+                        'creation_depends_on': ['creation_policy_step_0'],
+                        'required_certifications': ['certification1_ap'],
+                        'review_policy': {
+                            'policy': 'sampled_review',
+                            'rate': 1,
+                            'max_reviews': 1,
+                        },
+                        'creation_policy': {
+                            'policy_function': {
+                                'path': ('orchestra.utils.tests.'
+                                         'test_creation_policies.never_create'
+                                         )
+                            }
+                        },
+                        'user_interface': {
+                            'javascript_includes': ['/path/to/some.js'],
+                            'stylesheet_includes': ['/path/to/some.css'],
+                            'angular_module': 'step1',
+                            'angular_directive': 'step1_directive',
                         },
                     },
                 ],
