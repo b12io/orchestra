@@ -30,6 +30,7 @@ class CounterIncrementerTask(SafeTask):
 class BadTaskClass(object):
     pass
 
+
 DISPATCH_SETTINGS = {
     'BEANSTALK_DISPATCH_TABLE': {
         'the_counter': ('beanstalk_dispatch.tests.'
