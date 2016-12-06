@@ -29,6 +29,7 @@ def load(workflow_version):
                 task_class=WorkerCertification.TaskClass.REAL,
                 role=certification_role)
 
+
 USERS = [
     {
         'username': 'journalism-editor',
