@@ -12,7 +12,6 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-
         fields = (
             'id',
             'workflow_slug',
@@ -50,7 +49,6 @@ class TaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-
         fields = (
             'id',
             'step_slug',
@@ -108,7 +106,6 @@ class TaskAssignmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TaskAssignment
-
         fields = (
             'id',
             'start_datetime',
@@ -169,13 +166,13 @@ class TaskTimerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TaskTimer
+        fields = '__all__'
 
 
 class IterationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Iteration
-
         fields = (
             'id',
             'start_datetime',
