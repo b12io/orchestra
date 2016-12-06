@@ -11,7 +11,7 @@ ipython==5.1.0
 boto==2.43.0
 moto==0.4.30
 flake8==3.2.1
-djangorestframework==3.4.7
+djangorestframework==3.5.3
 djangorestframework-httpsignature==1.0.0
 djangocms-admin-style==1.2.6.2
 lxml==3.6.4
