@@ -7,6 +7,7 @@ from orchestra.views import status
 urlpatterns = [
     url(r'^api/',
         include('orchestra.api_urls', namespace='orchestra')),
+    url(r'^api_new/', include('orchestra.api.urls', namespace='api_new')),
     url(r'^communication/',
         include('orchestra.communication.urls',
                 namespace='communication')),
