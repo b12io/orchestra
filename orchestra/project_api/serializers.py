@@ -4,12 +4,39 @@ from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import TaskTimer
 from orchestra.models import TimeEntry
+from orchestra.models import Worker
 from orchestra.models import WorkerCertification
 from rest_framework import serializers
 
 
-class ProjectSerializer(serializers.ModelSerializer):
+class IterationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Iteration
 
+        fields = (
+            'id',
+            'start_datetime',
+            'end_datetime',
+            'status',
+            'assignment',
+            'submitted_data',
+        )
+
+    status = serializers.SerializerMethodField()
+    submitted_data = serializers.SerializerMethodField()
+
+    def get_status(self, obj):
+        return dict(Iteration.STATUS_CHOICES).get(obj.status, None)
+
+    def get_submitted_data(self, obj):
+        """
+        This function exists to automatically deserialize the JSON blob from
+        the `in_progress_task_data` JSONField
+        """
+        return obj.submitted_data
+
+
+class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = (
@@ -46,7 +73,6 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 
 class TaskSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Task
         fields = (
@@ -103,7 +129,6 @@ class TaskSerializer(serializers.ModelSerializer):
 
 
 class TaskAssignmentSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = TaskAssignment
         fields = (
@@ -154,6 +179,12 @@ class TaskAssignmentSerializer(serializers.ModelSerializer):
         return obj.in_progress_task_data
 
 
+class TaskTimerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TaskTimer
+        fields = '__all__'
+
+
 class TimeEntrySerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -162,35 +193,13 @@ class TimeEntrySerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)
 
 
-class TaskTimerSerializer(serializers.ModelSerializer):
-
+class WorkerSerializer(serializers.ModelSerializer):
     class Meta:
-        model = TaskTimer
+        model = Worker
         fields = '__all__'
 
 
-class IterationSerializer(serializers.ModelSerializer):
-
+class WorkerCertificationSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Iteration
-        fields = (
-            'id',
-            'start_datetime',
-            'end_datetime',
-            'status',
-            'assignment',
-            'submitted_data',
-        )
-
-    status = serializers.SerializerMethodField()
-    submitted_data = serializers.SerializerMethodField()
-
-    def get_status(self, obj):
-        return dict(Iteration.STATUS_CHOICES).get(obj.status, None)
-
-    def get_submitted_data(self, obj):
-        """
-        This function exists to automatically deserialize the JSON blob from
-        the `in_progress_task_data` JSONField
-        """
-        return obj.submitted_data
+        model = WorkerCertification
+        field = '__all__'
