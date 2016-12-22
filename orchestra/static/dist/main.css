@@ -1748,3 +1748,419 @@ a.logo {
   .task-view .required-field-error.text-error input {
     border: 1px solid red;
     box-shadow: 0px 0px 1px red inset; }
+@charset "UTF-8";
+/*!
+ * Pikaday
+ * Copyright © 2014 David Bushell | BSD & MIT license | http://dbushell.com/
+ */
+.pika-single {
+  z-index: 9999;
+  display: block;
+  position: relative;
+  color: #333;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-bottom-color: #bbb;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+  .pika-single.is-hidden {
+    display: none; }
+  .pika-single.is-bound {
+    position: absolute;
+    box-shadow: 0 5px 15px -5px rgba(0, 0, 0, 0.5); }
+
+.pika-single {
+  *zoom: 1; }
+  .pika-single:before, .pika-single:after {
+    content: " ";
+    display: table; }
+  .pika-single:after {
+    clear: both; }
+
+.pika-lendar {
+  float: left;
+  width: 240px;
+  margin: 8px; }
+
+.pika-title {
+  position: relative;
+  text-align: center; }
+  .pika-title select {
+    cursor: pointer;
+    position: absolute;
+    z-index: 9998;
+    margin: 0;
+    left: 0;
+    top: 5px;
+    filter: alpha(opacity=0);
+    opacity: 0; }
+
+.pika-label {
+  display: inline-block;
+  *display: inline;
+  position: relative;
+  z-index: 9999;
+  overflow: hidden;
+  margin: 0;
+  padding: 5px 3px;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: bold;
+  background-color: #fff; }
+
+.pika-prev,
+.pika-next {
+  display: block;
+  cursor: pointer;
+  position: relative;
+  outline: none;
+  border: 0;
+  padding: 0;
+  width: 20px;
+  height: 30px;
+  text-indent: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  background-color: transparent;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 75% 75%;
+  opacity: .5;
+  *position: absolute;
+  *top: 0; }
+  .pika-prev:hover,
+  .pika-next:hover {
+    opacity: 1; }
+  .pika-prev.is-disabled,
+  .pika-next.is-disabled {
+    cursor: default;
+    opacity: .2; }
+
+.pika-prev,
+.is-rtl .pika-next {
+  float: left;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAeCAYAAAAsEj5rAAAAUklEQVR42u3VMQoAIBADQf8Pgj+OD9hG2CtONJB2ymQkKe0HbwAP0xucDiQWARITIDEBEnMgMQ8S8+AqBIl6kKgHiXqQqAeJepBo/z38J/U0uAHlaBkBl9I4GwAAAABJRU5ErkJggg==");
+  *left: 0; }
+
+.pika-next,
+.is-rtl .pika-prev {
+  float: right;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAeCAYAAAAsEj5rAAAAU0lEQVR42u3VOwoAMAgE0dwfAnNjU26bYkBCFGwfiL9VVWoO+BJ4Gf3gtsEKKoFBNTCoCAYVwaAiGNQGMUHMkjGbgjk2mIONuXo0nC8XnCf1JXgArVIZAQh5TKYAAAAASUVORK5CYII=");
+  *right: 0; }
+
+.pika-select {
+  display: inline-block;
+  *display: inline; }
+
+.pika-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  border: 0; }
+  .pika-table th,
+  .pika-table td {
+    width: 14.285714285714286%;
+    padding: 0; }
+  .pika-table th {
+    color: #999;
+    font-size: 12px;
+    line-height: 25px;
+    font-weight: bold;
+    text-align: center; }
+  .pika-table abbr {
+    border-bottom: none;
+    cursor: help; }
+
+.pika-button {
+  cursor: pointer;
+  display: block;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  outline: none;
+  border: 0;
+  margin: 0;
+  width: 100%;
+  padding: 5px;
+  color: #666;
+  font-size: 12px;
+  line-height: 15px;
+  text-align: right;
+  background: #f5f5f5; }
+  .is-today .pika-button {
+    color: #33aaff;
+    font-weight: bold; }
+  .is-selected .pika-button {
+    color: #fff;
+    font-weight: bold;
+    background: #33aaff;
+    box-shadow: inset 0 1px 3px #178fe5;
+    border-radius: 3px; }
+  .is-disabled .pika-button {
+    pointer-events: none;
+    cursor: default;
+    color: #999;
+    opacity: .3; }
+  .pika-button:hover {
+    color: #fff;
+    background: #ff8000;
+    box-shadow: none;
+    border-radius: 3px; }
+
+.pika-week {
+  font-size: 11px;
+  color: #999; }
+
+.is-inrange .pika-button {
+  background: #D5E9F7; }
+
+.is-startrange .pika-button {
+  color: #fff;
+  background: #6CB31D;
+  box-shadow: none;
+  border-radius: 3px; }
+
+.is-endrange .pika-button {
+  color: #fff;
+  background: #33aaff;
+  box-shadow: none;
+  border-radius: 3px; }
+/**
+ * Common stylesheet for Orchestra.
+ *
+ * This partial provides common variables and mixins useful for various view and
+ * component styles.
+ */
+.disable-select {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none; }
+
+.row.no-padding, .row.no-padding > [class*="col-"] {
+  padding-left: 0;
+  padding-right: 0; }
+
+.timecard-view {
+  position: absolute;
+  top: 100px;
+  width: 80%;
+  max-width: 750px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.4rem; }
+  .timecard-view .date-picker {
+    cursor: pointer; }
+    .timecard-view .date-picker i {
+      margin-right: 3px;
+      color: #0079bf; }
+  .timecard-view .help-icon {
+    font-size: 3rem; }
+  .timecard-view .incomplete {
+    color: red; }
+  .timecard-view .edit-label {
+    display: block;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-right: 5px; }
+  .timecard-view .timecard-header {
+    padding: 1.5rem; }
+  .timecard-view .edit-tools {
+    float: left; }
+    .timecard-view .edit-tools i {
+      margin-right: 5px;
+      cursor: pointer; }
+      .timecard-view .edit-tools i.active {
+        color: #0079bf; }
+  .timecard-view .day-name {
+    display: block;
+    padding-right: 1.5rem;
+    text-align: right;
+    font-size: 1.8rem;
+    font-weight: bold;
+    text-transform: uppercase; }
+  .timecard-view .date-group {
+    position: relative;
+    padding: 0.75rem;
+    margin: 0.75rem 0; }
+    .timecard-view .date-group h2 {
+      position: relative;
+      font-size: 1.8rem;
+      padding: 1.5rem;
+      border-bottom: 1px solid #cccccc;
+      background-color: white; }
+      .timecard-view .date-group h2 .date-label {
+        color: #27ae60;
+        text-transform: uppercase;
+        margin-right: 5px; }
+      .timecard-view .date-group h2 .btn-add-entry {
+        cursor: pointer;
+        position: relative; }
+        .timecard-view .date-group h2 .btn-add-entry:hover::after {
+          content: 'New entry';
+          position: absolute;
+          top: 50%;
+          right: 0px;
+          padding: 5px;
+          transform: translate(100%, -50%);
+          text-transform: uppercase;
+          font-weight: bold;
+          font-size: 0.6em;
+          font-family: "Ruda", sans-serif; }
+      .timecard-view .date-group h2 .date-duration {
+        float: right;
+        display: inline-block;
+        vertical-align: bottom; }
+  .timecard-view .entry-row {
+    position: relative;
+    background-color: white;
+    box-sizing: border-box;
+    padding: 1.5rem;
+    background-color: white; }
+    .timecard-view .entry-row.gray-stripe {
+      background-color: rgba(204, 204, 204, 0.5); }
+    .timecard-view .entry-row .row {
+      padding: 5px 0; }
+    .timecard-view .entry-row .description input {
+      width: 100%; }
+    .timecard-view .entry-row .edit-time {
+      text-align: right; }
+      .timecard-view .entry-row .edit-time label {
+        margin: 0; }
+      .timecard-view .entry-row .edit-time .time-component {
+        display: inline-block;
+        text-align: center; }
+    .timecard-view .entry-row .edit-task {
+      float: left;
+      width: 300px; }
+      .timecard-view .entry-row .edit-task .ui-select-bootstrap > .ui-select-choices {
+        width: auto; }
+    .timecard-view .entry-row .edit-options {
+      float: right; }
+      .timecard-view .entry-row .edit-options .edit-cancel-handle {
+        cursor: pointer;
+        display: inline-block; }
+        .timecard-view .entry-row .edit-options .edit-cancel-handle:hover {
+          text-decoration: underline; }
+    .timecard-view .entry-row .form-cell:not(:last-of-type) {
+      padding-right: 10px; }
+    .timecard-view .entry-row:hover input:read-only, .timecard-view .entry-row.editing input:read-only {
+      background: white; }
+  .timecard-view .time-input {
+    width: 55px; }
+  .timecard-view .show-description {
+    font-size: 1rem;
+    color: #0079bf;
+    cursor: pointer; }
+/**
+ * Common stylesheet for Orchestra.
+ *
+ * This partial provides common variables and mixins useful for various view and
+ * component styles.
+ */
+.disable-select {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none; }
+
+.row.no-padding, .row.no-padding > [class*="col-"] {
+  padding-left: 0;
+  padding-right: 0; }
+
+.timer {
+  font-size: 18px; }
+  .timer .popover-toggle {
+    line-height: 52px;
+    cursor: pointer;
+    color: white;
+    font-size: 1.4em; }
+  .timer .start-timer.btn {
+    color: white;
+    background-color: #2ecc71;
+    display: inline-block; }
+  .timer .time-display {
+    font-size: 28px;
+    line-height: initial;
+    vertical-align: top;
+    text-align: left;
+    font-family: "Lucida Console", Monaco, monospace; }
+  .timer .description input {
+    width: 100%; }
+  .timer .past-entries {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #cccccc; }
+    .timer .past-entries h1 {
+      font-size: 0.8em;
+      margin-bottom: 10px; }
+  .timer a {
+    cursor: pointer; }
+  .timer .popover {
+    width: 300px;
+    max-width: none; }
+    .timer .popover .timer-popover {
+      padding: 0; }
+      .timer .popover .timer-popover .ui-select-bootstrap > .ui-select-choices {
+        width: auto; }
+      .timer .popover .timer-popover .row {
+        margin: 10px 0; }
+      .timer .popover .timer-popover .tgl + .tgl-btn {
+        display: inline-block;
+        margin-bottom: 0; }
+    .timer .popover .tgl {
+      display: none; }
+      .timer .popover .tgl, .timer .popover .tgl:after, .timer .popover .tgl:before,
+      .timer .popover .tgl *, .timer .popover .tgl *:after, .timer .popover .tgl *:before,
+      .timer .popover .tgl + .tgl-btn {
+        box-sizing: border-box; }
+        .timer .popover .tgl::selection, .timer .popover .tgl:after::selection, .timer .popover .tgl:before::selection,
+        .timer .popover .tgl *::selection, .timer .popover .tgl *:after::selection, .timer .popover .tgl *:before::selection,
+        .timer .popover .tgl + .tgl-btn::selection {
+          background: none; }
+      .timer .popover .tgl + .tgl-btn {
+        outline: 0;
+        display: block;
+        width: 4em;
+        height: 2em;
+        position: relative;
+        cursor: pointer;
+        user-select: none; }
+        .timer .popover .tgl + .tgl-btn:after, .timer .popover .tgl + .tgl-btn:before {
+          position: relative;
+          display: block;
+          content: "";
+          width: 50%;
+          height: 100%; }
+        .timer .popover .tgl + .tgl-btn:after {
+          left: 0; }
+        .timer .popover .tgl + .tgl-btn:before {
+          display: none; }
+      .timer .popover .tgl:checked + .tgl-btn:after {
+        left: 50%; }
+    .timer .popover .tgl-ios + .tgl-btn {
+      background: #fbfbfb;
+      border-radius: 2em;
+      padding: 2px;
+      transition: all .4s ease;
+      border: 1px solid #e8eae9; }
+      .timer .popover .tgl-ios + .tgl-btn:after {
+        border-radius: 2em;
+        background: #fbfbfb;
+        transition: left 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), padding 0.3s ease, margin 0.3s ease;
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 4px 0 rgba(0, 0, 0, 0.08); }
+      .timer .popover .tgl-ios + .tgl-btn:hover:after {
+        will-change: padding; }
+      .timer .popover .tgl-ios + .tgl-btn:active {
+        box-shadow: inset 0 0 0 2em #e8eae9; }
+        .timer .popover .tgl-ios + .tgl-btn:active:after {
+          padding-right: .8em; }
+    .timer .popover .tgl-ios:checked + .tgl-btn {
+      background: #86d993; }
+      .timer .popover .tgl-ios:checked + .tgl-btn:active {
+        box-shadow: none; }
+        .timer .popover .tgl-ios:checked + .tgl-btn:active:after {
+          margin-left: -.8em; }

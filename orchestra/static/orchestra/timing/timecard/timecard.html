@@ -8,9 +8,9 @@
               <span class="edit-label">
                 Date range
               </span>
-              <date-picker date="vm.minDate" max-date="vm.maxDate.toDate()"></date-picker>–
-              <date-picker date="vm.maxDate" min-date="vm.minDate.toDate()"
-              max-date="vm.weekEnd.toDate()"></date-picker>
+              <date-picker date="vm.minDate" max-date="vm.maxDate"></date-picker>–
+              <date-picker date="vm.maxDate" min-date="vm.minDate"
+              max-date="vm.weekEnd"></date-picker>
             </div>
             <div class="col-xs-12 col-md-2">
               <a href="//orchestra.readthedocs.org/en/stable/features.html#time-tracking" target="_blank"
@@ -96,7 +96,7 @@
                     <div class="col-xs-4">
                       <div class="edit-date">
                         <label class="edit-label">Move to date</label>
-                        <date-picker date="entry.editData.date" max-date="vm.weekEnd.toDate()"></date-picker>
+                        <date-picker date="entry.editData.date" max-date="vm.weekEnd"></date-picker>
                       </div>
                     </div>
                     <div class="col-xs-8">

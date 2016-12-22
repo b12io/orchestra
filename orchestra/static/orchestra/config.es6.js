@@ -1,6 +1,6 @@
 import dashboardTemplate from 'orchestra/dashboard/dashboard.html'
 import taskTemplate from 'orchestra/task/task.html'
-import timecardTemplate from 'orchestra/timing/timecard/partials/timecard.html'
+import timecardTemplate from 'orchestra/timing/timecard/timecard.html'
 import projectManagementTemplate from 'orchestra/project_management/partials/project_management.html'
 
 /**
