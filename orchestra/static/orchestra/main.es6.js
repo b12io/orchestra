@@ -6,6 +6,7 @@ import {
 
 import common from 'orchestra/common/common.module.es6.js'
 import dashboard from 'orchestra/dashboard/dashboard.module.es6.js'
+import projectManagement from 'orchestra/project-management/project-management.module.es6.js'
 import task from 'orchestra/task/task.module.es6.js'
 import timing from 'orchestra/timing/timing.module.es6.js'
 
@@ -15,13 +16,12 @@ window.orchestra.angular_modules.map(module => {
   angular.module(module, [])
 })
 
-angular.module('orchestra.project_management', ['ui.select', common])
 angular.module('orchestra.analytics', [])
 
 angular
   .module('orchestra', [
     'ngRoute', common, timing, dashboard, task,
-    'orchestra.project_management', 'orchestra.analytics',
+    projectManagement, 'orchestra.analytics',
     // Include angular modules from Orchestra workflow steps
     ...window.orchestra.angular_modules
   ])
