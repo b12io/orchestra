@@ -31,9 +31,6 @@
 
   var files = {
     scss: [
-      'orchestra/static/orchestra/common/components/checklist/css/checklist.scss',
-      'orchestra/static/orchestra/common/components/iframe/css/iframe.scss',
-      'orchestra/static/orchestra/common/components/quill/css/quill.scss',
       'orchestra/static/orchestra/timing/timer/timer.scss',
       'orchestra/static/orchestra/common/css/orchestra.scss',
     ],
