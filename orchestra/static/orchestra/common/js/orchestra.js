@@ -13,7 +13,13 @@
 
   angular.module('orchestra', modules);
 
-  angular.module('orchestra.common', []);
+  angular.module('orchestra.common', ['ngResource'])
+    .config(function($resourceProvider) {
+      $resourceProvider.defaults.stripTrailingSlashes = false
+      $resourceProvider.defaults.actions.update = {
+        method: 'PUT'
+      }
+    });
   angular.module('orchestra.routes', ['ngRoute']);
   angular.module('orchestra.config', []);
   angular.module('orchestra.timing', ['ui.select', 'ngSanitize', 'orchestra.common']);
