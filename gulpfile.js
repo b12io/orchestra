@@ -59,7 +59,9 @@
 
     // jslint
     files.jslint.push(appName + '/static/**/*.js');
+    files.jslint.push('!' + appName + '/static/dist/**/*.js');
     files.jslint.push('!' + appName + '/static/**/*.min.js');
+    files.jslint.push('!' + appName + '/static/**/*.es6.js');
 
     // htmllint
     files.htmllint.push(appName + '/static/**/*.html');
