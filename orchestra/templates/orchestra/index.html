@@ -3,6 +3,16 @@
 
 {% block title %}Dashboard{% endblock %}
 
+{% block page_stylesheets %}
+    <!-- TODO(jrbotros): remove other scripts once they've been bundled properly -->
+    <link rel="stylesheet" href="{% static "dist/main.css" %}">
+
+    {# we call `static()` in the view function to prevent whitenoise looking for a template value #}
+    {% for css in stylesheet_includes %}
+      {{ css | safe }}
+    {% endfor %}
+{% endblock page_stylesheets%}
+
 {% block main %}
 <section id="main-content" ng-view autoscroll="true">
   {% block content %}content{% endblock content %}
@@ -26,13 +36,6 @@
 <!-- TODO(jrbotros): remove other scripts once they've been bundled properly -->
 <script src="{% static "dist/main.js" %}" type="text/javascript"></script>
 
-<script src="{% static "orchestra/common/components/checklist/lib/dragula/dragula.min.js" %}" type="text/javascript"></script>
-<script src="{% static "orchestra/common/components/checklist/js/directives.js" %}" type="text/javascript"></script>
-<script src="{% static "orchestra/common/components/quill/js/quill.min.js" %}" type="text/javascript"></script>
-<script src="{% static "orchestra/common/components/quill/js/directives.js" %}" type="text/javascript"></script>
-<script src="{% static "orchestra/common/components/iframe/js/directives.js" %}" type="text/javascript"></script>
-<script src="{% static "orchestra/common/components/project_folder/project_folder.js" %}" type="text/javascript"></script>
-<script src="{% static "orchestra/common/components/team_messages/team_messages.js" %}" type="text/javascript"></script>
 <script src="{% static "orchestra/task/js/controllers.js" %}" type="text/javascript"></script>
 <script src="{% static "orchestra/task/js/directives.js" %}" type="text/javascript"></script>
 <script src="{% static "orchestra/task/js/autosave.js" %}" type="text/javascript"></script>
@@ -60,10 +63,3 @@
   {{ js | safe }}
 {% endfor %}
 {% endblock page_javascript%}
-
-{% block page_stylesheets %}
-    {# we call `static()` in the view function to prevent whitenoise looking for a template value #}
-    {% for css in stylesheet_includes %}
-      {{ css | safe }}
-    {% endfor %}
-{% endblock page_stylesheets%}

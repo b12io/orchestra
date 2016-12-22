@@ -18,12 +18,14 @@ window.orchestra.angular_modules.forEach(module => {
 })
 
 // TODO(jrbotros): pare down these modules
-angular.module('orchestra', [
-  'ngRoute', common, 'orchestra.timing', 'orchestra.dashboard',
-  'orchestra.task', 'orchestra.project_management', 'orchestra.analytics',
-  // Include angular modules from Orchestra workflow steps
-  ...window.orchestra.angular_modules
-]).config(config)
+angular
+  .module('orchestra', [
+    'ngRoute', common, 'orchestra.timing', 'orchestra.dashboard',
+    'orchestra.task', 'orchestra.project_management', 'orchestra.analytics',
+    // Include angular modules from Orchestra workflow steps
+    ...window.orchestra.angular_modules
+  ])
+  .config(config)
   .run(($http, $location, $rootScope, $window) => {
     'ngAnnotate'
 
