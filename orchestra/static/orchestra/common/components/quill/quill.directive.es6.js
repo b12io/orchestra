@@ -4,7 +4,7 @@ import template from './quill.html'
 import Quill from 'quill'
 import 'quill/dist/quill.base.css'
 import 'quill/dist/quill.snow.css'
-import './quill.css'
+import './quill.scss'
 
 export default function orchestraQuill ($http, $timeout) {
   'ngAnnotate'

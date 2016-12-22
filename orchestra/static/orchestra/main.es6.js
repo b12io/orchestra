@@ -5,23 +5,22 @@ import {
 } from 'lodash'
 
 import common from 'orchestra/common/common.module.es6.js'
+import task from 'orchestra/task/task.module.es6.js'
 import config from 'orchestra/config.es6.js'
 
-angular.module('orchestra.timing', ['ui.select', 'ngSanitize', common])
-angular.module('orchestra.dashboard', ['orchestra.timing'])
-angular.module('orchestra.task', ['orchestra.timing'])
-angular.module('orchestra.project_management', ['ui.select', common])
-angular.module('orchestra.analytics', [])
-
-window.orchestra.angular_modules.forEach(module => {
+window.orchestra.angular_modules.map(module => {
   angular.module(module, [])
 })
 
-// TODO(jrbotros): pare down these modules
+angular.module('orchestra.timing', ['ui.select', 'ngSanitize', common])
+angular.module('orchestra.dashboard', ['orchestra.timing'])
+angular.module('orchestra.project_management', ['ui.select', common])
+angular.module('orchestra.analytics', [])
+
 angular
   .module('orchestra', [
     'ngRoute', common, 'orchestra.timing', 'orchestra.dashboard',
-    'orchestra.task', 'orchestra.project_management', 'orchestra.analytics',
+    task, 'orchestra.project_management', 'orchestra.analytics',
     // Include angular modules from Orchestra workflow steps
     ...window.orchestra.angular_modules
   ])
