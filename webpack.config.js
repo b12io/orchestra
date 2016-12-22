@@ -61,7 +61,7 @@
     },
     resolve: {
       root: [
-        'orchestra/static'
+        path.join(__dirname, 'orchestra/static')
       ]
     },
     browser: {
