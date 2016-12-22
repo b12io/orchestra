@@ -7,7 +7,9 @@
   var print = require('gulp-print');
   var rename = require('gulp-rename');
   var gulpif = require('gulp-if');
+  var gutil = require('gulp-util');
   var watch = require('gulp-watch');
+  var webpack = require('webpack');
 
   // js
   var jscs = require('gulp-jscs');
@@ -115,6 +117,17 @@
     var all_lint_files = [].concat.apply([], [files.jslint, files.jsonlint]);
     gulp.watch(all_lint_files, ['lint']);
     gulp.watch(files.all_scss, ['scss']);
+    gulp.watch(all_lint_files, ['webpack']);
+  });
+
+  gulp.task('webpack', function(callback) {
+    webpack(require('./webpack.config.js'), function(err, stats) {
+      if (err) {
+        throw new gutil.PluginError('webpack', err);
+      }
+      gutil.log('[webpack]', stats.toString());
+      callback();
+    });
   });
 
   gulp.task('default', ['build', 'watch']);
