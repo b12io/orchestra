@@ -52,7 +52,11 @@
 
 	var _commonModuleEs2 = _interopRequireDefault(_commonModuleEs);
 
-	var _configEs = __webpack_require__(45);
+	var _taskModuleEs = __webpack_require__(47);
+
+	var _taskModuleEs2 = _interopRequireDefault(_taskModuleEs);
+
+	var _configEs = __webpack_require__(55);
 
 	var _configEs2 = _interopRequireDefault(_configEs);
 
@@ -60,18 +64,16 @@
 
 	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } } /* global angular */
 
-	angular.module('orchestra.timing', ['ui.select', 'ngSanitize', _commonModuleEs2.default]);
-	angular.module('orchestra.dashboard', ['orchestra.timing']);
-	angular.module('orchestra.task', ['orchestra.timing']);
-	angular.module('orchestra.project_management', ['ui.select', _commonModuleEs2.default]);
-	angular.module('orchestra.analytics', []);
-
-	window.orchestra.angular_modules.forEach(function (module) {
+	window.orchestra.angular_modules.map(function (module) {
 	  angular.module(module, []);
 	});
 
-	// TODO(jrbotros): pare down these modules
-	angular.module('orchestra', ['ngRoute', _commonModuleEs2.default, 'orchestra.timing', 'orchestra.dashboard', 'orchestra.task', 'orchestra.project_management', 'orchestra.analytics'].concat(_toConsumableArray(window.orchestra.angular_modules))).config(_configEs2.default).run(function ($http, $location, $rootScope, $window) {
+	angular.module('orchestra.timing', ['ui.select', 'ngSanitize', _commonModuleEs2.default]);
+	angular.module('orchestra.dashboard', ['orchestra.timing']);
+	angular.module('orchestra.project_management', ['ui.select', _commonModuleEs2.default]);
+	angular.module('orchestra.analytics', []);
+
+	angular.module('orchestra', ['ngRoute', _commonModuleEs2.default, 'orchestra.timing', 'orchestra.dashboard', _taskModuleEs2.default, 'orchestra.project_management', 'orchestra.analytics'].concat(_toConsumableArray(window.orchestra.angular_modules))).config(_configEs2.default).run(function ($http, $location, $rootScope, $window) {
 	  'ngAnnotate';
 
 	  // Update xsrf $http headers to align with Django's defaults
@@ -17215,15 +17217,15 @@
 
 	var _quillDirectiveEs2 = _interopRequireDefault(_quillDirectiveEs);
 
-	var _teamMessagesDirectiveEs = __webpack_require__(37);
+	var _teamMessagesDirectiveEs = __webpack_require__(39);
 
 	var _teamMessagesDirectiveEs2 = _interopRequireDefault(_teamMessagesDirectiveEs);
 
-	var _projectFolderDirectiveEs = __webpack_require__(39);
+	var _projectFolderDirectiveEs = __webpack_require__(41);
 
 	var _projectFolderDirectiveEs2 = _interopRequireDefault(_projectFolderDirectiveEs);
 
-	var _websiteIframeDirectiveEs = __webpack_require__(41);
+	var _websiteIframeDirectiveEs = __webpack_require__(43);
 
 	var _websiteIframeDirectiveEs2 = _interopRequireDefault(_websiteIframeDirectiveEs);
 
@@ -19226,8 +19228,11 @@
 
 	__webpack_require__(35);
 
+	__webpack_require__(37);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	// TODO(jrbotros): update to v1.0.0
 	function orchestraQuill($http, $timeout) {
 	  'ngAnnotate';
 
@@ -19460,8 +19465,6 @@
 	    }
 	  };
 	}
-
-	// TODO(jrbotros): update to v1.0.0
 
 /***/ },
 /* 30 */
@@ -30081,6 +30084,13 @@
 /***/ },
 /* 36 */,
 /* 37 */
+/***/ function(module, exports) {
+
+	// removed by extract-text-webpack-plugin
+
+/***/ },
+/* 38 */,
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30090,7 +30100,7 @@
 	});
 	exports.default = orchestraTeamMessages;
 
-	var _teamMessages = __webpack_require__(38);
+	var _teamMessages = __webpack_require__(40);
 
 	var _teamMessages2 = _interopRequireDefault(_teamMessages);
 
@@ -30109,13 +30119,13 @@
 	}
 
 /***/ },
-/* 38 */
+/* 40 */
 /***/ function(module, exports) {
 
 	module.exports = "<website-iframe title=\"Team Messages\"\n\t\tid=\"team-messages\" \n\t\tng-if=\"vm.taskAssignment.project.team_messages_url\"\n\t\tiframe-url=\"{{vm.taskAssignment.project.team_messages_url}}\">\n</website-iframe>\n";
 
 /***/ },
-/* 39 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30125,7 +30135,7 @@
 	});
 	exports.default = orchestraProjectFolder;
 
-	var _projectFolder = __webpack_require__(40);
+	var _projectFolder = __webpack_require__(42);
 
 	var _projectFolder2 = _interopRequireDefault(_projectFolder);
 
@@ -30150,13 +30160,13 @@
 	}
 
 /***/ },
-/* 40 */
+/* 42 */
 /***/ function(module, exports) {
 
 	module.exports = "<div ng-if=\"vm.projectFolderId\" class=\"project-drive-folder\">\n  <website-iframe title=\"Project Drive Folder\"\n                  id=\"project-drive-folder\"\n-                 description=\"Resources for the project should be stored here. Open the folder in a new window and add it to your drive if you need to upload anything new!\"\n                  iframe-url=\"{{vm.projectFolderEmbedUrl}}\"\n                  external-url=\"{{vm.projectFolderExternalUrl}}\">\n  </website-iframe>\n</div>\n";
 
 /***/ },
-/* 41 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30166,11 +30176,11 @@
 	});
 	exports.default = websiteIframe;
 
-	var _websiteIframe = __webpack_require__(42);
+	var _websiteIframe = __webpack_require__(44);
 
 	var _websiteIframe2 = _interopRequireDefault(_websiteIframe);
 
-	__webpack_require__(43);
+	__webpack_require__(45);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -30224,20 +30234,432 @@
 	}
 
 /***/ },
-/* 42 */
+/* 44 */
 /***/ function(module, exports) {
 
 	module.exports = "<!--htmlhint id-unique:false -->\n\n<div ng-if=\"bare\" class=\"iframe-wrapper\">\n  <div id=\"iframe-wrapper-{{id}}\">\n  </div>\n</div>\n\n<section ng-if=\"!bare\" class=\"section-panel\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          {{ title }}\n          <a href=\"{{externalUrl || iframeUrl}}\" target=\"_blank\" class=\"btn\">\n            Open in a new window\n          </a>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row padded\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        {{description}}\n        <div class=\"iframe-wrapper\">\n          <div id=\"iframe-wrapper-{{id}}\">\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n";
 
 /***/ },
-/* 43 */
+/* 45 */
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
 
 /***/ },
-/* 44 */,
-/* 45 */
+/* 46 */,
+/* 47 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _autosaveServiceEs = __webpack_require__(48);
+
+	var _autosaveServiceEs2 = _interopRequireDefault(_autosaveServiceEs);
+
+	var _dynamicLoadDirectiveEs = __webpack_require__(49);
+
+	var _dynamicLoadDirectiveEs2 = _interopRequireDefault(_dynamicLoadDirectiveEs);
+
+	var _requiredFieldDirectiveEs = __webpack_require__(50);
+
+	var _requiredFieldDirectiveEs2 = _interopRequireDefault(_requiredFieldDirectiveEs);
+
+	var _requiredFieldsServiceEs = __webpack_require__(51);
+
+	var _requiredFieldsServiceEs2 = _interopRequireDefault(_requiredFieldsServiceEs);
+
+	var _taskControllerEs = __webpack_require__(52);
+
+	var _taskControllerEs2 = _interopRequireDefault(_taskControllerEs);
+
+	__webpack_require__(53);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	/* global angular */
+
+	var name = 'orchestra.task';
+	angular.module(name, ['orchestra.timing']).controller('TaskController', _taskControllerEs2.default).directive('dynamicLoad', _dynamicLoadDirectiveEs2.default).directive('orchestraRequiredField', _requiredFieldDirectiveEs2.default).factory('autoSaveTask', _autosaveServiceEs2.default).factory('requiredFields', _requiredFieldsServiceEs2.default);
+
+	exports.default = name;
+
+/***/ },
+/* 48 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = autoSaveTask;
+	function autoSaveTask($rootScope, $timeout, $http, orchestraService) {
+	  return {
+	    setup: function setup($scope, taskId, taskData) {
+	      var service = this;
+	      service.saveError = false;
+	      service.saving = false;
+	      service.timeout = 10000;
+	      service.taskId = taskId;
+	      service.data = taskData;
+	      service.scope = $scope;
+
+	      var handler = $rootScope.$on('task.data:change', function () {
+	        service.schedule();
+	      });
+	      $scope.$on('$destroy', handler);
+
+	      // Browser close or reload
+	      window.onbeforeunload = function () {
+	        if (service.autoSaveTimer || service.saveError) {
+	          return 'Your latest changes haven\'t been saved.';
+	        }
+	      };
+
+	      // Angular location change
+	      $scope.$on('$locationChangeStart', function (e) {
+	        if (service.autoSaveTimer || service.saveError) {
+	          if (!window.confirm('Your latest changes haven\'t been saved.\n\n' + 'Are you sure you want to leave this page?')) {
+	            // Disable confirm dialog if navigating away from task view.
+	            window.onbeforeunload = null;
+	            e.preventDefault();
+	          }
+	        }
+	      });
+	    },
+	    schedule: function schedule() {
+	      var service = this;
+	      if (!service.autoSaveTimer && !service.scope.is_read_only) {
+	        service.autoSaveTimer = $timeout(function () {
+	          service.save();
+	        }, service.timeout);
+	      }
+	    },
+	    cancel: function cancel() {
+	      var service = this;
+	      $timeout.cancel(service.autoSaveTimer);
+	      service.autoSaveTimer = undefined;
+	    },
+	    save: function save() {
+	      var service = this;
+	      if (service.scope.is_read_only) {
+	        return;
+	      }
+	      service.saving = true;
+	      service.saveError = false;
+	      service.cancel();
+	      if (orchestraService.signals.fireSignal('save.before') === false) {
+	        // If any of the registered signal handlers returns false, prevent
+	        // save.
+	        service.saving = false;
+	        return;
+	      }
+	      $http.post('/orchestra/api/interface/save_task_assignment/', {
+	        'task_id': service.taskId,
+	        'task_data': service.data
+	      }).success(function (data, status, headers, config) {
+	        service.lastSaved = Date.now();
+	        // Reset timeout counter on save success
+	        service.timeout = 10000;
+	        orchestraService.signals.fireSignal('save.success');
+	      }).error(function (data, status, headers, config) {
+	        service.saveError = true;
+	        orchestraService.signals.fireSignal('save.error');
+	      }).finally(function () {
+	        orchestraService.signals.fireSignal('save.finally');
+	        service.saving = false;
+	        if (service.saveError) {
+	          // Retry save with exp backoff
+	          service.timeout *= 2;
+	          service.schedule();
+	        }
+	      });
+	    }
+	  };
+	}
+
+/***/ },
+/* 49 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = dynamicLoad;
+	function dynamicLoad($compile) {
+	  'ngAnnotate';
+
+	  return {
+	    restrict: 'A',
+	    replace: true,
+	    link: function link(scope, ele, attrs) {
+	      scope.$watch(attrs.dynamicLoad, function (html) {
+	        ele.html(html);
+	        $compile(ele.contents())(scope);
+	      });
+	    }
+	  };
+	}
+
+/***/ },
+/* 50 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = orchestraRequiredField;
+	/**
+	 * Provides a directive to wrap required fields in task views.
+	 *   - The wrapped HTML should contain an input element bound with
+	 *     ngModel.
+	 *   - Optionally provide a class to add to the directive wrapper on
+	 *     error with `data-error-class="error-class"` on the directive
+	 *     element; otherwise, a default is provided for the input type.
+	 */
+	function orchestraRequiredField($compile, requiredFields) {
+	  'ngAnnotate';
+
+	  return {
+	    restrict: 'EA',
+	    link: function link(scope, elem, attrs) {
+	      var field = elem.find('input')[0];
+	      var errorClass = elem.attr('data-error-class');
+	      if (!errorClass) {
+	        errorClass = field.getAttribute('type') + '-error';
+	      }
+	      if (field && field.getAttribute('type') !== 'checkbox' && field.getAttribute('type') !== 'text') {
+	        console.error('Unsupported required field type.');
+	        return;
+	      }
+	      requiredFields.require('input-' + field.getAttribute('type'), field);
+	      var toggleError = function toggleError() {
+	        if (requiredFields.invalid.indexOf(field) >= 0) {
+	          elem.addClass('required-field-error ' + errorClass);
+	        } else {
+	          elem.removeClass('required-field-error ' + errorClass);
+	        }
+	      };
+	      toggleError();
+	      scope.$on('orchestra:task:validatedFields', toggleError);
+	    }
+	  };
+	}
+
+/***/ },
+/* 51 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = requiredFields;
+	function requiredFields($rootScope, orchestraService) {
+	  /**
+	   * Service to keep track of all required fields in a task view and
+	   * validate them on submit.
+	   */
+	  'ngAnnotate';
+
+	  var requiredFields = {
+	    validators: {
+	      'input-checkbox': [function (elem) {
+	        return elem.checked;
+	      }],
+	      'input-text': [function (elem) {
+	        return elem.value && elem.value.length > 0;
+	      }]
+	    },
+	    setup: function setup(data) {
+	      /**
+	       * Sets up the base data on which to validate fields.
+	       */
+	      this.fields = {};
+	      this.invalid = [];
+	      this.data = data;
+	    },
+	    require: function require(fieldType, field) {
+	      /**
+	       * Sets a field as required. Fields are HTML elements to be
+	       * checked by one or more validators according to their field
+	       * type.
+	       */
+	      if (this.fields[fieldType] === undefined) {
+	        this.fields[fieldType] = [field];
+	      } else {
+	        this.fields[fieldType].push(field);
+	      }
+	    },
+	    validate: function validate() {
+	      /**
+	       * Validates required fields according to their registered
+	       * validators.
+	       */
+	      var requiredFields = this;
+	      requiredFields.invalid = [];
+
+	      /* jshint -W083 */
+	      // Hide error for creating a function in a loop
+	      for (var fieldType in requiredFields.fields) {
+	        var validators = requiredFields.validators[fieldType];
+	        if (!validators) {
+	          console.error('Validators not found for field type:' + fieldType);
+	          continue;
+	        }
+	        var fields = requiredFields.fields[fieldType];
+	        fields.forEach(function (field) {
+	          var success = true;
+	          validators.forEach(function (validator) {
+	            success = success && validator(field);
+	          });
+	          if (!success) {
+	            requiredFields.invalid.push(field);
+	          }
+	        });
+	      }
+	      $rootScope.$broadcast('orchestra:task:validatedFields');
+	      return requiredFields.invalid.length === 0;
+	    },
+	    registerValidator: function registerValidator(fieldType, validator) {
+	      /**
+	       * Register a validator function to the given field type.
+	       */
+	      var requiredFields = this;
+	      if (requiredFields.validators[fieldType] === undefined) {
+	        requiredFields.validators[fieldType].push(validator);
+	      } else {
+	        requiredFields.validators[fieldType] = [validator];
+	      }
+	    }
+	  };
+
+	  orchestraService.signals.registerSignal('submit.before', function () {
+	    if (!requiredFields.validate()) {
+	      window.alert('One or more required fields have not been filled out.');
+	      return false;
+	    }
+	  });
+
+	  return requiredFields;
+	}
+
+/***/ },
+/* 52 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = TaskController;
+	function TaskController($location, $scope, $routeParams, $http, $rootScope, $uibModal, $timeout, autoSaveTask, orchestraService, orchestraTasks, requiredFields) {
+	  var vm = this;
+	  vm.taskId = $routeParams.taskId;
+	  vm.taskAssignment = {};
+	  vm.angularDirective = '';
+
+	  vm.activate = function () {
+	    $http.post('/orchestra/api/interface/task_assignment_information/', {
+	      'task_id': vm.taskId
+	    }).success(function (data, status, headers, config) {
+	      vm.taskAssignment = data;
+	      vm.project = data.project;
+	      vm.is_read_only = data.is_read_only;
+	      vm.work_times_seconds = data.work_times_seconds;
+
+	      orchestraTasks.data.then(function () {
+	        orchestraTasks.currentTask = orchestraTasks.tasksByAssignmentId[vm.taskAssignment.assignment_id];
+	        $scope.$on('$locationChangeStart', function () {
+	          orchestraTasks.currentTask = undefined;
+	        });
+	      });
+
+	      if (!vm.is_read_only) {
+	        requiredFields.setup(vm);
+	        $scope.$watch('vm.taskAssignment.task.data', function (newVal, oldVal) {
+	          // Ensure save fired at initialization
+	          // [http://stackoverflow.com/a/18915585]
+	          if (newVal !== oldVal) {
+	            $rootScope.$broadcast('task.data:change');
+	          }
+	        }, true);
+
+	        vm.autoSaver = autoSaveTask;
+	        autoSaveTask.setup($scope, vm.taskId, vm.taskAssignment.task.data);
+	      }
+
+	      var directiveTag = window.orchestra.angular_directives[data.workflow.slug][data.workflow_version.slug][data.step.slug];
+
+	      var inject;
+	      if (directiveTag) {
+	        // Hyphenate and lowercase camel-cased directive names according to
+	        // angular standards.
+	        directiveTag = directiveTag.replace(/[A-Z]/g, function (letter, pos) {
+	          return (pos ? '-' : '') + letter.toLowerCase();
+	        });
+
+	        inject = ['<', directiveTag, ' task-assignment="vm.taskAssignment"></', directiveTag, '>'].join('');
+	      }
+	      vm.angularDirective = inject;
+	    });
+	  };
+
+	  vm.confirmSubmission = function (command) {
+	    vm.submitting = true;
+	    if (orchestraService.signals.fireSignal('submit.before') === false) {
+	      // If any of the registered signal handlers returns false, prevent
+	      // submit.
+	      vm.submitting = false;
+	      return;
+	    }
+	    $http.post('/orchestra/api/interface/submit_task_assignment/', {
+	      'task_id': vm.taskId,
+	      'task_data': vm.taskAssignment.task.data,
+	      'command_type': command
+	    }).success(function (data, status, headers, config) {
+	      // Prevent additional confirmation dialog on leaving the page; data
+	      // will be saved by submission
+	      vm.autoSaver.cancel();
+	      orchestraService.signals.fireSignal('submit.success');
+	      orchestraTasks.updateTasks();
+	      $location.path('/timecard');
+	    }).error(function (data, status, headers, config) {
+	      orchestraService.signals.fireSignal('submit.error');
+	    }).finally(function () {
+	      orchestraService.signals.fireSignal('submit.finally');
+	      vm.submitting = false;
+	    });
+	  };
+
+	  vm.submitTask = function (command) {
+	    if (window.confirm('Are you sure you want to submit this task?')) {
+	      vm.confirmSubmission(command);
+	    }
+	  };
+
+	  vm.activate();
+	}
+
+/***/ },
+/* 53 */
+/***/ function(module, exports) {
+
+	// removed by extract-text-webpack-plugin
+
+/***/ },
+/* 54 */,
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30247,19 +30669,19 @@
 	});
 	exports.default = config;
 
-	var _dashboard = __webpack_require__(46);
+	var _dashboard = __webpack_require__(56);
 
 	var _dashboard2 = _interopRequireDefault(_dashboard);
 
-	var _task = __webpack_require__(47);
+	var _task = __webpack_require__(57);
 
 	var _task2 = _interopRequireDefault(_task);
 
-	var _project_management = __webpack_require__(48);
+	var _project_management = __webpack_require__(58);
 
 	var _project_management2 = _interopRequireDefault(_project_management);
 
-	var _timecard = __webpack_require__(49);
+	var _timecard = __webpack_require__(59);
 
 	var _timecard2 = _interopRequireDefault(_timecard);
 
@@ -30297,25 +30719,25 @@
 	}
 
 /***/ },
-/* 46 */
+/* 56 */
 /***/ function(module, exports) {
 
 	module.exports = "<section class=\"wrapper\">\n  <section class=\"section-panel tasks-section\">\n    <div class=\"container-fluid\">\n      <div class=\"row section-header\">\n        <div class=\"col-lg-12\">\n          <h3>\n            Active Tasks ({{ vm.orchestraTasks.activeTasks().length || 0 }})\n            <button type=\"button\"\n                    ng-if=\"vm.enableNewTaskButtons\"\n                    ng-click=\"vm.newTask('entry_level')\"\n                    ng-class=\"{'disabled': vm.orchestraTasks.preventNew ||\n                                           vm.noTaskTimer}\"\n                    class=\"btn btn-primary btn-new-entry-task\">\n              New delivery task\n            </button>\n            <button type=\"button\"\n                    ng-if=\"vm.orchestraTasks.reviewerStatus &&\n                           vm.enableNewTaskButtons\"\n                    ng-click=\"vm.newTask('reviewer')\"\n                    ng-class=\"{'disabled': vm.orchestraTasks.preventNew ||\n                                           vm.noTaskTimer}\"\n                    class=\"btn btn-primary btn-new-review-task\">\n              New review task\n            </button>\n            <span class=\"warning-message\"\n                  ng-show=\"vm.newTaskError && !vm.orchestraTasks.preventNew\">\n              No tasks available at the moment\n            </span>\n            <i class=\"fa fa-spinner fa-spin\" ng-show=\"vm.waiting\"></i>\n          </h3>\n        </div>\n      </div>\n      <div class=\"row padded active-tasks\">\n        <div class=\"col-lg-3 col-md-3 col-task\">\n          <div taskcards=\"{tasks: vm.orchestraTasks.tasks.in_progress, label: 'In progress'}\"\n          class=\"task-cards-wrapper\">\n          </div>\n        </div>\n        <div class=\"col-lg-3 col-md-3 col-task col-waiting\">\n          <div taskcards=\"{tasks: vm.orchestraTasks.tasks.pending_review, label: 'Pending review'}\"\n          class=\"task-cards-wrapper\">\n          </div>\n        </div>\n        <div class=\"col-lg-3 col-md-3 col-task\">\n          <div taskcards=\"{tasks: vm.orchestraTasks.tasks.returned, label: 'Returned from reviewer'}\"\n          class=\"task-cards-wrapper\">\n          </div>\n        </div>\n        <div class=\"col-lg-3 col-md-3 col-task col-waiting\">\n          <div taskcards=\"{tasks: vm.orchestraTasks.tasks.pending_processing, label: 'Pending update'}\"\n          class=\"task-cards-wrapper\">\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n  <!--/section-panel tasks-section -->\n\n  <section class=\"section-panel tasks-section\">\n    <div class=\"container-fluid\">\n      <div class=\"row section-header\">\n        <div class=\"col-lg-12\">\n          <h3>\n            Completed Tasks ({{ vm.orchestraTasks.tasks.complete.length || 0 }})\n          </h3>\n        </div>\n      </div>\n      <div class=\"row completed-tasks\">\n        <div class=\"col-lg-12 col-task\">\n          <div class=\"row\">\n            <div taskcards=\"{tasks: vm.orchestraTasks.tasks.complete, flowable: true}\"></div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n  <!--/section-panel tasks-section -->\n</section>\n<!--/wrapper -->\n";
 
 /***/ },
-/* 47 */
+/* 57 */
 /***/ function(module, exports) {
 
 	module.exports = "<section class=\"wrapper task-view\">\n\n\n<script type=\"text/ng-template\" id=\"submit_task_modal.html\">\n  <div class=\"modal-header\">\n    <h3 class=\"modal-title\">{{command | capitalize}} Confirmation</h3>\n  </div>\n  <div class=\"modal-body modal-confirm-body\">\n    <div class=\"modal-confirm-text\">\n      <div class=\"time-question\">\n        Approximately how much time did you spend on <strong>this iteration</strong> of the task?\n      </div>\n        <div class=\"time-summary\">\n          <span class=\"time-report form-inline input-group-sm\">\n            <span class=\"time-unit-group\">\n              <input type=\"text\"\n                     class=\"form-control\"\n                     id=\"current-time-hours\"\n                     ng-model=\"currentIterationHours\">\n                     <span class=\"time-unit\"> hours</span>\n            </span>\n            <span class=\"time-unit-group\">\n              <input type=\"text\"\n                     class=\"form-control\"\n                     id=\"current-time-minutes\"\n                     ng-model=\"currentIterationMinutes\">\n                     <span class=\"time-unit\"> mins</span>\n            </span>\n          </span>\n        </div>\n        <div class=\"time-error-message\" ng-bind=\"secondsErrorMessage\"></div>\n        <div class=\"time-summary\">\n          <span class=\"time-label\">Total time so far</span>\n          <span class=\"time-report\">\n            <span class=\"time-unit-group\">\n              <span class=\"time-value-float\">\n                <span class=\"time-value\" ng-bind=\"totalPreviousHoursMinutes()[0]\"></span>\n              </span>\n              <span class=\"time-unit\"> hours</span>\n            </span>\n            <span class=\"time-unit-group\">\n              <span class=\"time-value-float\">\n                <span class=\"time-value\" ng-bind=\"totalPreviousHoursMinutes()[1]\"></span>\n              </span>\n              <span class=\"time-unit\"> mins</span>\n            </span>\n          </span>\n        </div>\n        <hr />\n        <div class=\"time-summary\">\n          <span class=\"time-label\">Total time on task</span>\n          <span class=\"time-report\">\n            <span class=\"time-unit-group\">\n              <span class=\"time-value-float\">\n                <span class=\"time-value\" ng-bind=\"totalHoursMinutes()[0]\"></span>\n              </span>\n              <span class=\"time-unit\"> hours</span>\n            </span>\n            <span class=\"time-unit-group\">\n              <span class=\"time-value-float\">\n                <span class=\"time-value\" ng-bind=\"totalHoursMinutes()[1]\"></span>\n              </span>\n              <span class=\"time-unit\"> mins</span>\n            </span>\n          </span>\n        </div>\n    </div>\n    <div class=\"pull-center\">\n      <button class=\"btn btn-primary\" ng-disabled=\"secondsErrorMessage !== null\" ng-click=\"submit()\">{{command | capitalize}}</button>\n      <button class=\"btn btn-default\" ng-click=\"cancel()\">Cancel</button>\n    </div>\n  </div>\n</script>\n\n\n<nav class=\"topbar-overview\" ng-class=\"{'reviewer-topbar': vm.taskAssignment.is_reviewer}\">\n    <div class=\"topbar-leader\">\n      <div class=\"project-overview\">\n        <div class=\"workflow\">{{ vm.taskAssignment.workflow.name}}</div>\n        {{ vm.taskAssignment.project.details}}\n      </div>\n      <div class=\"arrow-wrapper\">\n        <div class=\"arrow-with-shadow\"></div>\n      </div>\n    </div>\n    <div class=\"topbar-follower\">\n      <div class=\"task-overview\">\n        {{ vm.taskAssignment.step.name}}\n        <span ng-if=\"vm.taskAssignment.is_reviewer\">\n              Review\n        </span>\n      </div>\n    </div>\n</nav>\n\n<div class=\"fixed-infobox-outer\" ng-if=\"vm.is_read_only\">\n  <div class=\"fixed-infobox bg-info\">\n    This task is in view-only mode. You cannot edit or review it at this time.\n  </div>\n</div>\n\n<div class=\"fixed-infobox-outer\" ng-if=\"vm.autoSaver.saveError\">\n  <div class=\"fixed-infobox btn-danger\">\n    Error saving task. Trying again...\n  </div>\n</div>\n\n<div class=\"step-interface\">\n  <div dynamic-load=\"vm.angularDirective\"></div>\n</div>\n\n<section class=\"task-actions-wrapper\">\n  <div class=\"task-actions\">\n    <div class=\"container-fluid\">\n      <div class=\"row\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <button ng-if=\"!vm.taskAssignment.is_reviewer\"\n                  type=\"button\"\n                  class=\"btn btn-primary navbar-btn\"\n                  ng-click=\"vm.submitTask('submit')\"\n                  ng-disabled=\"vm.is_read_only || vm.autoSaver.saving || vm.submitting\">\n            Submit\n          </button>\n          <button ng-if=\"vm.taskAssignment.is_reviewer\"\n                  type=\"button\"\n                  class=\"btn btn-primary navbar-btn\"\n                  ng-click=\"vm.submitTask('accept')\"\n                  ng-disabled=\"vm.is_read_only || vm.autoSaver.saving || vm.submitting\">\n            Accept\n          </button>\n          <button ng-if=\"vm.taskAssignment.is_reviewer\"\n                  type=\"button\"\n                  class=\"btn btn-default navbar-btn\"\n                  ng-click=\"vm.submitTask('reject')\"\n                  ng-disabled=\"vm.is_read_only || vm.autoSaver.saving || vm.submitting\">\n            Reject\n          </button>\n          <button type=\"button\"\n                  class=\"btn btn-default navbar-btn\"\n                  ng-click=\"vm.autoSaver.save()\"\n                  ng-disabled=\"vm.is_read_only || vm.autoSaver.saving || vm.submitting\">\n            Save\n          </button>\n          <div class=\"save-message\">\n            <div ng-show=\"vm.autoSaver.saving\">Saving...</div>\n            <div ng-show=\"vm.autoSaver.lastSaved && !vm.autoSaver.saving\">\n              Saved at {{ vm.autoSaver.lastSaved | date:'mediumTime' }}\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n\n\n</section><!--/wrapper -->\n";
 
 /***/ },
-/* 48 */
+/* 58 */
 /***/ function(module, exports) {
 
 	module.exports = "<div class=\"project-management\">\n  <section class=\"section-panel\">\n    <div class=\"container-fluid\">\n      <div class=\"row padded\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <ui-select class=\"project-description\" ng-model=\"vis.dataService.currentProject\"\n              ng-change=\"vis.dataService.setSelectedProject()\"\n              ng-disabled=\"vis.dataService.loading\">\n            <ui-select-match>\n              <span ng-bind=\"projectDescription($select.selected)\"></span>\n            </ui-select-match>\n            <ui-select-choices repeat=\"item in (vis.dataService.allProjects | toArray | filter: $select.search) track by item.id\">\n              <span ng-bind=\"projectDescription(item)\"></span>\n            </ui-select-choices>\n          </ui-select>\n          <div class=\"project-actions\" ng-show=\"vis.dataService.currentProject.id\">\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.createSubsequentTasks()\" class=\"btn btn-default\">\n              Create subsequent tasks\n            </button>\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.showSlackActions()\" class=\"btn btn-default\">\n              Edit Slack users\n            </button>\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.showProjectData()\" class=\"btn btn-default\">\n              View project data\n            </button>\n            <a ng-href=\"{{vis.dataService.data.project.admin_url}}\" ng-disabled=\"vis.dataService.loading\" target=\"_blank\">\n              <button type=\"button\" class=\"btn btn-default\">View in admin</button>\n            </a>\n            <button ng-click=\"vis.endProject()\" class=\"btn btn-danger\">Abort project</button>\n          </div>\n        </div>\n      </div>\n      <div class=\"row\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <div class=\"vis-wrapper\" ng-show=\"vis.dataService.currentProject.id\">\n            <div class=\"overlay\" ng-if=\"vis.dataService.loading\">\n              <div class=\"spinner\"></div>\n            </div>\n            <div class=\"freeze-pane-left\">\n              <div class=\"scale-buttons\">\n                <button ng-click=\"vis.axis.relativeTime = !vis.axis.relativeTime; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  Switch to {{vis.axis.relativeTime ? 'local' : 'relative'}} time\n                </button>\n                <button ng-click=\"vis.params.scaleWidth = vis.params.scaleWidth / 1.1; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  -\n                </button>\n                <button ng-click=\"vis.params.scaleWidth = vis.params.scaleWidth * 1.1; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  +\n                </button>\n              </div>\n              <div class=\"task-names\"></div>\n            </div>\n            <div class=\"svg-wrapper\"></div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n</div>\n";
 
 /***/ },
-/* 49 */
+/* 59 */
 /***/ function(module, exports) {
 
 	module.exports = "<div class=\"timecard-view\" ng-if=\"!vm.dataLoading\">\n  <div class=\"entries\">\n    <div class=\"container-fluid\">\n      <div class=\"row no-padding\">\n        <div class=\"col-xs-10 col-xs-offset-2\">\n          <div class=\"row\">\n            <div class=\"col-xs-12 col-md-10\">\n              <span class=\"edit-label\">\n                Date range\n              </span>\n              <date-picker date=\"vm.minDate\" max-date=\"vm.maxDate.toDate()\"></date-picker>–\n              <date-picker date=\"vm.maxDate\" min-date=\"vm.minDate.toDate()\"\n              max-date=\"vm.weekEnd.toDate()\"></date-picker>\n            </div>\n            <div class=\"col-xs-12 col-md-2\">\n              <a href=\"//orchestra.readthedocs.org/en/stable/features.html#time-tracking\" target=\"_blank\"\n              class=\"pull-right help-icon\"><i class=\"fa fa-question-circle\"></i></a>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n    <div class=\"date-group\" ng-repeat=\"dateEntries in vm.timeEntries.entriesByDate | toArray | orderBy:vm.datetimeFromKey:'true'\">\n      <div class=\"container-fluid\">\n        <div class=\"row no-padding\">\n          <div class=\"col-xs-12 col-md-2\">\n            <span class=\"day-name\">{{ vm.dayName(dateEntries.$key) }}</span>\n          </div>\n          <div class=\"col-xs-12 col-md-10\">\n            <div class=\"date-entries\">\n              <h2>\n                <span class=\"date-label\">{{ vm.prettyDate(dateEntries.$key) }}</span>\n                <i ng-click=\"vm.addEntry(vm.datetimeFromKey(dateEntries))\" class=\"fa fa-plus btn-add-entry\"></i>\n                <span class=\"date-duration\" ng-show=\"vm.timeEntries.invalidEntriesForDate(dateEntries.$key).length\">\n                  <em class=\"incomplete\">Invalid Entries</em>\n                </span>\n                <span class=\"date-duration\" ng-hide=\"vm.timeEntries.invalidEntriesForDate(dateEntries.$key).length\">\n                  {{ vm.timeEntries.timeWorkedForDate(dateEntries.$key).humanizeUnits() }}\n                </span>\n              </h2>\n              <div class=\"entry-row\" ng-if=\"!dateEntries.length\">\n                <div class=\"row\">\n                  <div class=\"col-xs-12\">\n                    <em>No entries for this date</em>\n                  </div>\n                </div>\n              </div>\n              <div class=\"entry-row\" ng-class=\"{'gray-stripe': $index % 2}\" ng-repeat=\"entry in dateEntries | orderBy:'-id'\">\n                <form class=\"container-fluid form-inline\" novalidate name=\"entryForm\">\n                  <div class=\"row\">\n                    <div class=\"col-xs-2 edit-tools disable-select\">\n                      <i ng-click=\"vm.timeEntries.deleteEntry(entry)\" class=\"fa fa-times-circle\"></i>\n                      <i class=\"fa fa-pencil-square-o\" ng-class=\"{active: entry.editing}\" ng-click=\"vm.editEntry(entry)\"></i>\n                    </div>\n\n                    <!-- Readonly view for description and time worked -->\n                    <div class=\"col-xs-6 description\" ng-if=\"!entry.editing\">\n                      <span ng-show=\"entry.description\">\n                        {{ entry.description }}\n                      </span>\n                      <span class=\"incomplete\" ng-hide=\"entry.description\">\n                        <em>No description</em>\n                      </span>\n                    </div>\n                    <div class=\"col-xs-4 edit-time\" ng-if=\"!entry.editing\">\n                      {{ entry.time_worked.roundMinute().humanizeUnits() }}\n                    </div>\n                    <div class=\"col-xs-12\" ng-if=\"!entry.editing\">\n                      <em class=\"pull-right\" ng-show=\"vm.orchestraTasks.tasksByAssignmentId[entry.assignment]\">\n                        {{ vm.orchestraTasks.getDescription(vm.orchestraTasks.tasksByAssignmentId[entry.assignment]) }}\n                      </em>\n                      <em class=\"pull-right incomplete\" ng-hide=\"vm.orchestraTasks.tasksByAssignmentId[entry.assignment]\">\n                        Unassigned\n                      </em>\n                    </div>\n\n                    <!-- Editable view for description and time worked -->\n                    <div class=\"col-xs-6\" ng-if=\"entry.editing\">\n                      <input class=\"form-control\" type=\"text\" ng-model=\"entry.editData.description\" placeholder=\"What did you work on?\">\n                    </div>\n                    <div class=\"col-xs-4 edit-time\" ng-if=\"entry.editing\">\n                      <div class=\"time-component\">\n                        <input class=\"form-control\" type=\"number\" ng-model=\"entry.editData.timeWorked.h\"\n                        min=\"0\" max=\"23\" enforce-integers>\n                        <label>hours</label>\n                      </div>\n                      <div class=\"time-component\">\n                        <input class=\"form-control\" type=\"number\" ng-model=\"entry.editData.timeWorked.m\"\n                        min=\"0\" max=\"59\" enforce-integers>\n                        <label>minutes</label>\n                      </div>\n                    </div>\n                  </div>\n\n                  <div class=\"row\" ng-if=\"entry.editing\">\n                    <div class=\"col-xs-4\">\n                      <div class=\"edit-date\">\n                        <label class=\"edit-label\">Move to date</label>\n                        <date-picker date=\"entry.editData.date\" max-date=\"vm.weekEnd.toDate()\"></date-picker>\n                      </div>\n                    </div>\n                    <div class=\"col-xs-8\">\n                      <div class=\"edit-task\">\n                        <task-select task=\"entry.editData.task\"></task-select>\n                      </div>\n                    </div>\n                  </div>\n                  <div class=\"row\" ng-if=\"entry.editing\">\n                    <div class=\"col-xs-12\">\n                      <div class=\"edit-options pull-right\">\n                        <div class=\"edit-cancel-handle\" ng-click=\"vm.cancelChanges(entry)\">\n                          Cancel\n                        </div>\n                        <div class=\"btn btn-primary btn-sm edit-save-handle\" ng-disabled=\"vm.entryUnchanged(entry)\"\n                        ng-click=\"vm.saveChanges(entry)\">\n                          Save changes\n                        </div>\n                      </div>\n                    </div>\n                  </div>\n                </form>\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n";
