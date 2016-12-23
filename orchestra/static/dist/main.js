@@ -52,13 +52,13 @@
 
 	var _commonModuleEs2 = _interopRequireDefault(_commonModuleEs);
 
-	var _taskModuleEs = __webpack_require__(47);
-
-	var _taskModuleEs2 = _interopRequireDefault(_taskModuleEs);
-
 	var _dashboardModuleEs = __webpack_require__(55);
 
 	var _dashboardModuleEs2 = _interopRequireDefault(_dashboardModuleEs);
+
+	var _taskModuleEs = __webpack_require__(47);
+
+	var _taskModuleEs2 = _interopRequireDefault(_taskModuleEs);
 
 	var _configEs = __webpack_require__(61);
 
@@ -30793,21 +30793,21 @@
 	});
 	exports.default = config;
 
-	var _task = __webpack_require__(62);
-
-	var _task2 = _interopRequireDefault(_task);
-
 	var _dashboard = __webpack_require__(63);
 
 	var _dashboard2 = _interopRequireDefault(_dashboard);
 
-	var _project_management = __webpack_require__(64);
+	var _task = __webpack_require__(62);
 
-	var _project_management2 = _interopRequireDefault(_project_management);
+	var _task2 = _interopRequireDefault(_task);
 
 	var _timecard = __webpack_require__(65);
 
 	var _timecard2 = _interopRequireDefault(_timecard);
+
+	var _project_management = __webpack_require__(64);
+
+	var _project_management2 = _interopRequireDefault(_project_management);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
