@@ -1,5 +1,5 @@
 # Packages needed to build docs on https://readthedocs.org
 Django==1.9.12
-Sphinx==1.5
+Sphinx==1.5.1
 sphinx-autobuild==0.6.0
 sphinxcontrib-httpdomain==1.5.0
