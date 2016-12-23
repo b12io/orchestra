@@ -1,6 +1,4 @@
-import {
-  isObject
-} from 'lodash'
+/* global angular */
 
 export function capitalize () {
   return function (input, format) {
@@ -12,12 +10,10 @@ export function capitalize () {
   }
 }
 
-export function toArray () {
   // Modified from github.com/petebacondarwin/angular-toArrayFilter
+export function toArray () {
   return function (obj, addKey) {
-    if (!isObject(obj)) {
-      return obj
-    }
+    if (!angular.isObject(obj)) return obj
     if (addKey === false) {
       return Object.keys(obj).map(function (key) {
         return obj[key]
@@ -25,15 +21,9 @@ export function toArray () {
     } else {
       return Object.keys(obj).map(function (key) {
         var value = obj[key]
-        if (isObject(value)) {
-          return Object.defineProperty(value, '$key', {
-            enumerable: false, value: key
-          })
-        } else {
-          return {
-            $key: key, $value: value
-          }
-        }
+        return angular.isObject(value)
+          ? Object.defineProperty(value, '$key', { enumerable: false, value: key })
+          : { $key: key, $value: value }
       })
     }
   }
