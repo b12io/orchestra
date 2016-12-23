@@ -22,6 +22,10 @@
         test: /\.es6\.js$/,
         exclude: [/node_modules/, /.*\.min\.js/],
         loader: 'eslint'  // Only works for ES6
+      }, {
+        test: /\.html/,
+        loader: 'htmlhint',
+        exclude: /node_modules/
       }],
       loaders: [{
         test: /\.json$/,
