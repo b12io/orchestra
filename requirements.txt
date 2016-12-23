@@ -25,7 +25,7 @@ python-dateutil==2.6.0
 django-hijack==2.1.2
 django-hijack-admin==2.1.2
 django-money==0.10
-django-filter==0.15.3
+django-filter==1.0.1
 django-widget-tweaks==1.4.1
 django-bitfield==1.8.0
 django-phonenumber-field==1.1.0
