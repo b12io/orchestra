@@ -1,5 +1,5 @@
-import dataModalTemplate from 'orchestra/project-management/partials/data_modal.html'
-import slackModalTemplate from 'orchestra/project-management/partials/slack_modal.html'
+import dataModalTemplate from 'orchestra/project-management/data-modal.html'
+import slackModalTemplate from 'orchestra/project-management/slack-modal.html'
 
 let d3 = require('d3')
 

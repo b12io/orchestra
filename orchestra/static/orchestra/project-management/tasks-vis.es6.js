@@ -1,4 +1,4 @@
-import revertModalTemplate from 'orchestra/project-management/partials/revert_modal.html'
+import revertModalTemplate from 'orchestra/project-management/revert-modal.html'
 
 let d3 = require('d3')
 

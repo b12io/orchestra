@@ -2,15 +2,15 @@
 
 import common from 'orchestra/common/common.module.es6.js'
 
+import assignmentsVis from './assignments-vis.es6.js'
+import axis from './axis.es6.js'
+import crosshair from './crosshair.es6.js'
+import dataService from './data-service.es6.js'
+import iterationsVis from './iterations-vis.es6.js'
+import projectVis from './project-vis.es6.js'
+import tasksVis from './tasks-vis.es6.js'
+import visUtils from './vis-utils.es6.js'
 import ProjectManagementController from './project-management.controller.es6.js'
-import assignmentsVis from './js/assignments-vis.es6.js'
-import axis from './js/axis.es6.js'
-import crosshair from './js/crosshair.es6.js'
-import dataService from './js/data-service.es6.js'
-import iterationsVis from './js/iterations-vis.es6.js'
-import projectVis from './js/project-vis.es6.js'
-import tasksVis from './js/tasks-vis.es6.js'
-import visUtils from './js/vis-utils.es6.js'
 
 import './project-management.scss'
 
