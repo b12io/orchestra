@@ -3,7 +3,7 @@ jsonfield==1.0.3
 django-jsonview==1.0.0
 requests==2.12.4
 factory_boy==2.8.1
-coverage==4.2
+coverage==4.3.1
 psycopg2==2.6.2
 django-registration-redux==1.4
 djrill==2.1.0
@@ -15,7 +15,7 @@ djangorestframework==3.5.3
 djangorestframework-httpsignature==1.0.0
 djangocms-admin-style==1.2.6.2
 lxml==3.7.1
-beautifulsoup4==4.5.1
+beautifulsoup4==4.5.3
 pyOpenSSL==16.2.0
 pycrypto==2.6.1
 google-api-python-client==1.5.3
@@ -39,4 +39,4 @@ markdown2==2.3.2
 timeout-decorator==0.3.2
 
 # Journalism Workflow requirements
-Pillow==3.4.2
+Pillow==4.0.0
