@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.templatetags.static import static
+from django.views.decorators.csrf import requires_csrf_token
 from jsonview.decorators import json_view
 from jsonview.exceptions import BadRequest
 from rest_framework import filters
@@ -299,6 +300,7 @@ def error_handler(request, error_code, context):
                   status=error_code)
 
 
+@requires_csrf_token
 def bad_request(request):
     error_code = http_status.HTTP_400_BAD_REQUEST
     return error_handler(request, error_code, context={
@@ -306,6 +308,7 @@ def bad_request(request):
     })
 
 
+@requires_csrf_token
 def forbidden(request):
     error_code = http_status.HTTP_403_FORBIDDEN
     return error_handler(request, error_code, context={
@@ -313,6 +316,7 @@ def forbidden(request):
     })
 
 
+@requires_csrf_token
 def not_found(request):
     error_code = http_status.HTTP_404_NOT_FOUND
     return error_handler(request, error_code, context={
@@ -320,6 +324,7 @@ def not_found(request):
     })
 
 
+@requires_csrf_token
 def internal_server_error(request):
     error_code = http_status.HTTP_500_INTERNAL_SERVER_ERROR
     return error_handler(request, error_code, context={
