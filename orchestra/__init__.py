@@ -1,4 +1,4 @@
 # The current Orchestra version.
-__version__ = '0.2.23'
+__version__ = '0.2.24'
 
 default_app_config = 'orchestra.apps.OrchestraAppConfig'
