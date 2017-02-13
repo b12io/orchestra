@@ -1,25 +1,25 @@
 Django==1.9.12
 jsonfield==1.0.3
 django-jsonview==1.0.0
-requests==2.12.4
+requests==2.13.0
 factory_boy==2.8.1
-coverage==4.3.1
+coverage==4.3.4
 psycopg2==2.6.2
 django-registration-redux==1.4
 djrill==2.1.0
-ipython==5.1.0
+ipython==5.2.2
 boto==2.45.0
-moto==0.4.30
-flake8==3.2.1
-djangorestframework==3.5.3
+moto==0.4.31
+flake8==3.3.0
+djangorestframework==3.5.4
 djangorestframework-httpsignature==1.0.0
 djangocms-admin-style==1.2.6.2
-lxml==3.7.1
+lxml==3.7.2
 beautifulsoup4==4.5.3
 pyOpenSSL==16.2.0
 pycrypto==2.6.1
 google-api-python-client==1.5.3
-slacker==0.9.30
+slacker==0.9.40
 pandas==0.19.2
 python-dateutil==2.6.0
 django-hijack==2.1.2
@@ -35,8 +35,8 @@ django-gulp==2.5.0
 django-related-admin==0.4.0
 django-ajax-selects==1.5.2
 django-kronos==1.0
-markdown2==2.3.2
-timeout-decorator==0.3.2
+markdown2==2.3.3
+timeout-decorator==0.3.3
 
 # Journalism Workflow requirements
 Pillow==4.0.0
