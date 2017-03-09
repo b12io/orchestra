@@ -1574,6 +1574,157 @@ a.logo {
  * This partial provides common variables and mixins useful for various view and
  * component styles.
  */
+.disable-select, .project-management .task-view .add-assignment, .project-management .task-view .worker-name, .project-management .project-actions {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none; }
+
+.row.no-padding, .row.no-padding > [class*="col-"] {
+  padding-left: 0;
+  padding-right: 0; }
+
+.project-management .vis-wrapper .overlay .spinner::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-bottom: 1px solid black;
+  border-right: 1px solid black;
+  border-radius: 50%;
+  content: "";
+  animation: spin .75s linear infinite; }
+
+.project-management-modal, .slack-modal, .data-modal, .revert-modal {
+  font-size: 1.5rem;
+  padding: 15px; }
+  .project-management-modal .json-view, .slack-modal .json-view, .data-modal .json-view, .revert-modal .json-view {
+    margin-top: 10px;
+    max-height: 50vh; }
+
+.slack-modal input {
+  width: 200px; }
+
+.slack-modal .add-user {
+  cursor: pointer;
+  color: #2ecc71; }
+
+.slack-modal .remove-user {
+  cursor: pointer;
+  color: red; }
+
+.data-modal .header-wrapper {
+  overflow: auto; }
+  .data-modal .header-wrapper .data-header {
+    float: left; }
+  .data-modal .header-wrapper .btn-admin {
+    float: right; }
+
+.revert-modal .header-wrapper {
+  overflow: auto; }
+
+.project-management {
+  margin-top: 75px;
+  font-size: 1.5rem;
+  position: relative; }
+  .project-management .project-description.ui-select-bootstrap {
+    margin: 10px 0; }
+    .project-management .project-description.ui-select-bootstrap > .ui-select-match > .btn {
+      height: auto;
+      width: auto;
+      font-size: 30px;
+      padding-right: 40px; }
+  .project-management .axis-wrapper {
+    position: relative;
+    display: inline-block; }
+  .project-management .axis {
+    shape-rendering: crispEdges; }
+    .project-management .axis.x line {
+      stroke: #000; }
+    .project-management .axis.x path {
+      fill: none;
+      stroke: #000; }
+  .project-management .x.label {
+    color: black;
+    position: absolute; }
+  .project-management svg {
+    vertical-align: top;
+    overflow: visible; }
+  .project-management .task-view {
+    position: relative;
+    display: inline-block; }
+    .project-management .task-view .add-assignment {
+      display: block;
+      cursor: pointer;
+      text-align: right; }
+    .project-management .task-view .worker-name {
+      display: block;
+      cursor: pointer;
+      text-align: right;
+      background-color: inherit; }
+      .project-management .task-view .worker-name.readonly {
+        outline: none;
+        border: none; }
+  .project-management .vis-wrapper {
+    position: relative;
+    margin-bottom: 75px;
+    min-height: 200px; }
+    .project-management .vis-wrapper .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: white;
+      opacity: 0.75;
+      z-index: 100; }
+      .project-management .vis-wrapper .overlay .spinner {
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%); }
+    .project-management .vis-wrapper .svg-wrapper {
+      overflow-x: auto;
+      overflow-y: hidden;
+      position: relative; }
+    .project-management .vis-wrapper .freeze-pane-left {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      background-color: white;
+      text-align: right;
+      border-right: 1px solid #333;
+      min-width: 225px; }
+      .project-management .vis-wrapper .freeze-pane-left .scale-buttons {
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding-right: 10px; }
+      .project-management .vis-wrapper .freeze-pane-left .task-name {
+        padding: 0 10px; }
+        .project-management .vis-wrapper .freeze-pane-left .task-name .step-status {
+          font-size: 0.8em; }
+        .project-management .vis-wrapper .freeze-pane-left .task-name .task-action {
+          margin-left: 5px; }
+  .project-management .project-actions {
+    display: inline-block;
+    cursor: pointer; }
+    .project-management .project-actions .project-actions-menu {
+      font-size: 2em; }
+  .project-management .task-rect {
+    cursor: pointer; }
+/**
+ * Common stylesheet for Orchestra.
+ *
+ * This partial provides common variables and mixins useful for various view and
+ * component styles.
+ */
 .disable-select {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
