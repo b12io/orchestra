@@ -33,6 +33,8 @@
     "gulp-util": "^3.0.7",
     "gulp-watch": "^4.3.5",
     "html-loader": "^0.4.4",
+    "htmlhint": "^0.9.13",
+    "htmlhint-loader": "^1.1.0",
     "jshint": "^2.9.1",
     "jshint-loader": "^0.8.3",
     "jshint-stylish": "^2.1.0",
