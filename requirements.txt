@@ -1,5 +1,4 @@
 Django==1.9.12
-jsonfield==1.0.3
 django-jsonview==1.0.0
 requests==2.13.0
 factory_boy==2.8.1

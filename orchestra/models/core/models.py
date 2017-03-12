@@ -1,8 +1,8 @@
 from django.conf import settings
+from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.utils import timezone
 from djmoney.models.fields import MoneyField
-from jsonfield import JSONField
 from phonenumber_field.modelfields import PhoneNumberField
 
 from orchestra.models.core.mixins import WorkflowMixin
@@ -44,7 +44,7 @@ class Workflow(WorkflowMixin, models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField()
     code_directory = models.CharField(max_length=255, unique=True)
-    sample_data_load_function = JSONField(default={})
+    sample_data_load_function = JSONField(default=dict)
 
     class Meta:
         app_label = 'orchestra'
@@ -152,7 +152,7 @@ class Step(StepMixin, models.Model):
     slug = models.CharField(max_length=200)
     name = models.CharField(max_length=200)
     description = models.TextField()
-    detailed_description_function = JSONField(default={})
+    detailed_description_function = JSONField(default=dict)
     workflow_version = models.ForeignKey(WorkflowVersion, related_name='steps')
     creation_depends_on = models.ManyToManyField(
         'self',
@@ -167,14 +167,14 @@ class Step(StepMixin, models.Model):
 
     # Machine step fields
     is_human = models.BooleanField()
-    execution_function = JSONField(default={})
+    execution_function = JSONField(default=dict)
 
     # Human step fields
     required_certifications = models.ManyToManyField(Certification, blank=True)
-    assignment_policy = JSONField(default={})
-    review_policy = JSONField(default={})
-    creation_policy = JSONField(default={})
-    user_interface = JSONField(default={})
+    assignment_policy = JSONField(default=dict)
+    review_policy = JSONField(default=dict)
+    creation_policy = JSONField(default=dict)
+    user_interface = JSONField(default=dict)
 
     class Meta:
         app_label = 'orchestra'
@@ -311,7 +311,7 @@ class Project(ProjectMixin, models.Model):
 
     short_description = models.TextField()
     priority = models.IntegerField()
-    project_data = JSONField(default={}, blank=True)
+    project_data = JSONField(default=dict, blank=True)
     task_class = models.IntegerField(
         choices=WorkerCertification.TASK_CLASS_CHOICES)
     team_messages_url = models.URLField(null=True, blank=True)
@@ -421,7 +421,7 @@ class TaskAssignment(TaskAssignmentMixin, BaseModel):
 
     # Opaque field that stores current state of task as per the Step's
     # description
-    in_progress_task_data = JSONField(default={}, blank=True)
+    in_progress_task_data = JSONField(default=dict, blank=True)
 
 
 class Iteration(BaseModel):
@@ -459,7 +459,7 @@ class Iteration(BaseModel):
     assignment = models.ForeignKey(TaskAssignment, related_name='iterations')
     status = models.IntegerField(
         choices=STATUS_CHOICES, default=Status.PROCESSING)
-    submitted_data = JSONField(default={}, blank=True)
+    submitted_data = JSONField(default=dict, blank=True)
 
 
 class TimeEntry(BaseModel):
