@@ -1,5 +1,5 @@
 Django==1.9.12
-jsonfield==1.0.3
+jsonfield==2.0.1
 django-jsonview==1.0.0
 requests==2.13.0
 factory_boy==2.8.1
@@ -28,7 +28,7 @@ django-money==0.10.2
 django-filter==1.0.1
 django-widget-tweaks==1.4.1
 django-bitfield==1.8.0
-django-phonenumber-field==1.1.0
+django-phonenumber-field==1.2.0
 django-nose==1.4.4
 django-annoying==0.10.3
 django-gulp==2.5.0
