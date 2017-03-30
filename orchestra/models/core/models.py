@@ -68,7 +68,8 @@ class WorkflowVersion(WorkflowVersionMixin, models.Model):
     slug = models.CharField(max_length=200)
     name = models.CharField(max_length=200)
     description = models.TextField()
-    workflow = models.ForeignKey(Workflow, related_name='versions')
+    workflow = models.ForeignKey(
+        Workflow, related_name='versions', on_delete=models.CASCADE)
 
     class Meta:
         app_label = 'orchestra'
@@ -100,7 +101,8 @@ class Certification(CertificationMixin, models.Model):
         blank=True,
         related_name='dependent_certifications',
         symmetrical=False)
-    workflow = models.ForeignKey(Workflow, related_name='certifications')
+    workflow = models.ForeignKey(
+        Workflow, related_name='certifications', on_delete=models.CASCADE)
 
     class Meta:
         app_label = 'orchestra'
@@ -153,7 +155,8 @@ class Step(StepMixin, models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField()
     detailed_description_function = JSONField(default={})
-    workflow_version = models.ForeignKey(WorkflowVersion, related_name='steps')
+    workflow_version = models.ForeignKey(
+        WorkflowVersion, related_name='steps', on_delete=models.CASCADE)
     creation_depends_on = models.ManyToManyField(
         'self',
         blank=True,
@@ -200,7 +203,8 @@ class Worker(WorkerMixin, models.Model):
             The worker's priority when new tasks are being staffed by
             tools like StaffBot.
     """
-    user = models.OneToOneField(settings.AUTH_USER_MODEL)
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     start_datetime = models.DateTimeField(default=timezone.now)
     slack_username = models.CharField(max_length=200, blank=True, null=True)
     slack_user_id = models.CharField(max_length=200, blank=True, null=True)
@@ -260,8 +264,9 @@ class WorkerCertification(WorkerCertificationMixin, models.Model):
         (Role.REVIEWER, 'Reviewer'))
 
     created_at = models.DateTimeField(default=timezone.now)
-    certification = models.ForeignKey(Certification)
-    worker = models.ForeignKey(Worker, related_name='certifications')
+    certification = models.ForeignKey(Certification, on_delete=models.CASCADE)
+    worker = models.ForeignKey(
+        Worker, related_name='certifications', on_delete=models.CASCADE)
     task_class = models.IntegerField(choices=TASK_CLASS_CHOICES)
     role = models.IntegerField(choices=ROLE_CHOICES)
     staffbot_enabled = models.BooleanField(default=True)
@@ -307,6 +312,7 @@ class Project(ProjectMixin, models.Model):
                                  default=Status.ACTIVE)
 
     workflow_version = models.ForeignKey(WorkflowVersion,
+                                         on_delete=models.CASCADE,
                                          related_name='projects')
 
     short_description = models.TextField()
@@ -354,8 +360,10 @@ class Task(TaskMixin, models.Model):
         (Status.COMPLETE, 'Complete'))
 
     start_datetime = models.DateTimeField(default=timezone.now)
-    step = models.ForeignKey(Step, related_name='tasks')
-    project = models.ForeignKey(Project, related_name='tasks')
+    step = models.ForeignKey(Step, related_name='tasks',
+                             on_delete=models.CASCADE)
+    project = models.ForeignKey(
+        Project, related_name='tasks', on_delete=models.CASCADE)
     status = models.IntegerField(choices=STATUS_CHOICES)
 
     class Meta:
@@ -410,9 +418,11 @@ class TaskAssignment(TaskAssignmentMixin, BaseModel):
 
     start_datetime = models.DateTimeField(default=timezone.now)
     worker = models.ForeignKey(Worker,
+                               on_delete=models.CASCADE,
                                null=True,
                                blank=True)
-    task = models.ForeignKey(Task, related_name='assignments')
+    task = models.ForeignKey(
+        Task, related_name='assignments', on_delete=models.CASCADE)
 
     status = models.IntegerField(choices=STATUS_CHOICES)
 
@@ -456,7 +466,8 @@ class Iteration(BaseModel):
 
     start_datetime = models.DateTimeField(default=timezone.now)
     end_datetime = models.DateTimeField(null=True, blank=True)
-    assignment = models.ForeignKey(TaskAssignment, related_name='iterations')
+    assignment = models.ForeignKey(
+        TaskAssignment, related_name='iterations', on_delete=models.CASCADE)
     status = models.IntegerField(
         choices=STATUS_CHOICES, default=Status.PROCESSING)
     submitted_data = JSONField(default={}, blank=True)
@@ -489,8 +500,10 @@ class TimeEntry(BaseModel):
 
     date = models.DateField()
     time_worked = models.DurationField()
-    worker = models.ForeignKey(Worker, related_name='time_entries')
+    worker = models.ForeignKey(
+        Worker, related_name='time_entries', on_delete=models.CASCADE)
     assignment = models.ForeignKey(TaskAssignment,
+                                   on_delete=models.CASCADE,
                                    related_name='time_entries',
                                    null=True)
     description = models.CharField(max_length=200, null=True, blank=True)
@@ -516,8 +529,10 @@ class TaskTimer(models.Model):
         description (str): optional
             Description of currently ongoing work.
     """
-    worker = models.OneToOneField(Worker, related_name='timer')
+    worker = models.OneToOneField(
+        Worker, related_name='timer', on_delete=models.CASCADE)
     assignment = models.ForeignKey(TaskAssignment,
+                                   on_delete=models.CASCADE,
                                    related_name='timers',
                                    null=True)
     start_time = models.DateTimeField(null=True)
@@ -543,7 +558,8 @@ class PayRate(PayRateMixin, models.Model):
             The end of the time period of the pay rate (inclusive),
             or None if it's the current period.
     """
-    worker = models.ForeignKey(Worker, related_name='pay_rates')
+    worker = models.ForeignKey(
+        Worker, related_name='pay_rates', on_delete=models.CASCADE)
     hourly_rate = MoneyField(
         max_digits=10, decimal_places=2, default_currency='USD')
     hourly_multiplier = models.DecimalField(max_digits=6, decimal_places=4)

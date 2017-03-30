@@ -18,12 +18,16 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Iteration',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('start_datetime', models.DateTimeField(default=django.utils.timezone.now)),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
+                ('start_datetime', models.DateTimeField(
+                    default=django.utils.timezone.now)),
                 ('end_datetime', models.DateTimeField(blank=True, null=True)),
-                ('status', models.IntegerField(choices=[(0, 'Processing'), (1, 'Requested Review'), (2, 'Provided Review')])),
+                ('status', models.IntegerField(choices=[
+                 (0, 'Processing'), (1, 'Requested Review'), (2, 'Provided Review')])),
                 ('submitted_data', jsonfield.fields.JSONField(blank=True, default={})),
-                ('assignment', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='iterations', to='orchestra.TaskAssignment')),
+                ('assignment', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                                 related_name='iterations', to='orchestra.TaskAssignment')),
             ],
         ),
     ]

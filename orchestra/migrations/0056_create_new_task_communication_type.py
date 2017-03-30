@@ -10,6 +10,8 @@ from django.db import migrations
 # NOTE(joshblum): Future migrations that add a CommunicationType should copy
 # paste all of this boilerplate code, so you just have to specify the correct
 # COMMUNICATION_METHODS you want to be configurable.
+
+
 class CommunicationMethods(object):
     # Copy pasted from models since migrations does not have access
     SLACK = 'slack'
@@ -42,7 +44,8 @@ def _add_communication_type(apps, schema_editor, communication_type):
             communication_preference.methods.slack = True
             communication_preference.methods.email = True
         communication_preference.save()
-################# CommunicationType Migration Boilerplate Start #################
+################# CommunicationType Migration Boilerplate Start ##########
+
 
 def add_communication_type(apps, schema_editor):
     # Change this in future migrations to be the new CommunicationType you've

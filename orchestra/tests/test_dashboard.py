@@ -28,17 +28,17 @@ class DashboardTestCase(OrchestraTransactionTestCase):
         Task.objects.filter(status=Task.Status.AWAITING_PROCESSING).delete()
 
         project = self.projects['test_human_and_machine']
-        self.assertEquals(Task.objects.filter(project=project).count(),
-                          0)
+        self.assertEqual(Task.objects.filter(project=project).count(),
+                         0)
         create_subsequent_tasks(project)
 
         # Human Task was created
-        self.assertEquals(Task.objects.filter(project=project).count(),
-                          1)
+        self.assertEqual(Task.objects.filter(project=project).count(),
+                         1)
 
         response = (self.clients[0].get(
             '/orchestra/api/interface/new_task_assignment/entry_level/'))
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         human_step = self.workflow_steps['test_workflow_2']['step4']
         task = Task.objects.get(step=human_step, project=project)
@@ -46,11 +46,11 @@ class DashboardTestCase(OrchestraTransactionTestCase):
 
         # user 0 submits a task
         response = self._submit_assignment(self.clients[0], task.id, data=data)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         # Machine Task was created
-        self.assertEquals(Task.objects.filter(project=project).count(),
-                          2)
+        self.assertEqual(Task.objects.filter(project=project).count(),
+                         2)
         machine_step = self.workflow_steps['test_workflow_2']['simple_machine']
         machine_task_assignment = (
             TaskAssignment.objects
@@ -68,11 +68,11 @@ class DashboardTestCase(OrchestraTransactionTestCase):
 
     def test_index(self):
         response = self.clients[0].get('/orchestra/app/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def test_status(self):
         response = self.clients[0].get('/orchestra/status/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def test_dashboard_tasks(self):
         self._check_client_dashboard_state(self.clients[0], 'pending_review')
@@ -82,19 +82,19 @@ class DashboardTestCase(OrchestraTransactionTestCase):
             '/orchestra/api/interface/new_task_assignment/entry_level/'))
 
         # no task available for user3 because no entry-level certification
-        self.assertEquals(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
         returned = load_encoded_json(response.content)
-        self.assertEquals(returned['message'],
-                          'No worker certificates')
+        self.assertEqual(returned['message'],
+                         'No worker certificates')
 
         # user 0 only has certification for entry level tasks
         response = (self.clients[0].get(
             '/orchestra/api/interface/new_task_assignment/entry_level/'))
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         returned = load_encoded_json(response.content)
 
         task = Task.objects.get(id=returned['id'])
-        self.assertEquals({
+        self.assertEqual({
             'id': task.id,
             'assignment_id': task.assignments.get(worker=self.workers[0]).id,
             'step': task.step.slug,
@@ -122,10 +122,10 @@ class DashboardTestCase(OrchestraTransactionTestCase):
         # no more tasks for user 0 left
         response = (self.clients[0].get(
             '/orchestra/api/interface/new_task_assignment/entry_level/'))
-        self.assertEquals(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
         returned = load_encoded_json(response.content)
-        self.assertEquals(returned['message'],
-                          'No task')
+        self.assertEqual(returned['message'],
+                         'No task')
 
     def _check_client_dashboard_state(self, client, non_empty_status):
         response = client.get('/orchestra/api/interface/dashboard_tasks/')
@@ -140,7 +140,7 @@ class DashboardTestCase(OrchestraTransactionTestCase):
         # there is a review task for user 1
         response = (self.clients[1].get(
             '/orchestra/api/interface/new_task_assignment/reviewer/'))
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         returned = load_encoded_json(response.content)
         self._verify_good_task_assignment_information(
@@ -153,7 +153,7 @@ class DashboardTestCase(OrchestraTransactionTestCase):
         # user 0 only has certification for entry level tasks
         response = (self.clients[0].get(
             '/orchestra/api/interface/new_task_assignment/entry_level/'))
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         returned = load_encoded_json(response.content)
         task = Task.objects.get(id=returned['id'])
 
@@ -163,10 +163,10 @@ class DashboardTestCase(OrchestraTransactionTestCase):
             json.dumps({'task_id': -1,
                         'task_data': 'test'}),
             content_type='application/json')
-        self.assertEquals(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
         returned = load_encoded_json(response.content)
-        self.assertEquals(returned['message'],
-                          'No task for given id')
+        self.assertEqual(returned['message'],
+                         'No task for given id')
 
         # user does not have a permission to save
         response = self.clients[1].post(
@@ -174,10 +174,10 @@ class DashboardTestCase(OrchestraTransactionTestCase):
             json.dumps({'task_id': task.id,
                         'task_data': 'test'}),
             content_type='application/json')
-        self.assertEquals(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
         returned = load_encoded_json(response.content)
-        self.assertEquals(returned['message'],
-                          'Worker is not associated with task')
+        self.assertEqual(returned['message'],
+                         'Worker is not associated with task')
 
         # save new info
         new_data = {'new_test_key': 'new_test_value'}
@@ -186,7 +186,7 @@ class DashboardTestCase(OrchestraTransactionTestCase):
             json.dumps({'task_id': task.id,
                         'task_data': new_data}),
             content_type='application/json')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         self._verify_good_task_assignment_information(
             self.clients[0], {'task_id': task.id},
@@ -200,7 +200,7 @@ class DashboardTestCase(OrchestraTransactionTestCase):
         # get a reviewer task
         response = (self.clients[1].get(
             '/orchestra/api/interface/new_task_assignment/reviewer/'))
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         returned = load_encoded_json(response.content)
 
@@ -212,10 +212,10 @@ class DashboardTestCase(OrchestraTransactionTestCase):
             json.dumps({'task_id': task.id,
                         'task_data': new_data}),
             content_type='application/json')
-        self.assertEquals(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
         returned = load_encoded_json(response.content)
-        self.assertEquals(returned['message'],
-                          'Worker is not allowed to save')
+        self.assertEqual(returned['message'],
+                         'Worker is not allowed to save')
 
         reviewer_data = {'reviewer_key': 'reviewer_value'}
 
@@ -225,7 +225,7 @@ class DashboardTestCase(OrchestraTransactionTestCase):
             json.dumps({'task_id': task.id,
                         'task_data': reviewer_data}),
             content_type='application/json')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         self._verify_good_task_assignment_information(
             self.clients[1], {'task_id': task.id},
@@ -237,7 +237,7 @@ class DashboardTestCase(OrchestraTransactionTestCase):
         # user 0 only has certification for entry level tasks
         response = (self.clients[0].get(
             '/orchestra/api/interface/new_task_assignment/entry_level/'))
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         returned = load_encoded_json(response.content)
         task = Task.objects.get(id=returned['id'])
 
@@ -245,33 +245,33 @@ class DashboardTestCase(OrchestraTransactionTestCase):
 
         # user is not assigned to a task
         response = self._submit_assignment(self.clients[1], task.id)
-        self.assertEquals(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
         returned = load_encoded_json(response.content)
-        self.assertEquals(returned['message'],
-                          'Task assignment with worker is in broken state.')
+        self.assertEqual(returned['message'],
+                         'Task assignment with worker is in broken state.')
 
         # task does not exist
         response = self._submit_assignment(self.clients[1], -1)
-        self.assertEquals(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
         returned = load_encoded_json(response.content)
-        self.assertEquals(returned['message'],
-                          'No task for given id')
+        self.assertEqual(returned['message'],
+                         'No task for given id')
 
         # user 0 can only submit a task not reject
         response = self._submit_assignment(
             self.clients[0], task.id, command='reject')
-        self.assertEquals(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
         returned = load_encoded_json(response.content)
-        self.assertEquals(returned['message'],
-                          'Task not in rejectable state.')
+        self.assertEqual(returned['message'],
+                         'Task not in rejectable state.')
 
         # user 0 can't call illegal commands
         response = self._submit_assignment(
             self.clients[0], task.id, command='approve')
-        self.assertEquals(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
         returned = load_encoded_json(response.content)
-        self.assertEquals(returned['message'],
-                          'Illegal command')
+        self.assertEqual(returned['message'],
+                         'Illegal command')
         data = {'submit_key1': 'submit_val1'}
 
         # user 0 can't submit a task if its submission prerequisites aren't
@@ -287,18 +287,18 @@ class DashboardTestCase(OrchestraTransactionTestCase):
         step.save()
         response = self._submit_assignment(
             self.clients[0], task.id)
-        self.assertEquals(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
         returned = load_encoded_json(response.content)
-        self.assertEquals(returned['message'],
-                          'Submission prerequisites are not complete.')
-        step.submission_depends_on = []
+        self.assertEqual(returned['message'],
+                         'Submission prerequisites are not complete.')
+        step.submission_depends_on.set([])
         step.save()
 
         data = {'submit_key1': 'submit_val1'}
         # user 0 submits a task
         response = self._submit_assignment(
             self.clients[0], task.id, data=data)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         self._verify_good_task_assignment_information(
             self.clients[0], {'task_id': task.id},
@@ -312,10 +312,10 @@ class DashboardTestCase(OrchestraTransactionTestCase):
         # user cannot resubmit a task
         response = self._submit_assignment(
             self.clients[0], task.id)
-        self.assertEquals(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
         returned = load_encoded_json(response.content)
-        self.assertEquals(returned['message'],
-                          'Worker is not allowed to submit')
+        self.assertEqual(returned['message'],
+                         'Worker is not allowed to submit')
 
     def test_submit_reviewer_task_assignment(self):
         data = {'submit_key1': 'submit_val1'}
@@ -323,12 +323,12 @@ class DashboardTestCase(OrchestraTransactionTestCase):
         # user 1 is picking up a task as a reviewer
         response = (self.clients[1].get(
             '/orchestra/api/interface/new_task_assignment/reviewer/'))
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         returned = load_encoded_json(response.content)
         task_id = returned['id']
         task = Task.objects.get(id=returned['id'])
-        self.assertEquals(task.assignments.count(), 2)
-        self.assertEquals(task_id, self.tasks['review_task'].id)
+        self.assertEqual(task.assignments.count(), 2)
+        self.assertEqual(task_id, self.tasks['review_task'].id)
 
         verify_iterations(task.id)
 
@@ -351,7 +351,7 @@ class DashboardTestCase(OrchestraTransactionTestCase):
         # user 1 rejects a task
         response = self._submit_assignment(
             self.clients[1], task_id, data=rejected_data, command='reject')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         verify_iterations(task.id)
 
@@ -372,7 +372,7 @@ class DashboardTestCase(OrchestraTransactionTestCase):
         # user 0 submits an updated data
         response = self._submit_assignment(
             self.clients[0], task_id, data=data)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         verify_iterations(task.id)
 
@@ -387,7 +387,7 @@ class DashboardTestCase(OrchestraTransactionTestCase):
         # user 1 accepts a task
         response = self._submit_assignment(
             self.clients[1], task_id, data=accepted_data, command='accept')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         verify_iterations(task.id)
 
@@ -402,18 +402,18 @@ class DashboardTestCase(OrchestraTransactionTestCase):
         # make sure a task can't be submitted twice
         response = self._submit_assignment(
             self.clients[1], task_id, command='accept')
-        self.assertEquals(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
         returned = load_encoded_json(response.content)
-        self.assertEquals(returned['message'],
-                          'Worker is not allowed to submit')
+        self.assertEqual(returned['message'],
+                         'Worker is not allowed to submit')
 
         # user 3 is picking up a task as a reviewer
         response = (self.clients[3].get(
             '/orchestra/api/interface/new_task_assignment/reviewer/'))
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         returned = load_encoded_json(response.content)
-        self.assertEquals(returned['id'],
-                          task.id)
+        self.assertEqual(returned['id'],
+                         task.id)
 
         verify_iterations(task.id)
 
@@ -422,7 +422,7 @@ class DashboardTestCase(OrchestraTransactionTestCase):
         # user 3 rejects a task
         response = self._submit_assignment(
             self.clients[3], task_id, data=rejected_data, command='reject')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         returned = load_encoded_json(response.content)
 
         verify_iterations(task.id)
@@ -444,7 +444,7 @@ class DashboardTestCase(OrchestraTransactionTestCase):
 
         response = self._submit_assignment(
             self.clients[1], task.id)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         verify_iterations(task.id)
 
@@ -458,7 +458,7 @@ class DashboardTestCase(OrchestraTransactionTestCase):
         # check if the accepted_data is saved
         response = self._submit_assignment(
             self.clients[3], task_id, data=accepted_data, command='accept')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         returned = load_encoded_json(response.content)
 
         verify_iterations(task.id)
@@ -473,10 +473,10 @@ class DashboardTestCase(OrchestraTransactionTestCase):
         # check that reviewer cannot reaccept task
         response = self._submit_assignment(
             self.clients[3], task_id, data=accepted_data, command='accept')
-        self.assertEquals(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
         returned = load_encoded_json(response.content)
-        self.assertEquals(returned['message'],
-                          'Task already completed')
+        self.assertEqual(returned['message'],
+                         'Task already completed')
 
     def _verify_bad_task_assignment_information(
             self, client, post_data, error_message):
@@ -484,10 +484,10 @@ class DashboardTestCase(OrchestraTransactionTestCase):
             '/orchestra/api/interface/task_assignment_information/',
             json.dumps(post_data),
             content_type='application/json')
-        self.assertEquals(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
         returned = load_encoded_json(response.content)
-        self.assertEquals(returned['message'],
-                          error_message)
+        self.assertEqual(returned['message'],
+                         error_message)
 
     def _verify_good_task_assignment_information(
             self, client, post_data, project_description,
@@ -497,7 +497,7 @@ class DashboardTestCase(OrchestraTransactionTestCase):
             '/orchestra/api/interface/task_assignment_information/',
             json.dumps(post_data),
             content_type='application/json')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         task = Task.objects.get(id=post_data['task_id'])
         returned = load_encoded_json(response.content)
@@ -526,4 +526,4 @@ class DashboardTestCase(OrchestraTransactionTestCase):
             }
         }
 
-        self.assertEquals(returned, expected)
+        self.assertEqual(returned, expected)

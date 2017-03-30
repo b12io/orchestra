@@ -18,6 +18,6 @@ def load_encoded_json(encoded_data):
         json_data = encoded_data.decode('utf-8')
         data = json.loads(json_data)
     except (AttributeError, ValueError, UnicodeError) as e:
-        logger.warn('Json decode error {}'.format(str(e)))
+        logger.warning('Json decode error {}'.format(str(e)))
         data = {}
     return data

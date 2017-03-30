@@ -82,10 +82,10 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
 
     def test_get_new_task_assignment_entry_level(self):
         # Entry-level assignment
-        self.assertEquals(Task.objects
-                          .filter(status=Task.Status.AWAITING_PROCESSING)
-                          .count(),
-                          1)
+        self.assertEqual(Task.objects
+                         .filter(status=Task.Status.AWAITING_PROCESSING)
+                         .count(),
+                         1)
 
         with self.assertRaises(WorkerCertificationError):
             get_new_task_assignment(self.workers[5],
@@ -96,8 +96,8 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
                                              Task.Status.AWAITING_PROCESSING)
         self.assertTrue(assignment is not None)
 
-        self.assertEquals(assignment.task.status,
-                          Task.Status.PROCESSING)
+        self.assertEqual(assignment.task.status,
+                         Task.Status.PROCESSING)
 
         # No more tasks left in AWAITING_PROCESSING
         with self.assertRaises(NoTaskAvailable):
@@ -122,20 +122,20 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
 
     def test_get_new_task_assignment_reviewer(self):
         # Reviewer assignment
-        self.assertEquals(Task.objects
-                          .filter(status=Task.Status.PENDING_REVIEW)
-                          .count(),
-                          1)
+        self.assertEqual(Task.objects
+                         .filter(status=Task.Status.PENDING_REVIEW)
+                         .count(),
+                         1)
 
         # assign a review task to worker
         assignment = get_new_task_assignment(self.workers[7],
                                              Task.Status.PENDING_REVIEW)
         self.assertTrue(assignment is not None)
-        self.assertEquals(assignment.task.status,
-                          Task.Status.REVIEWING)
+        self.assertEqual(assignment.task.status,
+                         Task.Status.REVIEWING)
 
-        self.assertEquals(assignment.in_progress_task_data,
-                          {'test_key': 'test_value'})
+        self.assertEqual(assignment.in_progress_task_data,
+                         {'test_key': 'test_value'})
 
         # No tasks in state PENDING_REVIEW
         # No more tasks left in AWAITING_PROCESSING
@@ -191,11 +191,11 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
 
         # Create first task in test project
         create_subsequent_tasks(project)
-        self.assertEquals(project.tasks.count(), 1)
+        self.assertEqual(project.tasks.count(), 1)
         # Assign initial task to worker 0
         task = project.tasks.first()
         counter = role_counter_required_for_new_task(task)
-        self.assertEquals(counter, 0)
+        self.assertEqual(counter, 0)
 
         initial_task = assign_task(self.workers[0].id,
                                    task.id)
@@ -207,7 +207,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
                                        self.workers[0])
 
             counter = role_counter_required_for_new_task(initial_task)
-            self.assertEquals(counter, 1)
+            self.assertEqual(counter, 1)
 
             initial_task = assign_task(self.workers[1].id,
                                        task.id)
@@ -215,7 +215,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
                                        Iteration.Status.REQUESTED_REVIEW,
                                        self.workers[1])
             counter = role_counter_required_for_new_task(initial_task)
-            self.assertEquals(counter, 2)
+            self.assertEqual(counter, 2)
 
     def test_assign_task(self):
         entry_task = TaskFactory(
@@ -281,22 +281,22 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
             current_assignment(review_task).in_progress_task_data, test_data)
 
         # Assign review task to review worker
-        self.assertEquals(review_task.assignments.count(), 1)
+        self.assertEqual(review_task.assignments.count(), 1)
         review_task = assign_task(self.workers[3].id, review_task.id)
-        self.assertEquals(review_task.assignments.count(), 2)
+        self.assertEqual(review_task.assignments.count(), 2)
 
         reviewer_assignment = current_assignment(review_task)
         self.assertEqual(
             reviewer_assignment.worker, self.workers[3])
         self.assertEqual(
             reviewer_assignment.in_progress_task_data, test_data)
-        self.assertEquals(
+        self.assertEqual(
             reviewer_assignment.iterations.count(), 1)
         self.assertEqual(
             reviewer_assignment.iterations.first().start_datetime,
             reviewer_assignment.start_datetime)
 
-        self.assertEquals(
+        self.assertEqual(
             review_task.status, Task.Status.REVIEWING)
 
     def test_get_task_overview_for_worker(self):
@@ -330,7 +330,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
                 'last_name': self.workers[0].user.last_name,
             }
         }
-        self.assertEquals(data, expected)
+        self.assertEqual(data, expected)
 
     def test_task_assignment_saving(self):
         """
@@ -427,7 +427,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
                               'rate': 1,
                               'max_reviews': 1}
         step.save()
-        self.assertEquals(
+        self.assertEqual(
             get_next_task_status(task,
                                  Iteration.Status.REQUESTED_REVIEW),
             Task.Status.PENDING_REVIEW)
@@ -436,13 +436,13 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
                               'rate': 0,
                               'max_reviews': 1}
         step.save()
-        self.assertEquals(
+        self.assertEqual(
             get_next_task_status(task,
                                  Iteration.Status.REQUESTED_REVIEW),
             Task.Status.COMPLETE)
 
         task.status = Task.Status.POST_REVIEW_PROCESSING
-        self.assertEquals(
+        self.assertEqual(
             get_next_task_status(task,
                                  Iteration.Status.REQUESTED_REVIEW),
             Task.Status.REVIEWING)
@@ -454,7 +454,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
                               'rate': 1,
                               'max_reviews': 0}
         step.save()
-        self.assertEquals(
+        self.assertEqual(
             get_next_task_status(task,
                                  Iteration.Status.REQUESTED_REVIEW),
             Task.Status.COMPLETE)
@@ -463,7 +463,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
                               'rate': 1,
                               'max_reviews': 2}
         step.save()
-        self.assertEquals(
+        self.assertEqual(
             get_next_task_status(task,
                                  Iteration.Status.REQUESTED_REVIEW),
             Task.Status.PENDING_REVIEW)
@@ -480,7 +480,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
                               'rate': 1,
                               'max_reviews': 1}
         step.save()
-        self.assertEquals(
+        self.assertEqual(
             get_next_task_status(task,
                                  Iteration.Status.REQUESTED_REVIEW),
             Task.Status.COMPLETE)
@@ -490,7 +490,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
 
         # Create first task in test project
         create_subsequent_tasks(project)
-        self.assertEquals(project.tasks.count(), 1)
+        self.assertEqual(project.tasks.count(), 1)
         # Assign initial task to worker 0
         initial_task = assign_task(self.workers[0].id,
                                    project.tasks.first().id)
@@ -500,19 +500,19 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
             initial_task = submit_task(initial_task.id, {},
                                        Iteration.Status.REQUESTED_REVIEW,
                                        self.workers[0])
-        self.assertEquals(project.tasks.count(), 2)
+        self.assertEqual(project.tasks.count(), 2)
         related_task = project.tasks.exclude(id=initial_task.id).first()
         # Worker 0 not certified for related tasks, so should not have been
         # auto-assigned
-        self.assertEquals(related_task.assignments.count(), 0)
-        self.assertEquals(related_task.status, Task.Status.AWAITING_PROCESSING)
+        self.assertEqual(related_task.assignments.count(), 0)
+        self.assertEqual(related_task.status, Task.Status.AWAITING_PROCESSING)
 
         # Reset project
         project.tasks.all().delete()
 
         # Create first task in test project
         create_subsequent_tasks(project)
-        self.assertEquals(project.tasks.count(), 1)
+        self.assertEqual(project.tasks.count(), 1)
         # Assign initial task to worker 0
         initial_task = assign_task(self.workers[0].id,
                                    project.tasks.first().id)
@@ -531,7 +531,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
 
         # Create first task in test project
         create_subsequent_tasks(project)
-        self.assertEquals(project.tasks.count(), 1)
+        self.assertEqual(project.tasks.count(), 1)
         # Assign initial task to worker 4
         initial_task = assign_task(self.workers[4].id,
                                    project.tasks.first().id)
@@ -541,11 +541,11 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
             initial_task = submit_task(initial_task.id, {},
                                        Iteration.Status.REQUESTED_REVIEW,
                                        self.workers[4])
-        self.assertEquals(project.tasks.count(), 2)
+        self.assertEqual(project.tasks.count(), 2)
         related_task = project.tasks.exclude(id=initial_task.id).first()
         # Worker 4 is certified for related task and should have been assigned
-        self.assertEquals(related_task.assignments.count(), 1)
-        self.assertEquals(related_task.status, Task.Status.PROCESSING)
+        self.assertEqual(related_task.assignments.count(), 1)
+        self.assertEqual(related_task.status, Task.Status.PROCESSING)
         self.assertTrue(
             related_task.is_worker_assigned(self.workers[4]))
 
@@ -576,7 +576,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
 
         # Create first task in project
         create_subsequent_tasks(project)
-        self.assertEquals(project.tasks.count(), 1)
+        self.assertEqual(project.tasks.count(), 1)
 
         # Assign initial task to worker 0 and mark as complete
         initial_task = assign_task(self.workers[4].id,
@@ -624,7 +624,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
 
         # Create first task in project
         create_subsequent_tasks(project)
-        self.assertEquals(project.tasks.count(), 1)
+        self.assertEqual(project.tasks.count(), 1)
 
         # Assign initial task to worker 0 and mark as complete
         initial_task = assign_task(self.workers[4].id,

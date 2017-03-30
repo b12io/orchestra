@@ -22,7 +22,7 @@ class OrchestraTestHelpersMixin(object):
         # Rename the django Client to request_client
         self.request_client = self.client
         # maxDiff prevents the test runner from suppressing the diffs on
-        # assertEquals, which is nice when you have large string comparisons as
+        # assertEqual, which is nice when you have large string comparisons as
         # we do in this test to assert the expected JSON blob responses.
         self.maxDiff = None
 
@@ -48,10 +48,10 @@ class OrchestraTestHelpersMixin(object):
                         response,
                         expected_json_payload,
                         expected_status_code):
-        self.assertEquals(response.status_code, expected_status_code)
+        self.assertEqual(response.status_code, expected_status_code)
         returned = load_encoded_json(response.content)
-        self.assertEquals(returned,
-                          expected_json_payload)
+        self.assertEqual(returned,
+                         expected_json_payload)
 
     def _submit_assignment(self, request_client, task_id, data=None,
                            seconds=1, command='submit'):

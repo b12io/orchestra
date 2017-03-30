@@ -51,11 +51,11 @@ class MachineTaskTestCase(OrchestraTestCase):
             self, assignment_status, task_status):
         self.task.refresh_from_db()
         assignment = self.task.assignments.first()
-        self.assertEquals(assignment.status, assignment_status)
-        self.assertEquals(self.task.status, task_status)
+        self.assertEqual(assignment.status, assignment_status)
+        self.assertEqual(self.task.status, task_status)
 
         # Check correct iteration state
-        self.assertEquals(assignment.iterations.count(), 1)
+        self.assertEqual(assignment.iterations.count(), 1)
         iteration = assignment.iterations.first()
         if task_status == Task.Status.COMPLETE:
             expected_status = Iteration.Status.REQUESTED_REVIEW
@@ -66,13 +66,13 @@ class MachineTaskTestCase(OrchestraTestCase):
             expected_data = {}
             self.assertIsNone(iteration.end_datetime)
 
-        self.assertEquals(iteration.status, expected_status)
-        self.assertEquals(iteration.submitted_data, expected_data)
+        self.assertEqual(iteration.status, expected_status)
+        self.assertEqual(iteration.submitted_data, expected_data)
 
         # Assert that machine function is called once and there is only one
         # assignment regardless of state
-        self.assertEquals(self.machine_function_mock.call_count, 1)
-        self.assertEquals(self.task.assignments.count(), 1)
+        self.assertEqual(self.machine_function_mock.call_count, 1)
+        self.assertEqual(self.task.assignments.count(), 1)
 
     def test_new_task(self):
         self._reset_task()
@@ -131,7 +131,7 @@ class MachineTaskTestCase(OrchestraTestCase):
         assignment = self.task.assignments.first()
         assignment.status = TaskAssignment.Status.FAILED
         assignment.save()
-        self.assertEquals(self.machine_function_mock.call_count, 1)
+        self.assertEqual(self.machine_function_mock.call_count, 1)
         self.machine_function_mock.call_count = 0
 
         # New machine picks up the failed task

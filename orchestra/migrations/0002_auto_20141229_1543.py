@@ -15,7 +15,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='task',
             name='project',
-            field=models.ForeignKey(default=0, to='orchestra.Project'),
+            field=models.ForeignKey(
+                on_delete=models.CASCADE, default=0, to='orchestra.Project'),
             preserve_default=False,
         ),
         migrations.AlterField(

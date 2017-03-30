@@ -40,8 +40,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='task',
             name='project',
-            field=models.ForeignKey(
-                related_name='tasks', to='orchestra.Project'),
+            field=models.ForeignKey(on_delete=models.CASCADE,
+                                    related_name='tasks', to='orchestra.Project'),
             preserve_default=True,
         ),
         migrations.AlterField(
@@ -57,8 +57,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='taskassignment',
             name='task',
-            field=models.ForeignKey(
-                related_name='assignments', to='orchestra.Task'),
+            field=models.ForeignKey(on_delete=models.CASCADE,
+                                    related_name='assignments', to='orchestra.Task'),
             preserve_default=True,
         ),
     ]

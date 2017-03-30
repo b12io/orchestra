@@ -11,6 +11,8 @@ from django.test import Client
 from django.test import TestCase
 from django.test import override_settings
 
+from orchestra.utils.load_json import load_encoded_json
+
 CALL_COUNTER = 0
 
 
@@ -61,7 +63,7 @@ class DispatcherTestCase(TestCase):
 
     def test_no_get(self):
         response = self.client.get(self.url)
-        self.assertEquals(response.status_code, 405)
+        self.assertEqual(response.status_code, 405)
 
     @override_settings(BEANSTALK_DISPATCH_TABLE=None)
     def test_no_dispatch(self):
@@ -69,19 +71,19 @@ class DispatcherTestCase(TestCase):
             self.url, b64encode(
                 create_request_body('some_func').encode('ascii')),
             content_type='application/json')
-        self.assertEquals(response.status_code, 400)
-        self.assertEquals(json.loads(response.content.decode()),
-                          {'message': 'No beanstalk dispatch table configured',
-                           'error': 400})
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(load_encoded_json(response.content),
+                         {'message': 'No beanstalk dispatch table configured',
+                          'error': 400})
 
     def test_missing_function(self):
         response = self.client.post(
             self.url,
             b64encode(create_request_body('nonexistent_func').encode('ascii')),
             content_type='application/json')
-        self.assertEquals(response.status_code, 400)
-        self.assertEquals(
-            json.loads(response.content.decode()),
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            load_encoded_json(response.content),
             {
                 'message': 'Requested function not found: nonexistent_func',
                 'error': 400
@@ -93,9 +95,9 @@ class DispatcherTestCase(TestCase):
             b64encode(create_request_body(
                 'bad_task_class', 'test-queue', {}).encode('ascii')),
             content_type='application/json')
-        self.assertEquals(response.status_code, 400)
-        self.assertEquals(
-            json.loads(response.content.decode()),
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            load_encoded_json(response.content),
             {
                 'message': ('Requested task is not a SafeTask'
                             ' subclass: bad_task_class'),
@@ -108,9 +110,9 @@ class DispatcherTestCase(TestCase):
             b64encode(create_request_body(
                 'bad_function_pointer', 'test-queue', {}).encode('ascii')),
             content_type='application/json')
-        self.assertEquals(response.status_code, 400)
-        self.assertEquals(
-            json.loads(response.content.decode()),
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            load_encoded_json(response.content),
             {
                 'message': 'Unable to locate function: nothing-to-see-here',
                 'error': 400
@@ -125,8 +127,8 @@ class DispatcherTestCase(TestCase):
                 self.url,
                 b64encode(json.dumps(request_body).encode('ascii')),
                 content_type='application/json')
-            self.assertEquals(response.status_code, 400)
-            self.assertEquals(json.loads(response.content.decode()), {
+            self.assertEqual(response.status_code, 400)
+            self.assertEqual(load_encoded_json(response.content), {
                 'message': 'Please provide a {} argument'.format(missing_key),
                 'error': 400})
 
@@ -137,20 +139,18 @@ class DispatcherTestCase(TestCase):
         response = self.client.post(self.url,
                                     body,
                                     content_type='application/json')
-        self.assertEquals(response.status_code, 200)
-        self.assertEquals(json.loads(response.content.decode()),
-                          {})
-        self.assertEquals(CALL_COUNTER, 6)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(load_encoded_json(response.content), {})
+        self.assertEqual(CALL_COUNTER, 6)
 
     def test_just_args(self):
         body = b64encode(create_request_body('the_counter', 2).encode('ascii'))
         response = self.client.post(self.url,
                                     body,
                                     content_type='application/json')
-        self.assertEquals(response.status_code, 200)
-        self.assertEquals(json.loads(response.content.decode()),
-                          {})
-        self.assertEquals(CALL_COUNTER, 2)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(load_encoded_json(response.content), {})
+        self.assertEqual(CALL_COUNTER, 2)
 
     def test_just_args_task(self):
         body = b64encode(create_request_body(
@@ -158,10 +158,9 @@ class DispatcherTestCase(TestCase):
         response = self.client.post(self.url,
                                     body,
                                     content_type='application/json')
-        self.assertEquals(response.status_code, 200)
-        self.assertEquals(json.loads(response.content.decode()),
-                          {})
-        self.assertEquals(CALL_COUNTER, 2)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(load_encoded_json(response.content), {})
+        self.assertEqual(CALL_COUNTER, 2)
 
     def test_both_args_kwargs_task(self):
         body = b64encode(
@@ -170,7 +169,6 @@ class DispatcherTestCase(TestCase):
         response = self.client.post(self.url,
                                     body,
                                     content_type='application/json')
-        self.assertEquals(response.status_code, 200)
-        self.assertEquals(json.loads(response.content.decode()),
-                          {})
-        self.assertEquals(CALL_COUNTER, 6)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(load_encoded_json(response.content), {})
+        self.assertEqual(CALL_COUNTER, 6)

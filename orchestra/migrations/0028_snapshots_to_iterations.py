@@ -19,15 +19,18 @@ class SnapshotType:
     ACCEPT = 1
     REJECT = 2
 
+
 class IterationStatus:
     PROCESSING = 0
     REQUESTED_REVIEW = 1
     PROVIDED_REVIEW = 2
 
+
 class AssignmentStatus:
     PROCESSING = 0
     SUBMITTED = 1
     FAILED = 2
+
 
 # Map snapshot types onto iteration statuses
 snapshot_type_to_iteration_status = {
@@ -35,6 +38,7 @@ snapshot_type_to_iteration_status = {
     SnapshotType.ACCEPT: IterationStatus.REQUESTED_REVIEW,
     SnapshotType.REJECT: IterationStatus.PROVIDED_REVIEW,
 }
+
 
 def get_ordered_snapshots(task):
     task_snapshots = []
@@ -111,7 +115,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='iteration',
             name='status',
-            field=models.IntegerField(choices=[(0, 'Processing'), (1, 'Requested Review'), (2, 'Provided Review')], default=0),
+            field=models.IntegerField(choices=[(
+                0, 'Processing'), (1, 'Requested Review'), (2, 'Provided Review')], default=0),
         ),
         migrations.RunPython(snapshots_to_iterations)  # manually-reviewed
     ]

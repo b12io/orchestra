@@ -10,6 +10,7 @@ class DeleteMixin(object):
     Overrides delete and sets `is_deleted=True` instead of deleting object.
     Intended to be used with models that have an `is_deleted` field.
     """
+
     def delete(self, actually_delete=False, *args, **kwargs):
         # Implement cascading deletes.
         # NOTE(lydia): This ignores any other constraints passed to on_delete.
@@ -46,8 +47,7 @@ class BaseModelManager(models.Manager):
     """
 
     def get_queryset(self):
-        return (super(BaseModelManager, self).get_queryset()
-                .filter(is_deleted=False))
+        return super().get_queryset().filter(is_deleted=False)
 
 
 class BaseModel(DeleteMixin, models.Model):

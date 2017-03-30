@@ -27,8 +27,8 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         project = self.projects['empty_project']
         # TODO(jrbotros): add additional functionality to google mock
         project_folder = create_project_google_folder(project)
-        self.assertEquals(project_folder['id'], 1)
-        self.assertEquals(
+        self.assertEqual(project_folder['id'], 1)
+        self.assertEqual(
             project.team_messages_url, 'http://a.google.com/link')
 
     @override_settings(ORCHESTRA_SLACK_EXPERTS_ENABLED=True)
@@ -39,7 +39,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
             workflow_version=self.workflow_versions['test_workflow'])
         self.assertFalse(project.id in groups)
         group_id = create_project_slack_group(project)
-        self.assertEquals(len(groups), num_groups + 1)
+        self.assertEqual(len(groups), num_groups + 1)
         self.assertTrue(group_id in groups)
         project = Project.objects.get(id=project.id)
-        self.assertEquals(group_id, project.slack_group_id)
+        self.assertEqual(group_id, project.slack_group_id)

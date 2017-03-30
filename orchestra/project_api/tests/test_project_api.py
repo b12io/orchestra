@@ -36,12 +36,12 @@ class ProjectAPITestCase(OrchestraTestCase):
             reverse('orchestra:orchestra:project_details_url'),
             {'project_id': project.id},
             format='json')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         returned = load_encoded_json(response.content)
         project_details_url = returned.get('project_details_url')
-        self.assertEquals(project_details_url,
-                          ('http://testserver/orchestra/app/project/%s' %
-                           project.id))
+        self.assertEqual(project_details_url,
+                         ('http://testserver/orchestra/app/project/%s' %
+                          project.id))
 
         response = self.api_client.post(
             '/orchestra/api/project/project_details_url/',
@@ -59,7 +59,7 @@ class ProjectAPITestCase(OrchestraTestCase):
             '/orchestra/api/project/project_information/',
             {'project_id': project.id},
             format='json')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         returned = load_encoded_json(response.content)
 
         unimportant_keys = (
@@ -133,7 +133,7 @@ class ProjectAPITestCase(OrchestraTestCase):
             ]
         }
 
-        self.assertEquals(returned, expected)
+        self.assertEqual(returned, expected)
 
         response = self.api_client.post(
             '/orchestra/api/project/project_information/',
@@ -162,8 +162,8 @@ class ProjectAPITestCase(OrchestraTestCase):
         returned = load_encoded_json(response.content)
         for key in ('id', 'project', 'start_datetime'):
             del returned['tasks']['step1'][key]
-        self.assertEquals(response.status_code, 200)
-        self.assertEquals(returned['tasks'], {
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(returned['tasks'], {
             'step1': {
                 'assignments': [],
                 'latest_data': None,
@@ -208,12 +208,12 @@ class ProjectAPITestCase(OrchestraTestCase):
              'task_class': 'real',
              'project_data': {}},
             format='json')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
-        self.assertEquals((Task.objects
-                           .filter(status=Task.Status.AWAITING_PROCESSING)
-                           .count()),
-                          tasks_awaiting_processing + 1)
+        self.assertEqual((Task.objects
+                          .filter(status=Task.Status.AWAITING_PROCESSING)
+                          .count()),
+                         tasks_awaiting_processing + 1)
 
         # Creating a 'training' project should set task_class correctly.
         response = self.api_client.post(
@@ -225,10 +225,10 @@ class ProjectAPITestCase(OrchestraTestCase):
              'task_class': 'training',
              'project_data': {}},
             format='json')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         project_id = load_encoded_json(response.content)['project_id']
-        self.assertEquals(Project.objects.get(id=project_id).task_class,
-                          WorkerCertification.TaskClass.TRAINING)
+        self.assertEqual(Project.objects.get(id=project_id).task_class,
+                         WorkerCertification.TaskClass.TRAINING)
 
         # Creating a project with missing parameters should fail.
         response = self.api_client.post(
@@ -243,11 +243,11 @@ class ProjectAPITestCase(OrchestraTestCase):
     def test_workflow_types(self):
         response = self.api_client.get(
             '/orchestra/api/project/workflow_types/', format='json')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         workflows = load_encoded_json(response.content)['workflows']
         workflows = dict(workflows)
-        self.assertEquals(
+        self.assertEqual(
             workflows,
             {
                 workflow_slug: {
@@ -273,7 +273,7 @@ class ProjectAPITestCase(OrchestraTestCase):
                 'task_id': task_id,
             },
             format='json')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         data = load_encoded_json(response.content)
         self.assertEqual(data['success'], success)
         return data
@@ -336,9 +336,9 @@ class ProjectAPITestCase(OrchestraTestCase):
             '/orchestra/api/project/project_information/',
             {'project_id': 1},
             format='json')
-        self.assertEquals(response.status_code, 403)
+        self.assertEqual(response.status_code, 403)
         returned = load_encoded_json(response.content)
-        self.assertEquals(
+        self.assertEqual(
             returned,
             {'detail': 'You do not have permission to perform this action.'})
 
@@ -352,7 +352,7 @@ class ProjectAPIAuthTestCase(OrchestraTestCase):
         self.authentication = OrchestraProjectAPIAuthentication()
 
     def test_auth_success(self):
-        self.assertEquals(
+        self.assertEqual(
             self.authentication.fetch_user_data('a'),
             (SignedUser(), 'b'))
 
@@ -366,6 +366,6 @@ class ProjectAPIAuthTestCase(OrchestraTestCase):
         with self.assertRaises(AuthenticationFailed):
             self.authentication.fetch_user_data('a')
         settings.ORCHESTRA_PROJECT_API_CREDENTIALS = tmp_setting
-        self.assertEquals(
+        self.assertEqual(
             self.authentication.fetch_user_data('a'),
             (SignedUser(), 'b'))

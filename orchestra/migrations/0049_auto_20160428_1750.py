@@ -15,11 +15,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='staffingrequest',
             name='communication_method',
-            field=models.IntegerField(choices=[(0, 'slack'), (1, 'email')], default=0),
+            field=models.IntegerField(
+                choices=[(0, 'slack'), (1, 'email')], default=0),
         ),
         migrations.AddField(
             model_name='staffingrequest',
             name='status',
-            field=models.IntegerField(choices=[(0, 'pending'), (1, 'sent')], default=0),
+            field=models.IntegerField(
+                choices=[(0, 'pending'), (1, 'sent')], default=0),
         ),
     ]

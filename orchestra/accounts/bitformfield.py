@@ -23,11 +23,10 @@ class CheckboxSelectMultipleP(CheckboxSelectMultiple):
 
 class BitFieldCheckboxSelectMultiple(CheckboxSelectMultipleP):
 
-    def render(self, name, value, attrs=None, choices=()):
+    def render(self, name, value, attrs=None):
         if isinstance(value, BitHandler):
             value = [k for k, v in value if v]
-        return super(BitFieldCheckboxSelectMultiple, self).render(
-            name, value, attrs=attrs, choices=enumerate(choices))
+        return super().render(name, value, attrs=attrs)
 
     def _has_changed(self, initial, data):
         if initial is None:

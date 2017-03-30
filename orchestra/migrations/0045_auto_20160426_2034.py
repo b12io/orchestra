@@ -18,12 +18,17 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='CommunicationPreference',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('methods', bitfield.models.BitField((('slack', 'Slack'), ('email', 'Email')), blank=True, default=None, null=True)),
-                ('communication_type', models.IntegerField(choices=[(0, 'task_status_change')])),
-                ('worker', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='orchestra.Worker')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
+                ('methods', bitfield.models.BitField((('slack', 'Slack'),
+                                                      ('email', 'Email')), blank=True, default=None, null=True)),
+                ('communication_type', models.IntegerField(
+                    choices=[(0, 'task_status_change')])),
+                ('worker', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='orchestra.Worker')),
             ],
-            bases=(orchestra.models.communication.mixins.CommunicationPreferenceMixin, models.Model),
+            bases=(
+                orchestra.models.communication.mixins.CommunicationPreferenceMixin, models.Model),
         ),
         migrations.AlterUniqueTogether(  # manually-reviewed
             name='communicationpreference',

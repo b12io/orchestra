@@ -24,7 +24,7 @@ class ProjectPropertiesTestCase(OrchestraTestCase):
             initial_task = submit_task(initial_task.id, {},
                                        Iteration.Status.REQUESTED_REVIEW,
                                        self.workers[6])
-        self.assertEquals(completed_projects(projects).count(), 0)
+        self.assertEqual(completed_projects(projects).count(), 0)
 
         next_task = assign_task(
             self.workers[6].id,
@@ -34,7 +34,7 @@ class ProjectPropertiesTestCase(OrchestraTestCase):
             initial_task = submit_task(next_task.id, {},
                                        Iteration.Status.REQUESTED_REVIEW,
                                        self.workers[6])
-        self.assertEquals(completed_projects(projects).count(), 0)
+        self.assertEqual(completed_projects(projects).count(), 0)
 
         next_task = assign_task(
             self.workers[6].id,
@@ -45,4 +45,4 @@ class ProjectPropertiesTestCase(OrchestraTestCase):
             initial_task = submit_task(next_task.id, {},
                                        Iteration.Status.REQUESTED_REVIEW,
                                        self.workers[6])
-        self.assertEquals(completed_projects(projects).count(), 1)
+        self.assertEqual(completed_projects(projects).count(), 1)

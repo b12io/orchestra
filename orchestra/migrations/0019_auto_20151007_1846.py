@@ -22,26 +22,31 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='certification',
             name='workflow',
-            field=models.ForeignKey(to='orchestra.Workflow', related_name='certifications'),
+            field=models.ForeignKey(on_delete=models.CASCADE,
+                                    to='orchestra.Workflow', related_name='certifications'),
         ),
         migrations.AlterField(
             model_name='project',
             name='workflow_version',
-            field=models.ForeignKey(to='orchestra.WorkflowVersion', related_name='projects'),
+            field=models.ForeignKey(on_delete=models.CASCADE,
+                                    to='orchestra.WorkflowVersion', related_name='projects'),
         ),
         migrations.AlterField(
             model_name='task',
             name='step',
-            field=models.ForeignKey(to='orchestra.Step', related_name='tasks'),
+            field=models.ForeignKey(
+                on_delete=models.CASCADE, to='orchestra.Step', related_name='tasks'),
         ),
         migrations.AlterField(
             model_name='step',
             name='workflow_version',
-            field=models.ForeignKey(to='orchestra.WorkflowVersion', related_name='steps'),
+            field=models.ForeignKey(on_delete=models.CASCADE,
+                                    to='orchestra.WorkflowVersion', related_name='steps'),
         ),
         migrations.AlterField(
             model_name='workflowversion',
             name='workflow',
-            field=models.ForeignKey(to='orchestra.Workflow', related_name='versions'),
+            field=models.ForeignKey(on_delete=models.CASCADE,
+                                    to='orchestra.Workflow', related_name='versions'),
         ),
     ]

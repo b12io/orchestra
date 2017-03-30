@@ -16,11 +16,14 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TaskTimer',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('start_time', models.DateTimeField(null=True)),
                 ('stop_time', models.DateTimeField(null=True)),
-                ('assignment', models.OneToOneField(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='timer', to='orchestra.TaskAssignment')),
-                ('worker', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='timers', to='orchestra.Worker')),
+                ('assignment', models.OneToOneField(null=True, on_delete=django.db.models.deletion.CASCADE,
+                                                    related_name='timer', to='orchestra.TaskAssignment')),
+                ('worker', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                             related_name='timers', to='orchestra.Worker')),
             ],
         ),
         migrations.AddField(

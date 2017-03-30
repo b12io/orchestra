@@ -41,18 +41,18 @@ class ClientTestCase(TestCase):
         sqs_connection.create_queue(self.queue_name)
         queue = sqs_connection.get_queue(self.queue_name)
         messages = queue.get_messages()
-        self.assertEquals(len(messages), 0)
+        self.assertEqual(len(messages), 0)
 
         # Schedule a function.
         schedule_function(
             self.queue_name, 'a-function', '1', '2', kwarg1=1, kwarg2=2)
 
         messages = queue.get_messages()
-        self.assertEquals(len(messages), 1)
+        self.assertEqual(len(messages), 1)
 
         # For some reason, boto base64-encodes the messages, but moto does
         # not.  Life.
-        self.assertEquals(
+        self.assertEqual(
             json.loads(messages[0].get_body()),
             {FUNCTION: 'a-function', ARGS: ['1', '2'], KWARGS: {
                 'kwarg1': 1, 'kwarg2': 2}})
@@ -65,4 +65,4 @@ class ClientTestCase(TestCase):
         # Schedule a function.
         schedule_function(self.queue_name, 'the_counter', 1, second_arg=5)
 
-        self.assertEquals(CALL_COUNTER, 6)
+        self.assertEqual(CALL_COUNTER, 6)

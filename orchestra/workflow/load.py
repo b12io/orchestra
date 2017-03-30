@@ -83,7 +83,8 @@ def load_workflow(app_label, version_slug, force=False):
             raise WorkflowError(
                 'Certification {} requires non-existent certification.'
                 .format(certification_data['slug']))
-        certification.required_certifications = list(required_certifications)
+        certification.required_certifications.set(
+            list(required_certifications))
 
     # Load the desired versions
     desired_versions = [version_data for version_data in data['versions']
@@ -209,4 +210,4 @@ def _set_step_dependencies(step, step_data, dependency_attr, dependency_model,
         raise WorkflowError(
             '{}.{} contains a non-existent slug.'
             .format(step_data['slug'], dependency_attr))
-    setattr(step, dependency_attr, dependencies)
+    getattr(step, dependency_attr).set(dependencies)

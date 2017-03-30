@@ -67,7 +67,7 @@ class StaffBotTest(OrchestraTestCase):
         bot.dispatch(data)
         send_staffing_requests(worker_batch_size=20,
                                frequency=timedelta(minutes=0))
-        self.assertEquals(StaffingRequestInquiry.objects.filter(
+        self.assertEqual(StaffingRequestInquiry.objects.filter(
             communication_preference__worker_id=worker,
             request__task=task).count(), can_slack + can_mail)
 
@@ -166,10 +166,10 @@ class StaffBotTest(OrchestraTestCase):
         task = TaskFactory(status=Task.Status.COMPLETE)
         data['text'] = 'staff {}'.format(task.id)
         response = bot.dispatch(data)
-        self.assertEquals(response['attachments'][0]['text'],
-                          bot.task_assignment_error
-                          .format(task.id,
-                                  'Status incompatible with new assignment'))
+        self.assertEqual(response['attachments'][0]['text'],
+                         bot.task_assignment_error
+                         .format(task.id,
+                                 'Status incompatible with new assignment'))
 
     @patch('orchestra.bots.staffbot.send_mail')
     @patch('orchestra.bots.staffbot.message_experts_slack_group')
@@ -235,9 +235,9 @@ class StaffBotTest(OrchestraTestCase):
 
         data['text'] = command
         response = bot.dispatch(data)
-        self.assertEquals(response['attachments'][0]['text'],
-                          (bot.task_assignment_does_not_exist_error
-                           .format(worker.user.username, task.id)))
+        self.assertEqual(response['attachments'][0]['text'],
+                         (bot.task_assignment_does_not_exist_error
+                          .format(worker.user.username, task.id)))
 
     @override_settings(ORCHESTRA_MOCK_EMAILS=True)
     @patch('orchestra.bots.staffbot.send_mail')

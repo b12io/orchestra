@@ -16,7 +16,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Workflow',
             fields=[
-                ('id', models.AutoField(serialize=False, primary_key=True, verbose_name='ID', auto_created=True)),
+                ('id', models.AutoField(serialize=False,
+                                        primary_key=True, verbose_name='ID', auto_created=True)),
                 ('slug', models.CharField(max_length=200, unique=True)),
                 ('name', models.CharField(max_length=200)),
                 ('description', models.TextField()),
@@ -27,7 +28,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Step',
             fields=[
-                ('id', models.AutoField(serialize=False, primary_key=True, verbose_name='ID', auto_created=True)),
+                ('id', models.AutoField(serialize=False,
+                                        primary_key=True, verbose_name='ID', auto_created=True)),
                 ('slug', models.CharField(max_length=200)),
                 ('name', models.CharField(max_length=200)),
                 ('description', models.TextField()),
@@ -36,17 +38,20 @@ class Migration(migrations.Migration):
                 ('assignment_policy', jsonfield.fields.JSONField()),
                 ('review_policy', jsonfield.fields.JSONField()),
                 ('user_interface', jsonfield.fields.JSONField()),
-                ('creation_depends_on', models.ManyToManyField(to='orchestra.Step', related_name='creation_dependents', blank=True)),
+                ('creation_depends_on', models.ManyToManyField(
+                    to='orchestra.Step', related_name='creation_dependents', blank=True)),
             ],
         ),
         migrations.CreateModel(
             name='WorkflowVersion',
             fields=[
-                ('id', models.AutoField(serialize=False, primary_key=True, verbose_name='ID', auto_created=True)),
+                ('id', models.AutoField(serialize=False,
+                                        primary_key=True, verbose_name='ID', auto_created=True)),
                 ('slug', models.CharField(max_length=200)),
                 ('name', models.CharField(max_length=200)),
                 ('description', models.TextField()),
-                ('workflow', models.ForeignKey(null=True, to='orchestra.Workflow', related_name='versions')),
+                ('workflow', models.ForeignKey(on_delete=models.CASCADE, null=True,
+                                               to='orchestra.Workflow', related_name='versions')),
             ],
         ),
         migrations.AlterField(
@@ -62,37 +67,44 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='step',
             name='required_certifications',
-            field=models.ManyToManyField(to='orchestra.Certification', blank=True),
+            field=models.ManyToManyField(
+                to='orchestra.Certification', blank=True),
         ),
         migrations.AddField(
             model_name='step',
             name='submission_depends_on',
-            field=models.ManyToManyField(to='orchestra.Step', related_name='submission_dependents', blank=True),
+            field=models.ManyToManyField(
+                to='orchestra.Step', related_name='submission_dependents', blank=True),
         ),
         migrations.AddField(
             model_name='step',
             name='workflow_version',
-            field=models.ForeignKey(null=True, to='orchestra.WorkflowVersion', related_name='steps'),
+            field=models.ForeignKey(on_delete=models.CASCADE,
+                                    null=True, to='orchestra.WorkflowVersion', related_name='steps'),
         ),
         migrations.AddField(
             model_name='certification',
             name='workflow',
-            field=models.ForeignKey(null=True, to='orchestra.Workflow', related_name='certifications'),
+            field=models.ForeignKey(on_delete=models.CASCADE,
+                                    null=True, to='orchestra.Workflow', related_name='certifications'),
         ),
         migrations.AlterField(
             model_name='certification',
             name='required_certifications',
-            field=models.ManyToManyField(to='orchestra.Certification', blank=True, related_name='dependent_certifications'),
+            field=models.ManyToManyField(
+                to='orchestra.Certification', blank=True, related_name='dependent_certifications'),
         ),
         migrations.AddField(
             model_name='project',
             name='workflow_version',
-            field=models.ForeignKey(null=True, to='orchestra.WorkflowVersion', related_name='projects'),
+            field=models.ForeignKey(on_delete=models.CASCADE,
+                                    null=True, to='orchestra.WorkflowVersion', related_name='projects'),
         ),
         migrations.AddField(
             model_name='task',
             name='step',
-            field=models.ForeignKey(null=True, to='orchestra.Step', related_name='tasks'),
+            field=models.ForeignKey(on_delete=models.CASCADE,
+                                    null=True, to='orchestra.Step', related_name='tasks'),
         ),
         migrations.AlterUniqueTogether(  # manually-reviewed
             name='workflowversion',

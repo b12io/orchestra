@@ -16,11 +16,14 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TimeEntry',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('date', models.DateField()),
                 ('time_worked', models.DurationField()),
-                ('description', models.CharField(blank=True, max_length=200, null=True)),
-                ('assignment', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='time_entries', to='orchestra.TaskAssignment')),
+                ('description', models.CharField(
+                    blank=True, max_length=200, null=True)),
+                ('assignment', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                                 related_name='time_entries', to='orchestra.TaskAssignment')),
             ],
         ),
     ]

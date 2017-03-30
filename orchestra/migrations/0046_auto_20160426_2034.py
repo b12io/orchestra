@@ -7,6 +7,8 @@ from enum import Enum
 from django.db import migrations
 
 # Copy pasted from models since migrations does not have access
+
+
 class CommunicationMethods(object):
     SLACK = 'slack'
     EMAIL = 'email'
@@ -17,8 +19,10 @@ COMMUNICATION_METHODS = (
     (CommunicationMethods.EMAIL, 'Email'),
 )
 
+
 class CommunicationType(Enum):
     TASK_STATUS_CHANGE = 0
+
 
 def add_communcation_type_to_workers(apps, schema_editor):
     CommunicationPreference = apps.get_model(
@@ -40,5 +44,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(add_communcation_type_to_workers)  # manually-reviewed
+        migrations.RunPython(add_communcation_type_to_workers) # manually-reviewed
     ]
