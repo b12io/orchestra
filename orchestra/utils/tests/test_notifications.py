@@ -48,21 +48,21 @@ class BasicNotificationsTestCase(OrchestraTestCase):
                            status=Task.Status.AWAITING_PROCESSING)
 
         # Entry-level worker picks up task
-        self.assertEquals(task.status, Task.Status.AWAITING_PROCESSING)
+        self.assertEqual(task.status, Task.Status.AWAITING_PROCESSING)
         task = assign_task(self.workers[0].id, task.id)
         self.assertTrue(task.is_worker_assigned(self.workers[0]))
 
         # Notification should be sent to entry-level worker
-        self.assertEquals(len(self.mail.inbox), 1)
+        self.assertEqual(len(self.mail.inbox), 1)
         notification = self.mail.inbox.pop()
-        self.assertEquals(notification['recipient'],
-                          self.workers[0].user.email)
-        self.assertEquals(notification['subject'],
-                          "You've been assigned to a new task!")
+        self.assertEqual(notification['recipient'],
+                         self.workers[0].user.email)
+        self.assertEqual(notification['subject'],
+                         "You've been assigned to a new task!")
 
         _validate_slack_messages('Task has been picked up by a worker.')
-        self.assertEquals(len(internal_slack_messages), 0)
-        self.assertEquals(len(experts_slack_messages), 0)
+        self.assertEqual(len(internal_slack_messages), 0)
+        self.assertEqual(len(experts_slack_messages), 0)
 
         with patch('orchestra.utils.task_lifecycle._is_review_needed',
                    return_value=True):
@@ -70,160 +70,160 @@ class BasicNotificationsTestCase(OrchestraTestCase):
             task = submit_task(task.id, {}, Iteration.Status.REQUESTED_REVIEW,
                                self.workers[0])
 
-        self.assertEquals(task.status, Task.Status.PENDING_REVIEW)
+        self.assertEqual(task.status, Task.Status.PENDING_REVIEW)
         # Notification should be sent to entry-level worker
-        self.assertEquals(len(self.mail.inbox), 1)
+        self.assertEqual(len(self.mail.inbox), 1)
         notification = self.mail.inbox.pop()
-        self.assertEquals(notification['recipient'],
-                          self.workers[0].user.email)
-        self.assertEquals(notification['subject'],
-                          'Your task is under review!')
+        self.assertEqual(notification['recipient'],
+                         self.workers[0].user.email)
+        self.assertEqual(notification['subject'],
+                         'Your task is under review!')
 
         _validate_slack_messages('Task is awaiting review.')
-        self.assertEquals(len(internal_slack_messages), 0)
-        self.assertEquals(len(experts_slack_messages), 0)
+        self.assertEqual(len(internal_slack_messages), 0)
+        self.assertEqual(len(experts_slack_messages), 0)
 
         # Reviewer picks up task
         task = assign_task(self.workers[1].id, task.id)
-        self.assertEquals(task.status, Task.Status.REVIEWING)
+        self.assertEqual(task.status, Task.Status.REVIEWING)
         # No notification should be sent
-        self.assertEquals(len(self.mail.inbox), 0)
+        self.assertEqual(len(self.mail.inbox), 0)
 
         _validate_slack_messages('Task is under review.')
-        self.assertEquals(len(internal_slack_messages), 0)
-        self.assertEquals(len(experts_slack_messages), 0)
+        self.assertEqual(len(internal_slack_messages), 0)
+        self.assertEqual(len(experts_slack_messages), 0)
 
         # Reviewer rejects task
         task = submit_task(task.id, {}, Iteration.Status.PROVIDED_REVIEW,
                            self.workers[1])
-        self.assertEquals(task.status, Task.Status.POST_REVIEW_PROCESSING)
+        self.assertEqual(task.status, Task.Status.POST_REVIEW_PROCESSING)
         # Notification should be sent to original worker
-        self.assertEquals(len(self.mail.inbox), 1)
+        self.assertEqual(len(self.mail.inbox), 1)
         notification = self.mail.inbox.pop()
-        self.assertEquals(notification['recipient'],
-                          self.workers[0].user.email)
-        self.assertEquals(notification['subject'],
-                          'Your task has been returned')
+        self.assertEqual(notification['recipient'],
+                         self.workers[0].user.email)
+        self.assertEqual(notification['subject'],
+                         'Your task has been returned')
 
         _validate_slack_messages('Task was returned by reviewer.')
-        self.assertEquals(len(internal_slack_messages), 0)
-        self.assertEquals(len(experts_slack_messages), 0)
+        self.assertEqual(len(internal_slack_messages), 0)
+        self.assertEqual(len(experts_slack_messages), 0)
 
         # Entry-level worker resubmits task
         task = submit_task(task.id, {}, Iteration.Status.REQUESTED_REVIEW,
                            self.workers[0])
-        self.assertEquals(task.status, Task.Status.REVIEWING)
+        self.assertEqual(task.status, Task.Status.REVIEWING)
         # Notification should be sent to reviewer
-        self.assertEquals(len(self.mail.inbox), 1)
+        self.assertEqual(len(self.mail.inbox), 1)
         notification = self.mail.inbox.pop()
-        self.assertEquals(notification['recipient'],
-                          self.workers[1].user.email)
-        self.assertEquals(notification['subject'],
-                          'A task is ready for re-review!')
+        self.assertEqual(notification['recipient'],
+                         self.workers[1].user.email)
+        self.assertEqual(notification['subject'],
+                         'A task is ready for re-review!')
 
         _validate_slack_messages('Task is under review.')
-        self.assertEquals(len(internal_slack_messages), 0)
-        self.assertEquals(len(experts_slack_messages), 0)
+        self.assertEqual(len(internal_slack_messages), 0)
+        self.assertEqual(len(experts_slack_messages), 0)
 
         # First reviewer accepts task
         with patch('orchestra.utils.task_lifecycle._is_review_needed',
                    return_value=True):
             task = submit_task(task.id, {}, Iteration.Status.REQUESTED_REVIEW,
                                self.workers[1])
-        self.assertEquals(task.status, Task.Status.PENDING_REVIEW)
+        self.assertEqual(task.status, Task.Status.PENDING_REVIEW)
         # Notification should be sent to first reviewer
-        self.assertEquals(len(self.mail.inbox), 1)
+        self.assertEqual(len(self.mail.inbox), 1)
         notification = self.mail.inbox.pop()
-        self.assertEquals(notification['recipient'],
-                          self.workers[1].user.email)
-        self.assertEquals(notification['subject'],
-                          'Your task is under review!')
+        self.assertEqual(notification['recipient'],
+                         self.workers[1].user.email)
+        self.assertEqual(notification['subject'],
+                         'Your task is under review!')
 
         _validate_slack_messages('Task is awaiting review.')
-        self.assertEquals(len(internal_slack_messages), 0)
-        self.assertEquals(len(experts_slack_messages), 0)
+        self.assertEqual(len(internal_slack_messages), 0)
+        self.assertEqual(len(experts_slack_messages), 0)
 
         # Second reviewer picks up task
         task = assign_task(self.workers[3].id, task.id)
-        self.assertEquals(task.status, Task.Status.REVIEWING)
+        self.assertEqual(task.status, Task.Status.REVIEWING)
         # No notification should be sent
-        self.assertEquals(len(self.mail.inbox), 0)
+        self.assertEqual(len(self.mail.inbox), 0)
 
         _validate_slack_messages('Task is under review.')
-        self.assertEquals(len(internal_slack_messages), 0)
-        self.assertEquals(len(experts_slack_messages), 0)
+        self.assertEqual(len(internal_slack_messages), 0)
+        self.assertEqual(len(experts_slack_messages), 0)
 
         # Second reviewer rejects task
         task = submit_task(task.id, {}, Iteration.Status.PROVIDED_REVIEW,
                            self.workers[3])
-        self.assertEquals(task.status, Task.Status.POST_REVIEW_PROCESSING)
+        self.assertEqual(task.status, Task.Status.POST_REVIEW_PROCESSING)
         # Notification should be sent to first reviewer
-        self.assertEquals(len(self.mail.inbox), 1)
+        self.assertEqual(len(self.mail.inbox), 1)
         notification = self.mail.inbox.pop()
-        self.assertEquals(notification['recipient'],
-                          self.workers[1].user.email)
-        self.assertEquals(notification['subject'],
-                          'Your task has been returned')
+        self.assertEqual(notification['recipient'],
+                         self.workers[1].user.email)
+        self.assertEqual(notification['subject'],
+                         'Your task has been returned')
 
         _validate_slack_messages('Task was returned by reviewer.')
-        self.assertEquals(len(internal_slack_messages), 0)
-        self.assertEquals(len(experts_slack_messages), 0)
+        self.assertEqual(len(internal_slack_messages), 0)
+        self.assertEqual(len(experts_slack_messages), 0)
 
         # First reviewer resubmits task
         task = submit_task(task.id, {}, Iteration.Status.REQUESTED_REVIEW,
                            self.workers[1])
-        self.assertEquals(task.status, Task.Status.REVIEWING)
+        self.assertEqual(task.status, Task.Status.REVIEWING)
         # Notification should be sent to second reviewer
-        self.assertEquals(len(self.mail.inbox), 1)
+        self.assertEqual(len(self.mail.inbox), 1)
         notification = self.mail.inbox.pop()
-        self.assertEquals(notification['recipient'],
-                          self.workers[3].user.email)
-        self.assertEquals(notification['subject'],
-                          'A task is ready for re-review!')
+        self.assertEqual(notification['recipient'],
+                         self.workers[3].user.email)
+        self.assertEqual(notification['subject'],
+                         'A task is ready for re-review!')
 
         _validate_slack_messages('Task is under review.')
-        self.assertEquals(len(internal_slack_messages), 0)
-        self.assertEquals(len(experts_slack_messages), 0)
+        self.assertEqual(len(internal_slack_messages), 0)
+        self.assertEqual(len(experts_slack_messages), 0)
 
         # Second reviewer accepts task; task is complete
         with patch('orchestra.utils.task_lifecycle._is_review_needed',
                    return_value=False):
             task = submit_task(task.id, {}, Iteration.Status.REQUESTED_REVIEW,
                                self.workers[3])
-        self.assertEquals(task.status, Task.Status.COMPLETE)
+        self.assertEqual(task.status, Task.Status.COMPLETE)
 
         # Notification should be sent to all workers on task
-        self.assertEquals(len(self.mail.inbox), 3)
+        self.assertEqual(len(self.mail.inbox), 3)
         recipients = {mail['recipient'] for mail in self.mail.inbox}
         subjects = {mail['subject'] for mail in self.mail.inbox}
-        self.assertEquals(recipients,
-                          {self.workers[uid].user.email for uid in (0, 1, 3)})
-        self.assertEquals(subjects, {'Task complete!'})
+        self.assertEqual(recipients,
+                         {self.workers[uid].user.email for uid in (0, 1, 3)})
+        self.assertEqual(subjects, {'Task complete!'})
         self.mail.clear()
 
         _validate_slack_messages('Task has been completed.')
-        self.assertEquals(len(internal_slack_messages), 0)
-        self.assertEquals(len(experts_slack_messages), 0)
+        self.assertEqual(len(internal_slack_messages), 0)
+        self.assertEqual(len(experts_slack_messages), 0)
 
         # End project
         end_project(task.project.id)
         task = Task.objects.get(id=task.id)
-        self.assertEquals(task.status, Task.Status.ABORTED)
+        self.assertEqual(task.status, Task.Status.ABORTED)
 
         # Notification should be sent to all workers on task
-        self.assertEquals(len(self.mail.inbox), 3)
+        self.assertEqual(len(self.mail.inbox), 3)
         recipients = {mail['recipient'] for mail in self.mail.inbox}
         subjects = {mail['subject'] for mail in self.mail.inbox}
-        self.assertEquals(recipients,
-                          {self.workers[uid].user.email for uid in (0, 1, 3)})
-        self.assertEquals(subjects,
-                          {'A task you were working on has been ended'})
+        self.assertEqual(recipients,
+                         {self.workers[uid].user.email for uid in (0, 1, 3)})
+        self.assertEqual(subjects,
+                         {'A task you were working on has been ended'})
         self.mail.clear()
 
         for task in project.tasks.all():
             _validate_slack_messages('Task has been aborted.')
-        self.assertEquals(len(internal_slack_messages), 0)
-        self.assertEquals(len(experts_slack_messages), 0)
+        self.assertEqual(len(internal_slack_messages), 0)
+        self.assertEqual(len(experts_slack_messages), 0)
 
     def test_slack_group_id(self):
         def fake_random_string():

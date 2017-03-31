@@ -16,6 +16,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='staffingrequest',
             name='communication_preference',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='orchestra.CommunicationPreference'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to='orchestra.CommunicationPreference'),
         ),
     ]

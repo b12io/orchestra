@@ -65,7 +65,7 @@ class CommunicationPreference(CommunicationPreferenceMixin, BaseModel):
         }
     }
 
-    worker = models.ForeignKey(Worker)
+    worker = models.ForeignKey(Worker, on_delete=models.CASCADE)
     methods = BitField(flags=COMMUNICATION_METHODS,
                        blank=True, null=True, default=None)
     communication_type = models.IntegerField(
@@ -105,7 +105,8 @@ class StaffBotRequest(StaffBotRequestMixin, BaseModel):
         PROCESSING = 'processing'
         COMPLETE = 'complete'
 
-    task = models.ForeignKey(Task, related_name='staffing_requests')
+    task = models.ForeignKey(
+        Task, related_name='staffing_requests', on_delete=models.CASCADE)
     required_role_counter = models.IntegerField()
     request_cause = models.IntegerField(choices=RequestCause.choices())
     project_description = models.TextField(null=True, blank=True)
@@ -134,9 +135,11 @@ class StaffingRequestInquiry(StaffingRequestInquiryMixin, BaseModel):
         EMAIL = 'email'
 
     request = models.ForeignKey(StaffBotRequest,
+                                on_delete=models.CASCADE,
                                 null=True,
                                 related_name='inquiries')
-    communication_preference = models.ForeignKey(CommunicationPreference)
+    communication_preference = models.ForeignKey(
+        CommunicationPreference, on_delete=models.CASCADE)
     communication_method = models.IntegerField(
         choices=CommunicationMethod.choices())
 
@@ -157,6 +160,7 @@ class StaffingResponse(StaffingResponseMixin, BaseModel):
             True if a Worker was selected to work on the Task
     """
     request_inquiry = models.ForeignKey(StaffingRequestInquiry,
+                                        on_delete=models.CASCADE,
                                         related_name='responses')
     response_text = models.TextField(blank=True, null=True)
     is_available = models.BooleanField()

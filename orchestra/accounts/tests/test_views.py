@@ -92,7 +92,6 @@ class CommunicationPreferenceSettingsTest(OrchestraAuthenticatedTestCase):
 
         # email is unset and therefore false
         data = self._get_mock_data()
-
         response = self.request_client.post(self.url, data)
         self.assertTrue(response.context['success'])
 

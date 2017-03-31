@@ -10,9 +10,9 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.templatetags.static import static
 from django.views.decorators.csrf import requires_csrf_token
+from django_filters import rest_framework as filters
 from jsonview.decorators import json_view
 from jsonview.exceptions import BadRequest
-from rest_framework import filters
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status as http_status

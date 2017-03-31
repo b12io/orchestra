@@ -25,13 +25,13 @@ class TestGoogleAppsConvenience(TestCase):
         url = 'http://nocontenttype.com/image.jpeg'
         response = fake_image_get(url)
         mimetype = _get_image_mimetype(response, url)
-        self.assertEquals(mimetype, 'image/jpeg')
+        self.assertEqual(mimetype, 'image/jpeg')
 
         # Content type is provided.
         url = 'http://contenttype.com/image.jpg'
         response = fake_image_get(url)
         mimetype = _get_image_mimetype(response, url)
-        self.assertEquals(mimetype, 'image/jpg')
+        self.assertEqual(mimetype, 'image/jpg')
 
     @patch('requests.get', side_effect=fake_image_get)
     @patch.object(Service, '_create_drive_service',
@@ -45,7 +45,7 @@ class TestGoogleAppsConvenience(TestCase):
                           settings.GOOGLE_SERVICE_EMAIL)
         image_data = add_image(service, 'test_folder',
                                'http://nocontenttype.com/image.jpeg')
-        self.assertEquals(
+        self.assertEqual(
             image_data, {'id': 1, 'alternateLink': 'http://a.google.com/link'})
 
         image_data = add_image(service, 'test_folder',
@@ -67,8 +67,8 @@ class TestGoogleAppsConvenience(TestCase):
             'test_parent_id',
             ['http://inp.gogo/image.jpg'],
             'test')
-        self.assertEquals(media_images['folder']['id'], 1)
-        self.assertEquals(
+        self.assertEqual(media_images['folder']['id'], 1)
+        self.assertEqual(
             media_images['image_counter']['uploaded_images'], 1)
 
         # Make sure that if the incorrect image is provided,
@@ -77,8 +77,8 @@ class TestGoogleAppsConvenience(TestCase):
             'test_parent_id',
             ['http://nocontenttype.com/test.jp', None],
             'test')
-        self.assertEquals(media_images['folder']['id'], 1)
-        self.assertEquals(
+        self.assertEqual(media_images['folder']['id'], 1)
+        self.assertEqual(
             media_images['image_counter']['not_uploaded_images'], 2)
 
         with self.assertRaises(GoogleDriveError):
@@ -92,7 +92,7 @@ class TestGoogleAppsConvenience(TestCase):
         # our helper function and raises an error.
         folder = create_folder_with_permissions('test_parent_id',
                                                 'permission_fail')
-        self.assertEquals(folder['id'], 'error')
+        self.assertEqual(folder['id'], 'error')
 
     @patch.object(Service, '_create_drive_service',
                   new=mock_create_drive_service)
@@ -100,7 +100,7 @@ class TestGoogleAppsConvenience(TestCase):
         service = Service(settings.GOOGLE_P12_PATH,
                           settings.GOOGLE_SERVICE_EMAIL)
         folder = service.delete_folder('test')
-        self.assertEquals(folder['id'], 1)
+        self.assertEqual(folder['id'], 1)
 
         folder = service.delete_folder('error')
         self.assertIsNone(folder)
@@ -109,6 +109,6 @@ class TestGoogleAppsConvenience(TestCase):
                   new=mock_create_drive_service)
     def test_create_document_from_template(self):
         upload_info = create_document_from_template('test_id', 'test_filename')
-        self.assertEquals(upload_info['id'], 1)
+        self.assertEqual(upload_info['id'], 1)
         with self.assertRaises(GoogleDriveError):
             create_document_from_template('error', 'test_filename')

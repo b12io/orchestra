@@ -19,34 +19,44 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='StaffingRequest',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(default=django.utils.timezone.now)),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
+                ('created_at', models.DateTimeField(
+                    default=django.utils.timezone.now)),
                 ('is_deleted', models.BooleanField(default=False)),
-                ('request_cause', models.IntegerField(choices=[(0, 'user'), (1, 'autostaff'), (2, 'restaff')])),
+                ('request_cause', models.IntegerField(choices=[
+                 (0, 'user'), (1, 'autostaff'), (2, 'restaff')])),
                 ('project_description', models.TextField(blank=True, null=True)),
-                ('task', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='orchestra.Task')),
-                ('worker', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='orchestra.Worker')),
+                ('task', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='orchestra.Task')),
+                ('worker', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='orchestra.Worker')),
             ],
             options={
                 'abstract': False,
             },
-            bases=(orchestra.models.communication.mixins.StaffingRequestInquiryMixin, orchestra.utils.models.DeleteMixin, models.Model),
+            bases=(orchestra.models.communication.mixins.StaffingRequestInquiryMixin,
+                   orchestra.utils.models.DeleteMixin, models.Model),
         ),
         migrations.CreateModel(
             name='StaffingResponse',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(default=django.utils.timezone.now)),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
+                ('created_at', models.DateTimeField(
+                    default=django.utils.timezone.now)),
                 ('is_deleted', models.BooleanField(default=False)),
                 ('response_text', models.TextField(blank=True, null=True)),
                 ('is_available', models.BooleanField()),
                 ('is_winner', models.NullBooleanField()),
-                ('request', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='responses', to='orchestra.StaffingRequest')),
+                ('request', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                              related_name='responses', to='orchestra.StaffingRequest')),
             ],
             options={
                 'abstract': False,
             },
-            bases=(orchestra.models.communication.mixins.StaffingResponseMixin, orchestra.utils.models.DeleteMixin, models.Model),
+            bases=(orchestra.models.communication.mixins.StaffingResponseMixin,
+                   orchestra.utils.models.DeleteMixin, models.Model),
         ),
         migrations.AddField(
             model_name='communicationpreference',

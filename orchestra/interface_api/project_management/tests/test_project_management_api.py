@@ -55,7 +55,7 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
                 'project_id': project.id,
             }),
             content_type='application/json')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         returned = load_encoded_json(response.content)
 
         # Skipping the `tasks` key/value pair for this test
@@ -72,7 +72,7 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
             'id': project.id,
             'workflow_slug': project.workflow_version.workflow.slug
         }
-        self.assertEquals(
+        self.assertEqual(
             expected_project,
             {k: returned['project'][k] for k in expected_project.keys()})
 
@@ -92,7 +92,7 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
             'id': task.id
         }
 
-        self.assertEquals(
+        self.assertEqual(
             expected_task,
             {k: sample_task[k] for k in expected_task.keys()})
 
@@ -128,7 +128,7 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
             'id': assignment.id
         }
 
-        self.assertEquals(
+        self.assertEqual(
             expected_assignment,
             {k: sample_assignment[k] for k in expected_assignment.keys()})
 
@@ -144,9 +144,9 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
                 'assignment_id': entry_assignment.id
             }),
             content_type='application/json')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         entry_assignment.refresh_from_db()
-        self.assertEquals(entry_assignment.worker, self.workers[0])
+        self.assertEqual(entry_assignment.worker, self.workers[0])
 
         # Reassign entry-level assignment to reviewer
         entry_assignment.refresh_from_db()
@@ -158,9 +158,9 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
                 'assignment_id': entry_assignment.id
             }),
             content_type='application/json')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         entry_assignment.refresh_from_db()
-        self.assertEquals(entry_assignment.worker, self.workers[1])
+        self.assertEqual(entry_assignment.worker, self.workers[1])
 
         # Attempt to reassign assignment to worker already working on task
         first_review_assignment = task.assignments.get(assignment_counter=1)
@@ -172,12 +172,12 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
                 'assignment_id': first_review_assignment.id
             }),
             content_type='application/json')
-        self.assertEquals(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
         first_review_assignment.refresh_from_db()
         self.assertTrue(first_review_assignment.worker, self.workers[1])
         returned = load_encoded_json(response.content)
-        self.assertEquals(returned['message'],
-                          'Worker already assigned to this task.')
+        self.assertEqual(returned['message'],
+                         'Worker already assigned to this task.')
 
         # Attempt to reassign review assignment to entry-level worker
         first_review_assignment = task.assignments.get(assignment_counter=1)
@@ -189,12 +189,12 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
                 'assignment_id': first_review_assignment.id
             }),
             content_type='application/json')
-        self.assertEquals(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
         first_review_assignment.refresh_from_db()
         self.assertTrue(first_review_assignment.worker, self.workers[0])
         returned = load_encoded_json(response.content)
-        self.assertEquals(returned['message'],
-                          'Worker not certified for this assignment.')
+        self.assertEqual(returned['message'],
+                         'Worker not certified for this assignment.')
 
         # Reassign review assignment to another reviewer
         second_review_assignment = task.assignments.get(assignment_counter=2)
@@ -206,9 +206,9 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
                 'assignment_id': second_review_assignment.id
             }),
             content_type='application/json')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         second_review_assignment.refresh_from_db()
-        self.assertEquals(second_review_assignment.worker, self.workers[3])
+        self.assertEqual(second_review_assignment.worker, self.workers[3])
 
     def test_complete_and_skip_task_api(self):
         task = self.tasks['project_management_task']
@@ -220,18 +220,18 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
                 'task_id': task.id,
             }),
             content_type='application/json')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         task.refresh_from_db()
-        self.assertEquals(task.status, Task.Status.COMPLETE)
+        self.assertEqual(task.status, Task.Status.COMPLETE)
         for assignment in task.assignments.all():
-            self.assertEquals(
+            self.assertEqual(
                 assignment.status, TaskAssignment.Status.SUBMITTED)
 
         # Check that dependent tasks have already been created
         # TODO(jrbotros): Create a `get_dependent_tasks` function
         num_tasks = task.project.tasks.count()
         create_subsequent_tasks(task.project)
-        self.assertEquals(task.project.tasks.count(), num_tasks)
+        self.assertEqual(task.project.tasks.count(), num_tasks)
 
     def test_end_project_api(self):
         project = self.projects['project_to_end']
@@ -241,11 +241,11 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
                 'project_id': project.id,
             }),
             content_type='application/json')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         project.refresh_from_db()
-        self.assertEquals(project.status, Project.Status.ABORTED)
+        self.assertEqual(project.status, Project.Status.ABORTED)
         for task in Task.objects.filter(project=project):
-            self.assertEquals(task.status, Task.Status.ABORTED)
+            self.assertEqual(task.status, Task.Status.ABORTED)
 
     def test_invalid_revert_aborted_task(self):
         task = setup_complete_task(self)
@@ -440,15 +440,15 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
                             revert_before=False):
         response = self._revert_task(
             task, iteration, revert_before=revert_before, commit=False)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         task.refresh_from_db()
         fake_audit = load_encoded_json(response.content)
         self.assertEqual(fake_audit, expected_audit)
 
-        self.assertEquals(task.status, Task.Status.COMPLETE)
-        self.assertEquals(task.assignments.count(), 2)
+        self.assertEqual(task.status, Task.Status.COMPLETE)
+        self.assertEqual(task.assignments.count(), 2)
         for assignment in task.assignments.all():
-            self.assertEquals(assignment.iterations.count(), 2)
+            self.assertEqual(assignment.iterations.count(), 2)
 
         response = self._revert_task(
             task, iteration, revert_before=revert_before, commit=True)
@@ -464,7 +464,7 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
         verify_iterations(task.id)
 
         if num_iterations:
-            self.assertEquals(
+            self.assertEqual(
                 current_assignment(task).in_progress_task_data,
                 latest_data)
 

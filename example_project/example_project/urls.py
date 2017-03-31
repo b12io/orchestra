@@ -24,8 +24,7 @@ handler500 = 'orchestra.views.internal_server_error'  # noqa
 urlpatterns = [
 
     # Admin Views
-    url(r'^orchestra/admin/',
-        include(admin.site.urls)),
+    url(r'^orchestra/admin/', admin.site.urls),
     url(r'^ajax_select/', include(ajax_select_urls)),
 
 

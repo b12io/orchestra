@@ -50,7 +50,8 @@ class Migration(migrations.Migration):
                 ('priority', models.IntegerField()),
                 ('task_class', models.IntegerField(
                     choices=[(0, b'Training tasks'), (1, b'A real task')])),
-                ('process', models.ForeignKey(to='orchestra.Process')),
+                ('process', models.ForeignKey(
+                    on_delete=models.CASCADE, to='orchestra.Process')),
             ],
             options={
             },
@@ -70,7 +71,8 @@ class Migration(migrations.Migration):
                 ('user_interface', jsonfield.fields.JSONField()),
                 ('depends_on', models.ManyToManyField(
                     related_name='depends_on_rel_+', to='orchestra.Step')),
-                ('process', models.ForeignKey(to='orchestra.Process')),
+                ('process', models.ForeignKey(
+                    on_delete=models.CASCADE, to='orchestra.Process')),
                 ('required_certifications', models.ManyToManyField(
                     to='orchestra.Certification')),
             ],
@@ -85,7 +87,8 @@ class Migration(migrations.Migration):
                     verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('status', models.IntegerField(choices=[(0, b'Awaiting Processing'), (1, b'Processing'), (
                     2, b'Pending Review'), (3, b'Reviewing'), (4, b'Post-review Processing'), (5, b'Complete')])),
-                ('step', models.ForeignKey(to='orchestra.Step')),
+                ('step', models.ForeignKey(
+                    on_delete=models.CASCADE, to='orchestra.Step')),
             ],
             options={
             },
@@ -112,7 +115,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(
                     verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('start_datetime', models.DateTimeField(auto_now_add=True)),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(
+                    on_delete=models.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
             options={
             },
@@ -127,9 +131,10 @@ class Migration(migrations.Migration):
                     choices=[(0, b'Training tasks'), (1, b'A real task')])),
                 ('role', models.IntegerField(
                     choices=[(0, b'Entry-level'), (1, b'Reviewer')])),
-                ('certification', models.ForeignKey(
-                    to='orchestra.Certification')),
-                ('worker', models.ForeignKey(to='orchestra.Worker')),
+                ('certification', models.ForeignKey(on_delete=models.CASCADE,
+                                                    to='orchestra.Certification')),
+                ('worker', models.ForeignKey(
+                    on_delete=models.CASCADE, to='orchestra.Worker')),
             ],
             options={
             },
@@ -138,7 +143,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='taskassignment',
             name='worker',
-            field=models.ForeignKey(to='orchestra.Worker'),
+            field=models.ForeignKey(
+                on_delete=models.CASCADE, to='orchestra.Worker'),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(  # manually-reviewed

@@ -21,7 +21,8 @@ def create_time_entries(apps, schema_editor):
             if 'datetime' not in snapshot or 'work_time_seconds' not in snapshot:
                 continue
             date = dateutil.parser.parse(snapshot['datetime']).date()
-            time_worked = datetime.timedelta(seconds=snapshot['work_time_seconds'])
+            time_worked = datetime.timedelta(
+                seconds=snapshot['work_time_seconds'])
             TimeEntry.objects.get_or_create(assignment=assignment, date=date,
                                             time_worked=time_worked)
 

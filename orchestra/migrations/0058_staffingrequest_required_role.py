@@ -15,6 +15,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='staffingrequest',
             name='required_role',
-            field=models.IntegerField(choices=[(0, 'Entry-level'), (1, 'Reviewer')], default=0),
+            field=models.IntegerField(
+                choices=[(0, 'Entry-level'), (1, 'Reviewer')], default=0),
         ),
     ]

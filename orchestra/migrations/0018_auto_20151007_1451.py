@@ -87,8 +87,8 @@ class Migration(migrations.Migration):
 
     # TODO(dhaas): Write reverse migrations for these.
     operations = [
-        migrations.RunPython(update_projects, migrations.RunPython.noop),  # manually-reviewed
-        migrations.RunPython(update_tasks, migrations.RunPython.noop),  # manually-reviewed
+        migrations.RunPython(update_projects, migrations.RunPython.noop), # manually-reviewed
+        migrations.RunPython(update_tasks, migrations.RunPython.noop), # manually-reviewed
         migrations.RunPython(migrate_worker_certifications,  # manually-reviewed
                              migrations.RunPython.noop),  # manually-reviewed
     ]

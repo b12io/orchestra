@@ -1,11 +1,9 @@
 import django_filters
 
-from rest_framework import filters
-
 from orchestra.models import TimeEntry
 
 
-class TimeEntryFilter(filters.FilterSet):
+class TimeEntryFilter(django_filters.FilterSet):
     min_date = django_filters.DateFilter(name='date', lookup_expr='gte')
     max_date = django_filters.DateFilter(name='date', lookup_expr='lte')
 

@@ -20,11 +20,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='staffingrequest',
             name='communication_preference',
-            field=models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, to='orchestra.CommunicationPreference'),
+            field=models.ForeignKey(
+                default=None, on_delete=django.db.models.deletion.CASCADE, to='orchestra.CommunicationPreference'),
         ),
         migrations.AlterField(
             model_name='communicationpreference',
             name='communication_type',
-            field=models.IntegerField(choices=[(0, 'task_status_change'), (1, 'new_task_available')]),
+            field=models.IntegerField(
+                choices=[(0, 'task_status_change'), (1, 'new_task_available')]),
         ),
     ]

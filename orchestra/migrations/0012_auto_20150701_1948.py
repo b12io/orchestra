@@ -14,7 +14,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='project',
             name='process_slug',
-            field=models.CharField(max_length=200, choices=[('website_design', 'Website design'), ('website_enhancement', 'Website enhancement')]),
+            field=models.CharField(max_length=200, choices=[(
+                'website_design', 'Website design'), ('website_enhancement', 'Website enhancement')]),
         ),
         migrations.AlterField(
             model_name='project',
@@ -24,6 +25,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='task',
             name='step_slug',
-            field=models.CharField(max_length=200, choices=[('design', 'Design'), ('export', 'Export design'), ('website_enhancement', 'Enhance'), ('export_enhancement_step', 'Export enhancement')]),
+            field=models.CharField(max_length=200, choices=[('design', 'Design'), ('export', 'Export design'), (
+                'website_enhancement', 'Enhance'), ('export_enhancement_step', 'Export enhancement')]),
         ),
     ]

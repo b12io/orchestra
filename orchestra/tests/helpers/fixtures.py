@@ -608,7 +608,7 @@ def setup_complete_task(test_case):
     assign_task(workers['entry'].id, task.id)
 
     task.refresh_from_db()
-    test_case.assertEquals(task.status, Task.Status.PROCESSING)
+    test_case.assertEqual(task.status, Task.Status.PROCESSING)
 
     submit_task(
         task.id, {'test': 'entry_submit'},
@@ -616,7 +616,7 @@ def setup_complete_task(test_case):
         workers['entry'])
 
     task.refresh_from_db()
-    test_case.assertEquals(task.status, Task.Status.PENDING_REVIEW)
+    test_case.assertEqual(task.status, Task.Status.PENDING_REVIEW)
 
     assign_task(workers['reviewer'].id, task.id)
     reviewer_assignment = task.assignments.get(
@@ -627,7 +627,7 @@ def setup_complete_task(test_case):
     reviewer_assignment.save()
 
     task.refresh_from_db()
-    test_case.assertEquals(task.status, Task.Status.REVIEWING)
+    test_case.assertEqual(task.status, Task.Status.REVIEWING)
 
     submit_task(
         task.id, {'test': 'reviewer_reject'},
@@ -635,7 +635,7 @@ def setup_complete_task(test_case):
         workers['reviewer'])
 
     task.refresh_from_db()
-    test_case.assertEquals(task.status, Task.Status.POST_REVIEW_PROCESSING)
+    test_case.assertEqual(task.status, Task.Status.POST_REVIEW_PROCESSING)
 
     submit_task(
         task.id, {'test': 'entry_resubmit'},
@@ -643,7 +643,7 @@ def setup_complete_task(test_case):
         workers['entry'])
 
     task.refresh_from_db()
-    test_case.assertEquals(task.status, Task.Status.REVIEWING)
+    test_case.assertEqual(task.status, Task.Status.REVIEWING)
 
     with patch('orchestra.utils.task_lifecycle._is_review_needed',
                return_value=False):
@@ -653,12 +653,12 @@ def setup_complete_task(test_case):
             workers['reviewer'])
 
     task.refresh_from_db()
-    test_case.assertEquals(task.status, Task.Status.COMPLETE)
-    test_case.assertEquals(task.assignments.count(), 2)
+    test_case.assertEqual(task.status, Task.Status.COMPLETE)
+    test_case.assertEqual(task.assignments.count(), 2)
     for assignment in task.assignments.all():
-        test_case.assertEquals(
+        test_case.assertEqual(
             assignment.status, TaskAssignment.Status.SUBMITTED)
-        test_case.assertEquals(assignment.iterations.count(), 2)
+        test_case.assertEqual(assignment.iterations.count(), 2)
 
     # Modify assignments with correct datetime
     new_datetime_labels = ('entry_pickup', 'reviewer_pickup')

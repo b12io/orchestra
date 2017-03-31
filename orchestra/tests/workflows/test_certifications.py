@@ -57,25 +57,25 @@ class ManageCertificationsTestCase(OrchestraTestCase):
 
     def test_migrate_certifications(self):
         def _check_old_certifications_unchanged():
-            self.assertEquals(WorkerCertification.objects.filter(
+            self.assertEqual(WorkerCertification.objects.filter(
                 worker=self.worker,
                 certification__workflow=self.workflow_old).count(), 4)
-            self.assertEquals(WorkerCertification.objects.filter(
+            self.assertEqual(WorkerCertification.objects.filter(
                 worker=self.worker,
                 certification__workflow=self.workflow_old,
                 certification__slug='certification1',
                 role=WorkerCertification.Role.ENTRY_LEVEL).count(), 1)
-            self.assertEquals(WorkerCertification.objects.filter(
+            self.assertEqual(WorkerCertification.objects.filter(
                 worker=self.worker,
                 certification__workflow=self.workflow_old,
                 certification__slug='certification1',
                 role=WorkerCertification.Role.REVIEWER).count(), 1)
-            self.assertEquals(WorkerCertification.objects.filter(
+            self.assertEqual(WorkerCertification.objects.filter(
                 worker=self.worker,
                 certification__workflow=self.workflow_old,
                 certification__slug='certification2',
                 role=WorkerCertification.Role.ENTRY_LEVEL).count(), 1)
-            self.assertEquals(WorkerCertification.objects.filter(
+            self.assertEqual(WorkerCertification.objects.filter(
                 worker=self.worker,
                 certification__workflow=self.workflow_old,
                 certification__slug='certification2',
@@ -83,7 +83,7 @@ class ManageCertificationsTestCase(OrchestraTestCase):
 
         _check_old_certifications_unchanged()
         # New workflow should have no worker certifications
-        self.assertEquals(WorkerCertification.objects.filter(
+        self.assertEqual(WorkerCertification.objects.filter(
             worker=self.worker,
             certification__workflow=self.workflow_new).count(), 0)
 
@@ -96,15 +96,15 @@ class ManageCertificationsTestCase(OrchestraTestCase):
         _check_old_certifications_unchanged()
 
         # New workflow should have only `certification1` worker certifications
-        self.assertEquals(WorkerCertification.objects.filter(
+        self.assertEqual(WorkerCertification.objects.filter(
             worker=self.worker,
             certification__workflow=self.workflow_new).count(), 2)
-        self.assertEquals(WorkerCertification.objects.filter(
+        self.assertEqual(WorkerCertification.objects.filter(
             worker=self.worker,
             certification__workflow=self.workflow_new,
             certification__slug='certification1',
             role=WorkerCertification.Role.ENTRY_LEVEL).count(), 1)
-        self.assertEquals(WorkerCertification.objects.filter(
+        self.assertEqual(WorkerCertification.objects.filter(
             worker=self.worker,
             certification__workflow=self.workflow_new,
             certification__slug='certification1',
@@ -119,25 +119,25 @@ class ManageCertificationsTestCase(OrchestraTestCase):
         _check_old_certifications_unchanged()
 
         # `certification2` should now be migrated as well
-        self.assertEquals(WorkerCertification.objects.filter(
+        self.assertEqual(WorkerCertification.objects.filter(
             worker=self.worker,
             certification__workflow=self.workflow_new).count(), 4)
-        self.assertEquals(WorkerCertification.objects.filter(
+        self.assertEqual(WorkerCertification.objects.filter(
             worker=self.worker,
             certification__workflow=self.workflow_new,
             certification__slug='certification1',
             role=WorkerCertification.Role.ENTRY_LEVEL).count(), 1)
-        self.assertEquals(WorkerCertification.objects.filter(
+        self.assertEqual(WorkerCertification.objects.filter(
             worker=self.worker,
             certification__workflow=self.workflow_new,
             certification__slug='certification1',
             role=WorkerCertification.Role.REVIEWER).count(), 1)
-        self.assertEquals(WorkerCertification.objects.filter(
+        self.assertEqual(WorkerCertification.objects.filter(
             worker=self.worker,
             certification__workflow=self.workflow_new,
             certification__slug='certification2',
             role=WorkerCertification.Role.ENTRY_LEVEL).count(), 1)
-        self.assertEquals(WorkerCertification.objects.filter(
+        self.assertEqual(WorkerCertification.objects.filter(
             worker=self.worker,
             certification__workflow=self.workflow_new,
             certification__slug='certification2',

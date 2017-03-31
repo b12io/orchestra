@@ -16,11 +16,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='timeentry',
             name='worker',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='time_entries', to='orchestra.Worker'),
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE,
+                                    related_name='time_entries', to='orchestra.Worker'),
         ),
         migrations.AlterField(
             model_name='timeentry',
             name='assignment',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='time_entries', to='orchestra.TaskAssignment'),
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE,
+                                    related_name='time_entries', to='orchestra.TaskAssignment'),
         ),
     ]
