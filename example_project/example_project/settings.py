@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
+import logging
 import os
 import sys
 from .orchestra_settings import setup_orchestra
@@ -134,5 +135,8 @@ STATIC_ROOT = 'staticfiles'
 TESTING = sys.argv[1:2] == ['test']
 if TESTING:
     PASSWORD_HASHERS = ('django.contrib.auth.hashers.MD5PasswordHasher',)
+    DEBUG = False
+    TEMPLATE_DEBUG = False
+    logging.disable(logging.CRITICAL)
 
 setup_orchestra(__name__)
