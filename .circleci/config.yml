@@ -1,0 +1,27 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/orchestra
+    docker:
+        - image: python:3.5.2
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            npm install -g gulp
+            npm install
+            # circle has a really old version of pip by default which seems to break
+            # builds sometimes.
+            pip install --upgrade pip
+            pip install -r requirements.txt
+            pip install coveralls
+      - run:
+          name: Run tests
+          command: |
+            make lint
+            make coverage
+            make coveralls
+            # Circle uses XUnit reports
+            mkdir -p $CIRCLE_TEST_REPORTS/python/
+            find . -wholename *nosetests.xml -exec sudo mv {} $CIRCLE_TEST_REPORTS/python/ \;
