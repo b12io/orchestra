@@ -26,9 +26,6 @@ SECRET_KEY = 'CHANGEMEOMG'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# Determine whether we're running on CircleCI or not
-RUNNING_ON_CIRCLE = bool(os.environ.get('CIRCLE_SHA1'))
-
 # Application definition
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -93,24 +90,12 @@ WSGI_APPLICATION = 'example_project.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
-if RUNNING_ON_CIRCLE:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'circle_test',
-            'USER': 'ubuntu',
-            'PASSWORD': '',
-            'HOST': 'localhost',
-            'PORT': '5432',
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'orchestra.sqlite3',
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': 'orchestra.sqlite3',
-        }
-    }
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
