@@ -25,4 +25,4 @@ jobs:
             make coveralls
             # Circle uses XUnit reports
             mkdir -p $CIRCLE_TEST_REPORTS/python/
-            find . -wholename *nosetests.xml -exec sudo mv {} $CIRCLE_TEST_REPORTS/python/ \;
+            find . -wholename *nosetests.xml -exec mv {} $CIRCLE_TEST_REPORTS/python/ \;
