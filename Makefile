@@ -1,5 +1,5 @@
 COVERAGE_ANNOTATION=coverage_annotations
-TEST_CMD=manage.py test orchestra beanstalk_dispatch --with-xunit --parallel=4 --exclude=assert_test*
+TEST_CMD=manage.py test orchestra beanstalk_dispatch --with-xunit --exclude=assert_test*
 GULP := $(shell command -v gulp 2> /dev/null)
 
 clean:
