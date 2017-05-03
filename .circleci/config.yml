@@ -9,8 +9,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apt-get update && apt-get install -y postgresql postgresql-contrib && /etc/init.d/postgresql start
-            curl -sL https://deb.nodesource.com/setup | bash - && apt-get install -y nodejs
+            curl -sL https://deb.nodesource.com/setup_7.x | bash - && apt-get install -y nodejs
             npm install -g gulp
             npm install
             # circle has a really old version of pip by default which seems to break
