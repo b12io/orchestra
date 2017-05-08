@@ -3,7 +3,7 @@ jsonfield==2.0.1
 django-jsonview==1.0.0
 requests==2.13.0
 factory_boy==2.8.1
-coverage==4.3.4
+coverage==4.4
 psycopg2==2.7.1
 django-registration-redux==1.6
 djrill==2.1.0
@@ -15,7 +15,7 @@ djangorestframework==3.6.2
 djangorestframework-httpsignature==1.0.0
 djangocms-admin-style==1.2.7
 lxml==3.7.3
-beautifulsoup4==4.5.3
+beautifulsoup4==4.6.0
 pyOpenSSL==17.0.0
 pycrypto==2.6.1
 google-api-python-client==1.6.2

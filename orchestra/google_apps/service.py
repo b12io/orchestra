@@ -26,7 +26,7 @@ class Service(object):
             google_p12_path,
             scopes=['https://www.googleapis.com/auth/drive'])
         http_auth = credentials.authorize(Http())
-        return build('drive', 'v2', http=http_auth)
+        return build('drive', 'v2', http=http_auth, cache_discovery=False)
 
     def insert_file(self, title, description, parent_id, mime_type, filename):
         """Insert new file.
