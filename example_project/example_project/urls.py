@@ -47,13 +47,13 @@ urlpatterns = [
     url(r'^orchestra/',
         include('orchestra.urls', namespace='orchestra')),
 
-    # Beanstalk Dispatch URLs
-    url(r'^beanstalk_dispatch/',
-        include('beanstalk_dispatch.urls')),
-
     # Favicon redirect for crawlers
     url(r'^favicon.ico/$', RedirectView.as_view(
         url=settings.STATIC_URL + 'orchestra/icons/favicon.ico',
         permanent=True),
         name='favicon'),
 ]
+
+if settings.BEANSTALK_WORKER:
+    urlpatterns.append(url(r'^beanstalk_dispatch/',
+                           include('beanstalk_dispatch.urls')))
