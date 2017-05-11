@@ -1,6 +1,7 @@
 from orchestra.core.errors import AssignmentPolicyError
 from orchestra.core.errors import WorkerCertificationError
 from orchestra.models import Task
+from orchestra.models import Worker
 from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.task_properties import assignment_history
 
@@ -14,6 +15,21 @@ def anyone_certified(task, **kwargs):
     in the awaiting processing pool.
     """
     return task
+
+
+def specified_worker(task, username, **kwargs):
+    """
+    Assign task to a specific person.
+
+    Args:
+        username (str):
+            Username of the worker to assign.
+
+    Returns:
+        task (orchestra.models.Task): The modified task object.
+    """
+    worker = Worker.objects.get(user__username=username)
+    return assign_task(worker.id, task.id)
 
 
 def previously_completed_steps(task, related_steps, **kwargs):
