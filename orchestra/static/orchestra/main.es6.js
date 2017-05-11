@@ -12,18 +12,15 @@ import timing from 'orchestra/timing/timing.module.es6.js'
 
 import config from 'orchestra/config.es6.js'
 
-window.orchestra.angular_modules.map(module => {
-  angular.module(module, [])
-})
-
 angular.module('orchestra.analytics', [])
+
+// Include any custom workflow modules as dependencies
+angular.module('orchestra.workflows', window.orchestra.angular_modules)
 
 angular
   .module('orchestra', [
     'ngRoute', common, timing, dashboard, task,
-    projectManagement, 'orchestra.analytics',
-    // Include angular modules from Orchestra workflow steps
-    ...window.orchestra.angular_modules
+    projectManagement, 'orchestra.analytics', 'orchestra.workflows'
   ])
   .config(config)
   .run(($http, $location, $rootScope, $window) => {
