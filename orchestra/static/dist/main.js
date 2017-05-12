@@ -126,7 +126,7 @@
 	  var undefined;
 
 	  /** Used as the semantic version number. */
-	  var VERSION = '4.17.2';
+	  var VERSION = '4.17.4';
 
 	  /** Used as the size to enable large array optimizations. */
 	  var LARGE_ARRAY_SIZE = 200;
@@ -1681,9 +1681,9 @@
 	     * Shortcut fusion is an optimization to merge iteratee calls; this avoids
 	     * the creation of intermediate arrays and can greatly reduce the number of
 	     * iteratee executions. Sections of a chain sequence qualify for shortcut
-	     * fusion if the section is applied to an array of at least `200` elements
-	     * and any iteratees accept only one argument. The heuristic for whether a
-	     * section qualifies for shortcut fusion is subject to change.
+	     * fusion if the section is applied to an array and iteratees accept only
+	     * one argument. The heuristic for whether a section qualifies for shortcut
+	     * fusion is subject to change.
 	     *
 	     * Chaining is supported in custom builds as long as the `_#value` method is
 	     * directly or indirectly included in the build.
@@ -1842,8 +1842,8 @@
 
 	    /**
 	     * By default, the template delimiters used by lodash are like those in
-	     * embedded Ruby (ERB). Change the following template settings to use
-	     * alternative delimiters.
+	     * embedded Ruby (ERB) as well as ES2015 template strings. Change the
+	     * following template settings to use alternative delimiters.
 	     *
 	     * @static
 	     * @memberOf _
@@ -1990,8 +1990,7 @@
 	          resIndex = 0,
 	          takeCount = nativeMin(length, this.__takeCount__);
 
-	      if (!isArr || arrLength < LARGE_ARRAY_SIZE ||
-	          (arrLength == length && takeCount == length)) {
+	      if (!isArr || (!isRight && arrLength == length && takeCount == length)) {
 	        return baseWrapperValue(array, this.__actions__);
 	      }
 	      var result = [];
@@ -2105,7 +2104,7 @@
 	     */
 	    function hashHas(key) {
 	      var data = this.__data__;
-	      return nativeCreate ? data[key] !== undefined : hasOwnProperty.call(data, key);
+	      return nativeCreate ? (data[key] !== undefined) : hasOwnProperty.call(data, key);
 	    }
 
 	    /**
@@ -2576,24 +2575,6 @@
 	     */
 	    function arrayShuffle(array) {
 	      return shuffleSelf(copyArray(array));
-	    }
-
-	    /**
-	     * Used by `_.defaults` to customize its `_.assignIn` use.
-	     *
-	     * @private
-	     * @param {*} objValue The destination value.
-	     * @param {*} srcValue The source value.
-	     * @param {string} key The key of the property to assign.
-	     * @param {Object} object The parent object of `objValue`.
-	     * @returns {*} Returns the value to assign.
-	     */
-	    function assignInDefaults(objValue, srcValue, key, object) {
-	      if (objValue === undefined ||
-	          (eq(objValue, objectProto[key]) && !hasOwnProperty.call(object, key))) {
-	        return srcValue;
-	      }
-	      return objValue;
 	    }
 
 	    /**
@@ -3208,8 +3189,7 @@
 	      if (value == null) {
 	        return value === undefined ? undefinedTag : nullTag;
 	      }
-	      value = Object(value);
-	      return (symToStringTag && symToStringTag in value)
+	      return (symToStringTag && symToStringTag in Object(value))
 	        ? getRawTag(value)
 	        : objectToString(value);
 	    }
@@ -3413,7 +3393,7 @@
 	      if (value === other) {
 	        return true;
 	      }
-	      if (value == null || other == null || (!isObject(value) && !isObjectLike(other))) {
+	      if (value == null || other == null || (!isObjectLike(value) && !isObjectLike(other))) {
 	        return value !== value && other !== other;
 	      }
 	      return baseIsEqualDeep(value, other, bitmask, customizer, baseIsEqual, stack);
@@ -3436,17 +3416,12 @@
 	    function baseIsEqualDeep(object, other, bitmask, customizer, equalFunc, stack) {
 	      var objIsArr = isArray(object),
 	          othIsArr = isArray(other),
-	          objTag = arrayTag,
-	          othTag = arrayTag;
+	          objTag = objIsArr ? arrayTag : getTag(object),
+	          othTag = othIsArr ? arrayTag : getTag(other);
 
-	      if (!objIsArr) {
-	        objTag = getTag(object);
-	        objTag = objTag == argsTag ? objectTag : objTag;
-	      }
-	      if (!othIsArr) {
-	        othTag = getTag(other);
-	        othTag = othTag == argsTag ? objectTag : othTag;
-	      }
+	      objTag = objTag == argsTag ? objectTag : objTag;
+	      othTag = othTag == argsTag ? objectTag : othTag;
+
 	      var objIsObj = objTag == objectTag,
 	          othIsObj = othTag == objectTag,
 	          isSameTag = objTag == othTag;
@@ -3894,7 +3869,6 @@
 	     * @returns {Object} Returns the new object.
 	     */
 	    function basePick(object, paths) {
-	      object = Object(object);
 	      return basePickBy(object, paths, function(value, path) {
 	        return hasIn(object, path);
 	      });
@@ -5287,8 +5261,7 @@
 	          var args = arguments,
 	              value = args[0];
 
-	          if (wrapper && args.length == 1 &&
-	              isArray(value) && value.length >= LARGE_ARRAY_SIZE) {
+	          if (wrapper && args.length == 1 && isArray(value)) {
 	            return wrapper.plant(value).value();
 	          }
 	          var index = 0,
@@ -5595,7 +5568,7 @@
 	      var func = Math[methodName];
 	      return function(number, precision) {
 	        number = toNumber(number);
-	        precision = nativeMin(toInteger(precision), 292);
+	        precision = precision == null ? 0 : nativeMin(toInteger(precision), 292);
 	        if (precision) {
 	          // Shift with exponential notation to avoid floating-point issues.
 	          // See [MDN](https://mdn.io/round#Examples) for more details.
@@ -5700,7 +5673,7 @@
 	      thisArg = newData[2];
 	      partials = newData[3];
 	      holders = newData[4];
-	      arity = newData[9] = newData[9] == null
+	      arity = newData[9] = newData[9] === undefined
 	        ? (isBindKey ? 0 : func.length)
 	        : nativeMax(newData[9] - length, 0);
 
@@ -5718,6 +5691,63 @@
 	      }
 	      var setter = data ? baseSetData : setData;
 	      return setWrapToString(setter(result, newData), func, bitmask);
+	    }
+
+	    /**
+	     * Used by `_.defaults` to customize its `_.assignIn` use to assign properties
+	     * of source objects to the destination object for all destination properties
+	     * that resolve to `undefined`.
+	     *
+	     * @private
+	     * @param {*} objValue The destination value.
+	     * @param {*} srcValue The source value.
+	     * @param {string} key The key of the property to assign.
+	     * @param {Object} object The parent object of `objValue`.
+	     * @returns {*} Returns the value to assign.
+	     */
+	    function customDefaultsAssignIn(objValue, srcValue, key, object) {
+	      if (objValue === undefined ||
+	          (eq(objValue, objectProto[key]) && !hasOwnProperty.call(object, key))) {
+	        return srcValue;
+	      }
+	      return objValue;
+	    }
+
+	    /**
+	     * Used by `_.defaultsDeep` to customize its `_.merge` use to merge source
+	     * objects into destination objects that are passed thru.
+	     *
+	     * @private
+	     * @param {*} objValue The destination value.
+	     * @param {*} srcValue The source value.
+	     * @param {string} key The key of the property to merge.
+	     * @param {Object} object The parent object of `objValue`.
+	     * @param {Object} source The parent object of `srcValue`.
+	     * @param {Object} [stack] Tracks traversed source values and their merged
+	     *  counterparts.
+	     * @returns {*} Returns the value to assign.
+	     */
+	    function customDefaultsMerge(objValue, srcValue, key, object, source, stack) {
+	      if (isObject(objValue) && isObject(srcValue)) {
+	        // Recursively merge objects and arrays (susceptible to call stack limits).
+	        stack.set(srcValue, objValue);
+	        baseMerge(objValue, srcValue, undefined, customDefaultsMerge, stack);
+	        stack['delete'](srcValue);
+	      }
+	      return objValue;
+	    }
+
+	    /**
+	     * Used by `_.omit` to customize its `_.cloneDeep` use to only clone plain
+	     * objects.
+	     *
+	     * @private
+	     * @param {*} value The value to inspect.
+	     * @param {string} key The key of the property to inspect.
+	     * @returns {*} Returns the uncloned value or `undefined` to defer cloning to `_.cloneDeep`.
+	     */
+	    function customOmitClone(value) {
+	      return isPlainObject(value) ? undefined : value;
 	    }
 
 	    /**
@@ -5891,9 +5921,9 @@
 	     */
 	    function equalObjects(object, other, bitmask, customizer, equalFunc, stack) {
 	      var isPartial = bitmask & COMPARE_PARTIAL_FLAG,
-	          objProps = keys(object),
+	          objProps = getAllKeys(object),
 	          objLength = objProps.length,
-	          othProps = keys(other),
+	          othProps = getAllKeys(other),
 	          othLength = othProps.length;
 
 	      if (objLength != othLength && !isPartial) {
@@ -6131,7 +6161,15 @@
 	     * @param {Object} object The object to query.
 	     * @returns {Array} Returns the array of symbols.
 	     */
-	    var getSymbols = nativeGetSymbols ? overArg(nativeGetSymbols, Object) : stubArray;
+	    var getSymbols = !nativeGetSymbols ? stubArray : function(object) {
+	      if (object == null) {
+	        return [];
+	      }
+	      object = Object(object);
+	      return arrayFilter(nativeGetSymbols(object), function(symbol) {
+	        return propertyIsEnumerable.call(object, symbol);
+	      });
+	    };
 
 	    /**
 	     * Creates an array of the own and inherited enumerable symbols of `object`.
@@ -6615,29 +6653,6 @@
 	      data[1] = newBitmask;
 
 	      return data;
-	    }
-
-	    /**
-	     * Used by `_.defaultsDeep` to customize its `_.merge` use.
-	     *
-	     * @private
-	     * @param {*} objValue The destination value.
-	     * @param {*} srcValue The source value.
-	     * @param {string} key The key of the property to merge.
-	     * @param {Object} object The parent object of `objValue`.
-	     * @param {Object} source The parent object of `srcValue`.
-	     * @param {Object} [stack] Tracks traversed source values and their merged
-	     *  counterparts.
-	     * @returns {*} Returns the value to assign.
-	     */
-	    function mergeDefaults(objValue, srcValue, key, object, source, stack) {
-	      if (isObject(objValue) && isObject(srcValue)) {
-	        // Recursively merge objects and arrays (susceptible to call stack limits).
-	        stack.set(srcValue, objValue);
-	        baseMerge(objValue, srcValue, undefined, mergeDefaults, stack);
-	        stack['delete'](srcValue);
-	      }
-	      return objValue;
 	    }
 
 	    /**
@@ -8382,7 +8397,7 @@
 	     *
 	     * var users = [
 	     *   { 'user': 'barney',  'active': false },
-	     *   { 'user': 'fred',    'active': false},
+	     *   { 'user': 'fred',    'active': false },
 	     *   { 'user': 'pebbles', 'active': true }
 	     * ];
 	     *
@@ -10951,7 +10966,7 @@
 	      if (typeof func != 'function') {
 	        throw new TypeError(FUNC_ERROR_TEXT);
 	      }
-	      start = start === undefined ? 0 : nativeMax(toInteger(start), 0);
+	      start = start == null ? 0 : nativeMax(toInteger(start), 0);
 	      return baseRest(function(args) {
 	        var array = args[start],
 	            otherArgs = castSlice(args, 0, start);
@@ -11621,7 +11636,7 @@
 	     * date objects, error objects, maps, numbers, `Object` objects, regexes,
 	     * sets, strings, symbols, and typed arrays. `Object` objects are compared
 	     * by their own, not inherited, enumerable properties. Functions and DOM
-	     * nodes are **not** supported.
+	     * nodes are compared by strict equality, i.e. `===`.
 	     *
 	     * @static
 	     * @memberOf _
@@ -12641,7 +12656,9 @@
 	     * // => 3
 	     */
 	    function toSafeInteger(value) {
-	      return baseClamp(toInteger(value), -MAX_SAFE_INTEGER, MAX_SAFE_INTEGER);
+	      return value
+	        ? baseClamp(toInteger(value), -MAX_SAFE_INTEGER, MAX_SAFE_INTEGER)
+	        : (value === 0 ? value : 0);
 	    }
 
 	    /**
@@ -12895,7 +12912,7 @@
 	     * // => { 'a': 1, 'b': 2 }
 	     */
 	    var defaults = baseRest(function(args) {
-	      args.push(undefined, assignInDefaults);
+	      args.push(undefined, customDefaultsAssignIn);
 	      return apply(assignInWith, undefined, args);
 	    });
 
@@ -12919,7 +12936,7 @@
 	     * // => { 'a': { 'b': 2, 'c': 3 } }
 	     */
 	    var defaultsDeep = baseRest(function(args) {
-	      args.push(undefined, mergeDefaults);
+	      args.push(undefined, customDefaultsMerge);
 	      return apply(mergeWith, undefined, args);
 	    });
 
@@ -13581,7 +13598,7 @@
 	      });
 	      copyObject(object, getAllKeysIn(object), result);
 	      if (isDeep) {
-	        result = baseClone(result, CLONE_DEEP_FLAG | CLONE_FLAT_FLAG | CLONE_SYMBOLS_FLAG);
+	        result = baseClone(result, CLONE_DEEP_FLAG | CLONE_FLAT_FLAG | CLONE_SYMBOLS_FLAG, customOmitClone);
 	      }
 	      var length = paths.length;
 	      while (length--) {
@@ -14730,7 +14747,10 @@
 	     */
 	    function startsWith(string, target, position) {
 	      string = toString(string);
-	      position = baseClamp(toInteger(position), 0, string.length);
+	      position = position == null
+	        ? 0
+	        : baseClamp(toInteger(position), 0, string.length);
+
 	      target = baseToString(target);
 	      return string.slice(position, position + target.length) == target;
 	    }
@@ -14849,9 +14869,9 @@
 	        options = undefined;
 	      }
 	      string = toString(string);
-	      options = assignInWith({}, options, settings, assignInDefaults);
+	      options = assignInWith({}, options, settings, customDefaultsAssignIn);
 
-	      var imports = assignInWith({}, options.imports, settings.imports, assignInDefaults),
+	      var imports = assignInWith({}, options.imports, settings.imports, customDefaultsAssignIn),
 	          importsKeys = keys(imports),
 	          importsValues = baseValues(imports, importsKeys);
 
@@ -16935,14 +16955,13 @@
 	    // Add `LazyWrapper` methods for `_.drop` and `_.take` variants.
 	    arrayEach(['drop', 'take'], function(methodName, index) {
 	      LazyWrapper.prototype[methodName] = function(n) {
-	        var filtered = this.__filtered__;
-	        if (filtered && !index) {
-	          return new LazyWrapper(this);
-	        }
 	        n = n === undefined ? 1 : nativeMax(toInteger(n), 0);
 
-	        var result = this.clone();
-	        if (filtered) {
+	        var result = (this.__filtered__ && !index)
+	          ? new LazyWrapper(this)
+	          : this.clone();
+
+	        if (result.__filtered__) {
 	          result.__takeCount__ = nativeMin(n, result.__takeCount__);
 	        } else {
 	          result.__views__.push({
@@ -19481,7 +19500,7 @@
 /* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var require;var require;/* WEBPACK VAR INJECTION */(function(global) {/*! Quill Editor v0.20.0
+	var require;var require;/* WEBPACK VAR INJECTION */(function(global) {/*! Quill Editor v0.20.1
 	 *  https://quilljs.com/
 	 *  Copyright (c) 2014, Jason Chen
 	 *  Copyright (c) 2013, salesforce.com
@@ -19491,7 +19510,7 @@
 	/**
 	 * @license
 	 * lodash 3.9.3 (Custom Build) <https://lodash.com/>
-	 * Build: `lodash modern include="difference,intersection,last,all,each,find,invoke,map,reduce,bind,defer,partial,clone,extend,defaults,omit,values,isElement,isEqual,isFunction,isNumber,isObject,isString,uniqueId" --development --output .build/lodash.js`
+	 * Build: `lodash modern include="difference,intersection,last,all,each,find,invoke,map,reduce,partition,bind,defer,partial,clone,extend,defaults,omit,values,isElement,isEqual,isFunction,isNumber,isObject,isString,uniqueId" --development --output .build/lodash.js`
 	 * Copyright 2012-2015 The Dojo Foundation <http://dojofoundation.org/>
 	 * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
 	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -21159,6 +21178,41 @@
 	  }
 
 	  /**
+	   * Creates a function that aggregates a collection, creating an accumulator
+	   * object composed from the results of running each element in the collection
+	   * through an iteratee.
+	   *
+	   * **Note:** This function is used to create `_.countBy`, `_.groupBy`, `_.indexBy`,
+	   * and `_.partition`.
+	   *
+	   * @private
+	   * @param {Function} setter The function to set keys and values of the accumulator object.
+	   * @param {Function} [initializer] The function to initialize the accumulator object.
+	   * @returns {Function} Returns the new aggregator function.
+	   */
+	  function createAggregator(setter, initializer) {
+	    return function(collection, iteratee, thisArg) {
+	      var result = initializer ? initializer() : {};
+	      iteratee = getCallback(iteratee, thisArg, 3);
+
+	      if (isArray(collection)) {
+	        var index = -1,
+	            length = collection.length;
+
+	        while (++index < length) {
+	          var value = collection[index];
+	          setter(result, value, iteratee(value, index, collection), collection);
+	        }
+	      } else {
+	        baseEach(collection, function(value, key, collection) {
+	          setter(result, value, iteratee(value, key, collection), collection);
+	        });
+	      }
+	      return result;
+	    };
+	  }
+
+	  /**
 	   * Creates a function that assigns properties of source object(s) to a given
 	   * destination object.
 	   *
@@ -22661,6 +22715,69 @@
 	  }
 
 	  /**
+	   * Creates an array of elements split into two groups, the first of which
+	   * contains elements `predicate` returns truthy for, while the second of which
+	   * contains elements `predicate` returns falsey for. The predicate is bound
+	   * to `thisArg` and invoked with three arguments: (value, index|key, collection).
+	   *
+	   * If a property name is provided for `predicate` the created `_.property`
+	   * style callback returns the property value of the given element.
+	   *
+	   * If a value is also provided for `thisArg` the created `_.matchesProperty`
+	   * style callback returns `true` for elements that have a matching property
+	   * value, else `false`.
+	   *
+	   * If an object is provided for `predicate` the created `_.matches` style
+	   * callback returns `true` for elements that have the properties of the given
+	   * object, else `false`.
+	   *
+	   * @static
+	   * @memberOf _
+	   * @category Collection
+	   * @param {Array|Object|string} collection The collection to iterate over.
+	   * @param {Function|Object|string} [predicate=_.identity] The function invoked
+	   *  per iteration.
+	   * @param {*} [thisArg] The `this` binding of `predicate`.
+	   * @returns {Array} Returns the array of grouped elements.
+	   * @example
+	   *
+	   * _.partition([1, 2, 3], function(n) {
+	   *   return n % 2;
+	   * });
+	   * // => [[1, 3], [2]]
+	   *
+	   * _.partition([1.2, 2.3, 3.4], function(n) {
+	   *   return this.floor(n) % 2;
+	   * }, Math);
+	   * // => [[1.2, 3.4], [2.3]]
+	   *
+	   * var users = [
+	   *   { 'user': 'barney',  'age': 36, 'active': false },
+	   *   { 'user': 'fred',    'age': 40, 'active': true },
+	   *   { 'user': 'pebbles', 'age': 1,  'active': false }
+	   * ];
+	   *
+	   * var mapper = function(array) {
+	   *   return _.pluck(array, 'user');
+	   * };
+	   *
+	   * // using the `_.matches` callback shorthand
+	   * _.map(_.partition(users, { 'age': 1, 'active': false }), mapper);
+	   * // => [['pebbles'], ['barney', 'fred']]
+	   *
+	   * // using the `_.matchesProperty` callback shorthand
+	   * _.map(_.partition(users, 'active', false), mapper);
+	   * // => [['barney', 'pebbles'], ['fred']]
+	   *
+	   * // using the `_.property` callback shorthand
+	   * _.map(_.partition(users, 'active'), mapper);
+	   * // => [['fred'], ['barney', 'pebbles']]
+	   */
+	  var partition = createAggregator(function(result, value, key) {
+	    result[key ? 0 : 1].push(value);
+	  }, function() { return [[], []]; });
+
+	  /**
 	   * Reduces `collection` to a value which is the accumulated result of running
 	   * each element in `collection` through `iteratee`, where each successive
 	   * invocation is supplied the return value of the previous. If `accumulator`
@@ -23720,6 +23837,7 @@
 	  lodash.omit = omit;
 	  lodash.pairs = pairs;
 	  lodash.partial = partial;
+	  lodash.partition = partition;
 	  lodash.property = property;
 	  lodash.restParam = restParam;
 	  lodash.values = values;
@@ -24534,6 +24652,15 @@
 	    }
 	  }
 	  return delta.chop();
+	};
+
+	Delta.prototype.concat = function (other) {
+	  var delta = this.slice();
+	  if (other.ops.length > 0) {
+	    delta.push(other.ops[0]);
+	    delta.ops = delta.ops.concat(other.ops.slice(1));
+	  }
+	  return delta;
 	};
 
 	Delta.prototype.diff = function (other) {
@@ -25393,7 +25520,7 @@
 	module.exports = diff;
 
 	},{}],7:[function(_dereq_,module,exports){
-	module.exports={"version":"0.20.0"}
+	module.exports={"version":"0.20.1"}
 	},{}],8:[function(_dereq_,module,exports){
 	var Delta, Document, Format, Line, LinkedList, Normalizer, _, dom;
 
@@ -26449,7 +26576,7 @@
 	      return function(node, value, name) {
 	        var format;
 	        format = _this.doc.formats[name];
-	        if (format != null) {
+	        if ((format != null) && !format.isType(Format.types.LINE)) {
 	          node = format.add(node, value);
 	        }
 	        return node;
@@ -26644,9 +26771,10 @@
 	        return node.removeAttribute(attribute);
 	      }
 	    });
-	    if (node.style.fontWeight === 'bold') {
+	    if (node.style.fontWeight === 'bold' || node.style.fontWeight > 500) {
 	      node.style.fontWeight = '';
 	      dom(node).wrap(document.createElement('b'));
+	      node = node.parentNode;
 	    }
 	    this.whitelistStyles(node);
 	    return this.whitelistTags(node);
@@ -26879,6 +27007,25 @@
 	      return this._setNativeRange(startNode, startOffset, endNode, endOffset);
 	    } else {
 	      return fn();
+	    }
+	  };
+
+	  Selection.prototype.scrollIntoView = function() {
+	    var containerBounds, containerHeight, editor, endBounds, line, offset, ref, ref1, startBounds;
+	    if (!this.range) {
+	      return;
+	    }
+	    editor = this.emitter.editor;
+	    startBounds = editor.getBounds(this.range.start);
+	    endBounds = this.range.isCollapsed() ? startBounds : editor.getBounds(this.range.end);
+	    containerBounds = editor.root.parentNode.getBoundingClientRect();
+	    containerHeight = containerBounds.bottom - containerBounds.top;
+	    if (containerHeight < endBounds.top + endBounds.height) {
+	      ref = editor.doc.findLineAt(this.range.end), line = ref[0], offset = ref[1];
+	      return line.node.scrollIntoView(false);
+	    } else if (startBounds.top < 0) {
+	      ref1 = editor.doc.findLineAt(this.range.start), line = ref1[0], offset = ref1[1];
+	      return line.node.scrollIntoView();
 	    }
 	  };
 
@@ -28326,6 +28473,24 @@
 	    })(this));
 	  };
 
+	  Keyboard.prototype.removeHotkeys = function(hotkey, callback) {
+	    var base, kept, ref, removed, which;
+	    hotkey = _.isString(hotkey) ? hotkey.toUpperCase() : hotkey;
+	    hotkey = Keyboard.hotkeys[hotkey] ? Keyboard.hotkeys[hotkey] : hotkey;
+	    hotkey = _.isObject(hotkey) ? hotkey : {
+	      key: hotkey
+	    };
+	    which = _.isNumber(hotkey.key) ? hotkey.key : hotkey.key.charCodeAt(0);
+	    if ((base = this.hotkeys)[which] == null) {
+	      base[which] = [];
+	    }
+	    ref = _.partition(this.hotkeys[which], function(handler) {
+	      return _.isEqual(hotkey, _.omit(handler, 'callback')) && (!callback || callback === handler.callback);
+	    }), removed = ref[0], kept = ref[1];
+	    this.hotkeys[which] = kept;
+	    return _.map(removed, 'callback');
+	  };
+
 	  Keyboard.prototype.toggleFormat = function(range, format) {
 	    var delta, value;
 	    if (range.isCollapsed()) {
@@ -28373,6 +28538,7 @@
 	            _this.toolbar.setActive(format, value);
 	          }
 	        });
+	        _this.quill.editor.selection.scrollIntoView();
 	        return false;
 	      };
 	    })(this));
@@ -28390,7 +28556,7 @@
 	              ref = _this.quill.editor.doc.findLineAt(range.start), line = ref[0], offset = ref[1];
 	              if (offset === 0 && (line.formats.bullet || line.formats.list)) {
 	                format = line.formats.bullet ? 'bullet' : 'list';
-	                _this.quill.formatLine(range.start, range.start, format, false);
+	                _this.quill.formatLine(range.start, range.start, format, false, Quill.sources.USER);
 	              } else if (range.start > 0) {
 	                _this.quill.deleteText(range.start - 1, range.start, Quill.sources.USER);
 	              }
@@ -28399,6 +28565,7 @@
 	            }
 	          }
 	        }
+	        _this.quill.editor.selection.scrollIntoView();
 	        return false;
 	      };
 	    })(this));
@@ -28419,7 +28586,9 @@
 	    _.each(['bold', 'italic', 'underline'], (function(_this) {
 	      return function(format) {
 	        return _this.addHotkey(Keyboard.hotkeys[format.toUpperCase()], function(range) {
-	          _this.toggleFormat(range, format);
+	          if (_this.quill.editor.doc.formats[format]) {
+	            _this.toggleFormat(range, format);
+	          }
 	          return false;
 	        });
 	      };
@@ -28719,6 +28888,9 @@
 	  MultiCursor.prototype.moveCursor = function(userId, index) {
 	    var cursor;
 	    cursor = this.cursors[userId];
+	    if (cursor == null) {
+	      return;
+	    }
 	    cursor.index = index;
 	    dom(cursor.elem).removeClass('hidden');
 	    clearTimeout(cursor.timer);
@@ -28767,10 +28939,16 @@
 	    }
 	    return _.each(this.cursors, (function(_this) {
 	      return function(cursor, id) {
-	        if (!(cursor && (cursor.index > index || cursor.userId === authorId))) {
+	        var shift;
+	        if (!cursor) {
 	          return;
 	        }
-	        return cursor.index += Math.max(length, index - cursor.index);
+	        shift = Math.max(length, index - cursor.index);
+	        if (cursor.userId === authorId) {
+	          return _this.moveCursor(authorId, cursor.index + shift);
+	        } else if (cursor.index > index) {
+	          return cursor.index += shift;
+	        }
 	      };
 	    })(this));
 	  };
@@ -28871,6 +29049,7 @@
 	    this._onConvert = bind(this._onConvert, this);
 	    this.container = this.quill.addContainer('ql-paste-manager');
 	    this.container.setAttribute('contenteditable', true);
+	    this.container.setAttribute('tabindex', '-1');
 	    dom(this.quill.root).on('paste', _.bind(this._paste, this));
 	    this.options = _.defaults(options, PasteManager.DEFAULTS);
 	    if ((base = this.options).onConvert == null) {
@@ -28899,7 +29078,7 @@
 	    this.container.focus();
 	    return _.defer((function(_this) {
 	      return function() {
-	        var delta, lengthAdded, line, lineBottom, offset, ref, windowBottom;
+	        var delta, lengthAdded;
 	        delta = _this.options.onConvert(_this.container);
 	        lengthAdded = delta.length();
 	        if (lengthAdded > 0) {
@@ -28912,12 +29091,7 @@
 	          _this.quill.updateContents(delta, 'user');
 	        }
 	        _this.quill.setSelection(range.start + lengthAdded, range.start + lengthAdded);
-	        ref = _this.quill.editor.doc.findLineAt(range.start + lengthAdded), line = ref[0], offset = ref[1];
-	        lineBottom = line.node.getBoundingClientRect().bottom;
-	        windowBottom = document.documentElement.clientHeight;
-	        if (lineBottom > windowBottom) {
-	          line.node.scrollIntoView(false);
-	        }
+	        _this.quill.editor.selection.scrollIntoView();
 	        return _this.container.innerHTML = "";
 	      };
 	    })(this));
@@ -29055,8 +29229,11 @@
 	        if (range != null) {
 	          callback(range, value);
 	        }
+	        if (dom.isIE(11)) {
+	          _this.quill.editor.selection.scrollIntoView();
+	        }
 	        _this.preventUpdate = false;
-	        return true;
+	        return false;
 	      };
 	    })(this));
 	  };
@@ -29356,12 +29533,20 @@
 	  UndoManager.prototype.initListeners = function() {
 	    this.quill.onModuleLoad('keyboard', (function(_this) {
 	      return function(keyboard) {
+	        var redoKey;
 	        keyboard.addHotkey(UndoManager.hotkeys.UNDO, function() {
 	          _this.quill.editor.checkUpdate();
 	          _this.undo();
 	          return false;
 	        });
-	        return keyboard.addHotkey(UndoManager.hotkeys.REDO, function() {
+	        redoKey = [UndoManager.hotkeys.REDO];
+	        if (navigator.platform.indexOf('Win') > -1) {
+	          redoKey.push({
+	            key: 'Y',
+	            metaKey: true
+	          });
+	        }
+	        return keyboard.addHotkey(redoKey, function() {
 	          _this.quill.editor.checkUpdate();
 	          _this.redo();
 	          return false;
@@ -40256,7 +40441,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//! moment-timezone.js
-	//! version : 0.5.10
+	//! version : 0.5.11
 	//! Copyright (c) JS Foundation and other contributors
 	//! license : MIT
 	//! github.com/moment/moment-timezone
@@ -40276,12 +40461,12 @@
 		"use strict";
 
 		// Do not load moment-timezone a second time.
-		if (moment.tz !== undefined) {
-			logError('Moment Timezone ' + moment.tz.version + ' was already loaded ' + (moment.tz.dataVersion ? 'with data from ' : 'without any data') + moment.tz.dataVersion);
-			return moment;
-		}
+		// if (moment.tz !== undefined) {
+		// 	logError('Moment Timezone ' + moment.tz.version + ' was already loaded ' + (moment.tz.dataVersion ? 'with data from ' : 'without any data') + moment.tz.dataVersion);
+		// 	return moment;
+		// }
 
-		var VERSION = "0.5.10",
+		var VERSION = "0.5.11",
 			zones = {},
 			links = {},
 			names = {},
@@ -57780,7 +57965,7 @@
 	      vm.submitting = false;
 	      return;
 	    }
-	    $http.post('/orchestra/api/interface/submit_task_assignment/', {
+	    return $http.post('/orchestra/api/interface/submit_task_assignment/', {
 	      'task_id': vm.taskId,
 	      'task_data': vm.taskAssignment.task.data,
 	      'command_type': command
@@ -57793,6 +57978,7 @@
 	      $location.path('/timecard');
 	    }).error(function (data, status, headers, config) {
 	      orchestraService.signals.fireSignal('submit.error');
+	      window.alert(data.message);
 	    }).finally(function () {
 	      orchestraService.signals.fireSignal('submit.finally');
 	      vm.submitting = false;
@@ -58138,6 +58324,9 @@
 	        // first day of week (0: Sunday, 1: Monday etc)
 	        firstDay: 0,
 
+	        // the default flag for moment's strict date parsing
+	        formatStrict: false,
+
 	        // the minimum/earliest date that can be selected
 	        minDate: null,
 	        // the maximum/latest date that can be selected
@@ -58165,6 +58354,9 @@
 
 	        // Render the month after year in the calendar title
 	        showMonthAfterYear: false,
+
+	        // Render days of the calendar grid that fall in the next or previous month
+	        showDaysInNextAndPreviousMonths: false,
 
 	        // how many months are visible
 	        numberOfMonths: 1,
@@ -58210,10 +58402,15 @@
 
 	    renderDay = function(opts)
 	    {
-	        if (opts.isEmpty) {
-	            return '<td class="is-empty"></td>';
-	        }
 	        var arr = [];
+	        var ariaSelected = 'false';
+	        if (opts.isEmpty) {
+	            if (opts.showDaysInNextAndPreviousMonths) {
+	                arr.push('is-outside-current-month');
+	            } else {
+	                return '<td class="is-empty"></td>';
+	            }
+	        }
 	        if (opts.isDisabled) {
 	            arr.push('is-disabled');
 	        }
@@ -58222,6 +58419,7 @@
 	        }
 	        if (opts.isSelected) {
 	            arr.push('is-selected');
+	            ariaSelected = 'true';
 	        }
 	        if (opts.isInRange) {
 	            arr.push('is-inrange');
@@ -58232,7 +58430,7 @@
 	        if (opts.isEndRange) {
 	            arr.push('is-endrange');
 	        }
-	        return '<td data-day="' + opts.day + '" class="' + arr.join(' ') + '">' +
+	        return '<td data-day="' + opts.day + '" class="' + arr.join(' ') + '" aria-selected="' + ariaSelected + '">' +
 	                 '<button class="pika-button pika-day" type="button" ' +
 	                    'data-pika-year="' + opts.year + '" data-pika-month="' + opts.month + '" data-pika-day="' + opts.day + '">' +
 	                        opts.day +
@@ -58266,16 +58464,16 @@
 	        for (i = 0; i < 7; i++) {
 	            arr.push('<th scope="col"><abbr title="' + renderDayName(opts, i) + '">' + renderDayName(opts, i, true) + '</abbr></th>');
 	        }
-	        return '<thead>' + (opts.isRTL ? arr.reverse() : arr).join('') + '</thead>';
+	        return '<thead><tr>' + (opts.isRTL ? arr.reverse() : arr).join('') + '</tr></thead>';
 	    },
 
-	    renderTitle = function(instance, c, year, month, refYear)
+	    renderTitle = function(instance, c, year, month, refYear, randId)
 	    {
 	        var i, j, arr,
 	            opts = instance._o,
 	            isMinYear = year === opts.minYear,
 	            isMaxYear = year === opts.maxYear,
-	            html = '<div class="pika-title">',
+	            html = '<div id="' + randId + '" class="pika-title" role="heading" aria-live="assertive">',
 	            monthHtml,
 	            yearHtml,
 	            prev = true,
@@ -58283,10 +58481,11 @@
 
 	        for (arr = [], i = 0; i < 12; i++) {
 	            arr.push('<option value="' + (year === refYear ? i - c : 12 + i - c) + '"' +
-	                (i === month ? ' selected': '') +
-	                ((isMinYear && i < opts.minMonth) || (isMaxYear && i > opts.maxMonth) ? 'disabled' : '') + '>' +
+	                (i === month ? ' selected="selected"': '') +
+	                ((isMinYear && i < opts.minMonth) || (isMaxYear && i > opts.maxMonth) ? 'disabled="disabled"' : '') + '>' +
 	                opts.i18n.months[i] + '</option>');
 	        }
+
 	        monthHtml = '<div class="pika-label">' + opts.i18n.months[month] + '<select class="pika-select pika-select-month" tabindex="-1">' + arr.join('') + '</select></div>';
 
 	        if (isArray(opts.yearRange)) {
@@ -58299,7 +58498,7 @@
 
 	        for (arr = []; i < j && i <= opts.maxYear; i++) {
 	            if (i >= opts.minYear) {
-	                arr.push('<option value="' + i + '"' + (i === year ? ' selected': '') + '>' + (i) + '</option>');
+	                arr.push('<option value="' + i + '"' + (i === year ? ' selected="selected"': '') + '>' + (i) + '</option>');
 	            }
 	        }
 	        yearHtml = '<div class="pika-label">' + year + opts.yearSuffix + '<select class="pika-select pika-select-year" tabindex="-1">' + arr.join('') + '</select></div>';
@@ -58328,9 +58527,9 @@
 	        return html += '</div>';
 	    },
 
-	    renderTable = function(opts, data)
+	    renderTable = function(opts, data, randId)
 	    {
-	        return '<table cellpadding="0" cellspacing="0" class="pika-table">' + renderHead(opts) + renderBody(data) + '</table>';
+	        return '<table cellpadding="0" cellspacing="0" class="pika-table" role="grid" aria-labelledby="' + randId + '">' + renderHead(opts) + renderBody(data) + '</table>';
 	    },
 
 
@@ -58354,7 +58553,7 @@
 	            }
 
 	            if (!hasClass(target, 'is-disabled')) {
-	                if (hasClass(target, 'pika-button') && !hasClass(target, 'is-empty')) {
+	                if (hasClass(target, 'pika-button') && !hasClass(target, 'is-empty') && !hasClass(target.parentNode, 'is-disabled')) {
 	                    self.setDate(new Date(target.getAttribute('data-pika-year'), target.getAttribute('data-pika-month'), target.getAttribute('data-pika-day')));
 	                    if (opts.bound) {
 	                        sto(function() {
@@ -58400,6 +58599,34 @@
 	            }
 	        };
 
+	        self._onKeyChange = function(e)
+	        {
+	            e = e || window.event;
+
+	            if (self.isVisible()) {
+
+	                switch(e.keyCode){
+	                    case 13:
+	                    case 27:
+	                        opts.field.blur();
+	                        break;
+	                    case 37:
+	                        e.preventDefault();
+	                        self.adjustDate('subtract', 1);
+	                        break;
+	                    case 38:
+	                        self.adjustDate('subtract', 7);
+	                        break;
+	                    case 39:
+	                        self.adjustDate('add', 1);
+	                        break;
+	                    case 40:
+	                        self.adjustDate('add', 7);
+	                        break;
+	                }
+	            }
+	        };
+
 	        self._onInputChange = function(e)
 	        {
 	            var date;
@@ -58408,7 +58635,7 @@
 	                return;
 	            }
 	            if (hasMoment) {
-	                date = moment(opts.field.value, opts.format);
+	                date = moment(opts.field.value, opts.format, opts.formatStrict);
 	                date = (date && date.isValid()) ? date.toDate() : null;
 	            }
 	            else {
@@ -58482,6 +58709,7 @@
 	        addEvent(self.el, 'mousedown', self._onMouseDown, true);
 	        addEvent(self.el, 'touchend', self._onMouseDown, true);
 	        addEvent(self.el, 'change', self._onChange);
+	        addEvent(document, 'keydown', self._onKeyChange);
 
 	        if (opts.field) {
 	            if (opts.container) {
@@ -58618,11 +58846,11 @@
 	        },
 
 	        /**
-	         * return a Date object of the current selection
+	         * return a Date object of the current selection with fallback for the current date
 	         */
 	        getDate: function()
 	        {
-	            return isDate(this._d) ? new Date(this._d.getTime()) : null;
+	            return isDate(this._d) ? new Date(this._d.getTime()) : new Date();
 	        },
 
 	        /**
@@ -58703,6 +58931,30 @@
 	            this.adjustCalendars();
 	        },
 
+	        adjustDate: function(sign, days) {
+
+	            var day = this.getDate();
+	            var difference = parseInt(days)*24*60*60*1000;
+
+	            var newDay;
+
+	            if (sign === 'add') {
+	                newDay = new Date(day.valueOf() + difference);
+	            } else if (sign === 'subtract') {
+	                newDay = new Date(day.valueOf() - difference);
+	            }
+
+	            if (hasMoment) {
+	                if (sign === 'add') {
+	                    newDay = moment(day).add(days, "days").toDate();
+	                } else if (sign === 'subtract') {
+	                    newDay = moment(day).subtract(days, "days").toDate();
+	                }
+	            }
+
+	            this.setDate(newDay);
+	        },
+
 	        adjustCalendars: function() {
 	            this.calendars[0] = adjustCalendar(this.calendars[0]);
 	            for (var c = 1; c < this._o.numberOfMonths; c++) {
@@ -58758,10 +59010,18 @@
 	         */
 	        setMinDate: function(value)
 	        {
-	            setToStartOfDay(value);
-	            this._o.minDate = value;
-	            this._o.minYear  = value.getFullYear();
-	            this._o.minMonth = value.getMonth();
+	            if(value instanceof Date) {
+	                setToStartOfDay(value);
+	                this._o.minDate = value;
+	                this._o.minYear  = value.getFullYear();
+	                this._o.minMonth = value.getMonth();
+	            } else {
+	                this._o.minDate = defaults.minDate;
+	                this._o.minYear  = defaults.minYear;
+	                this._o.minMonth = defaults.minMonth;
+	                this._o.startRange = defaults.startRange;
+	            }
+
 	            this.draw();
 	        },
 
@@ -58770,10 +59030,18 @@
 	         */
 	        setMaxDate: function(value)
 	        {
-	            setToStartOfDay(value);
-	            this._o.maxDate = value;
-	            this._o.maxYear = value.getFullYear();
-	            this._o.maxMonth = value.getMonth();
+	            if(value instanceof Date) {
+	                setToStartOfDay(value);
+	                this._o.maxDate = value;
+	                this._o.maxYear = value.getFullYear();
+	                this._o.maxMonth = value.getMonth();
+	            } else {
+	                this._o.maxDate = defaults.maxDate;
+	                this._o.maxYear = defaults.maxYear;
+	                this._o.maxMonth = defaults.maxMonth;
+	                this._o.endRange = defaults.endRange;
+	            }
+
 	            this.draw();
 	        },
 
@@ -58800,7 +59068,8 @@
 	                maxYear = opts.maxYear,
 	                minMonth = opts.minMonth,
 	                maxMonth = opts.maxMonth,
-	                html = '';
+	                html = '',
+	                randId;
 
 	            if (this._y <= minYear) {
 	                this._y = minYear;
@@ -58815,8 +59084,10 @@
 	                }
 	            }
 
+	            randId = 'pika-title-' + Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 2);
+
 	            for (var c = 0; c < opts.numberOfMonths; c++) {
-	                html += '<div class="pika-lendar">' + renderTitle(this, c, this.calendars[c].year, this.calendars[c].month, this.calendars[0].year) + this.render(this.calendars[c].year, this.calendars[c].month) + '</div>';
+	                html += '<div class="pika-lendar">' + renderTitle(this, c, this.calendars[c].year, this.calendars[c].month, this.calendars[0].year, randId) + this.render(this.calendars[c].year, this.calendars[c].month, randId) + '</div>';
 	            }
 
 	            this.el.innerHTML = html;
@@ -58830,10 +59101,12 @@
 	            }
 
 	            if (typeof this._o.onDraw === 'function') {
-	                var self = this;
-	                sto(function() {
-	                    self._o.onDraw.call(self);
-	                }, 0);
+	                this._o.onDraw(this);
+	            }
+	            
+	            if (opts.bound) {
+	                // let the screen reader user know to use arrow keys
+	                opts.field.setAttribute('aria-label', 'Use the arrow keys to pick a date');
 	            }
 	        },
 
@@ -58891,7 +59164,7 @@
 	        /**
 	         * render HTML for a particular month
 	         */
-	        render: function(year, month)
+	        render: function(year, month, randId)
 	        {
 	            var opts   = this._o,
 	                now    = new Date(),
@@ -58906,6 +59179,11 @@
 	                    before += 7;
 	                }
 	            }
+	            var previousMonth = month === 0 ? 11 : month - 1,
+	                nextMonth = month === 11 ? 0 : month + 1,
+	                yearOfPreviousMonth = month === 0 ? year - 1 : year,
+	                yearOfNextMonth = month === 11 ? year + 1 : year,
+	                daysInPreviousMonth = getDaysInMonth(yearOfPreviousMonth, previousMonth);
 	            var cells = days + before,
 	                after = cells;
 	            while(after > 7) {
@@ -58918,24 +59196,41 @@
 	                    isSelected = isDate(this._d) ? compareDates(day, this._d) : false,
 	                    isToday = compareDates(day, now),
 	                    isEmpty = i < before || i >= (days + before),
+	                    dayNumber = 1 + (i - before),
+	                    monthNumber = month,
+	                    yearNumber = year,
 	                    isStartRange = opts.startRange && compareDates(opts.startRange, day),
 	                    isEndRange = opts.endRange && compareDates(opts.endRange, day),
 	                    isInRange = opts.startRange && opts.endRange && opts.startRange < day && day < opts.endRange,
 	                    isDisabled = (opts.minDate && day < opts.minDate) ||
 	                                 (opts.maxDate && day > opts.maxDate) ||
 	                                 (opts.disableWeekends && isWeekend(day)) ||
-	                                 (opts.disableDayFn && opts.disableDayFn(day)),
-	                    dayConfig = {
-	                        day: 1 + (i - before),
-	                        month: month,
-	                        year: year,
+	                                 (opts.disableDayFn && opts.disableDayFn(day));
+
+	                if (isEmpty) {
+	                    if (i < before) {
+	                        dayNumber = daysInPreviousMonth + dayNumber;
+	                        monthNumber = previousMonth;
+	                        yearNumber = yearOfPreviousMonth;
+	                    } else {
+	                        dayNumber = dayNumber - days;
+	                        monthNumber = nextMonth;
+	                        yearNumber = yearOfNextMonth;
+	                    }
+	                }
+
+	                var dayConfig = {
+	                        day: dayNumber,
+	                        month: monthNumber,
+	                        year: yearNumber,
 	                        isSelected: isSelected,
 	                        isToday: isToday,
 	                        isDisabled: isDisabled,
 	                        isEmpty: isEmpty,
 	                        isStartRange: isStartRange,
 	                        isEndRange: isEndRange,
-	                        isInRange: isInRange
+	                        isInRange: isInRange,
+	                        showDaysInNextAndPreviousMonths: opts.showDaysInNextAndPreviousMonths
 	                    };
 
 	                row.push(renderDay(dayConfig));
@@ -58949,7 +59244,7 @@
 	                    r = 0;
 	                }
 	            }
-	            return renderTable(opts, data);
+	            return renderTable(opts, data, randId);
 	        },
 
 	        isVisible: function()
@@ -58959,7 +59254,7 @@
 
 	        show: function()
 	        {
-	            if (!this._v) {
+	            if (!this.isVisible()) {
 	                removeClass(this.el, 'is-hidden');
 	                this._v = true;
 	                this.draw();

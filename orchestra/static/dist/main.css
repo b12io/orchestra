@@ -258,7 +258,7 @@ li.checklist-item, .new-item {
       left: 50px;
       cursor: pointer;
       color: red; }
-/*! Quill Editor v0.20.0
+/*! Quill Editor v0.20.1
  *  https://quilljs.com/
  *  Copyright (c) 2014, Jason Chen
  *  Copyright (c) 2013, salesforce.com
@@ -451,7 +451,7 @@ li.checklist-item, .new-item {
 .ql-editor.ql-ie-9 br,
 .ql-editor.ql-ie-10 br {
   display: none; }
-/*! Quill Editor v0.20.0
+/*! Quill Editor v0.20.1
  *  https://quilljs.com/
  *  Copyright (c) 2014, Jason Chen
  *  Copyright (c) 2013, salesforce.com
@@ -1956,6 +1956,7 @@ a.logo {
   font-size: 14px;
   line-height: 20px;
   font-weight: bold;
+  color: #333;
   background-color: #fff; }
 
 .pika-prev,
@@ -2045,7 +2046,8 @@ a.logo {
     background: #33aaff;
     box-shadow: inset 0 1px 3px #178fe5;
     border-radius: 3px; }
-  .is-disabled .pika-button {
+  .is-disabled .pika-button,
+  .is-outside-current-month .pika-button {
     pointer-events: none;
     cursor: default;
     color: #999;

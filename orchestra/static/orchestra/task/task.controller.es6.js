@@ -68,7 +68,7 @@ export default function TaskController ($location, $scope, $routeParams, $http, 
       vm.submitting = false
       return
     }
-    $http.post('/orchestra/api/interface/submit_task_assignment/', {
+    return $http.post('/orchestra/api/interface/submit_task_assignment/', {
       'task_id': vm.taskId,
       'task_data': vm.taskAssignment.task.data,
       'command_type': command
@@ -83,6 +83,7 @@ export default function TaskController ($location, $scope, $routeParams, $http, 
       })
       .error(function (data, status, headers, config) {
         orchestraService.signals.fireSignal('submit.error')
+        window.alert(data.message)
       })
       .finally(function () {
         orchestraService.signals.fireSignal('submit.finally')
