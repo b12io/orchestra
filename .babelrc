@@ -1,0 +1,10 @@
+{
+  "presets": ["es2015"],
+  "plugins": [
+    "angularjs-annotate",
+    "transform-object-rest-spread",
+    ["babel-plugin-transform-builtin-extend", {
+      "globals": ["Error"]
+    }]
+  ]
+}

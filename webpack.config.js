@@ -1,79 +1,67 @@
-(function() {
-  'use strict';
+const path = require('path')
+const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
-  var path = require('path');
-  var webpack = require('webpack');
-  var ExtractTextPlugin = require('extract-text-webpack-plugin');
-
-  module.exports = {
-    entry: {
-      main: path.join(__dirname, 'orchestra/static/orchestra/main.es6.js')
-    },
-    output: {
-      path: path.join(__dirname, 'orchestra/static/dist'),
-      filename: '[name].js',
-    },
-    module: {
-      preLoaders: [{
+module.exports = {
+  resolve: {
+    modules: [
+      'node_modules',
+      path.join(__dirname, 'orchestra/static')
+    ]
+  },
+  entry: {
+    main: path.join(__dirname, 'orchestra/static/orchestra/main.es6.js')
+  },
+  output: {
+    path: path.join(__dirname, 'orchestra/static/dist'),
+    filename: '[name].js'
+  },
+  module: {
+    rules: [
+      {
         test: /\.js$/,
         exclude: [/\.es6\.js$/, /node_modules/, /.*\.min\.js/],
-        loader: 'jshint'  // Only works for ES5
+        use: 'jshint-loader',  // Only works for ES5
+        enforce: 'pre'
       }, {
         test: /\.es6\.js$/,
         exclude: [/node_modules/, /.*\.min\.js/],
-        loader: 'eslint'  // Only works for ES6
+        use: 'eslint-loader',  // Only works for ES6
+        enforce: 'pre'
       }, {
         test: /\.html/,
-        loader: 'htmlhint',
-        exclude: /node_modules/
-      }],
-      loaders: [{
+        use: 'htmlhint-loader',
+        exclude: /node_modules/,
+        enforce: 'pre'
+      }, {
         test: /\.json$/,
-        loaders: ['json-loader'],
+        use: 'json-loader'
       }, {
         test: /\.html$/,
-        loaders: ['html-loader'],
+        use: 'html-loader'
       }, {
-        test: /\.es6\.js$/,
-        loader: 'babel',
-        exclude: [/node_modules/, /.*\.min\.js/],
-        query: {
-          presets: ['es2015'],
-          plugins: [
-            'transform-object-rest-spread',
-            ['babel-plugin-transform-builtin-extend', {
-              globals: ['Error']
-            }]
-          ]
-        }
-      }, {
-        test: /\.js$/,
-        loaders: ['ng-annotate'],
+        test: /.js$/,
+        use: 'babel-loader',
+        exclude: [/node_modules/, /.*\.min\.js/]
       }, {
         test: /\.s?css$/,
-        loader: ExtractTextPlugin.extract('style-loader', 'css-loader!sass-loader')
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: ['css-loader', 'sass-loader']
+        })
       }
-    ]},
-    plugins: [
-      new ExtractTextPlugin('[name].css')
-    ],
-    externals: {
-      jQuery: 'jquery',
-      $: 'jquery',
-      'window.jQuery': 'jquery',
-      angular: 'angular'
-    },
-    resolve: {
-      root: [
-        path.join(__dirname, 'orchestra/static')
-      ]
-    },
-    browser: {
-      fs: false,
-    },
-    node: {
-      fs: 'empty',
-    },
-    bail: true,
-  };
-})();
+    ]
+  },
+  plugins: [
+    new ExtractTextPlugin('[name].css')
+  ],
+  externals: {
+    jQuery: 'jquery',
+    $: 'jquery',
+    'window.jQuery': 'jquery',
+    angular: 'angular'
+  },
+  stats: {
+    children: false
+  },
+  bail: true
+}

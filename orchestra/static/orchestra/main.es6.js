@@ -15,6 +15,7 @@ import config from 'orchestra/config.es6.js'
 angular.module('orchestra.analytics', [])
 
 // Include any custom workflow modules as dependencies
+window.orchestra.angular_modules.forEach(module => angular.module(module, []))
 angular.module('orchestra.workflows', window.orchestra.angular_modules)
 
 angular
