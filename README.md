@@ -24,7 +24,7 @@ started guide, or to reach out to the Orchestra team, take
 a look at some of these resources:
 
 * [Orchestra website](http://orchestra.b12.io)
-* [A blog post introducing Orchestra v0.1.0 to the world](http://blog.b12.io/post/130097884236/introducing-orchestra)
+* [A blog post introducing Orchestra v0.1.0 to the world](https://blog.b12.io/introducing-orchestra-23bace45d4a7)
 * [Subscribe to the Orchestra mailing list](https://groups.google.com/forum/#!forum/orchestra-devel)
 
 # About B12
