@@ -33,7 +33,7 @@
     {% block page_stylesheets %}
     {% endblock page_stylesheets %}
 
-    {% block header %}
+    {% block head %}
     {% endblock %}
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -148,13 +148,15 @@
 
     <!--script for this page-->
     {% block page_javascript %}
-    {% endblock page_javascript %}
+    {% endblock %}
 
-    {% with template_name=ORCHESTRA_THIRD_PARTY_SCRIPTS_TEMPLATE %}
-      {% if template_name %}
-        {% include template_name %}
-      {% endif %}
-    {% endwith %}
+    {% block third_party_scripts %}
+      {% with template_name=ORCHESTRA_THIRD_PARTY_SCRIPTS_TEMPLATE %}
+        {% if template_name %}
+          {% include template_name %}
+        {% endif %}
+      {% endwith %}
+   {% endblock %}
 
   </body>
 </html>
