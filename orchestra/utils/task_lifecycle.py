@@ -403,12 +403,16 @@ def get_task_overview_for_worker(task_id, worker):
             Information about `task` and its assignment for `worker`.
     """
     task = Task.objects.get(id=task_id)
-    if not task.is_worker_assigned(worker):
-        raise TaskAssignmentError('Worker is not associated with task')
     task_details = get_task_details(task_id)
 
-    task_assignment = TaskAssignment.objects.get(worker=worker,
-                                                 task=task)
+    if task.is_worker_assigned(worker):
+        task_assignment = TaskAssignment.objects.get(worker=worker, task=task)
+    elif worker.user.is_superuser:
+        task_assignment = assignment_history(task).last()
+        task_details['is_read_only'] = True
+    else:
+        raise TaskAssignmentError('Worker is not associated with task')
+
     task_assignment_details = get_task_assignment_details(task_assignment)
     task_assignment_details.update(task_details)
     return task_assignment_details
