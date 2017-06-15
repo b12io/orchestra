@@ -1,6 +1,8 @@
 from unittest.mock import patch
 from unittest.mock import MagicMock
 
+from django.contrib.auth import get_user_model
+
 from orchestra.core.errors import AssignmentPolicyError
 from orchestra.core.errors import CreationPolicyError
 from orchestra.core.errors import IllegalTaskSubmission
@@ -14,6 +16,7 @@ from orchestra.models import Iteration
 from orchestra.models import Project
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
+from orchestra.models import Worker
 from orchestra.models import WorkerCertification
 from orchestra.tests.helpers import OrchestraTransactionTestCase
 from orchestra.tests.helpers.fixtures import setup_models
@@ -330,6 +333,13 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
                 'last_name': self.workers[0].user.last_name,
             }
         }
+        self.assertEqual(data, expected)
+
+        # Superuser should have access to latest task data
+        superuser = get_user_model().objects.create_superuser(
+            'superuser', 'superuser@b12.io', 'test-password')
+        superworker = Worker.objects.create(user=superuser)
+        data = get_task_overview_for_worker(task.id, superworker)
         self.assertEqual(data, expected)
 
     def test_task_assignment_saving(self):
