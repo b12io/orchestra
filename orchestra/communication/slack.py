@@ -1,18 +1,32 @@
 import random
 import string
 
+import slacker
 from django.conf import settings
 from django.utils.text import slugify
-from slacker import Slacker
 
 from orchestra.utils.decorators import run_if
 from orchestra.communication.errors import SlackFormatError
 
+import logging
+logger = logging.getLogger(__name__)
+
 # Types of responses we can send to slack
 VALID_RESPONSE_TYPES = {'ephemeral', 'in_channel'}
+_request = slacker.BaseAPI._request
 
 
-class OrchestraSlackService(object):
+def _silent_request(*args, **kwargs):
+    try:
+        return _request(*args, **kwargs)
+    except slacker.Error:
+        logger.exception('Slack API Error')
+
+
+slacker.BaseAPI._request = _silent_request
+
+
+class OrchestraSlackService(slacker.Slacker):
     """
     Wrapper slack service to allow easy swapping and mocking out of API.
     """
@@ -20,9 +34,7 @@ class OrchestraSlackService(object):
     def __init__(self, api_key=None):
         if not api_key:
             api_key = settings.SLACK_EXPERTS_API_KEY
-        self._service = Slacker(api_key)
-        for attr_name in ('chat', 'groups', 'users'):
-            setattr(self, attr_name, getattr(self._service, attr_name))
+        super().__init__(api_key)
 
 
 @run_if('ORCHESTRA_SLACK_EXPERTS_ENABLED')
