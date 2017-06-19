@@ -34,7 +34,7 @@ def _silent_request(*args, **kwargs):
 BaseAPI._request = _silent_request
 
 
-class OrchestraSlackService(Slacker):
+class OrchestraSlackService(object):
     """
     Wrapper slack service to allow easy swapping and mocking out of API.
     """
@@ -42,7 +42,9 @@ class OrchestraSlackService(Slacker):
     def __init__(self, api_key=None):
         if not api_key:
             api_key = settings.SLACK_EXPERTS_API_KEY
-        super().__init__(api_key)
+        self._service = Slacker(api_key)
+        for attr_name in ('chat', 'groups', 'users'):
+            setattr(self, attr_name, getattr(self._service, attr_name))
 
 
 @run_if('ORCHESTRA_SLACK_EXPERTS_ENABLED')

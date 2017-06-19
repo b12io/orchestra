@@ -30,7 +30,7 @@ class OrchestraTestHelpersMixin(object):
         # and you'll need to restart your boot2docker.
         self.slack = MockSlacker()
         patcher = patch(
-            'orchestra.communication.slack.OrchestraSlackService',
+            'orchestra.communication.slack.Slacker',
             return_value=self.slack
         )
         patcher.start()
