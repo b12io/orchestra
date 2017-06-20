@@ -3,13 +3,35 @@ import string
 
 from django.conf import settings
 from django.utils.text import slugify
+from slacker import BaseAPI
+from slacker import Error as SlackError
 from slacker import Slacker
 
 from orchestra.utils.decorators import run_if
 from orchestra.communication.errors import SlackFormatError
 
+import logging
+logger = logging.getLogger(__name__)
+
 # Types of responses we can send to slack
 VALID_RESPONSE_TYPES = {'ephemeral', 'in_channel'}
+_request = BaseAPI._request
+
+
+def _silent_request(*args, **kwargs):
+    """
+    Attempt to make Slack API request and ignore if an exception is thrown.
+
+    TODO(jrbotros): this silences all errors, but we likely will want to be
+    able to surface errors in some cases in the future
+    """
+    try:
+        return _request(*args, **kwargs)
+    except SlackError:
+        logger.exception('Slack API Error')
+
+
+BaseAPI._request = _silent_request
 
 
 class OrchestraSlackService(object):
