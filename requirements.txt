@@ -1,7 +1,7 @@
 Django==1.9.13
-jsonfield==2.0.1
+jsonfield==2.0.2
 django-jsonview==1.0.0
-requests==2.17.3
+requests==2.18.1
 factory_boy==2.8.1
 coverage==4.4.1
 psycopg2==2.7.1
@@ -23,7 +23,7 @@ slacker==0.9.50
 python-dateutil==2.6.0
 django-hijack==2.1.4
 django-hijack-admin==2.1.4
-django-money==0.11.2
+django-money==0.11.3
 django-filter==1.0.4
 django-widget-tweaks==1.4.1
 django-bitfield==1.9.3
@@ -36,7 +36,7 @@ django-ajax-selects==1.6.0
 django-kronos==1.0
 markdown2==2.3.4
 timeout-decorator==0.3.3
-phonenumbers==8.5.1
+phonenumbers==8.5.2
 
 # Journalism Workflow requirements
 Pillow==4.1.1
