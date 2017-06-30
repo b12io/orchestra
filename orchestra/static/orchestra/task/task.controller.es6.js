@@ -1,6 +1,7 @@
-export default function TaskController ($location, $scope, $routeParams, $http, $rootScope,
-  $uibModal, $timeout, autoSaveTask, orchestraService, orchestraTasks,
-  requiredFields) {
+export default function TaskController (
+    $location, $scope, $routeParams, $http, $rootScope, autoSaveTask,
+    orchestraService, orchestraTasks, requiredFields
+) {
   var vm = this
   vm.taskId = $routeParams.taskId
   vm.taskAssignment = {}

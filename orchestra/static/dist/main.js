@@ -45335,7 +45335,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = TaskController;
-function TaskController($location, $scope, $routeParams, $http, $rootScope, $uibModal, $timeout, autoSaveTask, orchestraService, orchestraTasks, requiredFields) {
+function TaskController($location, $scope, $routeParams, $http, $rootScope, autoSaveTask, orchestraService, orchestraTasks, requiredFields) {
   var vm = this;
   vm.taskId = $routeParams.taskId;
   vm.taskAssignment = {};
