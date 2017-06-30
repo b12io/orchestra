@@ -15,7 +15,7 @@ import ProjectManagementController from './project-management.controller.es6.js'
 import './project-management.scss'
 
 const name = 'orchestra.project_management'
-angular.module(name, ['ui.select', common])
+angular.module(name, ['ui.bootstrap', 'ui.select', common])
   .controller('ProjectManagementController', ProjectManagementController)
   .factory('assignmentsVis', assignmentsVis)
   .factory('axis', axis)

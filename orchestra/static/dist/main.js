@@ -25445,7 +25445,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var name = 'orchestra.project_management'; /* global angular */
 
-angular.module(name, ['ui.select', _commonModuleEs2.default]).controller('ProjectManagementController', _projectManagementControllerEs2.default).factory('assignmentsVis', _assignmentsVisEs2.default).factory('axis', _axisEs2.default).factory('crosshair', _crosshairEs2.default).factory('dataService', _dataServiceEs2.default).factory('iterationsVis', _iterationsVisEs2.default).factory('projectVis', _projectVisEs2.default).factory('tasksVis', _tasksVisEs2.default).factory('visUtils', _visUtilsEs2.default);
+angular.module(name, ['ui.bootstrap', 'ui.select', _commonModuleEs2.default]).controller('ProjectManagementController', _projectManagementControllerEs2.default).factory('assignmentsVis', _assignmentsVisEs2.default).factory('axis', _axisEs2.default).factory('crosshair', _crosshairEs2.default).factory('dataService', _dataServiceEs2.default).factory('iterationsVis', _iterationsVisEs2.default).factory('projectVis', _projectVisEs2.default).factory('tasksVis', _tasksVisEs2.default).factory('visUtils', _visUtilsEs2.default);
 
 exports.default = name;
 
