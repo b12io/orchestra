@@ -32,13 +32,8 @@ export default function websiteIframe ($compile, $sce, $timeout) {
           iframe.setAttribute(attr, iframeAttrs[attr])
         }
 
-        var iframeWrappers = document.getElementsByClassName('iframe-wrapper')
-        for (var i = 0; i < iframeWrappers.length; i++) {
-          if (iframeWrappers[i].children[0].id === 'iframe-wrapper-' + $scope.id) {
-            iframeWrappers[i].style.height = $scope.height || 400
-            break
-          }
-        }
+        var iframeWrapper = document.getElementById('iframe-wrapper-' + $scope.id).parentElement
+        iframeWrapper[i].style.height = $scope.height || 400
 
         var parent = document.getElementById('iframe-wrapper-' + $scope.id)
         parent.appendChild(iframe)
