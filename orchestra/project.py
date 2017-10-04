@@ -24,9 +24,10 @@ def create_project_with_tasks(workflow_slug,
                                      project_data=project_data,
                                      task_class=task_class)
 
+    create_project_google_folder(project)
+
     if settings.PRODUCTION or settings.STAGING:
         create_project_slack_group(project)
-    create_project_google_folder(project)
 
     create_subsequent_tasks(project)
     return project
