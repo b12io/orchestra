@@ -14,6 +14,7 @@ from orchestra.models.core.mixins import WorkerCertificationMixin
 from orchestra.models.core.mixins import ProjectMixin
 from orchestra.models.core.mixins import TaskMixin
 from orchestra.models.core.mixins import TaskAssignmentMixin
+from orchestra.models.core.mixins import TodoMixin
 from orchestra.models.core.mixins import PayRateMixin
 from orchestra.utils.models import BaseModel
 
@@ -567,7 +568,7 @@ class PayRate(PayRateMixin, models.Model):
     end_date = models.DateField(null=True, blank=True)
 
 
-class Todo(BaseModel):
+class Todo(TodoMixin, BaseModel):
     """
     A todo on a task.
 

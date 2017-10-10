@@ -1,5 +1,6 @@
 from pydoc import locate
 
+from django.conf import settings
 from django.db.models import Q
 
 from orchestra.core.errors import ModelSaveError
@@ -60,6 +61,9 @@ class WorkerMixin(object):
             self.slack_username,
             self.phone
         )
+
+    def formatted_slack_username(self):
+        return '<@{}|{}>'.format(self.slack_user_id, self.slack_username)
 
 
 class WorkerCertificationMixin(object):
@@ -159,6 +163,15 @@ class TaskAssignmentMixin(object):
     def __str__(self):
         return '{} - {} - {}'.format(
             str(self.task), self.assignment_counter, str(self.worker))
+
+
+class TodoMixin(object):
+
+    def __str__(self):
+        return '{} - {} ({})'.format(
+            self.task,
+            self.description,
+            self.completed)
 
 
 class PayRateMixin(object):
