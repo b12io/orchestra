@@ -499,6 +499,7 @@ def tasks_assigned_to_worker(worker):
                 'step': step.name,
                 'project': workflow_version.name,
                 'detail': task_assignment.task.project.short_description,
+                'priority': task_assignment.task.project.priority,
                 'state': state})
     return tasks_assigned
 

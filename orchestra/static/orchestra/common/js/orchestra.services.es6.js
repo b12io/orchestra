@@ -66,12 +66,7 @@ export function orchestraTasks ($http) {
   'ngAnnotate'
   var orchestraTasks = {
     data: null,
-    tasks: {
-      'pending': [],
-      'returned': [],
-      'in_progress': [],
-      'completed': []
-    },
+    tasks: [],
     tasksByAssignmentId: {},
     preventNew: false,
     reviewerStatus: false,
@@ -97,34 +92,21 @@ export function orchestraTasks ($http) {
       return $http.get('/orchestra/api/interface/new_task_assignment/' + taskType + '/')
         .then(function (response) {
           var task = response.data
-          service.tasks.in_progress.push(task)
+          task.state = 'just_added'
+          service.tasks.push(task)
           service.tasksByAssignmentId[task.assignment_id] = task
+          return response
         })
     },
-    allTasks: function () {
-      var tasks = []
-      for (var type in this.tasks) {
-        tasks = tasks.concat(this.tasks[type])
-      }
-      return tasks
-    },
-    activeTasks: function () {
-      var tasks = []
-      for (var type in this.tasks) {
-        if (type !== 'complete') {
-          tasks = tasks.concat(this.tasks[type])
-        }
-      }
-      return tasks
-    },
+    allTasks: function () { return this.tasks },
+    activeTasks: function () { return this.allTasks().filter(task => task.state === 'in_progress' || task.state === 'returned' || task.state === 'just_added') },
+    pendingTasks: function () { return this.allTasks().filter(task => task.state === 'pending_review' || task.state === 'pending_processing') },
+    completedTasks: function () { return this.allTasks().filter(task => task.state === 'complete') },
     activeAndRecentTasks: function (numRecent) {
       // Return all active tasks, as well as `numRecent` of the most
       // recently completed tasks.
       var tasks = this.activeTasks()
-      return tasks.concat(this.tasks.complete.slice(0, numRecent))
-    },
-    tasksForType: function (taskType) {
-      return this.tasks[taskType]
+      return tasks.concat(this.completedTasks().slice(0, numRecent))
     },
     getDescription: function (task) {
       if (task) {
