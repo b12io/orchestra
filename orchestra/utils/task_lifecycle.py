@@ -477,7 +477,6 @@ def tasks_assigned_to_worker(worker):
         .order_by('-task__project__priority',
                   '-task__project__start_datetime')[:200])
 
-    # TODO(jrbotros): convert this to a filterable list
     task_assignments_overview = {
         'returned': (
             active_task_assignments
@@ -489,21 +488,18 @@ def tasks_assigned_to_worker(worker):
         'pending_processing': inactive_processing_task_assignments,
         'complete': complete_task_assignments}
 
-    tasks_assigned = {}
+    tasks_assigned = []
     for state, task_assignments in iter(task_assignments_overview.items()):
-        tasks_val = []
         for task_assignment in task_assignments:
             step = task_assignment.task.step
             workflow_version = step.workflow_version
-
-            # TODO(jrbotros): standardize task/assignment serialization
-            tasks_val.append({
+            tasks_assigned.append({
                 'id': task_assignment.task.id,
                 'assignment_id': task_assignment.id,
                 'step': step.name,
                 'project': workflow_version.name,
-                'detail': task_assignment.task.project.short_description})
-        tasks_assigned[state] = tasks_val
+                'detail': task_assignment.task.project.short_description,
+                'state': state})
     return tasks_assigned
 
 

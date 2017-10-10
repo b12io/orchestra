@@ -13,6 +13,7 @@ urlpatterns = [
     url(r'^app/?', index, name='index'),
     url(r'', include('orchestra.accounts.urls')),
     url(r'^bots/', include('orchestra.bots.urls', namespace='bots')),
+    url(r'^todos/', include('orchestra.todos.urls', namespace='todos')),
 
     # Health check status
     url(r'^status/', status, name='status'),
