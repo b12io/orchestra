@@ -1,4 +1,4 @@
-<section ng-if="!bare" class="section-panel">
+<section class="section-panel todo-list">
   <div class="container-fluid">
     <div class="row section-header">
       <div class="col-lg-12 col-md-12 col-sm-12">
@@ -7,24 +7,34 @@
         </h3>
       </div>
     </div>
-    <div class="row padded">
+    <div class="row padded" ng-if="todoList.ready">
       <div class="col-lg-12 col-md-12 col-sm-12">
-
-        <label class="edit-label">Select task</label>
-        <select name="todoList" id="todoList" ng-model="task">
-          <option value="{{task.id}}" ng-repeat="task in todoList.possibleTasks">{{task.step_slug}}</option>
-        </select>
-
-        <!--<ui-select ng-model="taskSelect.task">
-          <ui-select-match>
-            <span ng-bind="taskSelect.orchestraTasks.getDescription($select.selected)"></span>
-          </ui-select-match>
-          <ui-select-choices repeat="item in (taskSelect.orchestraTasks.activeAndRecentTasks(5) | filter: $select.search) track by item.id">
-            <span ng-bind="taskSelect.orchestraTasks.getDescription(item)"></span>
-          </ui-select-choices>
-        </ui-select>-->
-
-
+        <div class="new-todo">
+          <select name="todoList" id="todoList" ng-model="todoList.newTodoTaskId">
+            <option value="" selected>Select a task</option>
+            <option value="{{task.id}}" ng-repeat="task in todoList.possibleTasks">{{task.step_slug}}</option>
+          </select>
+          <input type="text"
+                 ng-model="todoList.newTodoDescription"
+                 placeholder="Description">
+          <div class="btn btn-primary btn-sm edit-save-handle"
+               ng-disabled="!todoList.canAddTodo()"
+               ng-click="todoList.addTodo()">
+            Add
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-12 col-md-12 col-sm-12">
+        <div class="existing-todos">
+          <div class="todo"
+               ng-repeat="todo in todoList.todos">
+            <input type="checkbox"
+                   ng-model="todo.completed"
+                   ng-click="todoList.updateTodo(todo)">
+            {{todoList.taskSlugs[todo.task]}}
+            {{todo.description}}
+          </div>
+        </div>
       </div>
     </div>
   </div>

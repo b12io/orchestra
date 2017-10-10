@@ -13,6 +13,14 @@ class TodoList(generics.ListCreateAPIView):
     # filter_backends = (filters.DjangoFilterBackend,)
     # filter_class = TimeEntryFilter
 
+    def get_queryset(self):
+        queryset = Todo.objects.all()
+        project_id = self.request.query_params.get('project', None)
+        if project_id is not None:
+            queryset = queryset.filter(task__project__id=int(project_id))
+        queryset = queryset.order_by('-created_at')
+        return queryset
+
 
 class TodoDetail(generics.RetrieveUpdateDestroyAPIView):
     # TODO(marcua): Add orchestra.utils.view_helpers.IsAssociatedProject
