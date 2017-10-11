@@ -9,7 +9,8 @@ export default function todoList (orchestraApi) {
     template,
     restrict: 'E',
     scope: {
-      projectId: '='
+      projectId: '=',
+      taskId: '='
     },
     controllerAs: 'todoList',
     bindToController: true,
@@ -19,22 +20,40 @@ export default function todoList (orchestraApi) {
       todoList.newTodoTaskId = null
       todoList.newTodoDescription = null
       todoList.ready = false
-      todoList.slugs = {}
+      todoList.taskSlugs = {}
       todoList.todos = []
+
+      const createTodo = (taskId, description, completed) => todoApi.create({
+        task: taskId,
+        description,
+        completed
+      }).then((taskData) => {
+        todoList.todos.unshift(taskData)
+        return taskData
+      })
 
       todoList.canAddTodo = () => {
         return todoList.newTodoTaskId && todoList.newTodoDescription
       }
 
+      todoList.canSendToPending = () => {
+        const numTodosOnThisTask = reduce(
+          todoList.todos, (result, todo) => {
+            return result + (todo.task === todoList.taskId ? 1 : 0)
+          }, 0)
+        return todoList.ready && (numTodosOnThisTask === 0)
+      }
+
+      todoList.sendToPending = () => {
+        createTodo(todoList.taskId, 'Send task to pending state', true)
+      }
+
       todoList.addTodo = () => {
-        todoApi.create({
-          task: todoList.newTodoTaskId,
-          description: todoList.newTodoDescription
-        }).then((taskData) => {
-          todoList.todos.unshift(taskData)
-          todoList.newTodoTaskId = null
-          todoList.newTodoDescription = null
-        })
+        createTodo(todoList.newTodoTaskId, todoList.newTodoDescription, false)
+          .then((taskData) => {
+            todoList.newTodoTaskId = null
+            todoList.newTodoDescription = null
+          })
       }
 
       todoList.updateTodo = (todo) => {

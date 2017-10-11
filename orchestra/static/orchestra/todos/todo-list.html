@@ -24,6 +24,18 @@
           </div>
         </div>
       </div>
+
+      <div class="col-lg-12 col-md-12 col-sm-12"
+           ng-if="todoList.canSendToPending()">
+        <div class="send-to-pending">
+          <div class="btn btn-primary btn-sm edit-save-handle"
+               ng-disabled="!todoList.canSendToPending()"
+               ng-click="todoList.sendToPending()">
+            Send to pending
+          </div>
+        </div>
+      </div>
+
       <div class="col-lg-12 col-md-12 col-sm-12">
         <div class="existing-todos">
           <div class="todo"
