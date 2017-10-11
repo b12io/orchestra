@@ -7,11 +7,12 @@ here as well.
 """
 from ajax_select import urls as ajax_select_urls
 from django.conf import settings
+from django.conf.urls import handler400
+from django.conf.urls import handler403
+from django.conf.urls import handler404
+from django.conf.urls import handler500
 from django.conf.urls import include
 from django.conf.urls import url
-from django.conf.urls import (
-    handler400, handler403, handler404, handler500
-)
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.views.generic import RedirectView

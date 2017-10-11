@@ -1,6 +1,5 @@
-from pydoc import locate
-
 import logging
+from pydoc import locate
 
 from django.db import transaction
 from django.utils import timezone
@@ -8,11 +7,11 @@ from django.utils import timezone
 from orchestra.core.errors import MachineExecutionError
 from orchestra.models import Iteration
 from orchestra.models import Project
+from orchestra.models import Step
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
-from orchestra.models import Step
-from orchestra.utils.task_lifecycle import get_previously_completed_task_data
 from orchestra.utils.task_lifecycle import create_subsequent_tasks
+from orchestra.utils.task_lifecycle import get_previously_completed_task_data
 from orchestra.utils.task_properties import get_latest_iteration
 
 logger = logging.getLogger(__name__)

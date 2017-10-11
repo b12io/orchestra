@@ -2,15 +2,15 @@ from django.apps import apps as django_apps
 from django.conf import settings
 from django.db import transaction
 
+from orchestra.core.errors import WorkflowError
 from orchestra.models import Certification
-from orchestra.models import Workflow
 from orchestra.models import Step
+from orchestra.models import Workflow
 from orchestra.models import WorkflowVersion
 from orchestra.workflow.defaults import get_default_assignment_policy
 from orchestra.workflow.defaults import get_default_creation_policy
 from orchestra.workflow.defaults import get_default_review_policy
 from orchestra.workflow.directory import parse_workflow_directory
-from orchestra.core.errors import WorkflowError
 
 
 def get_workflow_version_slugs():

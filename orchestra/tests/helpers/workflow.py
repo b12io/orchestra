@@ -1,6 +1,6 @@
 from orchestra.models import Certification
-from orchestra.models import Workflow
 from orchestra.models import Step
+from orchestra.models import Workflow
 from orchestra.models import WorkflowVersion
 
 

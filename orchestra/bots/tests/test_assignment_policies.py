@@ -2,9 +2,9 @@ from unittest.mock import patch
 
 from orchestra.communication.staffing import send_staffing_requests
 from orchestra.models import Iteration
-from orchestra.models import Task
 from orchestra.models import StaffBotRequest
 from orchestra.models import StaffingRequestInquiry
+from orchestra.models import Task
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.utils.task_lifecycle import assign_task

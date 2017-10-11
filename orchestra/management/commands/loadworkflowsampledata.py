@@ -6,7 +6,6 @@ from django.db import transaction
 from orchestra.models import Workflow
 from orchestra.models import WorkflowVersion
 
-
 LOAD_SCRIPT_MODULE = 'load_sample_data'
 
 

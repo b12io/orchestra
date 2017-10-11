@@ -1,10 +1,11 @@
+import logging
+
 from annoying.functions import get_object_or_None
 from django.conf import settings
 from slacker import Slacker
 
 from orchestra.models import Worker
 
-import logging
 logger = logging.getLogger(__name__)
 
 

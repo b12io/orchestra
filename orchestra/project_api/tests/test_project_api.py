@@ -12,8 +12,8 @@ from orchestra.models import Project
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import WorkerCertification
-from orchestra.project_api.api import get_workflow_steps
 from orchestra.project_api.api import MalformedDependencyException
+from orchestra.project_api.api import get_workflow_steps
 from orchestra.project_api.auth import OrchestraProjectAPIAuthentication
 from orchestra.project_api.auth import SignedUser
 from orchestra.tests.helpers import OrchestraTestCase

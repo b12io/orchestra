@@ -1,13 +1,14 @@
 import json
-
+import logging
 from base64 import b64decode
-from beanstalk_dispatch.execution import execute_function
-from jsonview.decorators import json_view
-from jsonview.exceptions import BadRequest
+
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
+from jsonview.decorators import json_view
+from jsonview.exceptions import BadRequest
 
-import logging
+from beanstalk_dispatch.execution import execute_function
+
 logger = logging.getLogger(__name__)
 
 

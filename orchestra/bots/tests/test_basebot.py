@@ -1,7 +1,7 @@
-from orchestra.tests.helpers import OrchestraTestCase
-from orchestra.bots.errors import SlackCommandInvalidRequest
 from orchestra.bots.basebot import BaseBot
+from orchestra.bots.errors import SlackCommandInvalidRequest
 from orchestra.bots.tests.fixtures import get_mock_slack_data
+from orchestra.tests.helpers import OrchestraTestCase
 
 
 class BaseBotTest(OrchestraTestCase):

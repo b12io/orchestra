@@ -1,16 +1,16 @@
+import logging
 import random
 import string
 
 from django.conf import settings
 from django.utils.text import slugify
-from slacker import BaseAPI
 from slacker import Error as SlackError
+from slacker import BaseAPI
 from slacker import Slacker
 
-from orchestra.utils.decorators import run_if
 from orchestra.communication.errors import SlackFormatError
+from orchestra.utils.decorators import run_if
 
-import logging
 logger = logging.getLogger(__name__)
 
 # Types of responses we can send to slack

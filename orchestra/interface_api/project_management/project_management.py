@@ -1,14 +1,13 @@
+import logging
 from urllib.parse import urljoin
 
 from django.conf import settings
 from django.core import urlresolvers
 from django.utils import timezone
 
+from orchestra.communication.slack import OrchestraSlackService
 from orchestra.models import Project
 from orchestra.project_api.api import get_project_information
-from orchestra.communication.slack import OrchestraSlackService
-
-import logging
 
 logger = logging.getLogger(__name__)
 

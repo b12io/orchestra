@@ -1,22 +1,21 @@
-from collections import Counter
-from datetime import date
 import logging
 import os
 import re
 import tempfile
+from collections import Counter
+from datetime import date
 
-from django.conf import settings
 import requests
+from django.conf import settings
 
 from orchestra.google_apps.errors import FailedRequest
-from orchestra.google_apps.errors import InvalidUrlError
 from orchestra.google_apps.errors import GoogleDriveError
+from orchestra.google_apps.errors import InvalidUrlError
 from orchestra.google_apps.permissions import read_with_link_permission
 from orchestra.google_apps.permissions import write_with_link_permission
 from orchestra.google_apps.service import Service
 from orchestra.utils.common_regex import image_file_regex
 from orchestra.utils.decorators import run_if
-
 
 logger = logging.getLogger(__name__)
 _image_mimetype_regex = re.compile('(image/(?:jpg|jpeg|gif|png|svg))',

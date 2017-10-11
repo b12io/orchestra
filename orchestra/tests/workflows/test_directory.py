@@ -5,7 +5,6 @@ from orchestra.core.errors import WorkflowError
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.workflow.directory import parse_workflow_directory
 
-
 NONEXISTENT_DIR = '/foo/bar/baz/'
 TEST_WORKFLOWS_DIR = os.path.abspath(os.path.dirname(__file__))
 INVALID_WORKFLOW_DIR = os.path.join(TEST_WORKFLOWS_DIR, 'invalid_dir')

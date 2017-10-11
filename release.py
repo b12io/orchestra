@@ -3,11 +3,11 @@
 This script can only be called by orchestra core committers, and will result
 in permission errors otherwise.
 """
-from argparse import ArgumentParser
-from distutils.version import StrictVersion
 import os
 import re
 import shutil
+from argparse import ArgumentParser
+from distutils.version import StrictVersion
 from subprocess import check_output
 from tempfile import mkdtemp
 

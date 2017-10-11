@@ -1,15 +1,16 @@
+import logging
+
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
+from orchestra.bots.basebot import BaseBot
 from orchestra.bots.errors import SlackCommandInvalidRequest
 from orchestra.bots.errors import SlackUserUnauthorized
-from orchestra.bots.basebot import BaseBot
 from orchestra.bots.staffbot import StaffBot
 from orchestra.communication.slack import format_slack_message
 
-import logging
 logger = logging.getLogger(__name__)
 
 

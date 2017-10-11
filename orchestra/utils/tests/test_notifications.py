@@ -3,12 +3,12 @@ from unittest.mock import patch
 from django.conf import settings
 from django.test import override_settings
 
+from orchestra.communication.slack import _project_slack_group_name
 from orchestra.models import Iteration
 from orchestra.models import Task
-from orchestra.communication.slack import _project_slack_group_name
 from orchestra.tests.helpers import OrchestraTestCase
-from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.fixtures import TaskFactory
+from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.task_lifecycle import end_project
 from orchestra.utils.task_lifecycle import submit_task

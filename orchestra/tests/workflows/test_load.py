@@ -7,15 +7,15 @@ from django.test import modify_settings
 from orchestra.core.errors import WorkflowError
 from orchestra.models import Workflow
 from orchestra.tests.helpers import OrchestraTestCase
-from orchestra.tests.helpers.workflow import assert_test_dir_workflow_not_loaded  # noqa
-from orchestra.tests.helpers.workflow import assert_test_dir_workflow_loaded
-from orchestra.tests.helpers.workflow import assert_test_dir_v1_not_loaded
 from orchestra.tests.helpers.workflow import assert_test_dir_v1_loaded
-from orchestra.tests.helpers.workflow import assert_test_dir_v2_not_loaded
+from orchestra.tests.helpers.workflow import assert_test_dir_v1_not_loaded
 from orchestra.tests.helpers.workflow import assert_test_dir_v2_loaded
+from orchestra.tests.helpers.workflow import assert_test_dir_v2_not_loaded
+from orchestra.tests.helpers.workflow import assert_test_dir_workflow_loaded
+from orchestra.tests.helpers.workflow import \
+    assert_test_dir_workflow_not_loaded  # noqa
 from orchestra.workflow.load import load_workflow
 from orchestra.workflow.load import load_workflow_version
-
 
 TEST_WORKFLOWS_MODULE = 'orchestra.tests.workflows'
 TEST_WORKFLOWS_DIR = os.path.abspath(

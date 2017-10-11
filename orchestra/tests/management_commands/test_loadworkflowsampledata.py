@@ -1,6 +1,6 @@
-from io import StringIO
 import os
 import sys
+from io import StringIO
 
 from django.core.management import call_command
 from django.test import modify_settings
@@ -10,7 +10,6 @@ from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.workflow import assert_test_dir_v1_loaded
 from orchestra.tests.helpers.workflow import assert_test_dir_workflow_loaded
 from orchestra.workflow.load import load_workflow
-
 
 NONEXISTENT_WORKFLOW_SLUG = 'DOESNOTEXIST'
 TEST_WORKFLOWS_MODULE = 'orchestra.tests.workflows'

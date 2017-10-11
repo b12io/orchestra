@@ -1,13 +1,14 @@
-import boto
 import json
+
+import boto
+from django.test import TestCase
+from django.test import override_settings
+from moto import mock_sqs
 
 from beanstalk_dispatch import ARGS
 from beanstalk_dispatch import FUNCTION
 from beanstalk_dispatch import KWARGS
 from beanstalk_dispatch.client import schedule_function
-from django.test import TestCase
-from django.test import override_settings
-from moto import mock_sqs
 
 CALL_COUNTER = 0
 

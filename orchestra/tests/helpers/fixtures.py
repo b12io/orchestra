@@ -1,13 +1,14 @@
 from datetime import timedelta
-from dateutil.parser import parse
 from unittest.mock import patch
 
 import factory
+from dateutil.parser import parse
 from django.contrib.auth.models import User
 from django.test import Client
 from django.test import override_settings
 from django.utils import timezone
 
+from orchestra.communication.slack import create_project_slack_group
 from orchestra.models import CommunicationPreference
 from orchestra.models import Iteration
 from orchestra.models import StaffBotRequest
@@ -19,14 +20,13 @@ from orchestra.models import TaskAssignment
 from orchestra.models import WorkerCertification
 from orchestra.models import Workflow
 from orchestra.models import WorkflowVersion
-from orchestra.communication.slack import create_project_slack_group
+from orchestra.tests.helpers.iterations import verify_iterations
+from orchestra.tests.helpers.workflow import workflow_fixtures
 from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.task_lifecycle import submit_task
 from orchestra.utils.task_properties import assignment_history
 from orchestra.utils.task_properties import current_assignment
 from orchestra.utils.task_properties import get_iteration_history
-from orchestra.tests.helpers.iterations import verify_iterations
-from orchestra.tests.helpers.workflow import workflow_fixtures
 from orchestra.workflow.defaults import get_default_assignment_policy
 from orchestra.workflow.defaults import get_default_creation_policy
 from orchestra.workflow.defaults import get_default_review_policy

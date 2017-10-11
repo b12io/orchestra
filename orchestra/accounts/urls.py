@@ -1,10 +1,9 @@
 from django.conf.urls import url
 from django.views.generic import RedirectView
 
-from orchestra.accounts.views import OrchestraRegistrationView
 from orchestra.accounts.views import AccountSettingsView
 from orchestra.accounts.views import CommunicationPreferenceSettingsView
-
+from orchestra.accounts.views import OrchestraRegistrationView
 
 urlpatterns = [
     # We have to override the register endpoint to emit the

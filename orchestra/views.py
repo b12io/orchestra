@@ -1,51 +1,51 @@
 import base64
 import json
+import logging
 import os
 from collections import defaultdict
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
 from django.templatetags.static import static
 from django.views.decorators.csrf import requires_csrf_token
 from django_filters import rest_framework as filters
 from jsonview.decorators import json_view
 from jsonview.exceptions import BadRequest
+from rest_framework import status as http_status
 from rest_framework import generics
 from rest_framework import permissions
-from rest_framework import status as http_status
 
+from orchestra.core.errors import IllegalTaskSubmission
+from orchestra.core.errors import NoTaskAvailable
+from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import TaskStatusError
 from orchestra.core.errors import TimerError
 from orchestra.core.errors import WorkerCertificationError
-from orchestra.core.errors import NoTaskAvailable
-from orchestra.core.errors import TaskAssignmentError
-from orchestra.core.errors import IllegalTaskSubmission
 from orchestra.filters import TimeEntryFilter
 from orchestra.models import Iteration
+from orchestra.models import Step
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import TimeEntry
 from orchestra.models import Worker
-from orchestra.models import Step
 from orchestra.project_api.serializers import TaskTimerSerializer
 from orchestra.project_api.serializers import TimeEntrySerializer
-from orchestra.utils.s3 import upload_editor_image
 from orchestra.utils import time_tracking
 from orchestra.utils.load_json import load_encoded_json
+from orchestra.utils.s3 import upload_editor_image
+from orchestra.utils.task_lifecycle import get_new_task_assignment
+from orchestra.utils.task_lifecycle import get_task_overview_for_worker
 from orchestra.utils.task_lifecycle import save_task
 from orchestra.utils.task_lifecycle import submit_task
 from orchestra.utils.task_lifecycle import tasks_assigned_to_worker
-from orchestra.utils.task_lifecycle import get_new_task_assignment
-from orchestra.utils.task_lifecycle import get_task_overview_for_worker
-from orchestra.utils.task_lifecycle import worker_assigned_to_rejected_task
 from orchestra.utils.task_lifecycle import worker_assigned_to_max_tasks
+from orchestra.utils.task_lifecycle import worker_assigned_to_rejected_task
 from orchestra.utils.task_lifecycle import worker_has_reviewer_status
 from orchestra.utils.view_helpers import IsAssociatedWorker
 
-import logging
 logger = logging.getLogger(__name__)
 UserModel = get_user_model()
 

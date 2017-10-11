@@ -1,6 +1,13 @@
 from django.conf.urls import include
 from django.conf.urls import url
 
+from orchestra.project_api.views import assign_worker_to_task
+from orchestra.project_api.views import create_project
+from orchestra.project_api.views import project_details_url
+from orchestra.project_api.views import project_information
+from orchestra.project_api.views import workflow_types
+from orchestra.views import TimeEntryDetail
+from orchestra.views import TimeEntryList
 from orchestra.views import dashboard_tasks
 from orchestra.views import get_timer
 from orchestra.views import new_task_assignment
@@ -10,16 +17,8 @@ from orchestra.views import status
 from orchestra.views import stop_timer
 from orchestra.views import submit_task_assignment
 from orchestra.views import task_assignment_information
-from orchestra.views import upload_image
 from orchestra.views import update_timer
-from orchestra.views import TimeEntryList
-from orchestra.views import TimeEntryDetail
-from orchestra.project_api.views import assign_worker_to_task
-from orchestra.project_api.views import create_project
-from orchestra.project_api.views import workflow_types
-from orchestra.project_api.views import project_details_url
-from orchestra.project_api.views import project_information
-
+from orchestra.views import upload_image
 
 urlpatterns = [
     # Interface API

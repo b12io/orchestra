@@ -10,10 +10,15 @@ from phonenumber_field.modelfields import PhoneNumberField
 from phonenumber_field.widgets import PhoneNumberPrefixWidget
 from related_admin import RelatedFieldAdmin
 
+from orchestra.communication.slack import get_slack_user_id
 from orchestra.models import Certification
+from orchestra.models import CommunicationPreference
 from orchestra.models import Iteration
 from orchestra.models import PayRate
 from orchestra.models import Project
+from orchestra.models import StaffBotRequest
+from orchestra.models import StaffingRequestInquiry
+from orchestra.models import StaffingResponse
 from orchestra.models import Step
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
@@ -23,11 +28,6 @@ from orchestra.models import Worker
 from orchestra.models import WorkerCertification
 from orchestra.models import Workflow
 from orchestra.models import WorkflowVersion
-from orchestra.models import CommunicationPreference
-from orchestra.models import StaffBotRequest
-from orchestra.models import StaffingRequestInquiry
-from orchestra.models import StaffingResponse
-from orchestra.communication.slack import get_slack_user_id
 
 admin.site.site_header = 'Orchestra'
 admin.site.site_title = 'Orchestra'

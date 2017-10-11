@@ -1,16 +1,16 @@
 import json
-
 from base64 import b64encode
-from beanstalk_dispatch import ARGS
-from beanstalk_dispatch import FUNCTION
-from beanstalk_dispatch import KWARGS
-from beanstalk_dispatch.common import create_request_body
-from beanstalk_dispatch.safe_task import SafeTask
+
 from django.core.urlresolvers import reverse
 from django.test import Client
 from django.test import TestCase
 from django.test import override_settings
 
+from beanstalk_dispatch import ARGS
+from beanstalk_dispatch import FUNCTION
+from beanstalk_dispatch import KWARGS
+from beanstalk_dispatch.common import create_request_body
+from beanstalk_dispatch.safe_task import SafeTask
 from orchestra.utils.load_json import load_encoded_json
 
 CALL_COUNTER = 0

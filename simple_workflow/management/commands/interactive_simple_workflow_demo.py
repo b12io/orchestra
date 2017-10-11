@@ -1,5 +1,5 @@
-from pprint import pprint
 import subprocess
+from pprint import pprint
 from time import sleep
 
 from django.core.management.base import BaseCommand

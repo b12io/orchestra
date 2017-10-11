@@ -1,12 +1,11 @@
-from apiclient import errors
-from apiclient.http import MediaFileUpload
-from apiclient.discovery import build
-from httplib2 import Http
-from oauth2client.service_account import ServiceAccountCredentials
-
 import logging
 import re
 
+from apiclient import errors
+from apiclient.discovery import build
+from apiclient.http import MediaFileUpload
+from httplib2 import Http
+from oauth2client.service_account import ServiceAccountCredentials
 
 logger = logging.getLogger(__name__)
 _image_mimetype_regex = re.compile('(image/(?:jpg|jpeg|gif|png))',

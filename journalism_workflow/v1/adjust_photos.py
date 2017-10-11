@@ -1,3 +1,4 @@
+import logging
 import os
 import tempfile
 
@@ -10,7 +11,6 @@ from orchestra.google_apps.convenience import upload_file
 from orchestra.google_apps.permissions import write_with_link_permission
 from orchestra.google_apps.service import Service
 
-import logging
 logger = logging.getLogger(__name__)
 
 

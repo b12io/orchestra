@@ -1,8 +1,9 @@
+import logging
+
 from orchestra.google_apps.convenience import create_document_from_template
 from orchestra.google_apps.convenience import create_folder_with_permissions
 from orchestra.google_apps.permissions import write_with_link_permission
 
-import logging
 logger = logging.getLogger(__name__)
 
 

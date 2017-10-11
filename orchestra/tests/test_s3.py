@@ -4,8 +4,8 @@ from unittest.mock import patch
 from django.test import TestCase
 
 from orchestra.core.errors import S3UploadError
-from orchestra.utils.s3 import upload_editor_image
 from orchestra.utils.s3 import MAX_UPLOAD_SIZE_MB
+from orchestra.utils.s3 import upload_editor_image
 
 
 @patch('orchestra.utils.s3.boto')

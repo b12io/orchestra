@@ -4,9 +4,9 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
 from orchestra.bots.errors import StaffingResponseException
-from orchestra.models import Worker
 from orchestra.communication.staffing import get_available_requests
 from orchestra.communication.staffing import handle_staffing_response
+from orchestra.models import Worker
 
 
 @login_required

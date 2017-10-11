@@ -7,8 +7,8 @@ from orchestra.models import Project
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.tests.helpers import OrchestraTestCase
-from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.fixtures import ProjectFactory
+from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.utils.task_lifecycle import create_subsequent_tasks
 
 

@@ -1,13 +1,13 @@
-from ajax_select import register
 from ajax_select import LookupChannel
+from ajax_select import register
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
-from django.utils.html import escape
 from django.db.models import Q
+from django.utils.html import escape
 
 from orchestra.models import CommunicationPreference
-from orchestra.models import StaffingRequestInquiry
 from orchestra.models import Project
+from orchestra.models import StaffingRequestInquiry
 from orchestra.models import Task
 from orchestra.models import Worker
 
