@@ -4,6 +4,11 @@
       <div class="col-lg-12 col-md-12 col-sm-12">
         <h3>
           Todo List
+          <a class="btn"
+               ng-if="todoList.canSendToPending()"
+               ng-click="todoList.sendToPending()">
+            Send to pending
+          </a>
         </h3>
       </div>
     </div>
@@ -21,17 +26,6 @@
                ng-disabled="!todoList.canAddTodo()"
                ng-click="todoList.addTodo()">
             Add
-          </div>
-        </div>
-      </div>
-
-      <div class="col-lg-12 col-md-12 col-sm-12"
-           ng-if="todoList.canSendToPending()">
-        <div class="send-to-pending">
-          <div class="btn btn-primary btn-sm edit-save-handle"
-               ng-disabled="!todoList.canSendToPending()"
-               ng-click="todoList.sendToPending()">
-            Send to pending
           </div>
         </div>
       </div>

@@ -237,8 +237,8 @@ def assign_task(worker_id, task_id):
         assignment=assignment,
         start_datetime=assignment.start_datetime)
 
-    if settings.PRODUCTION or settings.STAGING:
-        add_worker_to_project_team(worker, task.project)
+    # if settings.PRODUCTION or settings.STAGING:
+    add_worker_to_project_team(worker, task.project)
     notify_status_change(task, previous_status)
     return task
 
@@ -493,6 +493,19 @@ def tasks_assigned_to_worker(worker):
         for task_assignment in task_assignments:
             step = task_assignment.task.step
             workflow_version = step.workflow_version
+            next_todo_description = None
+            should_be_active = False
+            if state in ('returned', 'in_progress'):
+                next_todo = (
+                    task_assignment.task.todos
+                    .filter(completed=False)
+                    .order_by('-created_at')
+                    .first())
+                if next_todo:
+                    next_todo_description = next_todo.description
+                num_todos = task_assignment.task.todos.count()
+                should_be_active = ((num_todos == 0) or
+                                    (next_todo_description is not None))
             tasks_assigned.append({
                 'id': task_assignment.task.id,
                 'assignment_id': task_assignment.id,
@@ -500,7 +513,9 @@ def tasks_assigned_to_worker(worker):
                 'project': workflow_version.name,
                 'detail': task_assignment.task.project.short_description,
                 'priority': task_assignment.task.project.priority,
-                'state': state})
+                'state': state,
+                'next_todo_description': next_todo_description,
+                'should_be_active': should_be_active})
     return tasks_assigned
 
 

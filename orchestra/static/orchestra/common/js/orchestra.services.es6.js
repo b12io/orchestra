@@ -64,6 +64,11 @@ export function orchestraService () {
 
 export function orchestraTasks ($http) {
   'ngAnnotate'
+  const activeState = (task) => task.state === 'in_progress' || task.state === 'returned' || task.state === 'just_added'
+  const pendingState = (task) => task.state === 'pending_review' || task.state === 'pending_processing'
+  const activeTask = (task) => activeState(task) && task.should_be_active
+  const pendingTask = (task) => (activeState(task) && !task.should_be_active) || pendingState(task)
+
   var orchestraTasks = {
     data: null,
     tasks: [],
@@ -99,8 +104,8 @@ export function orchestraTasks ($http) {
         })
     },
     allTasks: function () { return this.tasks },
-    activeTasks: function () { return this.allTasks().filter(task => task.state === 'in_progress' || task.state === 'returned' || task.state === 'just_added') },
-    pendingTasks: function () { return this.allTasks().filter(task => task.state === 'pending_review' || task.state === 'pending_processing') },
+    activeTasks: function () { return this.allTasks().filter(task => activeTask(task)) },
+    pendingTasks: function () { return this.allTasks().filter(task => pendingTask(task)) },
     completedTasks: function () { return this.allTasks().filter(task => task.state === 'complete') },
     activeAndRecentTasks: function (numRecent) {
       // Return all active tasks, as well as `numRecent` of the most

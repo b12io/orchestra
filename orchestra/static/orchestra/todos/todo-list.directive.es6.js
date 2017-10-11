@@ -51,7 +51,6 @@ export default function todoList (orchestraApi) {
       todoList.addTodo = () => {
         createTodo(todoList.newTodoTaskId, todoList.newTodoDescription, false)
           .then((taskData) => {
-            todoList.newTodoTaskId = null
             todoList.newTodoDescription = null
           })
       }
