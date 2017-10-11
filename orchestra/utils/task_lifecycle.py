@@ -237,8 +237,8 @@ def assign_task(worker_id, task_id):
         assignment=assignment,
         start_datetime=assignment.start_datetime)
 
-    # if settings.PRODUCTION or settings.STAGING:
-    add_worker_to_project_team(worker, task.project)
+    if settings.PRODUCTION or settings.STAGING:
+        add_worker_to_project_team(worker, task.project)
     notify_status_change(task, previous_status)
     return task
 
