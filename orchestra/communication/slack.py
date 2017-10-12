@@ -84,6 +84,14 @@ def create_project_slack_group(project):
                              'Discussing work on `{}`'.format(
                                  project.short_description))
     project.save()
+
+    # Message out project folder id.
+    if project.project_data.get('project_folder_id'):
+        message = (
+            'Project folder: '
+            'https://drive.google.com/drive/folders/{}'
+            ).format(project.project_data['project_folder_id'])
+        slack.chat.post_message(project.slack_group_id, message)
     return project.slack_group_id
 
 
