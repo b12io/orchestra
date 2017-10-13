@@ -6,4 +6,5 @@ export default function DashboardController (
   var vm = this
 
   vm.orchestraTasks = orchestraTasks
+  orchestraTasks.updateTasks()
 }
