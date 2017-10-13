@@ -14,7 +14,7 @@
     </div>
     <div class="row padded" ng-if="todoList.ready">
       <div class="col-lg-12 col-md-12 col-sm-12">
-        <div class="new-todo">
+        <form class="new-todo">
           <select name="todoList" id="todoList" ng-model="todoList.newTodoTaskId">
             <option value="" selected>Select a task</option>
             <option value="{{task.id}}" ng-repeat="task in todoList.possibleTasks">{{task.step_slug}}</option>
@@ -22,12 +22,13 @@
           <input type="text"
                  ng-model="todoList.newTodoDescription"
                  placeholder="Description">
-          <div class="btn btn-primary btn-sm edit-save-handle"
-               ng-disabled="!todoList.canAddTodo()"
-               ng-click="todoList.addTodo()">
+          <button type="submit"
+             class="btn btn-primary btn-sm edit-save-handle"
+             ng-disabled="!todoList.canAddTodo()"
+             ng-click="todoList.addTodo()">
             Add
-          </div>
-        </div>
+          </button>
+        </form>
       </div>
 
       <div class="col-lg-12 col-md-12 col-sm-12">
