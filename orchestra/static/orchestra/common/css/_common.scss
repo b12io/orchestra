@@ -20,7 +20,7 @@ $panel-margin: 3rem;
 $panel-padding: 1.5rem;
 $panel-button-margin: 1.5rem;
 
-$main-font-stack: 'Ruda', sans-serif;
+$main-font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 
 @mixin vendor-prefix($name, $argument) {
   -webkit-#{$name}: #{$argument};
