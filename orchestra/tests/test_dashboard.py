@@ -130,11 +130,12 @@ class DashboardTestCase(OrchestraTransactionTestCase):
     def _check_client_dashboard_state(self, client, non_empty_status):
         response = client.get('/orchestra/api/interface/dashboard_tasks/')
         returned = load_encoded_json(response.content)
-        for status, val in returned['tasks'].items():
-            if status == non_empty_status:
-                self.assertTrue(len(val) > 0)
-            else:
-                self.assertTrue(len(val) == 0)
+        non_empty_tasks = [task for task in returned['tasks']
+                           if task['state'] == non_empty_status]
+        empty_tasks = [task for task in returned['tasks']
+                       if task['state'] != non_empty_status]
+        self.assertGreater(len(non_empty_tasks), 0)
+        self.assertEqual(len(empty_tasks), 0)
 
     def test_reviewer_task_assignment(self):
         # there is a review task for user 1
