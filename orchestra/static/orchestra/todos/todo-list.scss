@@ -1,5 +1,18 @@
 .todo-list {
+  .section-body {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+
   .new-todo {
     float: left;
+  }
+
+  .todo {
+    padding-top: 5px;
+    &__role {
+      font-weight: 600;
+      padding-left: 5px;
+    }
   }
 }

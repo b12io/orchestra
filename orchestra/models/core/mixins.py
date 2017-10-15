@@ -1,6 +1,5 @@
 from pydoc import locate
 
-from django.conf import settings
 from django.db.models import Q
 
 from orchestra.core.errors import ModelSaveError
