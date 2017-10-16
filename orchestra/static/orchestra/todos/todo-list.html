@@ -19,7 +19,8 @@
             <option value="" selected>Select owner</option>
             <option value="{{task.id}}" ng-repeat="task in todoList.possibleTasks">{{task.step_slug}}</option>
           </select>
-          <input type="text"
+          <input class="new-todo__description"
+                 type="text"
                  ng-model="todoList.newTodoDescription"
                  placeholder="Description">
           <button type="submit"

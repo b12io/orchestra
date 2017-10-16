@@ -6,6 +6,9 @@
 
   .new-todo {
     float: left;
+    &__description {
+      width: 300px;
+    }
   }
 
   .todo {
