@@ -5,7 +5,7 @@ from orchestra.todos.views import TodoList
 
 urlpatterns = [
     url(r'^todo/$',
-        TodoList.as_view(), name='todo'),
+        TodoList.as_view(), name='todos'),
     url(r'^todo/(?P<pk>[0-9]+)/$',
         TodoDetail.as_view(), name='todo'),
 ]
