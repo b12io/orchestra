@@ -123,13 +123,16 @@ class ProjectAPITestCase(OrchestraTestCase):
             'steps': [
                 {'slug': 'step1',
                  'description': 'The longer description of the first step',
-                 'is_human': True},
+                 'is_human': True,
+                 'name': 'The first step'},
                 {'slug': 'step2',
                  'description': 'The longer description of the second step',
-                 'is_human': True},
+                 'is_human': True,
+                 'name': 'The second step'},
                 {'slug': 'step3',
                  'description': 'The longer description of the third step',
-                 'is_human': True}
+                 'is_human': True,
+                 'name': 'The third step'}
             ]
         }
 

@@ -8,11 +8,6 @@ def is_project_admin(user):
             user.is_superuser)
 
 
-def is_project_member_or_admin(user, project):
-    return (project.tasks.filter(assignments__worker__user=user).count() > 0 or
-            is_project_admin(user))
-
-
 def project_management_api_view_base(func):
     @json_view
     @login_required
