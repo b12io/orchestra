@@ -98,7 +98,8 @@ def _traverse_step_graph(graph, workflow_version):
             slug=current_node)
         steps.append({'slug': current_node,
                       'description': current_step.description,
-                      'is_human': current_step.is_human})
+                      'is_human': current_step.is_human,
+                      'name': current_step.name})
 
         for key, dependencies in graph.items():
             if (current_node in dependencies and

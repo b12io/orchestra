@@ -1,6 +1,7 @@
 from rest_framework import generics
 from rest_framework import permissions
 
+from orchestra.models import Task
 from orchestra.models import Todo
 from orchestra.models import Worker
 from orchestra.todos.serializers import TodoSerializer
@@ -34,7 +35,8 @@ class IsAssociatedWithProject(permissions.BasePermission):
         elif request.method == 'POST':
             # Create calls have a task ID
             task_id = request.data.get('task')
-            return worker.assignments.filter(task=task_id).exists()
+            project = Task.objects.get(id=task_id).project
+            return worker.assignments.filter(task__project=project).exists()
         return False
 
 

@@ -17,7 +17,7 @@
         <form class="new-todo">
           <select name="todoList" id="todoList" ng-model="todoList.newTodoTaskId">
             <option value="" selected>Select owner</option>
-            <option value="{{task.id}}" ng-repeat="task in todoList.possibleTasks">{{task.step_slug}}</option>
+            <option value="{{task.id}}" ng-repeat="task in todoList.possibleTasks">{{todoList.steps[task.step_slug].name}}</option>
           </select>
           <input class="new-todo__description"
                  type="text"
@@ -40,7 +40,7 @@
               <input type="checkbox"
                      ng-model="todo.completed"
                      ng-click="todoList.updateTodo(todo)">
-              <span class="todo__role">{{todoList.taskSlugs[todo.task]}}: </span>
+              <span class="todo__role">{{todoList.steps[todoList.taskSlugs[todo.task]].name}}: </span>
               <span class="todo__description">{{todo.description}}</span>
             </label>
           </div>

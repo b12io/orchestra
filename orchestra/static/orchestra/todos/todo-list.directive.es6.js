@@ -62,6 +62,11 @@ export default function todoList (orchestraApi) {
       orchestraApi.projectInformation(todoList.projectId)
         .then((response) => {
           const humanSteps = new Set(response.data.steps.filter(step => step.is_human).map(step => step.slug))
+          todoList.steps = reduce(
+            Object.values(response.data.steps), (result, step) => {
+              result[step.slug] = step
+              return result
+            }, {})
           todoList.taskSlugs = reduce(
             Object.values(response.data.tasks), (result, task) => {
               result[task.id] = task.step_slug
