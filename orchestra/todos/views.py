@@ -1,3 +1,5 @@
+import json
+
 from rest_framework import generics
 from rest_framework import permissions
 
@@ -7,13 +9,43 @@ from orchestra.todos.serializers import TodoSerializer
 from orchestra.utils.notifications import message_experts_slack_group
 
 
+class IsAssociatedWithTodosProject(permissions.BasePermission):
+    """
+    Ensures that a user's worker is accoiated with the todo's project.
+    """
+
+    def has_object_permission(self, request, view, todo):
+        worker = Worker.objects.get(user=request.user)
+        project = todo.task.project
+        return worker.assignments.filter(task__project=project).exists()
+
+
+class IsAssociatedWithProject(permissions.BasePermission):
+    """
+    Ensures that a user's worker is associated with the request's
+    `project`.
+
+    """
+
+    def has_permission(self, request, view):
+        worker = Worker.objects.get(user=request.user)
+        if request.method == 'GET':
+            # List calls have a project ID
+            project_id = request.query_params.get('project')
+            return worker.assignments.filter(task__project=project_id).exists()
+        elif request.method == 'POST':
+            # Create calls have a task ID
+            task_id = request.data.get('task')
+            return worker.assignments.filter(task=task_id).exists()
+        return False
+
+
 class TodoList(generics.ListCreateAPIView):
-    # TODO(marcua): Add orchestra.utils.view_helpers.IsAssociatedProject
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,
+                          IsAssociatedWithProject)
+
     serializer_class = TodoSerializer
     queryset = Todo.objects.all()
-    # filter_backends = (filters.DjangoFilterBackend,)
-    # filter_class = TimeEntryFilter
 
     def get_queryset(self):
         queryset = Todo.objects.all()
@@ -40,8 +72,8 @@ class TodoList(generics.ListCreateAPIView):
 
 
 class TodoDetail(generics.RetrieveUpdateDestroyAPIView):
-    # TODO(marcua): Add orchestra.utils.view_helpers.IsAssociatedProject
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,
+                          IsAssociatedWithTodosProject)
     queryset = Todo.objects.all()
     serializer_class = TodoSerializer
 

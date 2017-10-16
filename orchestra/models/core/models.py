@@ -419,6 +419,7 @@ class TaskAssignment(TaskAssignmentMixin, BaseModel):
 
     start_datetime = models.DateTimeField(default=timezone.now)
     worker = models.ForeignKey(Worker,
+                               related_name='assignments',
                                on_delete=models.CASCADE,
                                null=True,
                                blank=True)
