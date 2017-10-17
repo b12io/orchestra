@@ -1,4 +1,6 @@
 import slacker
+
+from django.shortcuts import get_object_or_404
 from jsonview.exceptions import BadRequest
 from rest_framework import generics
 from rest_framework import permissions
@@ -41,12 +43,12 @@ def project_information_api(request):
     """
     This function is used by both the project management interface
     (project admins only) and for providing project information to
-    experts (only to experts associated with a project). We enfoce
+    experts (only to experts associated with a project). We enforce
     both of these permissions in the view below.
 
     """
     project_id = load_encoded_json(request.body)['project_id']
-    worker = Worker.objects.get(user=request.user)
+    worker = get_object_or_404(Worker, user=request.user)
     if not (is_project_admin(request.user) or
             worker.assignments.filter(task__project=project_id).exists()):
         raise BadRequest('Permission denied')
