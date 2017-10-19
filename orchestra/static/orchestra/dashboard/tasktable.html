@@ -50,8 +50,8 @@
                 <td>{{task.priority}}</td>
                 <td>{{task.project}}</td>
                 <td>{{task.step}}</td>
-                <td>{{task.detail}}</td>
-                <td>{{task.next_todo_description}}</td>
+                <td>{{task.detail|limitTo:50}}{{task.detail.length > 50 ? '...' : ''}}</td>
+                <td>{{task.next_todo_description|limitTo:50}}{{task.next_todo_description.length > 50 ? '...' : ''}}</td>
               </tr>
             </tbody>
           </table>
