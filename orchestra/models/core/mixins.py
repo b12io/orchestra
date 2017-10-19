@@ -62,7 +62,7 @@ class WorkerMixin(object):
         )
 
     def formatted_slack_username(self):
-        return '<@{}|{}>'.format(self.slack_user_id, self.slack_username)
+        return '<@{}>'.format(self.slack_user_id)
 
 
 class WorkerCertificationMixin(object):

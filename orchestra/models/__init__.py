@@ -16,3 +16,25 @@ from orchestra.models.core.models import TimeEntry  # noqa
 from orchestra.models.core.models import TaskTimer  # noqa
 from orchestra.models.core.models import Todo  # noqa
 from orchestra.models.core.models import PayRate  # noqa
+
+
+__all__ = [
+    'CommunicationPreference',
+    'StaffBotRequest',
+    'StaffingRequestInquiry',
+    'StaffingResponse',
+    'Workflow',
+    'WorkflowVersion',
+    'Certification',
+    'Step',
+    'Worker',
+    'WorkerCertification',
+    'Project',
+    'Task',
+    'TaskAssignment',
+    'Iteration',
+    'TimeEntry',
+    'TaskTimer',
+    'Todo',
+    'PayRate',
+]

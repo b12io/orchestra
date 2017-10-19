@@ -11,11 +11,21 @@
     }
   }
 
-  .todo {
+  .existing-todos {
     padding-top: 5px;
-    &__role {
-      font-weight: 600;
-      padding-left: 5px;
+
+    .todo {
+      input[type=checkbox] {
+        transform: scale(1.1);
+      }
+      label {
+        align-items: end;
+        display: flex;
+      }
+      &__role {
+        font-weight: 500;
+        padding-left: 5px;
+      }
     }
   }
 }

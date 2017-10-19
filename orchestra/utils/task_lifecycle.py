@@ -504,6 +504,15 @@ def tasks_assigned_to_worker(worker):
                 if next_todo:
                     next_todo_description = next_todo.description
                 num_todos = task_assignment.task.todos.count()
+                # If a task has no todos (complete or incomplete)
+                # assigned to it, then by default the task would be
+                # marked as pending. When a task is first created and
+                # picked up by a worker, it will thus be in pending
+                # state, which is confusing behavior. We thus treat a
+                # task with zero todos as active. After a task has one
+                # or more todos assigned to it, its active/pending
+                # state is determined by the presence of incomplete
+                # todos.
                 should_be_active = ((num_todos == 0) or
                                     (next_todo_description is not None))
             tasks_assigned.append({
