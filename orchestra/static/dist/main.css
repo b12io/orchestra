@@ -1498,76 +1498,12 @@ a.logo {
   .tasks-section .section-header .btn-new-review-task.disabled {
     background-color: rgba(46, 204, 113, 0.6); }
 
-.tasks-section .col-task h4 {
-  padding-bottom: 0.5rem;
-  margin-bottom: 1.5rem;
-  border-bottom: 2px solid #cccccc; }
+.tasks-section tr.task-row {
+  cursor: pointer; }
 
-.tasks-section .col-task.col-waiting {
-  background-color: #eee;
-  opacity: 0.6; }
-
-.tasks-section .col-task .tasks-inactive {
-  opacity: 0.6; }
-  .tasks-section .col-task .tasks-inactive a, .tasks-section .col-task .tasks-inactive a:hover, .tasks-section .col-task .tasks-inactive a:focus, .tasks-section .col-task .tasks-inactive a:visited {
-    pointer-events: none;
-    cursor: default; }
-  .tasks-section .col-task .tasks-inactive .task-card:hover {
-    background-color: blue; }
-
-.tasks-section .col-task .task-cards {
-  min-height: 8.5rem; }
-  .tasks-section .col-task .task-cards > div:not(:last-child) {
-    margin-bottom: 1.5rem; }
-    .tasks-section .col-task .task-cards > div:not(:last-child) [class*="col-"] {
-      margin-bottom: 1.5rem; }
-  .tasks-section .col-task .task-cards .task-card-wrapper {
-    width: 100%;
-    padding: 1rem;
-    height: 8.5rem;
-    text-align: left;
-    background-color: white;
-    position: relative;
-    padding-left: 2.5rem;
-    border: 0.1rem solid #cccccc; }
-    .tasks-section .col-task .task-cards .task-card-wrapper:before {
-      content: '';
-      width: 1.5rem;
-      position: absolute;
-      top: -0.1rem;
-      bottom: -0.1rem;
-      left: -0.1rem;
-      background: #0079bf; }
-    .tasks-section .col-task .task-cards .task-card-wrapper:hover {
-      background-color: rgba(230, 198, 55, 0.2); }
-    .tasks-section .col-task .task-cards .task-card-wrapper a {
-      color: #3c3c3c; }
-      .tasks-section .col-task .task-cards .task-card-wrapper a:hover, .tasks-section .col-task .task-cards .task-card-wrapper a:visited, .tasks-section .col-task .task-cards .task-card-wrapper a:focus {
-        color: #3c3c3c;
-        text-decoration: none; }
-      .tasks-section .col-task .task-cards .task-card-wrapper a .task-card {
-        height: 6.5rem;
-        overflow: hidden; }
-        .tasks-section .col-task .task-cards .task-card-wrapper a .task-card .task-type h5 {
-          text-transform: uppercase;
-          color: #0079bf;
-          width: 100%;
-          font-size: 1.6em;
-          margin: 5px 0;
-          font-weight: bold; }
-        .tasks-section .col-task .task-cards .task-card-wrapper a .task-card .task-detail {
-          margin: 5px 0;
-          font-size: 1.2em;
-          line-height: 1.5em; }
-
-.tasks-section .active-tasks {
-  margin-top: 0; }
-  @media (min-width: 992px) {
-    .tasks-section .active-tasks .task-cards {
-      min-height: 38.5rem; } }
-
-.tasks-section .completed-tasks {
-  padding-bottom: 1.5rem; }
+.tasks-section .table {
+  margin-bottom: 0;
+  font-size: 1.4rem; }
 /**
  * Common stylesheet for Orchestra.
  *
@@ -2160,7 +2096,7 @@ a.logo {
           text-transform: uppercase;
           font-weight: bold;
           font-size: 0.6em;
-          font-family: "Ruda", sans-serif; }
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
       .timecard-view .date-group h2 .date-duration {
         float: right;
         display: inline-block;
@@ -2317,3 +2253,22 @@ a.logo {
         box-shadow: none; }
         .timer .popover .tgl-ios:checked + .tgl-btn:active:after {
           margin-left: -.8em; }
+.todo-list .section-body {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem; }
+
+.todo-list .new-todo {
+  float: left; }
+  .todo-list .new-todo__description {
+    width: 300px; }
+
+.todo-list .existing-todos {
+  padding-top: 5px; }
+  .todo-list .existing-todos .todo input[type=checkbox] {
+    transform: scale(1.1); }
+  .todo-list .existing-todos .todo label {
+    align-items: end;
+    display: flex; }
+  .todo-list .existing-todos .todo__role {
+    font-weight: 500;
+    padding-left: 5px; }
