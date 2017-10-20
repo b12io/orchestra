@@ -18,5 +18,6 @@
   "space-tab-mixed-disabled": true,
   "id-class-ad-disabled": true,
   "href-abs-or-rel": false,
-  "attr-unsafe-chars": true
+  "attr-unsafe-chars": true,
+  "spec-char-escape": false
 }

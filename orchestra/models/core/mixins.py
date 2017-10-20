@@ -61,6 +61,9 @@ class WorkerMixin(object):
             self.phone
         )
 
+    def formatted_slack_username(self):
+        return '<@{}>'.format(self.slack_user_id)
+
 
 class WorkerCertificationMixin(object):
 
@@ -159,6 +162,15 @@ class TaskAssignmentMixin(object):
     def __str__(self):
         return '{} - {} - {}'.format(
             str(self.task), self.assignment_counter, str(self.worker))
+
+
+class TodoMixin(object):
+
+    def __str__(self):
+        return '{} - {} ({})'.format(
+            self.task,
+            self.description,
+            self.completed)
 
 
 class PayRateMixin(object):

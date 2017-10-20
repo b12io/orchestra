@@ -140,3 +140,12 @@ class OrchestraModelTestCase(OrchestraTestCase):
     def test_to_string(self):
         instance = self.model(**self.model_kwargs)
         self.assertEqual(str(instance), str(instance))
+
+
+class EndpointTestCase(OrchestraTestCase):
+
+    def _verify_bad_request(self, response, message):
+        self.assertEqual(response.status_code, 400)
+        data = load_encoded_json(response.content)
+        self.assertEqual(data['message'], message)
+        self.assertEqual(data['error'], 400)

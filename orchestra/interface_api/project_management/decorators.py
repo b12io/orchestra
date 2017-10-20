@@ -8,9 +8,16 @@ def is_project_admin(user):
             user.is_superuser)
 
 
-def project_management_api_view(func):
+def project_management_api_view_base(func):
     @json_view
     @login_required
+    def func_wrapper(*args, **kwargs):
+        return func(*args, **kwargs)
+    return func_wrapper
+
+
+def project_management_api_view(func):
+    @project_management_api_view_base
     @user_passes_test(is_project_admin)
     def func_wrapper(*args, **kwargs):
         return func(*args, **kwargs)

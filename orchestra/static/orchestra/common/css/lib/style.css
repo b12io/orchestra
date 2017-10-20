@@ -6,14 +6,11 @@ Website: http://blacktie.co
 Premium: http://www.gridgum.com
 */
 
-/* Import fonts */
-@import url(//fonts.googleapis.com/css?family=Ruda:400,700,900);
-
 /* BASIC THEME CONFIGURATION */
 body {
     color: #797979;
-	background: #f2f2f2;
-    font-family: 'Ruda', sans-serif;
+    background: #f2f2f2;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     padding: 0px !important;
     margin: 0px !important;
     font-size:13px;
@@ -40,29 +37,29 @@ a, a:hover, a:focus {
 
 /* Bootstrap Modifications */
 .modal-header {
-	background: #68dff0;
+    background: #68dff0;
 }
 
 .modal-title {
-	color: white;
+    color: white;
 }
 
 .btn-round {
-	border-radius: 20px;
-	-webkit-border-radius: 20px;
+    border-radius: 20px;
+    -webkit-border-radius: 20px;
 }
 
 .accordion-heading .accordion-toggle {
-	display: block;
-	cursor: pointer;
-	border-top: 1px solid #F5F5F5;
-	padding: 5px 0px;
-	line-height: 28.75px;
-	text-transform: uppercase;
-	color: #1a1a1a;
-	background-color: #ffffff;
-	outline: none !important;
-	text-decoration: none;
+    display: block;
+    cursor: pointer;
+    border-top: 1px solid #F5F5F5;
+    padding: 5px 0px;
+    line-height: 28.75px;
+    text-transform: uppercase;
+    color: #1a1a1a;
+    background-color: #ffffff;
+    outline: none !important;
+    text-decoration: none;
 }
 
 
@@ -70,11 +67,11 @@ a, a:hover, a:focus {
 /*Theme Backgrounds*/
 
 .bg-theme {
-	background-color: #68dff0;
+    background-color: #68dff0;
 }
 
 .bg-theme02 {
-	background-color: #ac92ec;
+    background-color: #ac92ec;
 }
 
 .bg-theme03 {
@@ -147,13 +144,13 @@ a, a:hover, a:focus {
 }
 
 .btn-clear-g {
-	color: #48bcb4;
-	background: transparent;
-	border-color: #48bcb4;
+    color: #48bcb4;
+    background: transparent;
+    border-color: #48bcb4;
 }
 
 .btn-clear-g:hover {
-	color: white;
+    color: white;
 }
 
 hr {
@@ -168,53 +165,53 @@ hr {
 /*Helpers*/
 
 .centered {
-	text-align: center;
+    text-align: center;
 }
 
 .goleft {
-	text-align: left;
+    text-align: left;
 }
 
 .goright {
-	text-align: right;
+    text-align: right;
 }
 
 .mt {
-	margin-top: 25px;
+    margin-top: 25px;
 }
 
 .mb {
-	margin-bottom: 25px;
+    margin-bottom: 25px;
 }
 
 .ml {
-	margin-left: 5px;
-	}
+    margin-left: 5px;
+    }
 
 .no-margin {
-	margin: 0 !important;
+    margin: 0 !important;
 }
 
 /*Exclusive Theme Colors Configuration*/
 
 .label-theme {
-	background-color: #68dff0;
+    background-color: #68dff0;
 }
 
 .bg-theme {
-	background-color: #68dff0;
+    background-color: #68dff0;
 }
 
 ul.top-menu > li > .logout {
-	color: #f2f2f2;
-	font-size: 12px;
-	border-radius: 4px;
-	-webkit-border-radius: 4px;
-	border: 1px solid #64c3c2 !important;
-	padding: 5px 15px;
-	margin-right: 15px;
-	background: #68dff0;
-	margin-top: 15px;
+    color: #f2f2f2;
+    font-size: 12px;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border: 1px solid #64c3c2 !important;
+    padding: 5px 15px;
+    margin-right: 15px;
+    background: #68dff0;
+    margin-top: 15px;
 }
 
 
@@ -228,8 +225,8 @@ ul.top-menu > li > .logout {
 }
 
 #sidebar h5 {
-	color: #f2f2f2;
-	font-weight: 700;
+    color: #f2f2f2;
+    font-weight: 700;
 }
 
 #sidebar ul li {
@@ -291,8 +288,8 @@ ul.sidebar-menu li ul.sub li a {
 }
 
 ul.sidebar-menu li ul.sub li a:hover {
-	color: white;
-	background: transparent;
+    color: white;
+    background: transparent;
 }
 
 ul.sidebar-menu li ul.sub li.active a {
@@ -725,114 +722,114 @@ ul.top-menu > li > a:hover, ul.top-menu > li > a:focus {
 /* Dash Side */
 
 .ds {
-	background: #ffffff;
-	padding-top: 20px;
+    background: #ffffff;
+    padding-top: 20px;
 }
 
 .ds h4 {
-	font-size: 14px;
-	font-weight: 700;
+    font-size: 14px;
+    font-weight: 700;
 }
 
 .ds h3 {
-	color: #ffffff;
-	font-size: 16px;
-	padding: 0 10px;
-	line-height: 60px;
-	height: 60px;
-	margin: 0;
-	background: #ff865c;
-	text-align: center;
+    color: #ffffff;
+    font-size: 16px;
+    padding: 0 10px;
+    line-height: 60px;
+    height: 60px;
+    margin: 0;
+    background: #ff865c;
+    text-align: center;
 }
 
 .ds i {
-	font-size: 12px;
-	line-height: 16px;
+    font-size: 12px;
+    line-height: 16px;
 }
 
 .ds .desc {
-	border-bottom: 1px solid #eaeaea;
-	display: inline-block;
-	padding: 15px 0;
-	width: 100%;
+    border-bottom: 1px solid #eaeaea;
+    display: inline-block;
+    padding: 15px 0;
+    width: 100%;
 }
 
 .ds .desc:hover {
-	background: #f2f2f2;
+    background: #f2f2f2;
 }
 
 .ds .thumb {
-	width: 30px;
-	margin: 0 10px 0 20px;
-	display: block;
-	float: left;
+    width: 30px;
+    margin: 0 10px 0 20px;
+    display: block;
+    float: left;
 }
 
 .ds .details {
-	width: 170px;
-	float: left;
+    width: 170px;
+    float: left;
 }
 
 .ds > .desc p {
-	font-size: 11px;
+    font-size: 11px;
 }
 
 .ds p > muted {
-	font-size: 9px;
-	text-transform: uppercase;
-	font-style: italic;
-	color: #666666
+    font-size: 9px;
+    text-transform: uppercase;
+    font-style: italic;
+    color: #666666
 }
 
 .ds a {
-	color: #68dff0;
+    color: #68dff0;
 }
 
 /* LINE ICONS CONFIGURATION */
 
 .mtbox {
-	margin-top: 80px;
-	margin-bottom: 40px;
+    margin-top: 80px;
+    margin-bottom: 40px;
 }
 
 .box1 {
-	padding: 15px;
-	text-align: center;
-	color: #989898;
-	border-bottom: 1px solid #989898;
+    padding: 15px;
+    text-align: center;
+    color: #989898;
+    border-bottom: 1px solid #989898;
 }
 
 .box1 span {
-	font-size: 50px;
+    font-size: 50px;
 
 }
 
 .box1 h3 {
-	text-align: center;
+    text-align: center;
 }
 
 .box0:hover .box1 {
-	border-bottom: 1px solid #ffffff;
+    border-bottom: 1px solid #ffffff;
 }
 
 .box0 p {
-	text-align: center;
-	font-size: 12px;
-	color: #f2f2f2;
+    text-align: center;
+    font-size: 12px;
+    color: #f2f2f2;
 }
 
 .box0:hover p {
-	color: #ff865c;
+    color: #ff865c;
 }
 
 .box0:hover {
-	background: #ffffff;
-	box-shadow: 0 2px 1px rgba(0, 0, 0, 0.2);
+    background: #ffffff;
+    box-shadow: 0 2px 1px rgba(0, 0, 0, 0.2);
 }
 
 /* MAIN CHART CONFIGURATION */
 .main-chart {
-	padding-top: 20px;
+    padding-top: 20px;
 }
 
 .mleft {
@@ -841,7 +838,7 @@ ul.top-menu > li > a:hover, ul.top-menu > li > a:focus {
 .border-head h3 {
     margin-top: 20px;
     margin-bottom: 20px;
-	margin-left: 15px;
+    margin-left: 15px;
     padding-bottom: 5px;
     font-weight: normal;
     font-size: 18px;
@@ -929,13 +926,13 @@ ul.top-menu > li > a:hover, ul.top-menu > li > a:focus {
 
 /*Donut Chart Main Page Conf*/
 .donut-main {
-	display: block;
-	text-align: center;
+    display: block;
+    text-align: center;
 }
 
 .donut-main h4 {
-	font-weight: 700;
-	font-size: 16px;
+    font-weight: 700;
+    font-size: 16px;
 }
 
 /* *************************************************************************************
@@ -945,12 +942,12 @@ PANELS CONFIGURATIONS
 /*Panel Size*/
 
 .pn {
-	height: 250px;
-	box-shadow: 0 2px 1px rgba(0, 0, 0, 0.2);
+    height: 250px;
+    box-shadow: 0 2px 1px rgba(0, 0, 0, 0.2);
 }
 
 .pn:hover {
-	box-shadow: 2px 3px 2px rgba(0, 0, 0, 0.3);
+    box-shadow: 2px 3px 2px rgba(0, 0, 0, 0.3);
 }
 
 .pn-small {
@@ -965,95 +962,95 @@ PANELS CONFIGURATIONS
 /*Grey Panel*/
 
 .grey-panel {
-	text-align: center;
-	background: #dfdfe1;
+    text-align: center;
+    background: #dfdfe1;
 }
 .grey-panel .grey-header {
-	background: #ccd1d9;
-	padding: 3px;
-	margin-bottom: 15px;
+    background: #ccd1d9;
+    padding: 3px;
+    margin-bottom: 15px;
 }
 .grey-panel h5 {
-	font-weight: 200;
-	margin-top: 10px;
+    font-weight: 200;
+    margin-top: 10px;
 }
 .grey-panel p {
-	margin-left: 5px;
+    margin-left: 5px;
 }
 /* Specific Conf for Donut Charts*/
 .donut-chart p {
-	margin-top: 5px;
-	font-weight: 700;
-	margin-left: 15px;
+    margin-top: 5px;
+    font-weight: 700;
+    margin-left: 15px;
 }
 .donut-chart h2 {
-	font-weight: 900;
-	color: #FF6B6B;
-	font-size: 38px;
+    font-weight: 900;
+    color: #FF6B6B;
+    font-size: 38px;
 }
 
 /* Dark Blue*/
 
 .darkblue-panel {
-	text-align: center;
-	background: #444c57;
+    text-align: center;
+    background: #444c57;
 }
 .darkblue-panel .darkblue-header {
-	background: transparent;
-	padding: 3px;
-	margin-bottom: 15px;
+    background: transparent;
+    padding: 3px;
+    margin-bottom: 15px;
 }
 .darkblue-panel h1 {
-	color: #f2f2f2;
+    color: #f2f2f2;
 }
 .darkblue-panel h5 {
-	font-weight: 200;
-	margin-top: 10px;
-	color: white;
+    font-weight: 200;
+    margin-top: 10px;
+    color: white;
 }
 .darkblue-panel footer {
-	color: white;
+    color: white;
 }
 .darkblue-panel footer h5 {
-	margin-left:10px;
-	margin-right: 10px;
-	font-weight: 700;
+    margin-left:10px;
+    margin-right: 10px;
+    font-weight: 700;
 }
 
 /*Green Panel*/
 .green-panel {
-	text-align: center;
-	background: #68dff0;
+    text-align: center;
+    background: #68dff0;
 }
 .green-panel .green-header {
-	background: #43b1a9;
-	padding: 3px;
-	margin-bottom: 15px;
+    background: #43b1a9;
+    padding: 3px;
+    margin-bottom: 15px;
 }
 .green-panel h5 {
-	color: white;
-	font-weight: 200;
-	margin-top: 10px;
+    color: white;
+    font-weight: 200;
+    margin-top: 10px;
 }
 .green-panel h3 {
-	color: white;
-	font-weight: 100;
+    color: white;
+    font-weight: 100;
 }
 .green-panel p {
-	color: white;
+    color: white;
 }
 
 /*White Panel */
 .white-panel {
-	text-align: center;
-	background: #ffffff;
-	color: #ccd1d9;
+    text-align: center;
+    background: #ffffff;
+    color: #ccd1d9;
 }
 
 .white-panel p {
-	margin-top: 5px;
-	font-weight: 700;
-	margin-left: 15px;
+    margin-top: 5px;
+    font-weight: 700;
+    margin-left: 15px;
 }
 
 .white-panel p.task-type {
@@ -1066,24 +1063,24 @@ PANELS CONFIGURATIONS
 
 
 .white-panel .white-header {
-	background: #f4f4f4;
-	padding: 3px;
-	margin-bottom: 15px;
-	color: #c6c6c6;
+    background: #f4f4f4;
+    padding: 3px;
+    margin-bottom: 15px;
+    color: #c6c6c6;
 }
 .white-panel .top-strip {
     padding: 3px;
     margin-bottom: 15px;
 }
 .white-panel .small {
-	font-size: 10px;
-	color: #ccd1d9;
+    font-size: 10px;
+    color: #ccd1d9;
 }
 
 .white-panel i {
-	color: #68dff0;
-	padding-right: 4px;
-	font-size: 14px;
+    color: #68dff0;
+    padding-right: 4px;
+    font-size: 14px;
 }
 
 /*STOCK CARD Panel*/
@@ -1115,7 +1112,7 @@ PANELS CONFIGURATIONS
     text-align: right;
 }
 .stock .changes .up {
-	color: #4fd98b
+    color: #4fd98b
 }
 .stock .current-price .changes .value {
       font-size: 1.8em;
@@ -1126,179 +1123,179 @@ PANELS CONFIGURATIONS
     display: block;
     background: #f2f2f2;
     padding: 10px;
-	text-align: center;
+    text-align: center;
 }
 .stock .summary strong {
-	font-weight: 900;
-	font-size: 14px;
+    font-weight: 900;
+    font-size: 14px;
 }
 
 /*Content Panel*/
 .content-panel {
-	background: #ffffff;
-	box-shadow: 0px 3px 2px #aab2bd;
-	padding-top: 15px;
-	padding-bottom: 5px;
+    background: #ffffff;
+    box-shadow: 0px 3px 2px #aab2bd;
+    padding-top: 15px;
+    padding-bottom: 5px;
 }
 .content-panel h4 {
-	margin-left: 10px;
+    margin-left: 10px;
 }
 
 /* Weather 2 */
 .weather-2 {
-	background: #e9f0f4;
+    background: #e9f0f4;
 }
 .weather-2 .weather-2-header {
-	background: #54bae6;
-	padding-top: 5px;
-	margin-bottom: 5px;
+    background: #54bae6;
+    padding-top: 5px;
+    margin-bottom: 5px;
 }
 .weather-2 .weather-2-header p {
-	color: white;
-	margin-left: 5px;
-	margin-right: 5px;
+    color: white;
+    margin-left: 5px;
+    margin-right: 5px;
 }
 .weather-2 .weather-2-header p small {
-	font-size: 10px;
+    font-size: 10px;
 }
 .weather-2 .data {
-	margin-right: 10px;
-	margin-left: 10px;
-	color: #272b34;
+    margin-right: 10px;
+    margin-left: 10px;
+    color: #272b34;
 }
 .weather-2 .data h5 {
-	margin-top: 0px;
-	font-weight: lighter;
+    margin-top: 0px;
+    font-weight: lighter;
 }
 .weather-2 .data h1{
-	margin-top: 2px;
+    margin-top: 2px;
 }
 
 /* Weather 3 */
 .weather-3 {
-	background: #ffcf00;
+    background: #ffcf00;
 }
 
 .weather-3 i {
-	color: white;
-	margin-top: 30px;
-	font-size: 70px;
+    color: white;
+    margin-top: 30px;
+    font-size: 70px;
 }
 .weather-3 h1 {
-	margin-top: 10px;
-	color: white;
-	font-weight: 900;
+    margin-top: 10px;
+    color: white;
+    font-weight: 900;
 }
 .weather-3 .info {
-	background: #f2f2f2;
+    background: #f2f2f2;
 }
 .weather-3 .info i {
-	font-size: 15px;
-	color: #c2c2c2;
-	margin-bottom: 0px;
-	margin-top: 10px;
+    font-size: 15px;
+    color: #c2c2c2;
+    margin-bottom: 0px;
+    margin-top: 10px;
 }
 .weather-3 .info h3 {
-	font-weight: 900;
-	margin-bottom: 0px;
+    font-weight: 900;
+    margin-bottom: 0px;
 }
 .weather-3 .info p {
-	margin-left: 10px;
-	margin-right: 10px;
-	margin-bottom: 16px;
-	color: #c2c2c2;
-	font-size: 15px;
-	font-weight: 700;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 16px;
+    color: #c2c2c2;
+    font-size: 15px;
+    font-weight: 700;
 }
 
 
 /*Twitter Panel*/
 .twitter-panel {
-	background: #4fc1e9;
-	text-align: center;
+    background: #4fc1e9;
+    text-align: center;
 }
 .twitter-panel i {
-	color: white;
-	margin-top: 40px;
+    color: white;
+    margin-top: 40px;
 }
 .twitter-panel p {
-	color: #f5f5f5;
-	margin: 10px;
+    color: #f5f5f5;
+    margin: 10px;
 }
 .twitter-panel .user {
-	color: white;
-	font-weight: 900;
+    color: white;
+    font-weight: 900;
 }
 
 
 /* Product Panel */
 .product-panel {
-	background: #dadad2;
-	text-align: center;
-	padding-top: 50px;
-	height: 100%;
+    background: #dadad2;
+    text-align: center;
+    padding-top: 50px;
+    height: 100%;
 }
 
 /* Product Panel 2*/
 .product-panel-2 {
-	background: #dadad2;
-	text-align: center;
+    background: #dadad2;
+    text-align: center;
 }
 .product-panel-2 .badge {
-	position: absolute;
-	top: 20px;
-	left: 35px;
+    position: absolute;
+    top: 20px;
+    left: 35px;
 }
 .badge-hot {
-	background: #ed5565;
-	width: 70px;
-	height: 70px;
-	line-height: 70px;
-	font-size: 18px;
-	color: #fff;
-	text-align: center;
-	border-radius: 100%;
+    background: #ed5565;
+    width: 70px;
+    height: 70px;
+    line-height: 70px;
+    font-size: 18px;
+    color: #fff;
+    text-align: center;
+    border-radius: 100%;
 }
 
 .followers {
-	margin-left: 5px;
-	margin-top: 5px;
+    margin-left: 5px;
+    margin-top: 5px;
 }
 
 .badge-popular {
-	background: #3498db;
-	width: 70px;
-	height: 70px;
-	line-height: 70px;
-	font-size: 13px;
-	color: #fff;
-	text-align: center;
-	border-radius: 100%;
+    background: #3498db;
+    width: 70px;
+    height: 70px;
+    line-height: 70px;
+    font-size: 13px;
+    color: #fff;
+    text-align: center;
+    border-radius: 100%;
 }
 .blog-title {
-	background: rgba(0,0,0,0.5);
-	bottom: 100px;
-	padding: 6px;
-	color: white;
-	font-weight: 700;
-	position: absolute;
-	display: block;
-	width: 120px;
+    background: rgba(0,0,0,0.5);
+    bottom: 100px;
+    padding: 6px;
+    color: white;
+    font-weight: 700;
+    position: absolute;
+    display: block;
+    width: 120px;
 }
 .blog-text {
-	margin-left: 8px;
-	margin-right: 8px;
-	margin-top: 15px;
-	font-size: 12px;
+    margin-left: 8px;
+    margin-right: 8px;
+    margin-top: 15px;
+    font-size: 12px;
 }
 
 /* Calendar Configuration */
 #calendar {
-	color: white;
-	padding: 0px !important;
+    color: white;
+    padding: 0px !important;
 }
 .calendar-month-header {
-	background: #43b1a9;
+    background: #43b1a9;
 }
 
 /* TODO PANEL */
@@ -1368,15 +1365,15 @@ PANELS CONFIGURATIONS
 }
 
 .pr2-social a {
-	color: #cdcdcd;
+    color: #cdcdcd;
 }
 .pr2-social a:hover {
-	color: #68dff0;
+    color: #68dff0;
 }
 .pr2-social i {
-	margin-top: 15px;
-	margin-right: 12px;
-	font-size: 20px;
+    margin-top: 15px;
+    margin-right: 12px;
+    font-size: 20px;
 }
 
 
@@ -1446,35 +1443,35 @@ PANELS CONFIGURATIONS
 
 /* showcase background */
 .showback {
-	background: #ffffff;
-	padding: 15px;
-	margin-bottom: 30px;
-	box-shadow: 0px 3px 2px #aab2bd;
+    background: #ffffff;
+    padding: 15px;
+    margin-bottom: 30px;
+    box-shadow: 0px 3px 2px #aab2bd;
 }
 
 
 
 /* Calendar Events - Calendar.html*/
 .external-event {
-	cursor: move;
-	display: inline-block !important;
-	margin-bottom: 7px !important;
-	margin-right: 7px !important;
-	padding: 10px;
+    cursor: move;
+    display: inline-block !important;
+    margin-bottom: 7px !important;
+    margin-right: 7px !important;
+    padding: 10px;
 }
 
 .drop-after {
-	padding-top: 15px;
-	margin-top: 15px;
-	border-top: 1px solid #ccc;
+    padding-top: 15px;
+    margin-top: 15px;
+    border-top: 1px solid #ccc;
 }
 
 .fc-state-default, .fc-state-default .fc-button-inner {
-	background: #f2f2f2;
+    background: #f2f2f2;
 }
 
 .fc-state-active .fc-button-inner {
-	background: #FFFFFF;
+    background: #FFFFFF;
 }
 
 /* Gallery Configuration */
@@ -1503,12 +1500,12 @@ PANELS CONFIGURATIONS
 
 /* EZ Checklist */
 .ez-checkbox {
-	margin-right: 5px;
+    margin-right: 5px;
 }
 
 .ez-checkbox, .ez-radio {
-	height: 20px;
-	width: 20px;
+    height: 20px;
+    width: 20px;
 }
 
 .brand-highlight {
@@ -1518,120 +1515,120 @@ background: #fffbcc !important;
 
 /* FORMS CONFIGURATION */
 .form-panel {
-	background: #ffffff;
-	margin: 10px;
-	padding: 10px;
-	box-shadow: 0px 3px 2px #aab2bd;
-	text-align: left;
+    background: #ffffff;
+    margin: 10px;
+    padding: 10px;
+    box-shadow: 0px 3px 2px #aab2bd;
+    text-align: left;
 }
 
 label {
-	font-weight: 400;
+    font-weight: 400;
 }
 
 .form-horizontal.style-form .form-group {
-	border-bottom: 1px solid #eff2f7;
-	padding-bottom: 15px;
-	margin-bottom: 15px;
+    border-bottom: 1px solid #eff2f7;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
 }
 
 .round-form {
-	border-radius: 500px;
-	-webkit-border-radius: 500px;
+    border-radius: 500px;
+    -webkit-border-radius: 500px;
 }
 
 @media (min-width: 768px) {
-		.form-horizontal .control-label {
-		text-align: left;
-	}
+        .form-horizontal .control-label {
+        text-align: left;
+    }
 }
 
 #focusedInput {
-	border: 1px solid #ed5565;
-	box-shadow: none;
+    border: 1px solid #ed5565;
+    box-shadow: none;
 }
 
 .add-on {
-	float: right;
-	margin-top: -37px;
-	padding: 3px;
-	text-align: center;
+    float: right;
+    margin-top: -37px;
+    padding: 3px;
+    text-align: center;
 }
 
 .add-on .btn {
-	height: 34px;
+    height: 34px;
 }
 
 
 /*LOGIN CONFIGURATION PAGE*/
 .form-login {
-	max-width: 330px;
-	margin: 100px auto 0;
-	background: #fff;
-	border-radius: 5px;
-	-webkit-border-radius: 5px;
+    max-width: 330px;
+    margin: 100px auto 0;
+    background: #fff;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
 }
 
 .form-login h2.form-login-heading {
-	margin: 0;
-	padding: 25px 20px;
-	text-align: center;
-	background: #68dff0;
-	border-radius: 5px 5px 0 0;
-	-webkit-border-radius: 5px 5px 0 0;
-	color: #fff;
-	font-size: 20px;
-	text-transform: uppercase;
-	font-weight: 300;
+    margin: 0;
+    padding: 25px 20px;
+    text-align: center;
+    background: #68dff0;
+    border-radius: 5px 5px 0 0;
+    -webkit-border-radius: 5px 5px 0 0;
+    color: #fff;
+    font-size: 20px;
+    text-transform: uppercase;
+    font-weight: 300;
 }
 .login-wrap {
-	padding: 20px;
+    padding: 20px;
 }
 .login-wrap .registration {
-	text-align: center;
+    text-align: center;
 }
 .login-social-link {
-	display: block;
-	margin-top: 20px;
-	margin-bottom: 15px;
+    display: block;
+    margin-top: 20px;
+    margin-bottom: 15px;
 }
 
 
 /*LOCK SCREEN CONF*/
 #showtime {
-	width: 100%;
-	color: #fff;
-	font-size: 90px;
-	margin-bottom: 30px;
-	margin-top: 250px;
-	display: inline-block;
-	text-align: center;
-	font-weight: 400;
+    width: 100%;
+    color: #fff;
+    font-size: 90px;
+    margin-bottom: 30px;
+    margin-top: 250px;
+    display: inline-block;
+    text-align: center;
+    font-weight: 400;
 }
 
 .lock-screen {
-	text-align: center;
+    text-align: center;
 }
 
 .lock-screen a {
-	color: white;
+    color: white;
 }
 
 .lock-screen a:hover {
-	color: #48cfad
+    color: #48cfad
 }
 
 .lock-screen i {
-	font-size: 60px;
+    font-size: 60px;
 }
 
 .lock-screen .modal-content {
-	position: relative;
-	background-color: #f2f2f2;
-	background-clip: padding-box;
-	border: 1px solid #999;
-	border: 1px solid rgba(0, 0, 0, .2);
-	border-radius: 5px;
+    position: relative;
+    background-color: #f2f2f2;
+    background-clip: padding-box;
+    border: 1px solid #999;
+    border: 1px solid rgba(0, 0, 0, .2);
+    border-radius: 5px;
 }
 
 

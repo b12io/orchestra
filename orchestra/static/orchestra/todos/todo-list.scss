@@ -1,0 +1,31 @@
+.todo-list {
+  .section-body {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .new-todo {
+    float: left;
+    &__description {
+      width: 300px;
+    }
+  }
+
+  .existing-todos {
+    padding-top: 5px;
+
+    .todo {
+      input[type=checkbox] {
+        transform: scale(1.1);
+      }
+      label {
+        align-items: end;
+        display: flex;
+      }
+      &__role {
+        font-weight: 500;
+        padding-left: 5px;
+      }
+    }
+  }
+}

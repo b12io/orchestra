@@ -156,6 +156,16 @@ class TimeEntryFactory(factory.django.DjangoModelFactory):
         model = 'orchestra.TimeEntry'
 
 
+class TodoFactory(factory.django.DjangoModelFactory):
+    task = factory.SubFactory(TaskFactory)
+    completed = False
+    description = factory.Sequence(
+        lambda n: 'Description {}'.format(n))
+
+    class Meta:
+        model = 'orchestra.Todo'
+
+
 class CommunicationPreferenceFactory(factory.django.DjangoModelFactory):
 
     worker = factory.SubFactory(WorkerFactory)

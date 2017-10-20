@@ -14,6 +14,7 @@ from orchestra.models.core.mixins import WorkerCertificationMixin
 from orchestra.models.core.mixins import ProjectMixin
 from orchestra.models.core.mixins import TaskMixin
 from orchestra.models.core.mixins import TaskAssignmentMixin
+from orchestra.models.core.mixins import TodoMixin
 from orchestra.models.core.mixins import PayRateMixin
 from orchestra.utils.models import BaseModel
 
@@ -418,6 +419,7 @@ class TaskAssignment(TaskAssignmentMixin, BaseModel):
 
     start_datetime = models.DateTimeField(default=timezone.now)
     worker = models.ForeignKey(Worker,
+                               related_name='assignments',
                                on_delete=models.CASCADE,
                                null=True,
                                blank=True)
@@ -565,3 +567,30 @@ class PayRate(PayRateMixin, models.Model):
     hourly_multiplier = models.DecimalField(max_digits=6, decimal_places=4)
     start_date = models.DateField(default=timezone.now)
     end_date = models.DateField(null=True, blank=True)
+
+
+class Todo(TodoMixin, BaseModel):
+    """
+    A todo on a task.
+
+    Attributes:
+        task (orchestra.models.Task):
+            The given task the Todo is attached to.
+        completed (boolean):
+            Whether the todo has been completed.
+        description (str):
+            A text description of the Todo.
+
+    Constraints:
+        `task` and `assignment_counter` are taken to be unique_together.
+
+        Task assignments for machine-type tasks cannot have a `worker`,
+        while those for human-type tasks must have one.
+    """
+    class Meta:
+        app_label = 'orchestra'
+
+    task = models.ForeignKey(
+        Task, related_name='todos', on_delete=models.CASCADE)
+    description = models.CharField(max_length=200)
+    completed = models.BooleanField(default=False)

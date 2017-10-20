@@ -1,0 +1,60 @@
+<section class="section-panel tasks-section">
+  <div class="container-fluid">
+    <div class="row section-header">
+      <div class="col-lg-12">
+        <h3>
+          {{vm.tasktable.label}} ({{ vm.tasktable.tasks.length || 0 }})
+          <button type="button"
+                    ng-if="vm.enableNewTaskButtons"
+                    ng-click="vm.newTask('entry_level')"
+                    ng-class="{'disabled': vm.orchestraTasks.preventNew ||
+                                           vm.noTaskTimer}"
+                    class="btn btn-primary btn-new-entry-task">
+              New delivery task
+            </button>
+            <button type="button"
+                    ng-if="vm.orchestraTasks.reviewerStatus &&
+                           vm.enableNewTaskButtons"
+                    ng-click="vm.newTask('reviewer')"
+                    ng-class="{'disabled': vm.orchestraTasks.preventNew ||
+                                           vm.noTaskTimer}"
+                    class="btn btn-primary btn-new-review-task">
+              New review task
+            </button>
+            <span class="warning-message"
+                  ng-show="vm.newTaskError && !vm.orchestraTasks.preventNew">
+              No tasks available at the moment
+            </span>
+            <i class="fa fa-spinner fa-spin" ng-show="vm.waiting"></i>
+        </h3>
+      </div>
+    </div>
+    <div class="row">
+          <table ng-if="vm.tasktable.tasks.length > 0"
+                 st-table="vm.tasktable.tasks"
+                 class="table table-striped">
+            <thead>
+              <tr>
+                <th>Priority</th>
+                <th>Project</th>
+                <th>Task</th>
+                <th>Details</th>
+                <th>Next steps</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                 class="task-row"
+                 ng-repeat="task in vm.tasktable.tasks"
+                 ng-click="vm.openTask(task)">
+                <td>{{task.priority}}</td>
+                <td>{{task.project}}</td>
+                <td>{{task.step}}</td>
+                <td>{{task.detail|limitTo:50}}{{task.detail.length > 50 ? '...' : ''}}</td>
+                <td>{{task.next_todo_description|limitTo:50}}{{task.next_todo_description.length > 50 ? '...' : ''}}</td>
+              </tr>
+            </tbody>
+          </table>
+    </div>
+  </div>
+</section>

@@ -1,4 +1,7 @@
 import slacker
+
+from django.shortcuts import get_object_or_404
+from django.core.exceptions import PermissionDenied
 from jsonview.exceptions import BadRequest
 from rest_framework import generics
 from rest_framework import permissions
@@ -9,6 +12,8 @@ from orchestra.interface_api.project_management.decorators import \
     is_project_admin
 from orchestra.interface_api.project_management.decorators import \
     project_management_api_view
+from orchestra.interface_api.project_management.decorators import \
+    project_management_api_view_base
 from orchestra.interface_api.project_management import project_management
 from orchestra.models import Task
 from orchestra.models import Project
@@ -34,9 +39,20 @@ class ProjectList(generics.ListCreateAPIView):
     queryset = Project.objects.exclude(status=Project.Status.ABORTED)
 
 
-@project_management_api_view
+@project_management_api_view_base
 def project_information_api(request):
+    """
+    This function is used by both the project management interface
+    (project admins only) and for providing project information to
+    experts (only to experts associated with a project). We enforce
+    both of these permissions in the view below.
+
+    """
     project_id = load_encoded_json(request.body)['project_id']
+    worker = get_object_or_404(Worker, user=request.user)
+    if not (is_project_admin(request.user) or
+            worker.assignments.filter(task__project=project_id).exists()):
+        raise PermissionDenied
     try:
         return project_management.project_management_information(project_id)
     except Project.DoesNotExist:

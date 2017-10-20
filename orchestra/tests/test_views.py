@@ -15,6 +15,7 @@ from orchestra.models import TimeEntry
 from orchestra.models import Worker
 from orchestra.project_api.serializers import TaskTimerSerializer
 from orchestra.project_api.serializers import TimeEntrySerializer
+from orchestra.tests.helpers import EndpointTestCase
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.fixtures import UserFactory
@@ -26,16 +27,7 @@ from orchestra.views import not_found
 from orchestra.views import internal_server_error
 
 
-class EndpointTests(OrchestraTestCase):
-
-    def _verify_bad_request(self, response, message):
-        self.assertEqual(response.status_code, 400)
-        data = load_encoded_json(response.content)
-        self.assertEqual(data['message'], message)
-        self.assertEqual(data['error'], 400)
-
-
-class TimeEntriesEndpointTests(EndpointTests):
+class TimeEntriesEndpointTests(EndpointTestCase):
 
     def setUp(self):
         super().setUp()
@@ -162,7 +154,7 @@ class TimeEntriesEndpointTests(EndpointTests):
         self.assertEqual(resp.status_code, 400)
 
 
-class TimerEndpointTests(EndpointTests):
+class TimerEndpointTests(EndpointTestCase):
 
     def setUp(self):
         super().setUp()

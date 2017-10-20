@@ -477,7 +477,6 @@ def tasks_assigned_to_worker(worker):
         .order_by('-task__project__priority',
                   '-task__project__start_datetime')[:200])
 
-    # TODO(jrbotros): convert this to a filterable list
     task_assignments_overview = {
         'returned': (
             active_task_assignments
@@ -489,21 +488,43 @@ def tasks_assigned_to_worker(worker):
         'pending_processing': inactive_processing_task_assignments,
         'complete': complete_task_assignments}
 
-    tasks_assigned = {}
+    tasks_assigned = []
     for state, task_assignments in iter(task_assignments_overview.items()):
-        tasks_val = []
         for task_assignment in task_assignments:
             step = task_assignment.task.step
             workflow_version = step.workflow_version
-
-            # TODO(jrbotros): standardize task/assignment serialization
-            tasks_val.append({
+            next_todo_description = None
+            should_be_active = False
+            if state in ('returned', 'in_progress'):
+                next_todo = (
+                    task_assignment.task.todos
+                    .filter(completed=False)
+                    .order_by('-created_at')
+                    .first())
+                if next_todo:
+                    next_todo_description = next_todo.description
+                num_todos = task_assignment.task.todos.count()
+                # If a task has no todos (complete or incomplete)
+                # assigned to it, then by default the task would be
+                # marked as pending. When a task is first created and
+                # picked up by a worker, it will thus be in pending
+                # state, which is confusing behavior. We thus treat a
+                # task with zero todos as active. After a task has one
+                # or more todos assigned to it, its active/pending
+                # state is determined by the presence of incomplete
+                # todos.
+                should_be_active = ((num_todos == 0) or
+                                    (next_todo_description is not None))
+            tasks_assigned.append({
                 'id': task_assignment.task.id,
                 'assignment_id': task_assignment.id,
                 'step': step.name,
                 'project': workflow_version.name,
-                'detail': task_assignment.task.project.short_description})
-        tasks_assigned[state] = tasks_val
+                'detail': task_assignment.task.project.short_description,
+                'priority': task_assignment.task.project.priority,
+                'state': state,
+                'next_todo_description': next_todo_description,
+                'should_be_active': should_be_active})
     return tasks_assigned
 
 
