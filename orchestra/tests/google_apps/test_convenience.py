@@ -1,20 +1,20 @@
-from unittest.mock import patch
 from unittest.mock import MagicMock
+from unittest.mock import patch
 
-from django.test import override_settings
-from django.test import TestCase
 from django.conf import settings
+from django.test import TestCase
+from django.test import override_settings
 
+from orchestra.google_apps.convenience import Service
 from orchestra.google_apps.convenience import _get_image_mimetype
+from orchestra.google_apps.convenience import add_image
 from orchestra.google_apps.convenience import create_document_from_template
 from orchestra.google_apps.convenience import create_folder_with_permissions
 from orchestra.google_apps.convenience import create_media_folder_with_images
-from orchestra.google_apps.convenience import Service
-from orchestra.google_apps.convenience import add_image
-from orchestra.google_apps.errors import InvalidUrlError
 from orchestra.google_apps.errors import GoogleDriveError
-from orchestra.tests.helpers.google_apps import mock_create_drive_service
+from orchestra.google_apps.errors import InvalidUrlError
 from orchestra.tests.helpers.google_apps import fake_image_get
+from orchestra.tests.helpers.google_apps import mock_create_drive_service
 
 
 @override_settings(GOOGLE_APPS=True)

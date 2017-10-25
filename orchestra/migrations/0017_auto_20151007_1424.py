@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import models, migrations
-from django.utils import timezone
 import jsonfield.fields
+from django.db import migrations
+from django.db import models
+from django.utils import timezone
 
 
 class Migration(migrations.Migration):

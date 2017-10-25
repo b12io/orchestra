@@ -5,15 +5,15 @@ TODO(marcua): Move this file to its own pip/github project.
 """
 
 import json
-import requests
-
+import logging
 from datetime import datetime
-from django.conf import settings
-from httpsig.requests_auth import HTTPSignatureAuth
 from time import mktime
 from wsgiref.handlers import format_date_time
 
-import logging
+import requests
+from django.conf import settings
+from httpsig.requests_auth import HTTPSignatureAuth
+
 logger = logging.getLogger(__name__)
 
 _httpsig_auth = HTTPSignatureAuth(key_id=settings.ORCHESTRA_PROJECT_API_KEY,

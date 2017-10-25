@@ -1,3 +1,5 @@
+from rest_framework import serializers
+
 from orchestra.models import Iteration
 from orchestra.models import Project
 from orchestra.models import Task
@@ -5,7 +7,6 @@ from orchestra.models import TaskAssignment
 from orchestra.models import TaskTimer
 from orchestra.models import TimeEntry
 from orchestra.models import WorkerCertification
-from rest_framework import serializers
 
 
 class ProjectSerializer(serializers.ModelSerializer):

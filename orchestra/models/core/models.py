@@ -5,17 +5,17 @@ from djmoney.models.fields import MoneyField
 from jsonfield import JSONField
 from phonenumber_field.modelfields import PhoneNumberField
 
+from orchestra.models.core.mixins import CertificationMixin
+from orchestra.models.core.mixins import PayRateMixin
+from orchestra.models.core.mixins import ProjectMixin
+from orchestra.models.core.mixins import StepMixin
+from orchestra.models.core.mixins import TaskAssignmentMixin
+from orchestra.models.core.mixins import TaskMixin
+from orchestra.models.core.mixins import TodoMixin
+from orchestra.models.core.mixins import WorkerCertificationMixin
+from orchestra.models.core.mixins import WorkerMixin
 from orchestra.models.core.mixins import WorkflowMixin
 from orchestra.models.core.mixins import WorkflowVersionMixin
-from orchestra.models.core.mixins import CertificationMixin
-from orchestra.models.core.mixins import StepMixin
-from orchestra.models.core.mixins import WorkerMixin
-from orchestra.models.core.mixins import WorkerCertificationMixin
-from orchestra.models.core.mixins import ProjectMixin
-from orchestra.models.core.mixins import TaskMixin
-from orchestra.models.core.mixins import TaskAssignmentMixin
-from orchestra.models.core.mixins import TodoMixin
-from orchestra.models.core.mixins import PayRateMixin
 from orchestra.utils.models import BaseModel
 
 # TODO(marcua): Convert ManyToManyFields to django-hstore referencefields or

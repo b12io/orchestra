@@ -7,19 +7,19 @@ from orchestra.core.errors import ModelSaveError
 from orchestra.models import PayRate
 from orchestra.models import Worker
 from orchestra.models import WorkerCertification
-from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers import OrchestraModelTestCase
+from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import CertificationFactory
-from orchestra.tests.helpers.fixtures import StepFactory
 from orchestra.tests.helpers.fixtures import PayRateFactory
 from orchestra.tests.helpers.fixtures import ProjectFactory
-from orchestra.tests.helpers.fixtures import TaskFactory
+from orchestra.tests.helpers.fixtures import StepFactory
 from orchestra.tests.helpers.fixtures import TaskAssignmentFactory
-from orchestra.tests.helpers.fixtures import WorkerFactory
+from orchestra.tests.helpers.fixtures import TaskFactory
+from orchestra.tests.helpers.fixtures import UserFactory
 from orchestra.tests.helpers.fixtures import WorkerCertificationFactory
+from orchestra.tests.helpers.fixtures import WorkerFactory
 from orchestra.tests.helpers.fixtures import WorkflowFactory
 from orchestra.tests.helpers.fixtures import WorkflowVersionFactory
-from orchestra.tests.helpers.fixtures import UserFactory
 from orchestra.tests.helpers.fixtures import setup_models
 
 

@@ -1,11 +1,11 @@
-from bs4 import BeautifulSoup
-from urllib.parse import urljoin
-from urllib.parse import urlparse
-
 import logging
 import random
 import re
+from urllib.parse import urljoin
+from urllib.parse import urlparse
+
 import requests
+from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
 

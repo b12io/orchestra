@@ -3,10 +3,10 @@ from urllib.parse import urljoin
 from django.conf import settings
 from django.core.urlresolvers import reverse
 
-from orchestra.models import Task
-from orchestra.models import CommunicationPreference
-from orchestra.communication.slack import OrchestraSlackService
 from orchestra.communication.mail import send_mail
+from orchestra.communication.slack import OrchestraSlackService
+from orchestra.models import CommunicationPreference
+from orchestra.models import Task
 from orchestra.utils.decorators import run_if
 from orchestra.utils.task_properties import assignment_history
 from orchestra.utils.task_properties import current_assignment

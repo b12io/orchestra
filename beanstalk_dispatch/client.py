@@ -1,9 +1,10 @@
 import json
+
 import boto.sqs
+from django.conf import settings
 
 from beanstalk_dispatch.common import create_request_body
 from beanstalk_dispatch.execution import execute_function
-from django.conf import settings
 
 
 def schedule_function(queue_name, function_name, *args, **kwargs):

@@ -12,7 +12,6 @@ to the bottom of `settings.py`.
 
 import os
 import sys
-
 from datetime import timedelta
 
 

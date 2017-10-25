@@ -1,3 +1,4 @@
+import logging
 import random
 from pydoc import locate
 
@@ -6,6 +7,7 @@ from django.db import connection
 from django.db import transaction
 from django.utils import timezone
 
+from orchestra.communication.slack import add_worker_to_project_team
 from orchestra.core.errors import AssignmentPolicyError
 from orchestra.core.errors import CreationPolicyError
 from orchestra.core.errors import IllegalTaskSubmission
@@ -22,13 +24,11 @@ from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import Worker
 from orchestra.models import WorkerCertification
-from orchestra.communication.slack import add_worker_to_project_team
 from orchestra.utils.notifications import notify_status_change
 from orchestra.utils.task_properties import assignment_history
 from orchestra.utils.task_properties import current_assignment
 from orchestra.utils.task_properties import get_latest_iteration
 
-import logging
 logger = logging.getLogger(__name__)
 
 

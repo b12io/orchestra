@@ -1,8 +1,8 @@
 import re
 
 from orchestra.bots.errors import SlackCommandInvalidRequest
-from orchestra.communication.slack import format_slack_message
 from orchestra.communication.slack import OrchestraSlackService
+from orchestra.communication.slack import format_slack_message
 
 
 class BaseBot(object):

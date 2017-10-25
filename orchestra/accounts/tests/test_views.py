@@ -1,8 +1,9 @@
-from django.core.urlresolvers import reverse
 from unittest.mock import patch
 
-from orchestra.tests.helpers import OrchestraAuthenticatedTestCase
+from django.core.urlresolvers import reverse
+
 from orchestra.models import CommunicationPreference
+from orchestra.tests.helpers import OrchestraAuthenticatedTestCase
 from orchestra.tests.helpers.fixtures import WorkerFactory
 from orchestra.tests.helpers.fixtures import setup_models
 

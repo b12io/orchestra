@@ -1,5 +1,6 @@
-from apiclient import errors
 from unittest.mock import MagicMock
+
+from apiclient import errors
 
 
 class FakeImageResponse(object):

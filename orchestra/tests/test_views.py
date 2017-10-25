@@ -1,8 +1,7 @@
 import datetime
 import json
-
-from unittest.mock import patch
 from unittest.mock import MagicMock
+from unittest.mock import patch
 
 from django.core.urlresolvers import reverse
 from django.utils import timezone
@@ -17,14 +16,14 @@ from orchestra.project_api.serializers import TaskTimerSerializer
 from orchestra.project_api.serializers import TimeEntrySerializer
 from orchestra.tests.helpers import EndpointTestCase
 from orchestra.tests.helpers import OrchestraTestCase
-from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.fixtures import UserFactory
 from orchestra.tests.helpers.fixtures import WorkerFactory
+from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.utils.load_json import load_encoded_json
 from orchestra.views import bad_request
 from orchestra.views import forbidden
-from orchestra.views import not_found
 from orchestra.views import internal_server_error
+from orchestra.views import not_found
 
 
 class TimeEntriesEndpointTests(EndpointTestCase):

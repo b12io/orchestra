@@ -1,31 +1,30 @@
 import slacker
-
-from django.shortcuts import get_object_or_404
 from django.core.exceptions import PermissionDenied
+from django.shortcuts import get_object_or_404
 from jsonview.exceptions import BadRequest
 from rest_framework import generics
 from rest_framework import permissions
 
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import WorkerCertificationError
+from orchestra.interface_api.project_management import project_management
 from orchestra.interface_api.project_management.decorators import \
     is_project_admin
 from orchestra.interface_api.project_management.decorators import \
     project_management_api_view
 from orchestra.interface_api.project_management.decorators import \
     project_management_api_view_base
-from orchestra.interface_api.project_management import project_management
-from orchestra.models import Task
 from orchestra.models import Project
+from orchestra.models import Task
 from orchestra.models import Worker
-from orchestra.utils.load_json import load_encoded_json
 from orchestra.project_api.serializers import ProjectSerializer
+from orchestra.utils.load_json import load_encoded_json
 from orchestra.utils.revert import revert_task_to_iteration
+from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.task_lifecycle import complete_and_skip_task
 from orchestra.utils.task_lifecycle import create_subsequent_tasks
-from orchestra.utils.task_lifecycle import reassign_assignment
-from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.task_lifecycle import end_project
+from orchestra.utils.task_lifecycle import reassign_assignment
 
 
 class IsProjectAdmin(permissions.BasePermission):

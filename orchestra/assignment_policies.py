@@ -1,3 +1,5 @@
+import logging
+
 from orchestra.core.errors import AssignmentPolicyError
 from orchestra.core.errors import WorkerCertificationError
 from orchestra.models import Task
@@ -5,7 +7,6 @@ from orchestra.models import Worker
 from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.task_properties import assignment_history
 
-import logging
 logger = logging.getLogger(__name__)
 
 

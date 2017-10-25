@@ -7,9 +7,9 @@ from orchestra.models import Todo
 from orchestra.models import Worker
 from orchestra.project_api.serializers import TimeEntrySerializer
 from orchestra.tests.helpers import EndpointTestCase
-from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.fixtures import TaskFactory
 from orchestra.tests.helpers.fixtures import TodoFactory
+from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.todos.serializers import TodoSerializer
 from orchestra.utils.load_json import load_encoded_json
 

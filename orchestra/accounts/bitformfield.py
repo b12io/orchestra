@@ -1,13 +1,15 @@
 # Copy pasted from
 # https://raw.githubusercontent.com/greyside/django-bitfield/04efae91d292bffb569bd7cc13e5c941e42e8698/bitfield/forms.py
-from django.forms import CheckboxSelectMultiple, IntegerField, ValidationError
+from bitfield.types import BitHandler
+from django.forms import CheckboxSelectMultiple
+from django.forms import IntegerField
+from django.forms import ValidationError
 from django.utils.safestring import mark_safe
+
 try:
     from django.utils.encoding import force_text
 except ImportError:
     from django.utils.encoding import force_unicode as force_text
-
-from bitfield.types import BitHandler
 
 
 class CheckboxSelectMultipleP(CheckboxSelectMultiple):

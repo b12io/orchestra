@@ -1,12 +1,14 @@
+import logging
+
 from django.views.decorators.csrf import csrf_exempt
-from orchestra.project_api.auth import IsSignedUser
-from orchestra.project_api.auth import OrchestraProjectAPIAuthentication
 from jsonview.decorators import json_view
 from rest_framework.decorators import api_view
 from rest_framework.decorators import authentication_classes
 from rest_framework.decorators import permission_classes
 
-import logging
+from orchestra.project_api.auth import IsSignedUser
+from orchestra.project_api.auth import OrchestraProjectAPIAuthentication
+
 logger = logging.getLogger(__name__)
 
 

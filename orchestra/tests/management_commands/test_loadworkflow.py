@@ -4,13 +4,13 @@ from django.core.management import call_command
 from django.test import modify_settings
 
 from orchestra.tests.helpers import OrchestraTestCase
-from orchestra.tests.helpers.workflow import assert_test_dir_workflow_not_loaded  # noqa
-from orchestra.tests.helpers.workflow import assert_test_dir_workflow_loaded
-from orchestra.tests.helpers.workflow import assert_test_dir_v1_not_loaded
 from orchestra.tests.helpers.workflow import assert_test_dir_v1_loaded
-from orchestra.tests.helpers.workflow import assert_test_dir_v2_not_loaded
+from orchestra.tests.helpers.workflow import assert_test_dir_v1_not_loaded
 from orchestra.tests.helpers.workflow import assert_test_dir_v2_loaded
-
+from orchestra.tests.helpers.workflow import assert_test_dir_v2_not_loaded
+from orchestra.tests.helpers.workflow import assert_test_dir_workflow_loaded
+from orchestra.tests.helpers.workflow import \
+    assert_test_dir_workflow_not_loaded  # noqa
 
 TEST_WORKFLOWS_MODULE = 'orchestra.tests.workflows'
 VALID_WORKFLOW = 'test_dir'

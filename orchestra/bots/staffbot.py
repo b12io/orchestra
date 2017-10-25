@@ -1,19 +1,20 @@
+import logging
 import re
 
-from django.db.models import Q
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.template import Context
 from django.template.loader import render_to_string
 
 from orchestra.bots.basebot import BaseBot
-from orchestra.communication.errors import SlackError
-from orchestra.communication.mail import send_mail
-from orchestra.communication.mail import html_from_plaintext
-from orchestra.communication.slack import format_slack_message
 from orchestra.bots.errors import SlackUserUnauthorized
-from orchestra.core.errors import TaskStatusError
+from orchestra.communication.errors import SlackError
+from orchestra.communication.mail import html_from_plaintext
+from orchestra.communication.mail import send_mail
+from orchestra.communication.slack import format_slack_message
 from orchestra.core.errors import TaskAssignmentError
+from orchestra.core.errors import TaskStatusError
 from orchestra.interface_api.project_management.decorators import \
     is_project_admin
 from orchestra.models import CommunicationPreference
@@ -26,7 +27,6 @@ from orchestra.utils.notifications import message_experts_slack_group
 from orchestra.utils.task_lifecycle import assert_new_task_status_valid
 from orchestra.utils.task_lifecycle import role_counter_required_for_new_task
 
-import logging
 logger = logging.getLogger(__name__)
 
 

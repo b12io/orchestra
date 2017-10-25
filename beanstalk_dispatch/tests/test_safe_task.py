@@ -1,9 +1,10 @@
 import time
+from datetime import timedelta
+from unittest.mock import MagicMock
+
+from django.test import TestCase
 
 from beanstalk_dispatch.safe_task import SafeTask
-from datetime import timedelta
-from django.test import TestCase
-from unittest.mock import MagicMock
 
 
 def get_mock_task():

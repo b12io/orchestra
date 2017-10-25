@@ -1,11 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
-
 from rest_framework import status
 
 from orchestra.models import Worker
 from orchestra.tests.helpers import OrchestraTestCase
-
 
 UserModel = get_user_model()
 

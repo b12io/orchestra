@@ -3,10 +3,12 @@
 from __future__ import unicode_literals
 
 from decimal import Decimal
-from django.db import migrations, models
+
 import django.db.models.deletion
 import django.utils.timezone
 import djmoney.models.fields
+from django.db import migrations
+from django.db import models
 
 
 class Migration(migrations.Migration):

@@ -1,6 +1,6 @@
 import inspect
-
 from pydoc import locate
+
 from django.conf import settings
 
 from beanstalk_dispatch import ARGS

@@ -1,6 +1,7 @@
 from datetime import timedelta
-from django.utils import timezone
 from unittest.mock import patch
+
+from django.utils import timezone
 
 from orchestra.bots.errors import StaffingResponseException
 from orchestra.communication.staffing import get_available_requests

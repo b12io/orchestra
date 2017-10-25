@@ -1,9 +1,10 @@
 import json
 
 from django.test import override_settings
+
+from orchestra.models import Step
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
-from orchestra.models import Step
 from orchestra.tests.helpers import OrchestraTransactionTestCase
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.iterations import verify_iterations

@@ -1,3 +1,4 @@
+import logging
 from urllib.parse import urlparse
 from urllib.parse import urlunsplit
 
@@ -12,10 +13,9 @@ from orchestra.models import Workflow
 from orchestra.project import create_project_with_tasks
 from orchestra.project_api.api import get_project_information
 from orchestra.project_api.decorators import api_endpoint
-from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.load_json import load_encoded_json
+from orchestra.utils.task_lifecycle import assign_task
 
-import logging
 logger = logging.getLogger(__name__)
 
 

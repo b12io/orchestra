@@ -3,8 +3,10 @@
 from __future__ import unicode_literals
 
 import bitfield.models
-from django.db import migrations, models
 import django.db.models.deletion
+from django.db import migrations
+from django.db import models
+
 import orchestra.models.communication.mixins
 
 

@@ -1,11 +1,10 @@
+import logging
+
 from orchestra.models import Project
 from orchestra.models import Step
 from orchestra.models import WorkflowVersion
 from orchestra.project_api.serializers import ProjectSerializer
 from orchestra.project_api.serializers import TaskSerializer
-
-
-import logging
 
 logger = logging.getLogger(__name__)
 

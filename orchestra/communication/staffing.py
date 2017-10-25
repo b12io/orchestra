@@ -7,21 +7,20 @@ from django.utils import timezone
 from markdown2 import markdown
 
 from orchestra.bots.errors import StaffingResponseException
-from orchestra.core.errors import TaskStatusError
-from orchestra.core.errors import TaskAssignmentError
 from orchestra.bots.staffbot import StaffBot
+from orchestra.core.errors import TaskAssignmentError
+from orchestra.core.errors import TaskStatusError
 from orchestra.models import StaffBotRequest
 from orchestra.models import StaffingRequestInquiry
 from orchestra.models import StaffingResponse
 from orchestra.models import TaskAssignment
 from orchestra.models import Worker
 from orchestra.utils.notifications import message_experts_slack_group
-from orchestra.utils.task_lifecycle import reassign_assignment
 from orchestra.utils.task_lifecycle import assign_task
-
 from orchestra.utils.task_lifecycle import check_worker_allowed_new_assignment
 from orchestra.utils.task_lifecycle import get_role_from_counter
 from orchestra.utils.task_lifecycle import is_worker_certified_for_task
+from orchestra.utils.task_lifecycle import reassign_assignment
 
 
 @transaction.atomic

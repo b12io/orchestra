@@ -1,12 +1,12 @@
 from bitfield import BitField
 from django.db import models
 
+from orchestra.models.communication.managers import \
+    CommunicationPreferenceManager
 from orchestra.models.communication.mixins import CommunicationPreferenceMixin
 from orchestra.models.communication.mixins import StaffBotRequestMixin
 from orchestra.models.communication.mixins import StaffingRequestInquiryMixin
 from orchestra.models.communication.mixins import StaffingResponseMixin
-from orchestra.models.communication.managers \
-    import CommunicationPreferenceManager
 from orchestra.models.core.models import Task
 from orchestra.models.core.models import Worker
 from orchestra.utils.models import BaseModel

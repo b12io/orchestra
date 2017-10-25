@@ -2,9 +2,11 @@
 # Manually written
 from __future__ import unicode_literals
 
-from django.db import connection, migrations, models
-
 import logging
+
+from django.db import connection
+from django.db import migrations
+from django.db import models
 
 logger = logging.getLogger(__name__)
 

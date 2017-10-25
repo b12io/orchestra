@@ -6,17 +6,17 @@ from django.core.urlresolvers import reverse
 from django.test import Client
 
 from orchestra.core.errors import InvalidRevertError
+from orchestra.models import Project
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
-from orchestra.models import Project
 from orchestra.project_api.serializers import IterationSerializer
-from orchestra.project_api.serializers import TaskSerializer
 from orchestra.project_api.serializers import TaskAssignmentSerializer
+from orchestra.project_api.serializers import TaskSerializer
 from orchestra.tests.helpers import OrchestraTestCase
-from orchestra.tests.helpers.fixtures import setup_complete_task
-from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.fixtures import UserFactory
 from orchestra.tests.helpers.fixtures import WorkerFactory
+from orchestra.tests.helpers.fixtures import setup_complete_task
+from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.iterations import verify_iterations
 from orchestra.utils.load_json import load_encoded_json
 from orchestra.utils.revert import RevertChange

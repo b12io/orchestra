@@ -1,16 +1,17 @@
-from django.core.urlresolvers import reverse
-from django.test import override_settings
-from django.test import Client as RequestClient
 from unittest.mock import patch
 
-from orchestra.bots.tests.fixtures import get_mock_slack_data
+from django.core.urlresolvers import reverse
+from django.test import Client as RequestClient
+from django.test import override_settings
+
 from orchestra.bots.staffbot import StaffBot
+from orchestra.bots.tests.fixtures import get_mock_slack_data
 from orchestra.models import Task
 from orchestra.tests.helpers import OrchestraTestCase
-from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.fixtures import TaskFactory
-from orchestra.utils.task_lifecycle import assign_task
+from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.utils.load_json import load_encoded_json
+from orchestra.utils.task_lifecycle import assign_task
 
 
 class StaffBotViewTest(OrchestraTestCase):

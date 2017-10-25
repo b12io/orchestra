@@ -1,8 +1,7 @@
 from unittest.mock import MagicMock
 
-from django.conf import settings
 import slacker
-
+from django.conf import settings
 
 # Groups that are not dynamically created during testing
 PREEXISTING_GROUPS = [settings.SLACK_INTERNAL_NOTIFICATION_CHANNEL]

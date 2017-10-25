@@ -1,26 +1,27 @@
 from datetime import timedelta
-from django.conf import settings
-from django.test import override_settings
 from unittest.mock import patch
 
-from orchestra.tests.helpers import OrchestraTestCase
-from orchestra.tests.helpers.fixtures import setup_models
-from orchestra.tests.helpers.fixtures import StaffBotRequestFactory
-from orchestra.tests.helpers.fixtures import StaffingRequestInquiryFactory
-from orchestra.tests.helpers.fixtures import StepFactory
-from orchestra.tests.helpers.fixtures import TaskFactory
-from orchestra.tests.helpers.fixtures import WorkerFactory
+from django.conf import settings
+from django.test import override_settings
+
 from orchestra.bots.errors import SlackUserUnauthorized
 from orchestra.bots.staffbot import StaffBot
 from orchestra.bots.tests.fixtures import get_mock_slack_data
-from orchestra.communication.staffing import send_staffing_requests
 from orchestra.communication.mail import html_from_plaintext
+from orchestra.communication.staffing import send_staffing_requests
 from orchestra.models import CommunicationPreference
 from orchestra.models import StaffBotRequest
 from orchestra.models import StaffingRequestInquiry
 from orchestra.models import Task
 from orchestra.models import Worker
 from orchestra.models import WorkerCertification
+from orchestra.tests.helpers import OrchestraTestCase
+from orchestra.tests.helpers.fixtures import StaffBotRequestFactory
+from orchestra.tests.helpers.fixtures import StaffingRequestInquiryFactory
+from orchestra.tests.helpers.fixtures import StepFactory
+from orchestra.tests.helpers.fixtures import TaskFactory
+from orchestra.tests.helpers.fixtures import WorkerFactory
+from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.task_lifecycle import is_worker_certified_for_task
 

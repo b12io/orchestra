@@ -1,10 +1,11 @@
+import logging
+
 from django.db import transaction
 
 from orchestra.models import Certification
 from orchestra.models import WorkerCertification
 from orchestra.models import Workflow
 
-import logging
 logger = logging.getLogger(__name__)
 
 

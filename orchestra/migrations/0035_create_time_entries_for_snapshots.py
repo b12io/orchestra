@@ -2,10 +2,11 @@
 # Manually written
 from __future__ import unicode_literals
 
-from django.db import migrations, models
-
 import datetime
+
 import dateutil
+from django.db import migrations
+from django.db import models
 
 
 def create_time_entries(apps, schema_editor):
