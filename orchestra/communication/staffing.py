@@ -14,7 +14,7 @@ from orchestra.models import StaffBotRequest
 from orchestra.models import StaffingRequestInquiry
 from orchestra.models import StaffingResponse
 from orchestra.models import TaskAssignment
-from orchestra.models import Worker
+from orchestra.models import WorkerCertification
 from orchestra.utils.notifications import message_experts_slack_group
 from orchestra.utils.task_lifecycle import reassign_assignment
 from orchestra.utils.task_lifecycle import assign_task
@@ -126,16 +126,30 @@ def send_request_inquiries(staffbot, request, worker_batch_size):
     workers_with_inquiries = (StaffingRequestInquiry.objects.filter(
         request=request).distinct().values_list(
             'communication_preference__worker__id', flat=True))
-    # Sort Workers by their staffing priority first, and then randomly
-    # within competing staffing priorities.
-    workers = (Worker.objects
-               .exclude(id__in=workers_with_inquiries)
-               .order_by('-staffing_priority', '?'))
+
     required_role = get_role_from_counter(request.required_role_counter)
     inquiries_sent = 0
 
-    for worker in workers:
+    # Sort Worker Certifications by their staffing priority first,
+    # and then randomly within competing staffing priorities.
+    worker_certifications = (
+        WorkerCertification
+        .objects
+        .exclude(worker__id__in=workers_with_inquiries)
+        .filter(role=required_role,
+                task_class=WorkerCertification.TaskClass.REAL,
+                certification__in=(request.task
+                                   .step.required_certifications.all()))
+        .order_by('-staffing_priority', '?'))
+    contacted_workers = set()
+
+    for certification in worker_certifications:
         try:
+            worker = certification.worker
+            if worker.id in contacted_workers:
+                continue
+
+            contacted_workers.add(worker.id)
             check_worker_allowed_new_assignment(worker)
             if (is_worker_certified_for_task(worker, request.task,
                                              required_role,
