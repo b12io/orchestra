@@ -9,10 +9,10 @@ from markdown2 import markdown
 from pydoc import locate
 
 from orchestra.bots.errors import StaffingResponseException
-from orchestra.bots.errors import WorkerSortError
 from orchestra.bots.staffbot import StaffBot
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import TaskStatusError
+from orchestra.bots.errors import WorkerSortError
 from orchestra.models import StaffBotRequest
 from orchestra.models import StaffingRequestInquiry
 from orchestra.models import StaffingResponse
