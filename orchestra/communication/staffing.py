@@ -8,8 +8,8 @@ from django.utils import timezone
 from markdown2 import markdown
 from pydoc import locate
 
-from orchestra.bots.errors import StaffingResponseException
 from orchestra.bots.staffbot import StaffBot
+from orchestra.bots.errors import StaffingResponseException
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import TaskStatusError
 from orchestra.bots.errors import WorkerSortError
