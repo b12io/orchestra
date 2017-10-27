@@ -12,3 +12,7 @@ class SlackUserUnauthorized(Exception):
 
 class SlackCommandInvalidRequest(Exception):
     pass
+
+
+class WorkerSortError(Exception):
+    pass

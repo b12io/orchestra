@@ -70,6 +70,9 @@ def setup_orchestra(settings_module_name):
     )
     settings.INSTALLED_APPS += settings.ORCHESTRA_WORKFLOWS
 
+    # Custom orchestra worker prioritization functions for specific workflows
+    settings.ORCHESTRA_WORKER_PRIORITY_SORT = {}
+
     # The maximum number of tasks an expert can pick up at a time.
     # Currently disabled.
     settings.ORCHESTRA_MAX_IN_PROGRESS_TASKS = 3

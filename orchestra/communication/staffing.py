@@ -1,12 +1,15 @@
 from annoying.functions import get_object_or_None
+from datetime import timedelta
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.db.models import Q
 from django.utils import timezone
 from markdown2 import markdown
+from pydoc import locate
 
 from orchestra.bots.errors import StaffingResponseException
+from orchestra.bots.errors import WorkerSortError
 from orchestra.bots.staffbot import StaffBot
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import TaskStatusError
@@ -117,19 +120,58 @@ def send_staffing_requests(
                 Q(last_inquiry_sent__lte=cutoff_datetime)))
 
     for request in requests:
-        send_request_inquiries(staffbot, request, worker_batch_size)
+        send_request_inquiries(staffbot, request)
 
 
-def send_request_inquiries(staffbot, request, worker_batch_size):
-    # Get Workers that haven't already received an inquiry.
+def get_worker_priorities(workers_with_inquiries):
+    def get_workers_in_priority_order():
+        return (Worker.objects
+                .exclude(id__in=workers_with_inquiries)
+                .order_by('-staffing_priority', '?'))
+
+    # Ping 2 workers in priority order every 2 minutes
+    return [(get_workers_in_priority_order, 2, 2)]
+
+
+def _get_worker_priority_functions(request, workers_with_inquiries):
+    workflow_name = request.task.project.workflow_version.name
+
+    if (hasattr(settings, 'ORCHESTRA_WORKER_PRIORITY_SORT_PATHS') and
+            workflow_name in settings.ORCHESTRA_WORKER_PRIORITY_SORT_PATHS):
+        try:
+            worker_sort_function_path = (
+                settings.ORCHESTRA_WORKER_PRIORITY_SORT_PATHS[workflow_name]
+            )
+            worker_sort_function = locate(worker_sort_function_path)
+            return worker_sort_function(request,
+                                        workers_with_inquiries)
+        except Exception as e:
+            raise WorkerSortError(e)
+    else:
+        return get_worker_priorities(workers_with_inquiries)
+
+
+def send_request_inquiries(staffbot, request):
     workers_with_inquiries = (StaffingRequestInquiry.objects.filter(
         request=request).distinct().values_list(
             'communication_preference__worker__id', flat=True))
-    # Sort Workers by their staffing priority first, and then randomly
-    # within competing staffing priorities.
-    workers = (Worker.objects
-               .exclude(id__in=workers_with_inquiries)
-               .order_by('-staffing_priority', '?'))
+
+    worker_priorities = _get_worker_priority_functions(request,
+                                                       workers_with_inquiries)
+    workers = None
+    stage = 0
+    batch_size = 0
+    interval = 0
+
+    while workers is None and stage < len(worker_priorities):
+        get_workers_func, batch_size, interval = worker_priorities[stage](
+            workers_with_inquiries)
+        cutoff_datetime = timezone.now() - timedelta(interval)
+        if request.last_inquiry_sent > cutoff_datetime:
+            return
+        workers = get_workers_func()
+        stage += 1
+
     required_role = get_role_from_counter(request.required_role_counter)
     inquiries_sent = 0
 
@@ -142,7 +184,7 @@ def send_request_inquiries(staffbot, request, worker_batch_size):
                     not request.task.is_worker_assigned(worker)):
                 staffbot.send_task_to_worker(worker, request)
                 inquiries_sent += 1
-            if inquiries_sent >= worker_batch_size:
+            if inquiries_sent >= batch_size:
                 break
 
         except TaskStatusError:
@@ -151,7 +193,7 @@ def send_request_inquiries(staffbot, request, worker_batch_size):
             pass
 
     # check whether all inquiries have been sent out.
-    if inquiries_sent < worker_batch_size:
+    if inquiries_sent < batch_size and stage is len(worker_priorities):
         message_experts_slack_group(
             request.task.project.slack_group_id,
             ('All staffing requests for task {} have been sent!'
