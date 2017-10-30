@@ -1,4 +1,6 @@
 from annoying.functions import get_object_or_None
+from datetime import timedelta
+from django.db.models import Count
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import transaction
@@ -13,6 +15,7 @@ from orchestra.bots.staffbot import StaffBot
 from orchestra.models import StaffBotRequest
 from orchestra.models import StaffingRequestInquiry
 from orchestra.models import StaffingResponse
+from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import WorkerCertification
 from orchestra.utils.notifications import message_experts_slack_group
@@ -22,6 +25,12 @@ from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.task_lifecycle import check_worker_allowed_new_assignment
 from orchestra.utils.task_lifecycle import get_role_from_counter
 from orchestra.utils.task_lifecycle import is_worker_certified_for_task
+
+
+MAX_REQUEST_COUNT = 3
+MAX_TIME_NO_RESPONSE = 300 # Minutes or 5 hours
+RESEND_TIME = 60 # Minutes or 1 hours
+STAFFING_GROUP_ID = 'G7R9Q24TZ'
 
 
 @transaction.atomic
@@ -121,26 +130,10 @@ def send_staffing_requests(
         send_request_inquiries(staffbot, request, worker_batch_size)
 
 
-def send_request_inquiries(staffbot, request, worker_batch_size):
-    # Get Workers that haven't already received an inquiry.
-    workers_with_inquiries = (StaffingRequestInquiry.objects.filter(
-        request=request).distinct().values_list(
-            'communication_preference__worker__id', flat=True))
-
-    required_role = get_role_from_counter(request.required_role_counter)
+def _send_request_inquiries(staffbot, request, worker_batch_size,
+                            worker_certifications):
     inquiries_sent = 0
-
-    # Sort Worker Certifications by their staffing priority first,
-    # and then randomly within competing staffing priorities.
-    worker_certifications = (
-        WorkerCertification
-        .objects
-        .exclude(worker__id__in=workers_with_inquiries)
-        .filter(role=required_role,
-                task_class=WorkerCertification.TaskClass.REAL,
-                certification__in=(request.task
-                                   .step.required_certifications.all()))
-        .order_by('-staffing_priority', '?'))
+    required_role = get_role_from_counter(request.required_role_counter)
     contacted_workers = set()
 
     for certification in worker_certifications:
@@ -175,6 +168,27 @@ def send_request_inquiries(staffbot, request, worker_batch_size):
     request.last_inquiry_sent = timezone.now()
     request.save()
 
+
+def send_request_inquiries(staffbot, request, worker_batch_size):
+    # Get Workers that haven't already received an inquiry.
+    workers_with_inquiries = (StaffingRequestInquiry.objects.filter(
+        request=request).distinct().values_list(
+            'communication_preference__worker__id', flat=True))
+    required_role = get_role_from_counter(request.required_role_counter)
+
+    # Sort Worker Certifications by their staffing priority first,
+    # and then randomly within competing staffing priorities.
+    worker_certifications = (
+        WorkerCertification
+        .objects
+        .exclude(worker__id__in=workers_with_inquiries)
+        .filter(role=required_role,
+                task_class=WorkerCertification.TaskClass.REAL,
+                certification__in=(request.task
+                                   .step.required_certifications.all()))
+        .order_by('-staffing_priority', '?'))
+    _send_request_inquiries(staffbot, request, worker_batch_size,
+                            worker_certifications)
 
 def get_available_requests(worker):
     # We want to show a worker only requests for which there is no
@@ -211,3 +225,62 @@ def get_available_requests(worker):
             reverse('orchestra:communication:available_staffing_requests'))
         contexts.append(metadata)
     return contexts
+
+
+def get_inquiries_per_worker_count(request):
+    inq_count = (request.inquiries.all()
+                 .values('communication_preference__worker')
+                 .annotate(Count('communication_preference__worker')))
+    return inq_count[0]['communication_preference__worker__count']
+
+
+def check_unstaffed_tasks():
+    # Get all requests without winners
+    task_values = (
+        Task.objects.all()
+        .filter(staffing_requests__inquiries__responses__is_winner=False)
+        .exclude(staffing_requests__isnull=True)
+        .exclude(staffing_requests__inquiries__isnull=True)
+        .order_by('-start_datetime')
+        .values('staffing_requests__required_role_counter', 'id')
+        .annotate(Count('staffing_requests__id')))
+
+    for task_value in task_values:
+        if task_value['staffing_requests__id__count'] > MAX_REQUEST_COUNT:
+            # Send to #staffing channel.
+            message_experts_slack_group(
+                STAFFING_GROUP_ID,
+                ('No winner request for task {}!'
+                 .format(request.task)))
+            continue
+        required_role_counter = task_value[
+            'staffing_requests__required_role_counter']
+        request = (
+            StaffBotRequest.objects.filter(
+                task=task_value['id'],
+                required_role_counter=required_role_counter)
+            .order_by('-created_at'))[0]
+
+        if request.created_at < timezone.now() - timedelta(
+                minutes=MAX_TIME_NO_RESPONSE):
+            message_experts_slack_group(
+                STAFFING_GROUP_ID,
+                ('No winner request for task {}! Created at {}'
+                 .format(request.task, request.created_at)))
+            continue
+
+
+def experts_followup():
+    # Get all requests without winners
+    requests = StaffBotRequest.objects.filter(
+        inquiries__responses__is_winner=False).order_by(
+            '-last_inquiry_sent')
+
+    for request in requests:
+        if not request.last_inquiry_sent:
+            continue
+        if request.last_inquiry_sent < timezone.now() - timedelta(
+                minutes=RESEND_TIME):
+            # resend
+            pass
+    pass
