@@ -90,7 +90,7 @@ def create_project_slack_group(project):
         message = (
             'Project folder: '
             'https://drive.google.com/drive/folders/{}'
-            ).format(project.project_data['project_folder_id'])
+        ).format(project.project_data['project_folder_id'])
         slack.chat.post_message(project.slack_group_id, message)
     return project.slack_group_id
 

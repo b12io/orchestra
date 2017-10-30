@@ -38,6 +38,7 @@ markdown2==2.3.4
 timeout-decorator==0.3.3
 phonenumbers==8.6.0
 isort==4.2.15
+beanstalk-dispatch==0.0.3
 
 # Journalism Workflow requirements
 Pillow==4.2.1

@@ -1,6 +1,6 @@
+from beanstalk_dispatch.client import schedule_function
 from django.conf import settings
 
-from beanstalk_dispatch.client import schedule_function
 from orchestra.machine_tasks import execute
 
 
