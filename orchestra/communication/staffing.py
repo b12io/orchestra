@@ -17,6 +17,7 @@ from orchestra.models import StaffingRequestInquiry
 from orchestra.models import StaffingResponse
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
+from orchestra.models import Worker
 from orchestra.models import WorkerCertification
 from orchestra.utils.notifications import message_experts_slack_group
 from orchestra.utils.task_lifecycle import reassign_assignment
@@ -28,8 +29,8 @@ from orchestra.utils.task_lifecycle import is_worker_certified_for_task
 
 
 MAX_REQUEST_COUNT = 3
-MAX_TIME_NO_RESPONSE = 300 # Minutes or 5 hours
-RESEND_TIME = 60 # Minutes or 1 hours
+MAX_TIME_NO_RESPONSE = 300  # Minutes or 5 hours
+RESEND_TIME = 60  # Minutes or 1 hours
 STAFFING_GROUP_ID = 'G7R9Q24TZ'
 
 
@@ -190,6 +191,7 @@ def send_request_inquiries(staffbot, request, worker_batch_size):
     _send_request_inquiries(staffbot, request, worker_batch_size,
                             worker_certifications)
 
+
 def get_available_requests(worker):
     # We want to show a worker only requests for which there is no
     # winner or for which they have not already replied.
@@ -251,7 +253,7 @@ def check_unstaffed_tasks():
             message_experts_slack_group(
                 STAFFING_GROUP_ID,
                 ('No winner request for task {}!'
-                 .format(request.task)))
+                 .format(task_value['id'])))
             continue
         required_role_counter = task_value[
             'staffing_requests__required_role_counter']
@@ -270,7 +272,7 @@ def check_unstaffed_tasks():
             continue
 
 
-def workers_followup():
+def available_tasks_followup():
     staffbot = StaffBot()
     workers = Worker.objects.all()
     for worker in workers:

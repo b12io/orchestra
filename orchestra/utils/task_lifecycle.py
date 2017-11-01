@@ -52,7 +52,7 @@ def mark_worker_as_winner(staffbot_request, worker):
 
     if staffing_response.exists():
         staffing_response = staffing_response.first()
-        staffing_response.is_winner =True
+        staffing_response.is_winner = True
         staffing_response.save()
     else:
         comm_pref = CommunicationPreference.objects.filter(
@@ -73,6 +73,7 @@ def mark_worker_as_winner(staffbot_request, worker):
             request_inquiry=inquiry,
             is_available=True,
             is_winner=True)
+
 
 def worker_assigned_to_max_tasks(worker):
     """
@@ -241,6 +242,7 @@ def assign_task(worker_id, task_id):
     worker = Worker.objects.get(id=worker_id)
     task = Task.objects.get(id=task_id)
     required_role = role_required_for_new_task(task)
+    required_role_counter = role_counter_required_for_new_task(task)
 
     assignment = current_assignment(task)
     if not is_worker_certified_for_task(worker, task, required_role):

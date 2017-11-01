@@ -206,8 +206,6 @@ class StaffBot(BaseBot):
             message_body = render_to_string(
                 'communication/tasks_available_email.txt',
                 context)
-            email_method = (
-                StaffingRequestInquiry.CommunicationMethod.EMAIL.value)
             email = communication_preference.worker.user.email
             self._send_staffing_request_by_mail(email, message_body)
 
@@ -215,8 +213,6 @@ class StaffBot(BaseBot):
             message_body = render_to_string(
                 'communication/tasks_available_slack.txt',
                 context)
-            slack_method = (
-                StaffingRequestInquiry.CommunicationMethod.SLACK.value)
             self._send_staffing_request_by_slack(
                 communication_preference.worker, message_body)
 

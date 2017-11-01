@@ -12,7 +12,7 @@ def staffbot_autoassign(task, **kwargs):
 
 def staffbot_request(task, **kwargs):
     required_role_counter = role_counter_required_for_new_task(task)
-    staffbot_request = StaffBotRequest.objects.create(
+    StaffBotRequest.objects.create(
         task=task,
         required_role_counter=required_role_counter,
         request_cause=StaffBotRequest.RequestCause.USER.value
