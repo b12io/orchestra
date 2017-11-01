@@ -1,0 +1,5 @@
+Hello {{user.first_name}}!
+
+Tasks are available for you to work on, if you'd like!  Go through a link to for details:
+
+<{{tasks_url}}|View Tasks>

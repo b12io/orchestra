@@ -188,6 +188,38 @@ class StaffBot(BaseBot):
                 'text': slack_message
             }])
 
+    def send_worker_tasks_available_reminder(self, worker):
+        communication_type = (
+            CommunicationPreference.CommunicationType.NEW_TASK_AVAILABLE.value)
+
+        communication_preference = CommunicationPreference.objects.get(
+            communication_type=communication_type,
+            worker=worker)
+
+        user = communication_preference.worker.user
+        tasks_url = self._get_staffing_url(
+            'orchestra:communication:available_staffing_requests',
+            None)
+        context = {'user': user,
+                   'tasks_url': tasks_url}
+        if communication_preference.can_email():
+            message_body = render_to_string(
+                'communication/tasks_available_email.txt',
+                context)
+            email_method = (
+                StaffingRequestInquiry.CommunicationMethod.EMAIL.value)
+            email = communication_preference.worker.user.email
+            self._send_staffing_request_by_mail(email, message_body)
+
+        if communication_preference.can_slack():
+            message_body = render_to_string(
+                'communication/tasks_available_slack.txt',
+                context)
+            slack_method = (
+                StaffingRequestInquiry.CommunicationMethod.SLACK.value)
+            self._send_staffing_request_by_slack(
+                communication_preference.worker, message_body)
+
     def send_task_to_worker(self, worker, staffbot_request):
         """
         Send the task to the worker for them to accept or reject.

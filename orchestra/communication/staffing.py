@@ -270,17 +270,11 @@ def check_unstaffed_tasks():
             continue
 
 
-def experts_followup():
-    # Get all requests without winners
-    requests = StaffBotRequest.objects.filter(
-        inquiries__responses__is_winner=False).order_by(
-            '-last_inquiry_sent')
-
-    for request in requests:
-        if not request.last_inquiry_sent:
-            continue
-        if request.last_inquiry_sent < timezone.now() - timedelta(
-                minutes=RESEND_TIME):
-            # resend
-            pass
-    pass
+def workers_followup():
+    staffbot = StaffBot()
+    workers = Worker.objects.all()
+    for worker in workers:
+        requests = get_available_requests(worker)
+        if len(requests):
+            # send staffbot request.
+            staffbot.send_worker_tasks_available_reminder(worker)
