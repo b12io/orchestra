@@ -16,17 +16,14 @@ from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import TaskDependencyError
 from orchestra.core.errors import TaskStatusError
 from orchestra.core.errors import WorkerCertificationError
-from orchestra.models import CommunicationPreference
 from orchestra.models import Iteration
 from orchestra.models import Project
-from orchestra.models import StaffBotRequest
-from orchestra.models import StaffingRequestInquiry
-from orchestra.models import StaffingResponse
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import Worker
 from orchestra.models import WorkerCertification
 from orchestra.communication.slack import add_worker_to_project_team
+from orchestra.communication.staffing import mark_worker_as_winner
 from orchestra.utils.notifications import notify_status_change
 from orchestra.utils.task_properties import assignment_history
 from orchestra.utils.task_properties import current_assignment
@@ -39,40 +36,6 @@ logger = logging.getLogger(__name__)
 class AssignmentPolicyType(object):
     ENTRY_LEVEL = 'entry_level'
     REVIEWER = 'reviewer'
-
-
-def mark_worker_as_winner(staffbot_request, worker):
-    # Mark everyone else as non-winner
-    StaffingResponse.objects.filter(
-        request_inquiry__request=staffbot_request).update(is_winner=False)
-
-    staffing_response = StaffingResponse.objects.filter(
-        request_inquiry__request=staffbot_request,
-        request_inquiry__communication_preference__worker=worker)
-
-    if staffing_response.exists():
-        staffing_response = staffing_response.first()
-        staffing_response.is_winner = True
-        staffing_response.save()
-    else:
-        comm_pref = CommunicationPreference.objects.filter(
-            worker=worker)
-        if not comm_pref.exists():
-            logger.error('Worker {} does not have a communication '
-                         'preferences setup'.format(worker))
-            return
-        comm_pref = comm_pref.first()
-        comm_method = StaffingRequestInquiry.CommunicationMethod.SLACK.value
-
-        inquiry = StaffingRequestInquiry.objects.create(
-            request=staffbot_request,
-            communication_preference=comm_pref,
-            communication_method=comm_method)
-
-        StaffingResponse.objects.create(
-            request_inquiry=inquiry,
-            is_available=True,
-            is_winner=True)
 
 
 def worker_assigned_to_max_tasks(worker):
@@ -217,7 +180,7 @@ def role_required_for_new_task(task):
 
 
 @transaction.atomic
-def assign_task(worker_id, task_id):
+def assign_task(worker_id, task_id, staffing_request_inquiry=None):
     """
     Return a given task after assigning or reassigning it to the specified
     worker.
@@ -276,11 +239,8 @@ def assign_task(worker_id, task_id):
         assignment=assignment,
         start_datetime=assignment.start_datetime)
 
-    staffbot_request = StaffBotRequest.objects.filter(
-        task=task, required_role_counter=required_role_counter)
-
-    if staffbot_request.exists():
-        mark_worker_as_winner(staffbot_request.first(), worker)
+    mark_worker_as_winner(worker, task, required_role_counter,
+                          staffing_request_inquiry)
 
     if settings.PRODUCTION or settings.STAGING:
         add_worker_to_project_team(worker, task.project)
@@ -289,7 +249,8 @@ def assign_task(worker_id, task_id):
 
 
 @transaction.atomic
-def reassign_assignment(worker_id, assignment_id):
+def reassign_assignment(worker_id, assignment_id,
+                        staffing_request_inquiry=None):
     """
     Return a given assignment after reassigning it to the specified
     worker.
@@ -325,6 +286,10 @@ def reassign_assignment(worker_id, assignment_id):
 
     assignment.worker = worker
     assignment.save()
+
+    mark_worker_as_winner(worker, assignment.task,
+                          assignment.assignment_counter,
+                          staffing_request_inquiry)
     add_worker_to_project_team(worker, assignment.task.project)
     return assignment
 

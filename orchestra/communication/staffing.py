@@ -1,6 +1,4 @@
 from annoying.functions import get_object_or_None
-from datetime import timedelta
-from django.db.models import Count
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import transaction
@@ -12,6 +10,7 @@ from orchestra.bots.errors import StaffingResponseException
 from orchestra.core.errors import TaskStatusError
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.bots.staffbot import StaffBot
+from orchestra.models import CommunicationPreference
 from orchestra.models import StaffBotRequest
 from orchestra.models import StaffingRequestInquiry
 from orchestra.models import StaffingResponse
@@ -27,11 +26,8 @@ from orchestra.utils.task_lifecycle import check_worker_allowed_new_assignment
 from orchestra.utils.task_lifecycle import get_role_from_counter
 from orchestra.utils.task_lifecycle import is_worker_certified_for_task
 
-
-MAX_REQUEST_COUNT = 3
-MAX_TIME_NO_RESPONSE = 300  # Minutes or 5 hours
-RESEND_TIME = 60  # Minutes or 1 hours
-STAFFING_GROUP_ID = 'G7R9Q24TZ'
+import logging
+logger = logging.getLogger(__name__)
 
 
 @transaction.atomic
@@ -49,8 +45,6 @@ def handle_staffing_response(worker, staffing_request_inquiry_id,
         response (orchestra.models.StaffingResponse):
             StaffingResponse object that has been created for the worker
     """
-
-    # TODO(kkamalov): add proper docstring
     staffing_request_inquiry = get_object_or_None(
         StaffingRequestInquiry,
         communication_preference__worker=worker,
@@ -78,11 +72,7 @@ def handle_staffing_response(worker, staffing_request_inquiry_id,
             not StaffingResponse.objects.filter(
                 request_inquiry__request=staffing_request_inquiry.request,
                 is_winner=True).exists()):
-        response.is_winner = True
         request = staffing_request_inquiry.request
-        request.status = StaffBotRequest.Status.COMPLETE.value
-        request.save()
-
         task_assignment = get_object_or_None(
             TaskAssignment,
             task=request.task,
@@ -229,32 +219,21 @@ def get_available_requests(worker):
     return contexts
 
 
-def get_inquiries_per_worker_count(request):
-    inq_count = (request.inquiries.all()
-                 .values('communication_preference__worker')
-                 .annotate(Count('communication_preference__worker')))
-    return inq_count[0]['communication_preference__worker__count']
+def warn_staffing_team_about_unstaffed_tasks():
+    max_unstaffed_datetime = (
+        timezone.now() - settings.ORCHESTRA_STAFFBOT_STAFFING_MAX_TIME)
 
-
-def check_unstaffed_tasks():
     # Get all requests without winners
     task_values = (
         Task.objects.all()
-        .filter(staffing_requests__inquiries__responses__is_winner=False)
+        .filter(staffing_requests__inquiries__responses__is_winner=False,
+                created_at__lt=max_unstaffed_datetime)
         .exclude(staffing_requests__isnull=True)
         .exclude(staffing_requests__inquiries__isnull=True)
         .order_by('-start_datetime')
-        .values('staffing_requests__required_role_counter', 'id')
-        .annotate(Count('staffing_requests__id')))
+        .values('staffing_requests__required_role_counter', 'id'))
 
     for task_value in task_values:
-        if task_value['staffing_requests__id__count'] > MAX_REQUEST_COUNT:
-            # Send to #staffing channel.
-            message_experts_slack_group(
-                STAFFING_GROUP_ID,
-                ('No winner request for task {}!'
-                 .format(task_value['id'])))
-            continue
         required_role_counter = task_value[
             'staffing_requests__required_role_counter']
         request = (
@@ -263,20 +242,68 @@ def check_unstaffed_tasks():
                 required_role_counter=required_role_counter)
             .order_by('-created_at'))[0]
 
-        if request.created_at < timezone.now() - timedelta(
-                minutes=MAX_TIME_NO_RESPONSE):
-            message_experts_slack_group(
-                STAFFING_GROUP_ID,
-                ('No winner request for task {}! Created at {}'
-                 .format(request.task, request.created_at)))
-            continue
+        message_experts_slack_group(
+            settings.ORCHESTRA_STAFFBOT_STAFFING_GROUP_ID,
+            ('No winner request for task {}! Created at {}'
+             .format(request.task, request.created_at)))
 
 
-def available_tasks_followup():
+def check_unstaffed_tasks():
     staffbot = StaffBot()
     workers = Worker.objects.all()
     for worker in workers:
         requests = get_available_requests(worker)
         if len(requests):
-            # send staffbot request.
             staffbot.send_worker_tasks_available_reminder(worker)
+
+
+def mark_worker_as_winner(worker, task, required_role_counter,
+                          staffing_request_inquiry):
+    staffbot_request = StaffBotRequest.objects.filter(
+        task=task, required_role_counter=required_role_counter)
+
+    # Check whether staffbot request was sent out for this task
+    if not staffbot_request.exists():
+        return
+
+    staffbot_request = staffbot_request.first()
+    if staffing_request_inquiry:
+        staffbot_request = staffing_request_inquiry.request
+    staffbot_request.status = StaffBotRequest.Status.COMPLETE.value
+    staffbot_request.save()
+
+    # Mark everyone else as non-winner
+    StaffingResponse.objects.filter(
+        request_inquiry__request=staffbot_request).update(is_winner=False)
+
+    # If staffing request inquiry provided
+    if staffing_request_inquiry:
+        staffing_response = staffing_request_inquiry.responses.all()
+    else:
+        staffing_response = StaffingResponse.objects.filter(
+            request_inquiry__request=staffbot_request,
+            request_inquiry__communication_preference__worker=worker)
+
+    if staffing_response.exists():
+        staffing_response = staffing_response.first()
+        staffing_response.is_winner = True
+        staffing_response.save()
+    else:
+        comm_pref = CommunicationPreference.objects.filter(
+            worker=worker)
+        if not comm_pref.exists():
+            logger.error('Worker {} does not have a communication '
+                         'preferences setup'.format(worker))
+            return
+        comm_pref = comm_pref.first()
+        comm_method = StaffingRequestInquiry.CommunicationMethod.SLACK.value
+
+        inquiry = StaffingRequestInquiry.objects.create(
+            request=staffbot_request,
+            communication_preference=comm_pref,
+            communication_method=comm_method)
+
+        StaffingResponse.objects.create(
+            request_inquiry=inquiry,
+            is_available=True,
+            is_winner=True)

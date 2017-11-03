@@ -1,5 +1,5 @@
 Hello {{user.first_name}}!
 
-Tasks are available for you to work on, if you'd like!  Go through a link to for details:
+Tasks are still available for you to work on, if you'd like! Here are some more details:
 
 <{{tasks_url}}|View Tasks>
