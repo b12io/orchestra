@@ -253,5 +253,7 @@ def check_unstaffed_tasks():
     workers = Worker.objects.all()
     for worker in workers:
         requests = get_available_requests(worker)
+        # TODO(kkamalov): send out reminder only if last request was sent
+        # at least ORCHESTRA_STAFFBOT_MIN_FOLLOWUP_TIME ago
         if len(requests):
             staffbot.send_worker_tasks_available_reminder(worker)
