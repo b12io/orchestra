@@ -14,8 +14,6 @@ import os
 import sys
 from .orchestra_settings import setup_orchestra
 
-from datetime import timedelta
-
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -124,7 +122,3 @@ if TESTING:
     PASSWORD_HASHERS = ('django.contrib.auth.hashers.MD5PasswordHasher',)
 
 setup_orchestra(__name__)
-
-
-ORCHESTRA_STAFFBOT_STAFFING_MAX_TIME = timedelta(minutes=5)
-ORCHESTRA_STAFFBOT_STAFFING_GROUP_ID = 'G7R9Q24TZ'
