@@ -77,12 +77,16 @@ def handle_staffing_response(worker, staffing_request_inquiry_id,
 
         # if task assignment exists then reassign
         if task_assignment is not None:
-            reassign_assignment(worker.id, task_assignment.id)
+            reassign_assignment(worker.id, task_assignment.id,
+                                staffing_request_inquiry)
         # otherwise assign task
         else:
-            assign_task(worker.id, request.task.id)
+            assign_task(worker.id, request.task.id,
+                        staffing_request_inquiry)
 
-    response.refresh_from_db()
+    response = (StaffingResponse.objects
+                .filter(request_inquiry=staffing_request_inquiry)
+                .first())
     check_responses_complete(staffing_request_inquiry.request)
     return response
 

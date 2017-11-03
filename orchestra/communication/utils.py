@@ -19,6 +19,7 @@ def mark_worker_as_winner(worker, task, required_role_counter,
     staffbot_request = staffbot_request.first()
     if staffing_request_inquiry:
         staffbot_request = staffing_request_inquiry.request
+
     staffbot_request.status = StaffBotRequest.Status.COMPLETE.value
     staffbot_request.save()
 

@@ -27,6 +27,11 @@ class StaffingTestCase(OrchestraTestCase):
     def setUp(self):
         self.worker = WorkerFactory()
         self.certification = CertificationFactory()
+        WorkerCertificationFactory(
+            worker=self.worker,
+            certification=self.certification
+        )
+
         self.staffing_request_inquiry = StaffingRequestInquiryFactory(
             communication_preference__worker=self.worker,
             communication_preference__communication_type=(
@@ -34,10 +39,9 @@ class StaffingTestCase(OrchestraTestCase):
                 .NEW_TASK_AVAILABLE.value),
             request__task__step__is_human=True
         )
-        WorkerCertificationFactory(
-            worker=self.worker,
-            certification=self.certification
-        )
+        self.staffing_request_inquiry \
+            .request.task.step.required_certifications.add(
+                self.certification)
         super().setUp()
 
     def test_handle_staffing_response_invalid_request(self):
@@ -64,6 +68,7 @@ class StaffingTestCase(OrchestraTestCase):
             self.worker, self.staffing_request_inquiry.id,
             is_available=True)
         self.assertTrue(response.is_winner)
+        self.staffing_request_inquiry.refresh_from_db()
         self.assertEqual(response.request_inquiry.request.status,
                          StaffBotRequest.Status.COMPLETE.value)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
@@ -170,15 +175,20 @@ class StaffingTestCase(OrchestraTestCase):
 
     @patch('orchestra.communication.staffing.message_experts_slack_group')
     def test_send_staffing_requests(self, mock_slack):
-
         worker2 = WorkerFactory()
         CommunicationPreferenceFactory(
             worker=worker2,
             communication_type=(
                 CommunicationPreference.CommunicationType
                 .NEW_TASK_AVAILABLE.value))
+        WorkerCertificationFactory(
+            worker=worker2,
+            certification=self.certification
+        )
 
         request = StaffBotRequestFactory()
+        request.task.step.required_certifications.add(self.certification)
+
         self.assertEqual(request.status,
                          StaffBotRequest.Status.PROCESSING.value)
 
