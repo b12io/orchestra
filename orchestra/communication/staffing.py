@@ -82,7 +82,7 @@ def handle_staffing_response(worker, staffing_request_inquiry_id,
         else:
             assign_task(worker.id, request.task.id)
 
-    response.save()
+    response.refresh_from_db()
     check_responses_complete(staffing_request_inquiry.request)
     return response
 

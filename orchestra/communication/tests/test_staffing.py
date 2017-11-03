@@ -6,28 +6,37 @@ from orchestra.bots.errors import StaffingResponseException
 from orchestra.communication.staffing import get_available_requests
 from orchestra.communication.staffing import handle_staffing_response
 from orchestra.communication.staffing import send_staffing_requests
+# from orchestra.communication.staffing import \
+#    warn_staffing_team_about_unstaffed_tasks
 from orchestra.models import CommunicationPreference
 from orchestra.models import StaffBotRequest
 from orchestra.models import StaffingRequestInquiry
 from orchestra.models import StaffingResponse
 from orchestra.models import TaskAssignment
 from orchestra.tests.helpers import OrchestraTestCase
+from orchestra.tests.helpers.fixtures import CertificationFactory
 from orchestra.tests.helpers.fixtures import CommunicationPreferenceFactory
 from orchestra.tests.helpers.fixtures import StaffBotRequestFactory
 from orchestra.tests.helpers.fixtures import StaffingRequestInquiryFactory
 from orchestra.tests.helpers.fixtures import WorkerFactory
+from orchestra.tests.helpers.fixtures import WorkerCertificationFactory
 
 
 class StaffingTestCase(OrchestraTestCase):
 
     def setUp(self):
         self.worker = WorkerFactory()
+        self.certification = CertificationFactory()
         self.staffing_request_inquiry = StaffingRequestInquiryFactory(
             communication_preference__worker=self.worker,
             communication_preference__communication_type=(
                 CommunicationPreference.CommunicationType
                 .NEW_TASK_AVAILABLE.value),
             request__task__step__is_human=True
+        )
+        WorkerCertificationFactory(
+            worker=self.worker,
+            certification=self.certification
         )
         super().setUp()
 
@@ -211,14 +220,19 @@ class StaffingTestCase(OrchestraTestCase):
     @patch('orchestra.communication.staffing.message_experts_slack_group')
     def test_send_staffing_request_priorities(self, mock_slack):
 
-        worker2 = WorkerFactory(staffing_priority=-1)
+        worker2 = WorkerFactory()
+        WorkerCertificationFactory(worker=worker2,
+                                   staffing_priority=-1)
+
         CommunicationPreferenceFactory(
             worker=worker2,
             communication_type=(
                 CommunicationPreference.CommunicationType
                 .NEW_TASK_AVAILABLE.value))
 
-        worker3 = WorkerFactory(staffing_priority=1)
+        worker3 = WorkerFactory()
+        WorkerCertificationFactory(worker=worker3,
+                                   staffing_priority=1)
         CommunicationPreferenceFactory(
             worker=worker3,
             communication_type=(
@@ -282,8 +296,15 @@ class StaffingTestCase(OrchestraTestCase):
             communication_type=(
                 CommunicationPreference.CommunicationType
                 .NEW_TASK_AVAILABLE.value))
+        WorkerCertificationFactory(
+            worker=worker2,
+            certification=self.certification
+        )
+
         request1 = StaffBotRequestFactory(task__step__is_human=True)
+        request1.task.step.required_certifications.add(self.certification)
         request2 = StaffBotRequestFactory(task__step__is_human=True)
+        request2.task.step.required_certifications.add(self.certification)
 
         send_staffing_requests(worker_batch_size=2,
                                frequency=timedelta(minutes=0))
@@ -335,17 +356,27 @@ class StaffingTestCase(OrchestraTestCase):
         self.assertEqual(len(get_available_requests(self.worker)), 0)
         self.assertEqual(len(get_available_requests(worker2)), 1)
 
+    def test_warn_staffing_team_about_unstaffed_tasks(self):
+        pass
+
     @patch('orchestra.communication.staffing.message_experts_slack_group')
     def test_send_staffing_requests_parameters(self, mock_slack):
         for idx in range(5):
+            worker = WorkerFactory()
             CommunicationPreferenceFactory(
-                worker=WorkerFactory(),
+                worker=worker,
                 communication_type=(
                     CommunicationPreference.CommunicationType
                     .NEW_TASK_AVAILABLE.value))
+            WorkerCertificationFactory(
+                worker=worker,
+                certification=self.certification
+            )
         # Make a new request and turn off the global request, as the
         # global one has an inquiry on it already.
         request = StaffBotRequestFactory(task__step__is_human=True)
+        request.task.step.required_certifications.add(self.certification)
+
         self.staffing_request_inquiry.request.status = (
             StaffBotRequest.Status.COMPLETE)
 

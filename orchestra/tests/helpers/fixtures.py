@@ -107,6 +107,7 @@ class WorkerCertificationFactory(factory.django.DjangoModelFactory):
     worker = factory.SubFactory(WorkerFactory)
     task_class = WorkerCertification.TaskClass.REAL
     role = WorkerCertification.Role.ENTRY_LEVEL
+    staffing_priority = 0
 
     class Meta:
         model = 'orchestra.WorkerCertification'

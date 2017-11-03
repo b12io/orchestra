@@ -200,9 +200,6 @@ class Worker(WorkerMixin, models.Model):
             The worker's Slack id if Slack integration is enabled.
         phone (str):
             The worker's phone number
-        staffing_priority (int):
-            The worker's priority when new tasks are being staffed by
-            tools like StaffBot.
     """
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

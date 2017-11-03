@@ -45,6 +45,7 @@ def mark_worker_as_winner(worker, task, required_role_counter,
             logger.error('Worker {} does not have a communication '
                          'preferences setup'.format(worker))
             return
+
         comm_pref = comm_pref.first()
         comm_method = StaffingRequestInquiry.CommunicationMethod.SLACK.value
 
