@@ -227,7 +227,7 @@ def warn_staffing_team_about_unstaffed_tasks():
     task_values = (
         Task.objects.all()
         .filter(staffing_requests__inquiries__responses__is_winner=False,
-                created_at__lt=max_unstaffed_datetime)
+                start_datetime__lt=max_unstaffed_datetime)
         .exclude(staffing_requests__isnull=True)
         .exclude(staffing_requests__inquiries__isnull=True)
         .order_by('-start_datetime')
@@ -242,10 +242,11 @@ def warn_staffing_team_about_unstaffed_tasks():
                 required_role_counter=required_role_counter)
             .order_by('-created_at'))[0]
 
-        message_experts_slack_group(
-            settings.ORCHESTRA_STAFFBOT_STAFFING_GROUP_ID,
-            ('No winner request for task {}! Created at {}'
-             .format(request.task, request.created_at)))
+        if request.created_at < max_unstaffed_datetime:
+            message_experts_slack_group(
+                settings.ORCHESTRA_STAFFBOT_STAFFING_GROUP_ID,
+                ('No winner request for task {}! Created at {}'
+                 .format(request.task, request.created_at)))
 
 
 def check_unstaffed_tasks():
@@ -256,4 +257,5 @@ def check_unstaffed_tasks():
         # TODO(kkamalov): send out reminder only if last request was sent
         # at least ORCHESTRA_STAFFBOT_MIN_FOLLOWUP_TIME ago
         if len(requests):
+            print(requests)
             staffbot.send_worker_tasks_available_reminder(worker)

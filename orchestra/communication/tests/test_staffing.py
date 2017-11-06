@@ -3,11 +3,13 @@ from django.utils import timezone
 from unittest.mock import patch
 
 from orchestra.bots.errors import StaffingResponseException
+from orchestra.communication.staffing import check_unstaffed_tasks
 from orchestra.communication.staffing import get_available_requests
 from orchestra.communication.staffing import handle_staffing_response
 from orchestra.communication.staffing import send_staffing_requests
-# from orchestra.communication.staffing import \
-#    warn_staffing_team_about_unstaffed_tasks
+from orchestra.communication.staffing import \
+    warn_staffing_team_about_unstaffed_tasks
+from orchestra.communication.utils import mark_worker_as_winner
 from orchestra.models import CommunicationPreference
 from orchestra.models import StaffBotRequest
 from orchestra.models import StaffingRequestInquiry
@@ -18,6 +20,7 @@ from orchestra.tests.helpers.fixtures import CertificationFactory
 from orchestra.tests.helpers.fixtures import CommunicationPreferenceFactory
 from orchestra.tests.helpers.fixtures import StaffBotRequestFactory
 from orchestra.tests.helpers.fixtures import StaffingRequestInquiryFactory
+from orchestra.tests.helpers.fixtures import StaffingResponseFactory
 from orchestra.tests.helpers.fixtures import WorkerFactory
 from orchestra.tests.helpers.fixtures import WorkerCertificationFactory
 
@@ -366,8 +369,65 @@ class StaffingTestCase(OrchestraTestCase):
         self.assertEqual(len(get_available_requests(self.worker)), 0)
         self.assertEqual(len(get_available_requests(worker2)), 1)
 
-    def test_warn_staffing_team_about_unstaffed_tasks(self):
-        pass
+    @patch('orchestra.communication.staffing.message_experts_slack_group')
+    def test_warn_staffing_team_about_unstaffed_tasks(self, mock_slack):
+        warn_staffing_team_about_unstaffed_tasks()
+        mock_slack.assert_not_called()
+
+        create_time = timezone.now() - timedelta(minutes=31)
+        StaffingResponseFactory(
+            request_inquiry__request__task__start_datetime=create_time,
+            request_inquiry__request__created_at=create_time,
+            is_winner=False
+        )
+        warn_staffing_team_about_unstaffed_tasks()
+        self.assertEqual(mock_slack.call_count, 1)
+
+    @patch('orchestra.communication.staffing.StaffBot'
+           '.send_worker_tasks_available_reminder')
+    def test_check_unstaffed_tasks(self, mock_staffbot):
+        # mark existing request as a winner
+        staffing_response = StaffingResponse.objects.create(
+            request_inquiry=self.staffing_request_inquiry,
+            is_available=True,
+            is_winner=True)
+
+        check_unstaffed_tasks()
+        mock_staffbot.assert_not_called()
+
+        staffing_response.delete()
+
+        check_unstaffed_tasks()
+        self.assertEqual(mock_staffbot.call_count, 1)
+
+    def test_mark_worker_as_winner(self):
+        self.assertEqual(
+            self.staffing_request_inquiry.responses.all().count(), 0)
+
+        mark_worker_as_winner(self.worker,
+                              self.staffing_request_inquiry.request.task,
+                              0,
+                              self.staffing_request_inquiry)
+        staffbot_request = self.staffing_request_inquiry.request
+        staffbot_request.refresh_from_db()
+
+        self.assertEqual(staffbot_request.status,
+                         StaffBotRequest.Status.COMPLETE.value)
+        self.assertEqual(
+            self.staffing_request_inquiry.responses.all().count(), 1)
+
+        response = self.staffing_request_inquiry.responses.first()
+        self.assertTrue(response.is_winner)
+
+        response.is_winner = False
+        response.is_available = False
+        mark_worker_as_winner(self.worker,
+                              self.staffing_request_inquiry.request.task,
+                              0, None)
+        self.assertEqual(
+            self.staffing_request_inquiry.responses.all().count(), 1)
+        response.refresh_from_db()
+        self.assertTrue(response.is_winner)
 
     @patch('orchestra.communication.staffing.message_experts_slack_group')
     def test_send_staffing_requests_parameters(self, mock_slack):

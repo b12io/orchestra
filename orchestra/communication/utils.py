@@ -1,3 +1,5 @@
+from django.db import transaction
+
 from orchestra.models import CommunicationPreference
 from orchestra.models import StaffBotRequest
 from orchestra.models import StaffingRequestInquiry
@@ -7,18 +9,22 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+@transaction.atomic
 def mark_worker_as_winner(worker, task, required_role_counter,
                           staffing_request_inquiry):
-    staffbot_request = StaffBotRequest.objects.filter(
-        task=task, required_role_counter=required_role_counter)
+    staffbot_request = (
+        StaffBotRequest.objects
+        .filter(task=task, required_role_counter=required_role_counter)
+        .order_by('-created_at'))
 
     # Check whether staffbot request was sent out for this task
     if not staffbot_request.exists():
         return
 
-    staffbot_request = staffbot_request.first()
     if staffing_request_inquiry:
         staffbot_request = staffing_request_inquiry.request
+    else:
+        staffbot_request = staffbot_request.first()
 
     staffbot_request.status = StaffBotRequest.Status.COMPLETE.value
     staffbot_request.save()
@@ -37,9 +43,14 @@ def mark_worker_as_winner(worker, task, required_role_counter,
 
     if staffing_response.exists():
         staffing_response = staffing_response.first()
+        staffing_response.is_available = True
         staffing_response.is_winner = True
         staffing_response.save()
     else:
+        # This branch occurs if a worker was assigned to a task that has
+        # an open StaffBot Request, but StaffBot hasn't reached out
+        # to the Worker yet. We fib a little and create in inquiry/response
+        # for the worker so they can be marked as a winner.
         comm_pref = CommunicationPreference.objects.filter(
             worker=worker)
         if not comm_pref.exists():
@@ -50,12 +61,14 @@ def mark_worker_as_winner(worker, task, required_role_counter,
         comm_pref = comm_pref.first()
         comm_method = StaffingRequestInquiry.CommunicationMethod.SLACK.value
 
-        inquiry = StaffingRequestInquiry.objects.create(
-            request=staffbot_request,
-            communication_preference=comm_pref,
-            communication_method=comm_method)
+        if not staffing_request_inquiry:
+            staffing_request_inquiry = (
+                StaffingRequestInquiry.objects
+                .create(request=staffbot_request,
+                        communication_preference=comm_pref,
+                        communication_method=comm_method))
 
         StaffingResponse.objects.create(
-            request_inquiry=inquiry,
+            request_inquiry=staffing_request_inquiry,
             is_available=True,
             is_winner=True)
