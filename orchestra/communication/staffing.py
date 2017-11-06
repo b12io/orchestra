@@ -249,7 +249,7 @@ def warn_staffing_team_about_unstaffed_tasks():
                  .format(request.task, request.created_at)))
 
 
-def check_unstaffed_tasks():
+def remind_workers_about_available_tasks():
     staffbot = StaffBot()
     workers = Worker.objects.all()
     for worker in workers:
