@@ -221,7 +221,7 @@ def get_available_requests(worker):
 
 def warn_staffing_team_about_unstaffed_tasks():
     max_unstaffed_datetime = (
-        timezone.now() - settings.ORCHESTRA_STAFFBOT_STAFFING_MAX_TIME)
+        timezone.now() - settings.ORCHESTRA_STAFFBOT_STAFFING_MIN_TIME)
 
     # Get all requests without winners
     task_values = (
