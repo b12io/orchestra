@@ -245,7 +245,7 @@ def warn_staffing_team_about_unstaffed_tasks():
         if request.created_at < max_unstaffed_datetime:
             message_experts_slack_group(
                 settings.ORCHESTRA_STAFFBOT_STAFFING_GROUP_ID,
-                ('No winner request for task {}! Created at {}'
+                ('No winner request for task {}! Created at {}.'
                  .format(request.task, request.created_at)))
 
 
