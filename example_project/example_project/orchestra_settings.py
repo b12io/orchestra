@@ -206,7 +206,7 @@ def setup_orchestra(settings_module_name):
     settings.ORCHESTRA_SLACK_STAFFBOT_TOKEN = ''
     settings.ORCHESTRA_STAFFBOT_WORKER_BATCH_SIZE = 5
     settings.ORCHESTRA_STAFFBOT_BATCH_FREQUENCY = timedelta(minutes=2)
-    settings.ORCHESTRA_STAFFBOT_STAFFING_MAX_TIME = timedelta(minutes=30)
+    settings.ORCHESTRA_STAFFBOT_STAFFING_MIN_TIME = timedelta(minutes=30)
     settings.ORCHESTRA_STAFFBOT_STAFFING_GROUP_ID = None
 
     # Optionally add a path for a template to support third party scripts
