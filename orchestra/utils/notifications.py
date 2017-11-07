@@ -167,3 +167,9 @@ def _notify_experts_slack_status_change(task, current_worker):
 def message_experts_slack_group(slack_channel, slack_message):
     slack = OrchestraSlackService(settings.SLACK_EXPERTS_API_KEY)
     slack.chat.post_message(slack_channel, slack_message)
+
+
+@run_if('ORCHESTRA_SLACK_INTERNAL_ENABLED')
+def message_internal_slack_group(slack_channel, slack_message):
+    slack = OrchestraSlackService(settings.SLACK_INTERNAL_API_KEY)
+    slack.chat.post_message(slack_channel, slack_message)

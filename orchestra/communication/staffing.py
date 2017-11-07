@@ -18,6 +18,7 @@ from orchestra.models import TaskAssignment
 from orchestra.models import Worker
 from orchestra.models import WorkerCertification
 from orchestra.utils.notifications import message_experts_slack_group
+from orchestra.utils.notifications import message_internal_slack_group
 from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.task_lifecycle import check_worker_allowed_new_assignment
 from orchestra.utils.task_lifecycle import get_role_from_counter
@@ -246,7 +247,7 @@ def warn_staffing_team_about_unstaffed_tasks():
             .order_by('-created_at'))[0]
 
         if request.created_at < max_unstaffed_datetime:
-            message_experts_slack_group(
+            message_internal_slack_group(
                 settings.ORCHESTRA_STAFFBOT_STAFFING_GROUP_ID,
                 ('No winner request for task {} - {}! Created at {}.'
                  .format(request.task.id, request.task, request.created_at)))
