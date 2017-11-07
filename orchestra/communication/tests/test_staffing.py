@@ -371,7 +371,7 @@ class StaffingTestCase(OrchestraTestCase):
         self.assertEqual(len(get_available_requests(self.worker)), 0)
         self.assertEqual(len(get_available_requests(worker2)), 1)
 
-    @patch('orchestra.communication.staffing.message_experts_slack_group')
+    @patch('orchestra.communication.staffing.message_internal_slack_group')
     def test_warn_staffing_team_about_unstaffed_tasks(self, mock_slack):
         warn_staffing_team_about_unstaffed_tasks()
         mock_slack.assert_not_called()
