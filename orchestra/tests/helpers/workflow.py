@@ -243,7 +243,7 @@ workflow_fixtures = [
                         },
                         'is_human': True,
                         'creation_depends_on': [],
-                        'required_certifications': [],
+                        'required_certifications': ['certification1_ap'],
                         'review_policy': {
                             'policy': 'no_review',
                         },
