@@ -1,10 +1,10 @@
 from datetime import timedelta
-from django.conf import settings
 from django.utils import timezone
 from unittest.mock import patch
 
 from orchestra.bots.errors import StaffingResponseException
-from orchestra.communication.staffing import remind_workers_about_available_tasks
+from orchestra.communication.staffing import \
+    remind_workers_about_available_tasks
 from orchestra.communication.staffing import get_available_requests
 from orchestra.communication.staffing import handle_staffing_response
 from orchestra.communication.staffing import send_staffing_requests
@@ -406,7 +406,7 @@ class StaffingTestCase(OrchestraTestCase):
         remind_workers_about_available_tasks()
         self.assertEqual(mock_slack.call_count, 1)
 
-        args, _ =  mock_slack.call_args
+        args, _ = mock_slack.call_args
         self.assertTrue(
             'Tasks are still available for you to work on' in args[1])
         # No href in slack
