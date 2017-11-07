@@ -169,7 +169,7 @@ def message_experts_slack_group(slack_channel, slack_message):
     slack.chat.post_message(slack_channel, slack_message)
 
 
-@run_if('ORCHESTRA_SLACK_EXPERTS_ENABLED')
+@run_if('ORCHESTRA_SLACK_INTERNAL_ENABLED')
 def message_internal_slack_group(slack_channel, slack_message):
     slack = OrchestraSlackService(settings.SLACK_INTERNAL_API_KEY)
     slack.chat.post_message(slack_channel, slack_message)
