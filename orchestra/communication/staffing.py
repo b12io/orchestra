@@ -190,6 +190,8 @@ def get_available_requests(worker):
     remaining_requests = (
         StaffBotRequest.objects
         .filter(inquiries__communication_preference__worker=worker)
+        .exclude(task__status=Task.Status.COMPLETE)
+        .exclude(task__status=Task.Status.ABORTED)
         .exclude(inquiries__responses__in=won_responses)
         .exclude(inquiries__responses__in=worker_provided_responses)
         .distinct())
@@ -227,6 +229,8 @@ def warn_staffing_team_about_unstaffed_tasks():
         Task.objects.all()
         .filter(start_datetime__lt=max_unstaffed_datetime)
         .exclude(staffing_requests__inquiries__responses__is_winner=True)
+        .exclude(status=Task.Status.COMPLETE)
+        .exclude(status=Task.Status.ABORTED)
         .exclude(staffing_requests__isnull=True)
         .exclude(staffing_requests__inquiries__isnull=True)
         .order_by('-start_datetime')
@@ -244,8 +248,8 @@ def warn_staffing_team_about_unstaffed_tasks():
         if request.created_at < max_unstaffed_datetime:
             message_experts_slack_group(
                 settings.ORCHESTRA_STAFFBOT_STAFFING_GROUP_ID,
-                ('No winner request for task {}! Created at {}.'
-                 .format(request.task, request.created_at)))
+                ('No winner request for task {} - {}! Created at {}.'
+                 .format(request.task.id, request.task, request.created_at)))
 
 
 def remind_workers_about_available_tasks():
