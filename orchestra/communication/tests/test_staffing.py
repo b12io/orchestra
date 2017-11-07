@@ -2,12 +2,11 @@ from datetime import timedelta
 from unittest.mock import patch
 
 from django.utils import timezone
-
 from orchestra.bots.errors import StaffingResponseException
-from orchestra.communication.staffing import \
-    remind_workers_about_available_tasks
 from orchestra.communication.staffing import get_available_requests
 from orchestra.communication.staffing import handle_staffing_response
+from orchestra.communication.staffing import \
+    remind_workers_about_available_tasks
 from orchestra.communication.staffing import send_staffing_requests
 from orchestra.communication.staffing import \
     warn_staffing_team_about_unstaffed_tasks
@@ -23,8 +22,8 @@ from orchestra.tests.helpers.fixtures import CommunicationPreferenceFactory
 from orchestra.tests.helpers.fixtures import StaffBotRequestFactory
 from orchestra.tests.helpers.fixtures import StaffingRequestInquiryFactory
 from orchestra.tests.helpers.fixtures import StaffingResponseFactory
-from orchestra.tests.helpers.fixtures import WorkerFactory
 from orchestra.tests.helpers.fixtures import WorkerCertificationFactory
+from orchestra.tests.helpers.fixtures import WorkerFactory
 
 
 class StaffingTestCase(OrchestraTestCase):

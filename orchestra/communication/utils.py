@@ -1,11 +1,11 @@
-from django.db import transaction
+import logging
 
+from django.db import transaction
 from orchestra.models import CommunicationPreference
 from orchestra.models import StaffBotRequest
 from orchestra.models import StaffingRequestInquiry
 from orchestra.models import StaffingResponse
 
-import logging
 logger = logging.getLogger(__name__)
 
 
