@@ -8,6 +8,7 @@ from django.db import transaction
 from django.utils import timezone
 
 from orchestra.communication.slack import add_worker_to_project_team
+from orchestra.communication.utils import mark_worker_as_winner
 from orchestra.core.errors import AssignmentPolicyError
 from orchestra.core.errors import CreationPolicyError
 from orchestra.core.errors import IllegalTaskSubmission
@@ -179,7 +180,7 @@ def role_required_for_new_task(task):
 
 
 @transaction.atomic
-def assign_task(worker_id, task_id):
+def assign_task(worker_id, task_id, staffing_request_inquiry=None):
     """
     Return a given task after assigning or reassigning it to the specified
     worker.
@@ -204,6 +205,7 @@ def assign_task(worker_id, task_id):
     worker = Worker.objects.get(id=worker_id)
     task = Task.objects.get(id=task_id)
     required_role = role_required_for_new_task(task)
+    required_role_counter = role_counter_required_for_new_task(task)
 
     assignment = current_assignment(task)
     if not is_worker_certified_for_task(worker, task, required_role):
@@ -240,11 +242,14 @@ def assign_task(worker_id, task_id):
     if settings.PRODUCTION or settings.STAGING:
         add_worker_to_project_team(worker, task.project)
     notify_status_change(task, previous_status)
+    mark_worker_as_winner(worker, task, required_role_counter,
+                          staffing_request_inquiry)
     return task
 
 
 @transaction.atomic
-def reassign_assignment(worker_id, assignment_id):
+def reassign_assignment(worker_id, assignment_id,
+                        staffing_request_inquiry=None):
     """
     Return a given assignment after reassigning it to the specified
     worker.
@@ -280,6 +285,10 @@ def reassign_assignment(worker_id, assignment_id):
 
     assignment.worker = worker
     assignment.save()
+
+    mark_worker_as_winner(worker, assignment.task,
+                          assignment.assignment_counter,
+                          staffing_request_inquiry)
     add_worker_to_project_team(worker, assignment.task.project)
     return assignment
 

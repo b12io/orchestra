@@ -28,7 +28,7 @@ class CommunicationPreferenceMixin(object):
     def __str__(self):
         return '{} - {} - {}'.format(
             self.worker,
-            self.methods.items(),
+            self.methods,
             self.get_descriptions().get('short_description')
         )
 

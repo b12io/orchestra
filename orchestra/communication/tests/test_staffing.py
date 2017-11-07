@@ -4,25 +4,39 @@ from unittest.mock import patch
 from django.utils import timezone
 
 from orchestra.bots.errors import StaffingResponseException
+from orchestra.communication.staffing import \
+    remind_workers_about_available_tasks
 from orchestra.communication.staffing import get_available_requests
 from orchestra.communication.staffing import handle_staffing_response
 from orchestra.communication.staffing import send_staffing_requests
+from orchestra.communication.staffing import \
+    warn_staffing_team_about_unstaffed_tasks
+from orchestra.communication.utils import mark_worker_as_winner
 from orchestra.models import CommunicationPreference
 from orchestra.models import StaffBotRequest
 from orchestra.models import StaffingRequestInquiry
 from orchestra.models import StaffingResponse
 from orchestra.models import TaskAssignment
 from orchestra.tests.helpers import OrchestraTestCase
+from orchestra.tests.helpers.fixtures import CertificationFactory
 from orchestra.tests.helpers.fixtures import CommunicationPreferenceFactory
 from orchestra.tests.helpers.fixtures import StaffBotRequestFactory
 from orchestra.tests.helpers.fixtures import StaffingRequestInquiryFactory
+from orchestra.tests.helpers.fixtures import StaffingResponseFactory
 from orchestra.tests.helpers.fixtures import WorkerFactory
+from orchestra.tests.helpers.fixtures import WorkerCertificationFactory
 
 
 class StaffingTestCase(OrchestraTestCase):
 
     def setUp(self):
         self.worker = WorkerFactory()
+        self.certification = CertificationFactory()
+        WorkerCertificationFactory(
+            worker=self.worker,
+            certification=self.certification
+        )
+
         self.staffing_request_inquiry = StaffingRequestInquiryFactory(
             communication_preference__worker=self.worker,
             communication_preference__communication_type=(
@@ -30,6 +44,9 @@ class StaffingTestCase(OrchestraTestCase):
                 .NEW_TASK_AVAILABLE.value),
             request__task__step__is_human=True
         )
+        self.staffing_request_inquiry \
+            .request.task.step.required_certifications.add(
+                self.certification)
         super().setUp()
 
     def test_handle_staffing_response_invalid_request(self):
@@ -56,6 +73,7 @@ class StaffingTestCase(OrchestraTestCase):
             self.worker, self.staffing_request_inquiry.id,
             is_available=True)
         self.assertTrue(response.is_winner)
+        self.staffing_request_inquiry.refresh_from_db()
         self.assertEqual(response.request_inquiry.request.status,
                          StaffBotRequest.Status.COMPLETE.value)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
@@ -162,15 +180,20 @@ class StaffingTestCase(OrchestraTestCase):
 
     @patch('orchestra.communication.staffing.message_experts_slack_group')
     def test_send_staffing_requests(self, mock_slack):
-
         worker2 = WorkerFactory()
         CommunicationPreferenceFactory(
             worker=worker2,
             communication_type=(
                 CommunicationPreference.CommunicationType
                 .NEW_TASK_AVAILABLE.value))
+        WorkerCertificationFactory(
+            worker=worker2,
+            certification=self.certification
+        )
 
         request = StaffBotRequestFactory()
+        request.task.step.required_certifications.add(self.certification)
+
         self.assertEqual(request.status,
                          StaffBotRequest.Status.PROCESSING.value)
 
@@ -212,14 +235,19 @@ class StaffingTestCase(OrchestraTestCase):
     @patch('orchestra.communication.staffing.message_experts_slack_group')
     def test_send_staffing_request_priorities(self, mock_slack):
 
-        worker2 = WorkerFactory(staffing_priority=-1)
+        worker2 = WorkerFactory()
+        WorkerCertificationFactory(worker=worker2,
+                                   staffing_priority=-1)
+
         CommunicationPreferenceFactory(
             worker=worker2,
             communication_type=(
                 CommunicationPreference.CommunicationType
                 .NEW_TASK_AVAILABLE.value))
 
-        worker3 = WorkerFactory(staffing_priority=1)
+        worker3 = WorkerFactory()
+        WorkerCertificationFactory(worker=worker3,
+                                   staffing_priority=1)
         CommunicationPreferenceFactory(
             worker=worker3,
             communication_type=(
@@ -283,8 +311,15 @@ class StaffingTestCase(OrchestraTestCase):
             communication_type=(
                 CommunicationPreference.CommunicationType
                 .NEW_TASK_AVAILABLE.value))
+        WorkerCertificationFactory(
+            worker=worker2,
+            certification=self.certification
+        )
+
         request1 = StaffBotRequestFactory(task__step__is_human=True)
+        request1.task.step.required_certifications.add(self.certification)
         request2 = StaffBotRequestFactory(task__step__is_human=True)
+        request2.task.step.required_certifications.add(self.certification)
 
         send_staffing_requests(worker_batch_size=2,
                                frequency=timedelta(minutes=0))
@@ -337,16 +372,102 @@ class StaffingTestCase(OrchestraTestCase):
         self.assertEqual(len(get_available_requests(worker2)), 1)
 
     @patch('orchestra.communication.staffing.message_experts_slack_group')
+    def test_warn_staffing_team_about_unstaffed_tasks(self, mock_slack):
+        warn_staffing_team_about_unstaffed_tasks()
+        mock_slack.assert_not_called()
+
+        create_time = timezone.now() - timedelta(minutes=31)
+        StaffingResponseFactory(
+            request_inquiry__request__task__start_datetime=create_time,
+            request_inquiry__request__created_at=create_time,
+            is_winner=False
+        )
+        warn_staffing_team_about_unstaffed_tasks()
+        self.assertEqual(mock_slack.call_count, 1)
+
+        args, _ = mock_slack.call_args
+        self.assertTrue('No winner request for task' in args[1])
+
+    @patch('orchestra.communication.staffing.StaffBot'
+           '._send_staffing_request_by_mail')
+    @patch('orchestra.communication.staffing.StaffBot'
+           '._send_staffing_request_by_slack')
+    def test_remind_workers_about_available_tasks(self, mock_slack, mock_mail):
+        # mark existing request as a winner
+        staffing_response = StaffingResponse.objects.create(
+            request_inquiry=self.staffing_request_inquiry,
+            is_available=True,
+            is_winner=True)
+
+        remind_workers_about_available_tasks()
+        mock_slack.assert_not_called()
+
+        staffing_response.delete()
+
+        remind_workers_about_available_tasks()
+        self.assertEqual(mock_slack.call_count, 1)
+
+        args, _ = mock_slack.call_args
+        self.assertTrue(
+            'Tasks are still available for you to work on' in args[1])
+        # No href in slack
+        self.assertTrue(
+            '<a href' not in args[1])
+
+        args, _ = mock_mail.call_args
+        self.assertTrue(
+            'Tasks are still available for you to work on' in args[1])
+        # href in email
+        self.assertTrue(
+            '<a href' in args[1])
+
+    def test_mark_worker_as_winner(self):
+        self.assertEqual(
+            self.staffing_request_inquiry.responses.all().count(), 0)
+
+        mark_worker_as_winner(self.worker,
+                              self.staffing_request_inquiry.request.task,
+                              0,
+                              self.staffing_request_inquiry)
+        staffbot_request = self.staffing_request_inquiry.request
+        staffbot_request.refresh_from_db()
+
+        self.assertEqual(staffbot_request.status,
+                         StaffBotRequest.Status.COMPLETE.value)
+        self.assertEqual(
+            self.staffing_request_inquiry.responses.all().count(), 1)
+
+        response = self.staffing_request_inquiry.responses.first()
+        self.assertTrue(response.is_winner)
+
+        response.is_winner = False
+        response.is_available = False
+        mark_worker_as_winner(self.worker,
+                              self.staffing_request_inquiry.request.task,
+                              0, None)
+        self.assertEqual(
+            self.staffing_request_inquiry.responses.all().count(), 1)
+        response.refresh_from_db()
+        self.assertTrue(response.is_winner)
+
+    @patch('orchestra.communication.staffing.message_experts_slack_group')
     def test_send_staffing_requests_parameters(self, mock_slack):
         for idx in range(5):
+            worker = WorkerFactory()
             CommunicationPreferenceFactory(
-                worker=WorkerFactory(),
+                worker=worker,
                 communication_type=(
                     CommunicationPreference.CommunicationType
                     .NEW_TASK_AVAILABLE.value))
+            WorkerCertificationFactory(
+                worker=worker,
+                certification=self.certification
+            )
         # Make a new request and turn off the global request, as the
         # global one has an inquiry on it already.
         request = StaffBotRequestFactory(task__step__is_human=True)
+        request.task.step.required_certifications.add(self.certification)
+
         self.staffing_request_inquiry.request.status = (
             StaffBotRequest.Status.COMPLETE)
 
