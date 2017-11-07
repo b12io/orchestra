@@ -226,8 +226,8 @@ def warn_staffing_team_about_unstaffed_tasks():
     # Get all requests without winners
     task_values = (
         Task.objects.all()
-        .filter(staffing_requests__inquiries__responses__is_winner=False,
-                start_datetime__lt=max_unstaffed_datetime)
+        .filter(start_datetime__lt=max_unstaffed_datetime)
+        .exclude(staffing_requests__inquiries__responses__is_winner=True)
         .exclude(staffing_requests__isnull=True)
         .exclude(staffing_requests__inquiries__isnull=True)
         .order_by('-start_datetime')
@@ -257,5 +257,4 @@ def remind_workers_about_available_tasks():
         # TODO(kkamalov): send out reminder only if last request was sent
         # at least ORCHESTRA_STAFFBOT_MIN_FOLLOWUP_TIME ago
         if len(requests):
-            print(requests)
             staffbot.send_worker_tasks_available_reminder(worker)
