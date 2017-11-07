@@ -13,8 +13,10 @@ from orchestra.core.errors import TaskStatusError
 from orchestra.models import StaffBotRequest
 from orchestra.models import StaffingRequestInquiry
 from orchestra.models import StaffingResponse
+from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import Worker
+from orchestra.models import WorkerCertification
 from orchestra.utils.notifications import message_experts_slack_group
 from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.task_lifecycle import check_worker_allowed_new_assignment
@@ -38,8 +40,6 @@ def handle_staffing_response(worker, staffing_request_inquiry_id,
         response (orchestra.models.StaffingResponse):
             StaffingResponse object that has been created for the worker
     """
-
-    # TODO(kkamalov): add proper docstring
     staffing_request_inquiry = get_object_or_None(
         StaffingRequestInquiry,
         communication_preference__worker=worker,
@@ -67,11 +67,7 @@ def handle_staffing_response(worker, staffing_request_inquiry_id,
             not StaffingResponse.objects.filter(
                 request_inquiry__request=staffing_request_inquiry.request,
                 is_winner=True).exists()):
-        response.is_winner = True
         request = staffing_request_inquiry.request
-        request.status = StaffBotRequest.Status.COMPLETE.value
-        request.save()
-
         task_assignment = get_object_or_None(
             TaskAssignment,
             task=request.task,
@@ -80,12 +76,16 @@ def handle_staffing_response(worker, staffing_request_inquiry_id,
 
         # if task assignment exists then reassign
         if task_assignment is not None:
-            reassign_assignment(worker.id, task_assignment.id)
+            reassign_assignment(worker.id, task_assignment.id,
+                                staffing_request_inquiry)
         # otherwise assign task
         else:
-            assign_task(worker.id, request.task.id)
+            assign_task(worker.id, request.task.id,
+                        staffing_request_inquiry)
 
-    response.save()
+    response = (StaffingResponse.objects
+                .filter(request_inquiry=staffing_request_inquiry)
+                .first())
     check_responses_complete(staffing_request_inquiry.request)
     return response
 
@@ -120,21 +120,19 @@ def send_staffing_requests(
         send_request_inquiries(staffbot, request, worker_batch_size)
 
 
-def send_request_inquiries(staffbot, request, worker_batch_size):
-    # Get Workers that haven't already received an inquiry.
-    workers_with_inquiries = (StaffingRequestInquiry.objects.filter(
-        request=request).distinct().values_list(
-            'communication_preference__worker__id', flat=True))
-    # Sort Workers by their staffing priority first, and then randomly
-    # within competing staffing priorities.
-    workers = (Worker.objects
-               .exclude(id__in=workers_with_inquiries)
-               .order_by('-staffing_priority', '?'))
-    required_role = get_role_from_counter(request.required_role_counter)
+def _send_request_inquiries(staffbot, request, worker_batch_size,
+                            worker_certifications):
     inquiries_sent = 0
+    required_role = get_role_from_counter(request.required_role_counter)
+    contacted_workers = set()
 
-    for worker in workers:
+    for certification in worker_certifications:
         try:
+            worker = certification.worker
+            if worker.id in contacted_workers:
+                continue
+
+            contacted_workers.add(worker.id)
             check_worker_allowed_new_assignment(worker)
             if (is_worker_certified_for_task(worker, request.task,
                                              required_role,
@@ -159,6 +157,28 @@ def send_request_inquiries(staffbot, request, worker_batch_size):
         request.status = StaffBotRequest.Status.COMPLETE.value
     request.last_inquiry_sent = timezone.now()
     request.save()
+
+
+def send_request_inquiries(staffbot, request, worker_batch_size):
+    # Get Workers that haven't already received an inquiry.
+    workers_with_inquiries = (StaffingRequestInquiry.objects.filter(
+        request=request).distinct().values_list(
+            'communication_preference__worker__id', flat=True))
+    required_role = get_role_from_counter(request.required_role_counter)
+
+    # Sort Worker Certifications by their staffing priority first,
+    # and then randomly within competing staffing priorities.
+    worker_certifications = (
+        WorkerCertification
+        .objects
+        .exclude(worker__id__in=workers_with_inquiries)
+        .filter(role=required_role,
+                task_class=WorkerCertification.TaskClass.REAL,
+                certification__in=(request.task
+                                   .step.required_certifications.all()))
+        .order_by('-staffing_priority', '?'))
+    _send_request_inquiries(staffbot, request, worker_batch_size,
+                            worker_certifications)
 
 
 def get_available_requests(worker):
@@ -196,3 +216,44 @@ def get_available_requests(worker):
             reverse('orchestra:communication:available_staffing_requests'))
         contexts.append(metadata)
     return contexts
+
+
+def warn_staffing_team_about_unstaffed_tasks():
+    max_unstaffed_datetime = (
+        timezone.now() - settings.ORCHESTRA_STAFFBOT_STAFFING_MIN_TIME)
+
+    # Get all requests without winners
+    task_values = (
+        Task.objects.all()
+        .filter(start_datetime__lt=max_unstaffed_datetime)
+        .exclude(staffing_requests__inquiries__responses__is_winner=True)
+        .exclude(staffing_requests__isnull=True)
+        .exclude(staffing_requests__inquiries__isnull=True)
+        .order_by('-start_datetime')
+        .values('staffing_requests__required_role_counter', 'id'))
+
+    for task_value in task_values:
+        required_role_counter = task_value[
+            'staffing_requests__required_role_counter']
+        request = (
+            StaffBotRequest.objects.filter(
+                task=task_value['id'],
+                required_role_counter=required_role_counter)
+            .order_by('-created_at'))[0]
+
+        if request.created_at < max_unstaffed_datetime:
+            message_experts_slack_group(
+                settings.ORCHESTRA_STAFFBOT_STAFFING_GROUP_ID,
+                ('No winner request for task {}! Created at {}.'
+                 .format(request.task, request.created_at)))
+
+
+def remind_workers_about_available_tasks():
+    staffbot = StaffBot()
+    workers = Worker.objects.all()
+    for worker in workers:
+        requests = get_available_requests(worker)
+        # TODO(kkamalov): send out reminder only if last request was sent
+        # at least ORCHESTRA_STAFFBOT_MIN_FOLLOWUP_TIME ago
+        if len(requests):
+            staffbot.send_worker_tasks_available_reminder(worker)
