@@ -66,6 +66,8 @@ staffing, in batches of
 ``settings.ORCHESTRA_STAFFBOT_BATCH_FREQUENCY`` time units (the
 frequency is a ``datetime.timedelta`` object).
 
+
+
 ``StaffBot`` looks at two fields when prioritizing ``Workers`` to
 reach out to when a task is available.  The
 ``WorkerCertification.staffbot_enabled`` field (``True`` by default)
@@ -74,7 +76,7 @@ have a given certification.  If you set it to ``False``, the
 ``Worker`` will still be able to pick up tasks requiring certification
 (e.g., you can still manually assign tasks to that ``Worker``), but
 ``StaffBot`` will not reach out to them for those tasks.  The
-``Worker.staffing_priority`` integer field (``0`` by default) helps
+``WorkerCertification.staffing_priority`` integer field (``0`` by default) helps
 ``StaffBot`` prioritize amongst certified ``Workers``.  If ``Workers``
 have the same ``staffing_priority``, ``StaffBot`` will prioritize them
 randomly.
