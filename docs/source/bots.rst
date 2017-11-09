@@ -66,8 +66,6 @@ staffing, in batches of
 ``settings.ORCHESTRA_STAFFBOT_BATCH_FREQUENCY`` time units (the
 frequency is a ``datetime.timedelta`` object).
 
-
-
 ``StaffBot`` looks at two fields when prioritizing ``Workers`` to
 reach out to when a task is available.  The
 ``WorkerCertification.staffbot_enabled`` field (``True`` by default)
@@ -80,6 +78,16 @@ have a given certification.  If you set it to ``False``, the
 ``StaffBot`` prioritize amongst certified ``Workers``.  If ``Workers``
 have the same ``staffing_priority``, ``StaffBot`` will prioritize them
 randomly.
+
+Utility function ``remind_workers_about_available_tasks`` has been added to
+staffing that goes through each worker and sends a reminder whether if
+there are any unclaimmed task still available.
+
+In order to receive warning into internal (admin) Slack workspace use
+``SLACK_INTERNAL_API_KEY``. ``warn_staffing_team_about_unstaffed_tasks``
+finds tasks that have not been staffed for more than ``ORCHESTRA_STAFFBOT_STAFFING_MIN_TIME``
+and sends out a message to internal ``ORCHESTRA_STAFFBOT_STAFFING_GROUP_ID``
+channel.
 
 Assignment Policy
 ================
