@@ -83,7 +83,7 @@ Utility functions
 =================
 There are several utility functions to help operationalize ``StaffBot``. You should call these through ``cron`` or some other scheduling utility:
 
-* ``orchestra.communication.staffing.send_staffing_requests`` looks for tasks that can be staffed and reaches out to the next set of ``settings.ORCHESTRA_STAFFBOT_WORKER_BATCH_SIZE`` workers every `settings.ORCHESTRA_STAFFBOT_BATCH_FREQUENCY``.
+* ``orchestra.communication.staffing.send_staffing_requests`` looks for tasks that can be staffed and reaches out to the next set of ``settings.ORCHESTRA_STAFFBOT_WORKER_BATCH_SIZE`` workers every ``settings.ORCHESTRA_STAFFBOT_BATCH_FREQUENCY``.
 * ``orchestra.communication.staffing.remind_workers_about_available_tasks`` sends a reminder to any worker who has unclaimed task still available.
 * ``orchestra.communication.staffing.warn_staffing_team_about_unstaffed_tasks`` warns administrators on the internal Slack channel ``ORCHESTRA_STAFFBOT_STAFFING_GROUP_ID`` about tasks that have not been staffed for more than ``ORCHESTRA_STAFFBOT_STAFFING_MIN_TIME``.
 
