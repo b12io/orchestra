@@ -79,15 +79,13 @@ have a given certification.  If you set it to ``False``, the
 have the same ``staffing_priority``, ``StaffBot`` will prioritize them
 randomly.
 
-Utility function ``remind_workers_about_available_tasks`` has been added to
-staffing that goes through each worker and sends a reminder whether if
-there are any unclaimmed task still available.
+Utility functions
+=================
+There are several utility functions to help operationalize ``StaffBot``. You should call these through ``cron`` or some other scheduling utility:
 
-In order to receive warning into internal (admin) Slack workspace use
-``SLACK_INTERNAL_API_KEY``. ``warn_staffing_team_about_unstaffed_tasks``
-finds tasks that have not been staffed for more than ``ORCHESTRA_STAFFBOT_STAFFING_MIN_TIME``
-and sends out a message to internal ``ORCHESTRA_STAFFBOT_STAFFING_GROUP_ID``
-channel.
+* ``orchestra.communication.staffing.send_staffing_requests`` looks for tasks that can be staffed and reaches out to the next set of ``settings.ORCHESTRA_STAFFBOT_WORKER_BATCH_SIZE`` workers every `settings.ORCHESTRA_STAFFBOT_BATCH_FREQUENCY``.
+* ``orchestra.communication.staffing.remind_workers_about_available_tasks`` sends a reminder to any worker who has unclaimed task still available.
+* ``orchestra.communication.staffing.warn_staffing_team_about_unstaffed_tasks`` warns administrators on the internal Slack channel ``ORCHESTRA_STAFFBOT_STAFFING_GROUP_ID`` about tasks that have not been staffed for more than ``ORCHESTRA_STAFFBOT_STAFFING_MIN_TIME``.
 
 Assignment Policy
 ================
