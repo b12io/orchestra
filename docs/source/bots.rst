@@ -74,10 +74,18 @@ have a given certification.  If you set it to ``False``, the
 ``Worker`` will still be able to pick up tasks requiring certification
 (e.g., you can still manually assign tasks to that ``Worker``), but
 ``StaffBot`` will not reach out to them for those tasks.  The
-``Worker.staffing_priority`` integer field (``0`` by default) helps
+``WorkerCertification.staffing_priority`` integer field (``0`` by default) helps
 ``StaffBot`` prioritize amongst certified ``Workers``.  If ``Workers``
 have the same ``staffing_priority``, ``StaffBot`` will prioritize them
 randomly.
+
+Utility functions
+=================
+There are several utility functions to help operationalize ``StaffBot``. You should call these through ``cron`` or some other scheduling utility:
+
+* ``orchestra.communication.staffing.send_staffing_requests`` looks for tasks that can be staffed and reaches out to the next set of ``settings.ORCHESTRA_STAFFBOT_WORKER_BATCH_SIZE`` workers every ``settings.ORCHESTRA_STAFFBOT_BATCH_FREQUENCY``.
+* ``orchestra.communication.staffing.remind_workers_about_available_tasks`` sends a reminder to any worker who has unclaimed task still available.
+* ``orchestra.communication.staffing.warn_staffing_team_about_unstaffed_tasks`` warns administrators on the internal Slack channel ``ORCHESTRA_STAFFBOT_STAFFING_GROUP_ID`` about tasks that have not been staffed for more than ``ORCHESTRA_STAFFBOT_STAFFING_MIN_TIME``.
 
 Assignment Policy
 ================
