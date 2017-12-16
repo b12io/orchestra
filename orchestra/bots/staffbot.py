@@ -15,8 +15,6 @@ from orchestra.communication.mail import send_mail
 from orchestra.communication.slack import format_slack_message
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import TaskStatusError
-from orchestra.interface_api.project_management.decorators import \
-    is_project_admin
 from orchestra.models import CommunicationPreference
 from orchestra.models import StaffBotRequest
 from orchestra.models import StaffingRequestInquiry
@@ -348,7 +346,7 @@ class StaffBot(BaseBot):
             raise SlackUserUnauthorized(
                 'Worker {} not found. slack_user_id: {}'.format(
                     username, slack_user_id))
-        elif not is_project_admin(worker.user):
+        elif not worker.is_project_admin():
             raise SlackUserUnauthorized(self.not_authorized_error)
         data = super().validate(data)
         return data

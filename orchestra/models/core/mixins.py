@@ -54,6 +54,11 @@ class WorkerMixin(object):
             WorkerCertification.Role.ENTRY_LEVEL
         )
 
+    def is_project_admin(self):
+        from orchestra.interface_api.project_management.decorators import (
+            is_project_admin)
+        return is_project_admin(self.user)
+
     def __str__(self):
         return '{} - @{} -{}'.format(
             self.user.username,

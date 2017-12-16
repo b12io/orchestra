@@ -417,7 +417,7 @@ def get_task_overview_for_worker(task_id, worker):
 
     if task.is_worker_assigned(worker):
         task_assignment = TaskAssignment.objects.get(worker=worker, task=task)
-    elif worker.user.is_superuser:
+    elif worker.is_project_admin():
         task_assignment = assignment_history(task).last()
         task_details['is_read_only'] = True
     else:
