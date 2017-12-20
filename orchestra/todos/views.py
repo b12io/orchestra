@@ -16,7 +16,9 @@ class IsAssociatedWithTodosProject(permissions.BasePermission):
     def has_object_permission(self, request, view, todo):
         worker = Worker.objects.get(user=request.user)
         project = todo.task.project
-        return worker.assignments.filter(task__project=project).exists()
+        return (
+            worker.is_project_admin() or
+            worker.assignments.filter(task__project=project).exists())
 
 
 class IsAssociatedWithProject(permissions.BasePermission):
@@ -28,6 +30,8 @@ class IsAssociatedWithProject(permissions.BasePermission):
 
     def has_permission(self, request, view):
         worker = Worker.objects.get(user=request.user)
+        if worker.is_project_admin():
+            return True
         if request.method == 'GET':
             # List calls have a project ID
             project_id = request.query_params.get('project')
