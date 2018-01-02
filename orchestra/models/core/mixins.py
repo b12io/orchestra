@@ -23,6 +23,16 @@ class CertificationMixin(object):
         return '{} - {}'.format(self.slug, self.workflow.slug)
 
 
+class SanityCheckMixin(object):
+
+    def __str__(self):
+        return '{} - {} (created: {}, handled: {})'.format(
+            self.project,
+            self.check_slug,
+            self.created_at,
+            self.handled_at)
+
+
 class StepMixin(object):
 
     def __str__(self):
