@@ -5,6 +5,7 @@ from orchestra.models.communication.models import StaffingResponse
 from orchestra.models.core.models import Workflow
 from orchestra.models.core.models import WorkflowVersion
 from orchestra.models.core.models import Certification
+from orchestra.models.core.models import SanityCheck
 from orchestra.models.core.models import Step
 from orchestra.models.core.models import Worker
 from orchestra.models.core.models import WorkerCertification
@@ -26,6 +27,7 @@ __all__ = [
     'Workflow',
     'WorkflowVersion',
     'Certification',
+    'SanityCheck',
     'Step',
     'Worker',
     'WorkerCertification',
