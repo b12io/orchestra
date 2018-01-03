@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.templatetags.static import static
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.csrf import requires_csrf_token
 from django_filters import rest_framework as filters
 from jsonview.decorators import json_view
@@ -156,6 +157,7 @@ def upload_image(request):
 
 @json_view
 @login_required
+@csrf_exempt
 def task_assignment_information(request):
     try:
         worker = Worker.objects.get(user=request.user)
