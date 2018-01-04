@@ -30,6 +30,10 @@ class ReviewPolicyError(Exception):
     pass
 
 
+class SanityBotError(Exception):
+    pass
+
+
 class S3UploadError(Exception):
     pass
 

@@ -102,7 +102,8 @@ def load_workflow_version(version_data, workflow, force=False):
         workflow=workflow,
         defaults={
             'name': version_data['name'],
-            'description': version_data['description']
+            'description': version_data['description'],
+            'sanity_checks': version_data.get('sanity_checks', {}),
         }
     )
 

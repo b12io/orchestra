@@ -65,6 +65,8 @@ class WorkflowVersion(WorkflowVersionMixin, models.Model):
             A longer description of the workflow version.
         workflow (orchestra.models.Workflow):
             The workflow that this is a version of.
+        sanity_checks (str):
+            A JSON blob used to define the sanity checks we run.
     """
     created_at = models.DateTimeField(default=timezone.now)
     slug = models.CharField(max_length=200)
@@ -72,6 +74,7 @@ class WorkflowVersion(WorkflowVersionMixin, models.Model):
     description = models.TextField()
     workflow = models.ForeignKey(
         Workflow, related_name='versions', on_delete=models.CASCADE)
+    sanity_checks = JSONField(default={})
 
     class Meta:
         app_label = 'orchestra'
