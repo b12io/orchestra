@@ -580,6 +580,10 @@ class Todo(TodoMixin, BaseModel):
             Whether the todo has been completed.
         description (str):
             A text description of the Todo.
+        start_date (datetime.date):
+            The date to start the task. (inclusive)
+        due_date (datetime.date):
+            The date the todo is due.
 
     Constraints:
         `task` and `assignment_counter` are taken to be unique_together.
@@ -594,3 +598,5 @@ class Todo(TodoMixin, BaseModel):
         Task, related_name='todos', on_delete=models.CASCADE)
     description = models.CharField(max_length=200)
     completed = models.BooleanField(default=False)
+    start_date = models.DateField(default=timezone.now)
+    due_date = models.DateField(null=True, blank=True)
