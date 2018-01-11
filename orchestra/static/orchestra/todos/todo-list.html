@@ -23,14 +23,18 @@
                  type="text"
                  ng-model="todoList.newTodoDescription"
                  placeholder="Description">
-          <label>Start</label>
-          <input class="new-todo__date"
-            type="text"
-            ng-model="todoList.newTodoStartDate">
-          <label>Due</label>
-          <input class="new-todo__date"
-            type="text"
-            ng-model="todoList.newTodoDueDate">
+          <div class="new-todo__date">
+            <div>
+              <label>Start</label>
+              <date-picker
+                date="todoList.newTodoStartDate"></date-picker>
+            </div>
+            <div>
+              <label>Due</label>
+              <date-picker
+                date="todoList.newTodoDueDate"></date-picker>
+            </div>
+          </div>
           <button type="submit"
              class="btn btn-primary btn-sm edit-save-handle"
              ng-disabled="!todoList.canAddTodo()"

@@ -1,5 +1,4 @@
 import { reduce } from 'lodash'
-import Pikaday from 'pikaday'
 import template from './todo-list.html'
 import './todo-list.scss'
 
@@ -15,13 +14,12 @@ export default function todoList (orchestraApi) {
     controllerAs: 'todoList',
     bindToController: true,
     controller: function (todoApi) {
-      console.log(Pikaday)
       var todoList = this
       todoList.possibleTasks = []
       todoList.newTodoTaskId = null
       todoList.newTodoDescription = null
-      todoList.newTodoStartDate = 'Now'
-      todoList.newTodoDueDate = '--'
+      todoList.newTodoStartDate = null
+      todoList.newTodoDueDate = null
       todoList.ready = false
       todoList.taskSlugs = {}
       todoList.todos = []
