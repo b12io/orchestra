@@ -24,10 +24,12 @@ export default function todoList (orchestraApi) {
       todoList.taskSlugs = {}
       todoList.todos = []
 
-      const createTodo = (taskId, description, completed) => todoApi.create({
+      const createTodo = (taskId, description, completed, startDate, dueDate) => todoApi.create({
         task: taskId,
         description,
-        completed
+        completed,
+        start_date: startDate,
+        due_date: dueDate
       }).then((taskData) => {
         todoList.todos.unshift(taskData)
         return taskData
@@ -49,15 +51,29 @@ export default function todoList (orchestraApi) {
         createTodo(todoList.taskId, 'Send task to pending state', true)
       }
 
+      todoList.getDateString = (datetime) => {
+        return datetime ? datetime.format('YYYY-MM-DD') : null
+      }
+
       todoList.addTodo = () => {
-        createTodo(todoList.newTodoTaskId, todoList.newTodoDescription, false)
-          .then((taskData) => {
-            todoList.newTodoDescription = null
-          })
+        const startDate = todoList.getDateString(todoList.newTodoStartDate)
+        const dueDate = todoList.getDateString(todoList.newTodoDueDate)
+        createTodo(todoList.newTodoTaskId,
+          todoList.newTodoDescription,
+          false,
+          startDate,
+          dueDate
+        ).then((taskData) => {
+          todoList.newTodoDescription = null
+        })
       }
 
       todoList.updateTodo = (todo) => {
         todoApi.update(todo)
+      }
+      todoList.deadlineDisplay = (todo) => {
+        console.log(todo)
+        return todo.due_date ? `Due on ${todo.due_date}` : ''
       }
 
       orchestraApi.projectInformation(todoList.projectId)
@@ -77,6 +93,7 @@ export default function todoList (orchestraApi) {
 
           // TODO(marcua): parallelize requests rather than chaining `then`s.
           todoApi.list(todoList.projectId).then((todos) => {
+            console.log(todos)
             todoList.todos = todos
             todoList.ready = true
           })

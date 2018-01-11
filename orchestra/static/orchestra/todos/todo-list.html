@@ -54,6 +54,7 @@
                      ng-click="todoList.updateTodo(todo)">
               <span class="todo__role">{{todoList.steps[todoList.taskSlugs[todo.task]].name}}:&nbsp;</span>
               <span class="todo__description">{{todo.description}}</span>
+              <span>{{todoList.deadlineDisplay(todo)}}</span>
             </label>
           </div>
         </div>
