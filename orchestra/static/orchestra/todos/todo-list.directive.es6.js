@@ -53,19 +53,19 @@ export default function todoList (orchestraApi) {
         createTodo(todoList.taskId, 'Send task to pending state', true)
       }
 
-      todoList.getDateString = (datetime) => {
-        return datetime ? datetime.format('YYYY-MM-DD') : null
+      todoList.getDateTimeString = (datetime) => {
+        return datetime ? datetime.format('YYYY-MM-DD HH:mm') : null
       }
 
       todoList.addTodo = () => {
-        const startDate = todoList.getDateString(todoList.newTodoStartDate)
-        const dueDate = todoList.getDateString(todoList.newTodoDueDate)
-        console.log(todoList.newTodoStartDate.format('YYYY-MM-DD HH:mm z'), todoList.newTodoDueDate.format('YYYY-MM-DD HH:mm z'))
+        const start = todoList.getDateTimeString(todoList.newTodoStartDate)
+        const due = todoList.getDateTimeString(todoList.newTodoDueDate)
+
         createTodo(todoList.newTodoTaskId,
           todoList.newTodoDescription,
           false,
-          startDate,
-          dueDate
+          start,
+          due
         ).then((taskData) => {
           todoList.newTodoDescription = null
         })
