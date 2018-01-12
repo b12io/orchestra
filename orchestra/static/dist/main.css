@@ -2285,4 +2285,5 @@ a.logo {
     padding-left: 5px; }
   .todo-list .existing-todos .todo__dates {
     padding-left: 5px;
-    font-style: italic; }
+    font-style: italic;
+    color: #82BF6E; }

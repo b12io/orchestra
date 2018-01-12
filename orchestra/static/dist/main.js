@@ -59142,7 +59142,12 @@ function datePicker(timeEntries) {
         minDate: scope.minDate ? scope.minDate.toDate() : null,
         maxDate: scope.maxDate ? scope.maxDate.toDate() : null,
         onSelect: function onSelect(date) {
-          scope.date = this.getMoment();
+          var newDate = this.getMoment();
+          if (!scope.date) {
+            scope.date = newDate;
+          } else {
+            scope.date.year(newDate.year()).month(newDate.month()).date(newDate.date());
+          }
           if (typeof scope.callback === 'function') {
             scope.callback(scope.date);
           }
@@ -61314,11 +61319,14 @@ var _todoList = __webpack_require__(207);
 
 var _todoList2 = _interopRequireDefault(_todoList);
 
+var _momentTimezone = __webpack_require__(3);
+
+var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
+
 __webpack_require__(208);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// import moment from 'moment-timezone'
 function todoList(orchestraApi) {
   'ngAnnotate';
 
@@ -61341,15 +61349,14 @@ function todoList(orchestraApi) {
       todoList.ready = false;
       todoList.taskSlugs = {};
       todoList.todos = [];
-      todoList.tmpTime = null; // moment()
 
       var createTodo = function createTodo(taskId, description, completed, startDate, dueDate) {
         return todoApi.create({
           task: taskId,
           description: description,
           completed: completed,
-          start_date: startDate,
-          due_date: dueDate
+          start_datetime: startDate,
+          due_datetime: dueDate
         }).then(function (taskData) {
           todoList.todos.unshift(taskData);
           return taskData;
@@ -61371,16 +61378,30 @@ function todoList(orchestraApi) {
         createTodo(todoList.taskId, 'Send task to pending state', true);
       };
 
-      todoList.getDateString = function (datetime) {
-        return datetime ? datetime.format('YYYY-MM-DD') : null;
+      todoList.getUTCDateTimeString = function (datetime) {
+        if (!datetime) {
+          return null;
+        }
+        var datetimeUtc = _momentTimezone2.default.tz(datetime.format('YYYY-MM-DD HH:mm'), _momentTimezone2.default.tz.guess()).utc();
+        return datetimeUtc.format('YYYY-MM-DD HH:mm');
+      };
+
+      todoList.getLocalTime = function (datetimeString) {
+        return datetimeString ? _momentTimezone2.default.utc(datetimeString).tz(_momentTimezone2.default.tz.guess()) : null;
+      };
+
+      todoList.getPrettyDatetime = function (datetime) {
+        return datetime.format('ddd MMMM D hh:mm a');
       };
 
       todoList.addTodo = function () {
-        var startDate = todoList.getDateString(todoList.newTodoStartDate);
-        var dueDate = todoList.getDateString(todoList.newTodoDueDate);
-        console.log(todoList.newTodoStartDate.format('YYYY-MM-DD HH:mm z'), todoList.newTodoDueDate.format('YYYY-MM-DD HH:mm z'));
-        createTodo(todoList.newTodoTaskId, todoList.newTodoDescription, false, startDate, dueDate).then(function (taskData) {
+        var start = todoList.getUTCDateTimeString(todoList.newTodoStartDate);
+        var due = todoList.getUTCDateTimeString(todoList.newTodoDueDate);
+
+        createTodo(todoList.newTodoTaskId, todoList.newTodoDescription, false, start, due).then(function (taskData) {
           todoList.newTodoDescription = null;
+          todoList.newTodoStartDate = null;
+          todoList.newTodoDueDate = null;
         });
       };
 
@@ -61388,26 +61409,20 @@ function todoList(orchestraApi) {
         todoApi.update(todo);
       };
 
-      todoList.datesDisplay = function (todo) {
-        // console.log(todo)
-        return todo.due_date ? 'Due on ' + todo.due_date : '';
+      todoList.getDatesDisplay = function (todo) {
+        var startDate = todoList.getLocalTime(todo.start_datetime);
+        var dueDate = todoList.getLocalTime(todo.due_datetime);
+        var startDateInfo = startDate ? 'Start by ' + todoList.getPrettyDatetime(startDate) : '';
+        var dueDateInfo = dueDate ? 'Due on ' + todoList.getPrettyDatetime(dueDate) : '';
+        return startDateInfo + ' ' + dueDateInfo;
       };
 
       todoList.setTimeOfDate = function (datetime) {
-        // console.log(datetime, datetime.hours(), datetime.minutes())
-        if (!datetime.hours()) {
-          datetime.hours(18);
+        if (!datetime.hours() && !datetime.minutes()) {
+          datetime.hours(18); // set the default to 6pm
         }
-        console.log(datetime);
         $scope.$apply();
       };
-
-      // TODO(paopow) : delete this and uncomment in the original place
-      todoApi.list(todoList.projectId).then(function (todos) {
-        // console.log(todos)
-        todoList.todos = todos;
-        todoList.ready = true;
-      });
 
       orchestraApi.projectInformation(todoList.projectId).then(function (response) {
         var humanSteps = new Set(response.data.steps.filter(function (step) {
@@ -61428,11 +61443,10 @@ function todoList(orchestraApi) {
         });
 
         // TODO(marcua): parallelize requests rather than chaining `then`s.
-        // todoApi.list(todoList.projectId).then((todos) => {
-        //   console.log(todos)
-        //   todoList.todos = todos
-        //   todoList.ready = true
-        // })
+        todoApi.list(todoList.projectId).then(function (todos) {
+          todoList.todos = todos;
+          todoList.ready = true;
+        });
       });
     }
   };
@@ -61442,7 +61456,7 @@ function todoList(orchestraApi) {
 /* 207 */
 /***/ (function(module, exports) {
 
-module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Todo List\n          <a class=\"btn\"\n               ng-if=\"todoList.canSendToPending()\"\n               ng-click=\"todoList.sendToPending()\">\n            Send to pending\n          </a>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\" ng-if=\"todoList.ready\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <form class=\"new-todo\">\n          <select name=\"todoList\" id=\"todoList\" ng-model=\"todoList.newTodoTaskId\">\n            <option value=\"\" selected>Select owner</option>\n            <option value=\"{{task.id}}\" ng-repeat=\"task in todoList.possibleTasks\">{{todoList.steps[task.step_slug].name}}</option>\n          </select>\n          <input class=\"new-todo__description\"\n                 type=\"text\"\n                 ng-model=\"todoList.newTodoDescription\"\n                 placeholder=\"Description\">\n          <div class=\"new-todo__date\">\n            <div>\n              <label>Start</label>\n              <date-picker\n                date=\"todoList.newTodoStartDate\"\n                callback=\"todoList.setTimeOfDate\"></date-picker>\n              <time-input datetime=\"todoList.newTodoStartDate\"></time-input>\n            </div>\n            <div>\n              <label>Due</label>\n              <date-picker\n                date=\"todoList.newTodoDueDate\"\n                callback=\"todoList.setTimeOfDate\"></date-picker>\n              <time-input datetime=\"todoList.newTodoDueDate\"></time-input>\n            </div>\n          </div>\n          <button type=\"submit\"\n             class=\"btn btn-primary btn-sm edit-save-handle\"\n             ng-disabled=\"!todoList.canAddTodo()\"\n             ng-click=\"todoList.addTodo()\">\n            Add\n          </button>\n        </form>\n      </div>\n\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <div class=\"existing-todos\">\n          <div class=\"todo\"\n               ng-repeat=\"todo in todoList.todos\">\n            <label>\n              <input type=\"checkbox\"\n                     ng-model=\"todo.completed\"\n                     ng-click=\"todoList.updateTodo(todo)\">\n              <span class=\"todo__role\">{{todoList.steps[todoList.taskSlugs[todo.task]].name}}:&nbsp;</span>\n              <span class=\"todo__description\">{{todo.description}}</span>\n              <span class=\"todo__dates\">{{todoList.datesDisplay(todo)}}</span>\n            </label>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n";
+module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Todo List\n          <a class=\"btn\"\n               ng-if=\"todoList.canSendToPending()\"\n               ng-click=\"todoList.sendToPending()\">\n            Send to pending\n          </a>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\" ng-if=\"todoList.ready\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <form class=\"new-todo\">\n          <select name=\"todoList\" id=\"todoList\" ng-model=\"todoList.newTodoTaskId\">\n            <option value=\"\" selected>Select owner</option>\n            <option value=\"{{task.id}}\" ng-repeat=\"task in todoList.possibleTasks\">{{todoList.steps[task.step_slug].name}}</option>\n          </select>\n          <input class=\"new-todo__description\"\n                 type=\"text\"\n                 ng-model=\"todoList.newTodoDescription\"\n                 placeholder=\"Description\">\n          <div class=\"new-todo__date\">\n            <div>\n              <label>Start</label>\n              <date-picker\n                date=\"todoList.newTodoStartDate\"\n                callback=\"todoList.setTimeOfDate\"></date-picker>\n              <time-input datetime=\"todoList.newTodoStartDate\"></time-input>\n            </div>\n            <div>\n              <label>Due</label>\n              <date-picker\n                date=\"todoList.newTodoDueDate\"\n                callback=\"todoList.setTimeOfDate\"></date-picker>\n              <time-input datetime=\"todoList.newTodoDueDate\"></time-input>\n            </div>\n          </div>\n          <button type=\"submit\"\n             class=\"btn btn-primary btn-sm edit-save-handle\"\n             ng-disabled=\"!todoList.canAddTodo()\"\n             ng-click=\"todoList.addTodo()\">\n            Add\n          </button>\n        </form>\n      </div>\n\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <div class=\"existing-todos\">\n          <div class=\"todo\"\n               ng-repeat=\"todo in todoList.todos\">\n            <label>\n              <input type=\"checkbox\"\n                     ng-model=\"todo.completed\"\n                     ng-click=\"todoList.updateTodo(todo)\">\n              <span class=\"todo__role\">{{todoList.steps[todoList.taskSlugs[todo.task]].name}}:&nbsp;</span>\n              <span class=\"todo__description\">{{todo.description}}</span>\n              <span class=\"todo__dates\">{{todoList.getDatesDisplay(todo)}}</span>\n            </label>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n";
 
 /***/ }),
 /* 208 */

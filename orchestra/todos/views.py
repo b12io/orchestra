@@ -61,9 +61,6 @@ class TodoList(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         todo = serializer.save()
-        print('----------')
-        print(serializer)
-        print(todo)
         sender = Worker.objects.get(
             user=self.request.user).formatted_slack_username()
         recipients = ' & '.join(
