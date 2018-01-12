@@ -1,6 +1,6 @@
 import { reduce } from 'lodash'
-// import moment from 'moment-timezone'
 import template from './todo-list.html'
+import moment from 'moment-timezone'
 import './todo-list.scss'
 
 export default function todoList (orchestraApi) {
@@ -24,14 +24,13 @@ export default function todoList (orchestraApi) {
       todoList.ready = false
       todoList.taskSlugs = {}
       todoList.todos = []
-      todoList.tmpTime = null// moment()
 
       const createTodo = (taskId, description, completed, startDate, dueDate) => todoApi.create({
         task: taskId,
         description,
         completed,
-        start_date: startDate,
-        due_date: dueDate
+        start_datetime: startDate,
+        due_datetime: dueDate
       }).then((taskData) => {
         todoList.todos.unshift(taskData)
         return taskData
@@ -53,13 +52,25 @@ export default function todoList (orchestraApi) {
         createTodo(todoList.taskId, 'Send task to pending state', true)
       }
 
-      todoList.getDateTimeString = (datetime) => {
-        return datetime ? datetime.format('YYYY-MM-DD HH:mm') : null
+      todoList.getUTCDateTimeString = (datetime) => {
+        if (!datetime) {
+          return null
+        }
+        const datetimeUtc = moment.tz(datetime.format('YYYY-MM-DD HH:mm'), moment.tz.guess()).utc()
+        return datetimeUtc.format('YYYY-MM-DD HH:mm')
+      }
+
+      todoList.getLocalTime = (datetimeString) => {
+        return datetimeString ? moment.utc(datetimeString).tz(moment.tz.guess()) : null
+      }
+
+      todoList.getPrettyDatetime = (datetime) => {
+        return datetime.format('ddd MMMM D hh:mm a')
       }
 
       todoList.addTodo = () => {
-        const start = todoList.getDateTimeString(todoList.newTodoStartDate)
-        const due = todoList.getDateTimeString(todoList.newTodoDueDate)
+        const start = todoList.getUTCDateTimeString(todoList.newTodoStartDate)
+        const due = todoList.getUTCDateTimeString(todoList.newTodoDueDate)
 
         createTodo(todoList.newTodoTaskId,
           todoList.newTodoDescription,
@@ -75,25 +86,20 @@ export default function todoList (orchestraApi) {
         todoApi.update(todo)
       }
 
-      todoList.datesDisplay = (todo) => {
-        // console.log(todo)
-        return todo.due_date ? `Due on ${todo.due_date}` : ''
+      todoList.getDatesDisplay = (todo) => {
+        const startDate = todoList.getLocalTime(todo.start_datetime)
+        const dueDate = todoList.getLocalTime(todo.due_datetime)
+        const startDateInfo = startDate ? `Start by ${todoList.getPrettyDatetime(startDate)}` : ''
+        const dueDateInfo = dueDate ? `Due on ${todoList.getPrettyDatetime(dueDate)}` : ''
+        return `${startDateInfo} ${dueDateInfo}`
       }
 
       todoList.setTimeOfDate = (datetime) => {
-        // console.log(datetime, datetime.hours(), datetime.minutes())
-        if (!datetime.hours()) {
-          datetime.hours(18)
+        if (!datetime.hours() && !datetime.minutes()) {
+          datetime.hours(18) // set the default to 6pm
         }
         $scope.$apply()
       }
-
-      // TODO(paopow) : delete this and uncomment in the original place
-      todoApi.list(todoList.projectId).then((todos) => {
-        // console.log(todos)
-        todoList.todos = todos
-        todoList.ready = true
-      })
 
       orchestraApi.projectInformation(todoList.projectId)
         .then((response) => {
@@ -111,11 +117,10 @@ export default function todoList (orchestraApi) {
           todoList.possibleTasks = Object.values(response.data.tasks).filter(task => task.status !== 'Complete' && humanSteps.has(task.step_slug))
 
           // TODO(marcua): parallelize requests rather than chaining `then`s.
-          // todoApi.list(todoList.projectId).then((todos) => {
-          //   console.log(todos)
-          //   todoList.todos = todos
-          //   todoList.ready = true
-          // })
+          todoApi.list(todoList.projectId).then((todos) => {
+            todoList.todos = todos
+            todoList.ready = true
+          })
         })
     }
   }
