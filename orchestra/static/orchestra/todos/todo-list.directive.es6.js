@@ -79,6 +79,8 @@ export default function todoList (orchestraApi) {
           due
         ).then((taskData) => {
           todoList.newTodoDescription = null
+          todoList.newTodoStartDate = null
+          todoList.newTodoDueDate = null
         })
       }
 
