@@ -1984,15 +1984,19 @@ a.logo {
     border-radius: 3px; }
   .is-disabled .pika-button,
   .is-outside-current-month .pika-button {
-    pointer-events: none;
-    cursor: default;
     color: #999;
     opacity: .3; }
+  .is-disabled .pika-button {
+    pointer-events: none;
+    cursor: default; }
   .pika-button:hover {
     color: #fff;
     background: #ff8000;
     box-shadow: none;
     border-radius: 3px; }
+  .pika-button .is-selection-disabled {
+    pointer-events: none;
+    cursor: default; }
 
 .pika-week {
   font-size: 11px;
@@ -2253,6 +2257,8 @@ a.logo {
         box-shadow: none; }
         .timer .popover .tgl-ios:checked + .tgl-btn:active:after {
           margin-left: -.8em; }
+.time-input {
+  color: black; }
 .todo-list .section-body {
   padding-top: 1.5rem;
   padding-bottom: 1.5rem; }
@@ -2261,6 +2267,11 @@ a.logo {
   float: left; }
   .todo-list .new-todo__description {
     width: 300px; }
+  .todo-list .new-todo__date {
+    padding-left: 5px;
+    padding-right: 20px;
+    display: inline-block;
+    width: 350px; }
 
 .todo-list .existing-todos {
   padding-top: 5px; }
@@ -2272,3 +2283,6 @@ a.logo {
   .todo-list .existing-todos .todo__role {
     font-weight: 500;
     padding-left: 5px; }
+  .todo-list .existing-todos .todo__dates {
+    padding-left: 5px;
+    font-style: italic; }

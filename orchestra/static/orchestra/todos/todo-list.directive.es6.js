@@ -1,4 +1,5 @@
 import { reduce } from 'lodash'
+// import moment from 'moment-timezone'
 import template from './todo-list.html'
 import './todo-list.scss'
 
@@ -13,7 +14,7 @@ export default function todoList (orchestraApi) {
     },
     controllerAs: 'todoList',
     bindToController: true,
-    controller: function (todoApi) {
+    controller: function (todoApi, $scope) {
       var todoList = this
       todoList.possibleTasks = []
       todoList.newTodoTaskId = null
@@ -23,6 +24,7 @@ export default function todoList (orchestraApi) {
       todoList.ready = false
       todoList.taskSlugs = {}
       todoList.todos = []
+      todoList.tmpTime = null// moment()
 
       const createTodo = (taskId, description, completed, startDate, dueDate) => todoApi.create({
         task: taskId,
@@ -58,6 +60,7 @@ export default function todoList (orchestraApi) {
       todoList.addTodo = () => {
         const startDate = todoList.getDateString(todoList.newTodoStartDate)
         const dueDate = todoList.getDateString(todoList.newTodoDueDate)
+        console.log(todoList.newTodoStartDate.format('YYYY-MM-DD HH:mm z'), todoList.newTodoDueDate.format('YYYY-MM-DD HH:mm z'))
         createTodo(todoList.newTodoTaskId,
           todoList.newTodoDescription,
           false,
@@ -71,10 +74,26 @@ export default function todoList (orchestraApi) {
       todoList.updateTodo = (todo) => {
         todoApi.update(todo)
       }
-      todoList.deadlineDisplay = (todo) => {
-        console.log(todo)
+
+      todoList.datesDisplay = (todo) => {
+        // console.log(todo)
         return todo.due_date ? `Due on ${todo.due_date}` : ''
       }
+
+      todoList.setTimeOfDate = (datetime) => {
+        // console.log(datetime, datetime.hours(), datetime.minutes())
+        if (!datetime.hours()) {
+          datetime.hours(18)
+        }
+        $scope.$apply()
+      }
+
+      // TODO(paopow) : delete this and uncomment in the original place
+      todoApi.list(todoList.projectId).then((todos) => {
+        // console.log(todos)
+        todoList.todos = todos
+        todoList.ready = true
+      })
 
       orchestraApi.projectInformation(todoList.projectId)
         .then((response) => {
@@ -92,11 +111,11 @@ export default function todoList (orchestraApi) {
           todoList.possibleTasks = Object.values(response.data.tasks).filter(task => task.status !== 'Complete' && humanSteps.has(task.step_slug))
 
           // TODO(marcua): parallelize requests rather than chaining `then`s.
-          todoApi.list(todoList.projectId).then((todos) => {
-            console.log(todos)
-            todoList.todos = todos
-            todoList.ready = true
-          })
+          // todoApi.list(todoList.projectId).then((todos) => {
+          //   console.log(todos)
+          //   todoList.todos = todos
+          //   todoList.ready = true
+          // })
         })
     }
   }

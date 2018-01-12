@@ -9,6 +9,7 @@ import TimecardController from 'orchestra/timing/timecard/timecard.controller.es
 import workTimer from 'orchestra/timing/timer/timer.directive.es6.js'
 import timeEntries from 'orchestra/timing/time-entries.service.es6.js'
 import TimeEntry from 'orchestra/timing/time-entry.service.es6.js'
+import timeInput from 'orchestra/timing/time-input/time-input.directive.es6.js'
 
 const name = 'orchestra.timing'
 angular.module(name, ['ui.select', 'ngSanitize', common])
@@ -16,6 +17,7 @@ angular.module(name, ['ui.select', 'ngSanitize', common])
   .directive('taskSelect', taskSelect)
   .directive('enforceIntegers', enforceIntegers)
   .directive('workTimer', workTimer)
+  .directive('timeInput', timeInput)
   .controller('TimecardController', TimecardController)
   .factory('timeEntries', timeEntries)
   .factory('TimeEntry', TimeEntry)

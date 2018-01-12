@@ -21,7 +21,7 @@ export default function datePicker (timeEntries) {
         onSelect: function (date) {
           scope.date = this.getMoment()
           if (typeof scope.callback === 'function') {
-            scope.callback(date)
+            scope.callback(scope.date)
           }
           scope.$apply()
         }

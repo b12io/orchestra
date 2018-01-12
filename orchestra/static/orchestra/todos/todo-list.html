@@ -27,12 +27,16 @@
             <div>
               <label>Start</label>
               <date-picker
-                date="todoList.newTodoStartDate"></date-picker>
+                date="todoList.newTodoStartDate"
+                callback="todoList.setTimeOfDate"></date-picker>
+              <time-input datetime="todoList.newTodoStartDate"></time-input>
             </div>
             <div>
               <label>Due</label>
               <date-picker
-                date="todoList.newTodoDueDate"></date-picker>
+                date="todoList.newTodoDueDate"
+                callback="todoList.setTimeOfDate"></date-picker>
+              <time-input datetime="todoList.newTodoDueDate"></time-input>
             </div>
           </div>
           <button type="submit"
@@ -54,7 +58,7 @@
                      ng-click="todoList.updateTodo(todo)">
               <span class="todo__role">{{todoList.steps[todoList.taskSlugs[todo.task]].name}}:&nbsp;</span>
               <span class="todo__description">{{todo.description}}</span>
-              <span>{{todoList.deadlineDisplay(todo)}}</span>
+              <span class="todo__dates">{{todoList.datesDisplay(todo)}}</span>
             </label>
           </div>
         </div>

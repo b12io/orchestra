@@ -42417,11 +42417,11 @@ var _timingModuleEs = __webpack_require__(187);
 
 var _timingModuleEs2 = _interopRequireDefault(_timingModuleEs);
 
-var _todosModuleEs = __webpack_require__(202);
+var _todosModuleEs = __webpack_require__(205);
 
 var _todosModuleEs2 = _interopRequireDefault(_todosModuleEs);
 
-var _configEs = __webpack_require__(207);
+var _configEs = __webpack_require__(210);
 
 var _configEs2 = _interopRequireDefault(_configEs);
 
@@ -59091,12 +59091,15 @@ var _timeEntryServiceEs = __webpack_require__(201);
 
 var _timeEntryServiceEs2 = _interopRequireDefault(_timeEntryServiceEs);
 
+var _timeInputDirectiveEs = __webpack_require__(202);
+
+var _timeInputDirectiveEs2 = _interopRequireDefault(_timeInputDirectiveEs);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/* global angular */
+var name = 'orchestra.timing'; /* global angular */
 
-var name = 'orchestra.timing';
-angular.module(name, ['ui.select', 'ngSanitize', _commonModuleEs2.default]).directive('datePicker', _datePickerDirectiveEs2.default).directive('taskSelect', _taskSelectDirectiveEs2.default).directive('enforceIntegers', _enforceIntegersDirectiveEs2.default).directive('workTimer', _timerDirectiveEs2.default).controller('TimecardController', _timecardControllerEs2.default).factory('timeEntries', _timeEntriesServiceEs2.default).factory('TimeEntry', _timeEntryServiceEs2.default);
+angular.module(name, ['ui.select', 'ngSanitize', _commonModuleEs2.default]).directive('datePicker', _datePickerDirectiveEs2.default).directive('taskSelect', _taskSelectDirectiveEs2.default).directive('enforceIntegers', _enforceIntegersDirectiveEs2.default).directive('workTimer', _timerDirectiveEs2.default).directive('timeInput', _timeInputDirectiveEs2.default).controller('TimecardController', _timecardControllerEs2.default).factory('timeEntries', _timeEntriesServiceEs2.default).factory('TimeEntry', _timeEntryServiceEs2.default);
 exports.default = name;
 
 /***/ }),
@@ -59141,7 +59144,7 @@ function datePicker(timeEntries) {
         onSelect: function onSelect(date) {
           scope.date = this.getMoment();
           if (typeof scope.callback === 'function') {
-            scope.callback(date);
+            scope.callback(scope.date);
           }
           scope.$apply();
         }
@@ -59230,22 +59233,6 @@ function datePicker(timeEntries) {
         }
     },
 
-    fireEvent = function(el, eventName, data)
-    {
-        var ev;
-
-        if (document.createEvent) {
-            ev = document.createEvent('HTMLEvents');
-            ev.initEvent(eventName, true, false);
-            ev = extend(ev, data);
-            el.dispatchEvent(ev);
-        } else if (document.createEventObject) {
-            ev = document.createEventObject();
-            ev = extend(ev, data);
-            el.fireEvent('on' + eventName, ev);
-        }
-    },
-
     trim = function(str)
     {
         return str.trim ? str.trim() : str.replace(/^\s+|\s+$/g,'');
@@ -59331,6 +59318,22 @@ function datePicker(timeEntries) {
         return to;
     },
 
+    fireEvent = function(el, eventName, data)
+    {
+        var ev;
+
+        if (document.createEvent) {
+            ev = document.createEvent('HTMLEvents');
+            ev.initEvent(eventName, true, false);
+            ev = extend(ev, data);
+            el.dispatchEvent(ev);
+        } else if (document.createEventObject) {
+            ev = document.createEventObject();
+            ev = extend(ev, data);
+            el.fireEvent('on' + eventName, ev);
+        }
+    },
+
     adjustCalendar = function(calendar) {
         if (calendar.month < 0) {
             calendar.year -= Math.ceil(Math.abs(calendar.month)/12);
@@ -59364,6 +59367,13 @@ function datePicker(timeEntries) {
         // the default output format for `.toString()` and `field` value
         format: 'YYYY-MM-DD',
 
+        // the toString function which gets passed a current date object and format
+        // and returns a string
+        toString: null,
+
+        // used to create date object from current input string
+        parse: null,
+
         // the initial date to view when first opened
         defaultDate: null,
 
@@ -59387,6 +59397,9 @@ function datePicker(timeEntries) {
         // show week numbers at head of row
         showWeekNumber: false,
 
+        // Week picker mode
+        pickWholeWeek: false,
+
         // used internally (don't config outside)
         minYear: 0,
         maxYear: 9999,
@@ -59407,6 +59420,9 @@ function datePicker(timeEntries) {
         // Render days of the calendar grid that fall in the next or previous month
         showDaysInNextAndPreviousMonths: false,
 
+        // Allows user to select days that fall in the next or previous month
+        enableSelectionDaysInNextAndPreviousMonths: false,
+
         // how many months are visible
         numberOfMonths: 1,
 
@@ -59416,6 +59432,9 @@ function datePicker(timeEntries) {
 
         // Specify a DOM element to render the calendar in
         container: undefined,
+
+        // Blur field when date is selected
+        blurFieldOnSelect : true,
 
         // internationalization
         i18n: {
@@ -59429,11 +59448,17 @@ function datePicker(timeEntries) {
         // Theme Classname
         theme: null,
 
+        // events array
+        events: [],
+
         // callback function
         onSelect: null,
         onOpen: null,
         onClose: null,
-        onDraw: null
+        onDraw: null,
+
+        // Enable keyboard input
+        keyboardInput: true
     },
 
 
@@ -59456,6 +59481,11 @@ function datePicker(timeEntries) {
         if (opts.isEmpty) {
             if (opts.showDaysInNextAndPreviousMonths) {
                 arr.push('is-outside-current-month');
+
+                if(!opts.enableSelectionDaysInNextAndPreviousMonths) {
+                    arr.push('is-selection-disabled');
+                }
+
             } else {
                 return '<td class="is-empty"></td>';
             }
@@ -59469,6 +59499,9 @@ function datePicker(timeEntries) {
         if (opts.isSelected) {
             arr.push('is-selected');
             ariaSelected = 'true';
+        }
+        if (opts.hasEvent) {
+            arr.push('has-event');
         }
         if (opts.isInRange) {
             arr.push('is-inrange');
@@ -59494,9 +59527,9 @@ function datePicker(timeEntries) {
         return '<td class="pika-week">' + weekNum + '</td>';
     },
 
-    renderRow = function(days, isRTL)
+    renderRow = function(days, isRTL, pickWholeWeek, isRowSelected)
     {
-        return '<tr>' + (isRTL ? days.reverse() : days).join('') + '</tr>';
+        return '<tr class="pika-row' + (pickWholeWeek ? ' pick-whole-week' : '') + (isRowSelected ? ' is-selected' : '') + '">' + (isRTL ? days.reverse() : days).join('') + '</tr>';
     },
 
     renderBody = function(rows)
@@ -59607,7 +59640,7 @@ function datePicker(timeEntries) {
                     if (opts.bound) {
                         sto(function() {
                             self.hide();
-                            if (opts.field) {
+                            if (opts.blurFieldOnSelect && opts.field) {
                                 opts.field.blur();
                             }
                         }, 100);
@@ -59657,7 +59690,9 @@ function datePicker(timeEntries) {
                 switch(e.keyCode){
                     case 13:
                     case 27:
-                        opts.field.blur();
+                        if (opts.field) {
+                            opts.field.blur();
+                        }
                         break;
                     case 37:
                         e.preventDefault();
@@ -59683,7 +59718,9 @@ function datePicker(timeEntries) {
             if (e.firedBy === self) {
                 return;
             }
-            if (hasMoment) {
+            if (opts.parse) {
+                date = opts.parse(opts.field.value, opts.format);
+            } else if (hasMoment) {
                 date = moment(opts.field.value, opts.format, opts.formatStrict);
                 date = (date && date.isValid()) ? date.toDate() : null;
             }
@@ -59758,7 +59795,10 @@ function datePicker(timeEntries) {
         addEvent(self.el, 'mousedown', self._onMouseDown, true);
         addEvent(self.el, 'touchend', self._onMouseDown, true);
         addEvent(self.el, 'change', self._onChange);
-        addEvent(document, 'keydown', self._onKeyChange);
+
+        if (opts.keyboardInput) {
+            addEvent(document, 'keydown', self._onKeyChange);
+        }
 
         if (opts.field) {
             if (opts.container) {
@@ -59873,7 +59913,17 @@ function datePicker(timeEntries) {
          */
         toString: function(format)
         {
-            return !isDate(this._d) ? '' : hasMoment ? moment(this._d).format(format || this._o.format) : this._d.toDateString();
+            format = format || this._o.format;
+            if (!isDate(this._d)) {
+                return '';
+            }
+            if (this._o.toString) {
+              return this._o.toString(this._d, format);
+            }
+            if (hasMoment) {
+              return moment(this._d).format(format);
+            }
+            return this._d.toDateString();
         },
 
         /**
@@ -59895,11 +59945,11 @@ function datePicker(timeEntries) {
         },
 
         /**
-         * return a Date object of the current selection with fallback for the current date
+         * return a Date object of the current selection
          */
         getDate: function()
         {
-            return isDate(this._d) ? new Date(this._d.getTime()) : new Date();
+            return isDate(this._d) ? new Date(this._d.getTime()) : null;
         },
 
         /**
@@ -59982,7 +60032,7 @@ function datePicker(timeEntries) {
 
         adjustDate: function(sign, days) {
 
-            var day = this.getDate();
+            var day = this.getDate() || new Date();
             var difference = parseInt(days)*24*60*60*1000;
 
             var newDay;
@@ -59991,14 +60041,6 @@ function datePicker(timeEntries) {
                 newDay = new Date(day.valueOf() + difference);
             } else if (sign === 'subtract') {
                 newDay = new Date(day.valueOf() - difference);
-            }
-
-            if (hasMoment) {
-                if (sign === 'add') {
-                    newDay = moment(day).add(days, "days").toDate();
-                } else if (sign === 'subtract') {
-                    newDay = moment(day).subtract(days, "days").toDate();
-                }
             }
 
             this.setDate(newDay);
@@ -60152,7 +60194,7 @@ function datePicker(timeEntries) {
             if (typeof this._o.onDraw === 'function') {
                 this._o.onDraw(this);
             }
-            
+
             if (opts.bound) {
                 // let the screen reader user know to use arrow keys
                 opts.field.setAttribute('aria-label', 'Use the arrow keys to pick a date');
@@ -60239,11 +60281,13 @@ function datePicker(timeEntries) {
                 after -= 7;
             }
             cells += 7 - after;
+            var isWeekSelected = false;
             for (var i = 0, r = 0; i < cells; i++)
             {
                 var day = new Date(year, month, 1 + (i - before)),
                     isSelected = isDate(this._d) ? compareDates(day, this._d) : false,
                     isToday = compareDates(day, now),
+                    hasEvent = opts.events.indexOf(day.toDateString()) !== -1 ? true : false,
                     isEmpty = i < before || i >= (days + before),
                     dayNumber = 1 + (i - before),
                     monthNumber = month,
@@ -60272,6 +60316,7 @@ function datePicker(timeEntries) {
                         day: dayNumber,
                         month: monthNumber,
                         year: yearNumber,
+                        hasEvent: hasEvent,
                         isSelected: isSelected,
                         isToday: isToday,
                         isDisabled: isDisabled,
@@ -60279,8 +60324,13 @@ function datePicker(timeEntries) {
                         isStartRange: isStartRange,
                         isEndRange: isEndRange,
                         isInRange: isInRange,
-                        showDaysInNextAndPreviousMonths: opts.showDaysInNextAndPreviousMonths
+                        showDaysInNextAndPreviousMonths: opts.showDaysInNextAndPreviousMonths,
+                        enableSelectionDaysInNextAndPreviousMonths: opts.enableSelectionDaysInNextAndPreviousMonths
                     };
+
+                if (opts.pickWholeWeek && isSelected) {
+                    isWeekSelected = true;
+                }
 
                 row.push(renderDay(dayConfig));
 
@@ -60288,9 +60338,10 @@ function datePicker(timeEntries) {
                     if (opts.showWeekNumber) {
                         row.unshift(renderWeek(i - before, month, year));
                     }
-                    data.push(renderRow(row, opts.isRTL));
+                    data.push(renderRow(row, opts.isRTL, opts.pickWholeWeek, isWeekSelected));
                     row = [];
                     r = 0;
+                    isWeekSelected = false;
                 }
             }
             return renderTable(opts, data, randId);
@@ -60304,9 +60355,9 @@ function datePicker(timeEntries) {
         show: function()
         {
             if (!this.isVisible()) {
-                removeClass(this.el, 'is-hidden');
                 this._v = true;
                 this.draw();
+                removeClass(this.el, 'is-hidden');
                 if (this._o.bound) {
                     addEvent(document, 'click', this._onClick);
                     this.adjustPosition();
@@ -60340,16 +60391,21 @@ function datePicker(timeEntries) {
          */
         destroy: function()
         {
+            var opts = this._o;
+
             this.hide();
             removeEvent(this.el, 'mousedown', this._onMouseDown, true);
             removeEvent(this.el, 'touchend', this._onMouseDown, true);
             removeEvent(this.el, 'change', this._onChange);
-            if (this._o.field) {
-                removeEvent(this._o.field, 'change', this._onInputChange);
-                if (this._o.bound) {
-                    removeEvent(this._o.trigger, 'click', this._onInputClick);
-                    removeEvent(this._o.trigger, 'focus', this._onInputFocus);
-                    removeEvent(this._o.trigger, 'blur', this._onInputBlur);
+            if (opts.keyboardInput) {
+                removeEvent(document, 'keydown', this._onKeyChange);
+            }
+            if (opts.field) {
+                removeEvent(opts.field, 'change', this._onInputChange);
+                if (opts.bound) {
+                    removeEvent(opts.trigger, 'click', this._onInputClick);
+                    removeEvent(opts.trigger, 'focus', this._onInputFocus);
+                    removeEvent(opts.trigger, 'blur', this._onInputBlur);
                 }
             }
             if (this.el.parentNode) {
@@ -60360,7 +60416,6 @@ function datePicker(timeEntries) {
     };
 
     return Pikaday;
-
 }));
 
 
@@ -60374,7 +60429,7 @@ function datePicker(timeEntries) {
 /* 191 */
 /***/ (function(module, exports) {
 
-module.exports = "<span class=\"date-picker\">\n  <i class=\"fa fa-calendar-o\"></i>{{ date.format('MMMM D') }}\n</span>\n";
+module.exports = "<span class=\"date-picker\">\n  <i class=\"fa fa-calendar-o\"></i>{{ date.format(' ddd MMMM D') }}\n</span>\n";
 
 /***/ }),
 /* 192 */
@@ -61152,16 +61207,85 @@ function TimeEntry($http) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.default = timeInput;
+
+var _timeInput = __webpack_require__(203);
+
+var _timeInput2 = _interopRequireDefault(_timeInput);
+
+__webpack_require__(204);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// import moment from 'moment-timezone'
+
+function timeInput() {
+  return {
+    template: _timeInput2.default,
+    scope: {
+      datetime: '='
+    },
+    link: function link(scope, elem, attrs) {
+      if (scope.datetime) {
+        scope.datetime.seconds(0);
+        scope.datetime.milliseconds(0);
+        scope.timeDisplay = scope.datetime.toDate();
+      } else {
+        scope.timeDisplay = null;
+      }
+
+      scope.onChange = function () {
+        scope.datetime.hours(scope.timeDisplay.getHours());
+        scope.datetime.minutes(scope.timeDisplay.getMinutes());
+      };
+
+      scope.$watch(function () {
+        return scope.datetime;
+      }, function () {
+        if (scope.datetime) {
+          scope.datetime.seconds(0);
+          scope.datetime.milliseconds(0);
+          scope.timeDisplay = scope.datetime.toDate();
+        } else {
+          scope.timeDisplay = null;
+        }
+      });
+    }
+  };
+}
+
+/***/ }),
+/* 203 */
+/***/ (function(module, exports) {
+
+module.exports = "<span class=\"time-input\">\n  <input type=\"time\"\n    ng-model=\"timeDisplay\"\n    ng-change=\"onChange()\"\n    ng-disabled=\"datetime === null\"\n    />\n</span>\n";
+
+/***/ }),
+/* 204 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 205 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 var _commonModuleEs = __webpack_require__(4);
 
 var _commonModuleEs2 = _interopRequireDefault(_commonModuleEs);
 
-var _todoListDirectiveEs = __webpack_require__(203);
+var _todoListDirectiveEs = __webpack_require__(206);
 
 var _todoListDirectiveEs2 = _interopRequireDefault(_todoListDirectiveEs);
 
-var _todosServiceEs = __webpack_require__(206);
+var _todosServiceEs = __webpack_require__(209);
 
 var _todosServiceEs2 = _interopRequireDefault(_todosServiceEs);
 
@@ -61173,7 +61297,7 @@ angular.module(name, ['ui.select', 'ngSanitize', _commonModuleEs2.default]).dire
 exports.default = name;
 
 /***/ }),
-/* 203 */
+/* 206 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61186,14 +61310,15 @@ exports.default = todoList;
 
 var _lodash = __webpack_require__(5);
 
-var _todoList = __webpack_require__(204);
+var _todoList = __webpack_require__(207);
 
 var _todoList2 = _interopRequireDefault(_todoList);
 
-__webpack_require__(205);
+__webpack_require__(208);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// import moment from 'moment-timezone'
 function todoList(orchestraApi) {
   'ngAnnotate';
 
@@ -61206,20 +61331,25 @@ function todoList(orchestraApi) {
     },
     controllerAs: 'todoList',
     bindToController: true,
-    controller: function controller(todoApi) {
+    controller: function controller(todoApi, $scope) {
       var todoList = this;
       todoList.possibleTasks = [];
       todoList.newTodoTaskId = null;
       todoList.newTodoDescription = null;
+      todoList.newTodoStartDate = null;
+      todoList.newTodoDueDate = null;
       todoList.ready = false;
       todoList.taskSlugs = {};
       todoList.todos = [];
+      todoList.tmpTime = null; // moment()
 
-      var createTodo = function createTodo(taskId, description, completed) {
+      var createTodo = function createTodo(taskId, description, completed, startDate, dueDate) {
         return todoApi.create({
           task: taskId,
           description: description,
-          completed: completed
+          completed: completed,
+          start_date: startDate,
+          due_date: dueDate
         }).then(function (taskData) {
           todoList.todos.unshift(taskData);
           return taskData;
@@ -61241,8 +61371,15 @@ function todoList(orchestraApi) {
         createTodo(todoList.taskId, 'Send task to pending state', true);
       };
 
+      todoList.getDateString = function (datetime) {
+        return datetime ? datetime.format('YYYY-MM-DD') : null;
+      };
+
       todoList.addTodo = function () {
-        createTodo(todoList.newTodoTaskId, todoList.newTodoDescription, false).then(function (taskData) {
+        var startDate = todoList.getDateString(todoList.newTodoStartDate);
+        var dueDate = todoList.getDateString(todoList.newTodoDueDate);
+        console.log(todoList.newTodoStartDate.format('YYYY-MM-DD HH:mm z'), todoList.newTodoDueDate.format('YYYY-MM-DD HH:mm z'));
+        createTodo(todoList.newTodoTaskId, todoList.newTodoDescription, false, startDate, dueDate).then(function (taskData) {
           todoList.newTodoDescription = null;
         });
       };
@@ -61250,6 +61387,27 @@ function todoList(orchestraApi) {
       todoList.updateTodo = function (todo) {
         todoApi.update(todo);
       };
+
+      todoList.datesDisplay = function (todo) {
+        // console.log(todo)
+        return todo.due_date ? 'Due on ' + todo.due_date : '';
+      };
+
+      todoList.setTimeOfDate = function (datetime) {
+        // console.log(datetime, datetime.hours(), datetime.minutes())
+        if (!datetime.hours()) {
+          datetime.hours(18);
+        }
+        console.log(datetime);
+        $scope.$apply();
+      };
+
+      // TODO(paopow) : delete this and uncomment in the original place
+      todoApi.list(todoList.projectId).then(function (todos) {
+        // console.log(todos)
+        todoList.todos = todos;
+        todoList.ready = true;
+      });
 
       orchestraApi.projectInformation(todoList.projectId).then(function (response) {
         var humanSteps = new Set(response.data.steps.filter(function (step) {
@@ -61270,29 +61428,30 @@ function todoList(orchestraApi) {
         });
 
         // TODO(marcua): parallelize requests rather than chaining `then`s.
-        todoApi.list(todoList.projectId).then(function (todos) {
-          todoList.todos = todos;
-          todoList.ready = true;
-        });
+        // todoApi.list(todoList.projectId).then((todos) => {
+        //   console.log(todos)
+        //   todoList.todos = todos
+        //   todoList.ready = true
+        // })
       });
     }
   };
 }
 
 /***/ }),
-/* 204 */
+/* 207 */
 /***/ (function(module, exports) {
 
-module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Todo List\n          <a class=\"btn\"\n               ng-if=\"todoList.canSendToPending()\"\n               ng-click=\"todoList.sendToPending()\">\n            Send to pending\n          </a>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\" ng-if=\"todoList.ready\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <form class=\"new-todo\">\n          <select name=\"todoList\" id=\"todoList\" ng-model=\"todoList.newTodoTaskId\">\n            <option value=\"\" selected>Select owner</option>\n            <option value=\"{{task.id}}\" ng-repeat=\"task in todoList.possibleTasks\">{{todoList.steps[task.step_slug].name}}</option>\n          </select>\n          <input class=\"new-todo__description\"\n                 type=\"text\"\n                 ng-model=\"todoList.newTodoDescription\"\n                 placeholder=\"Description\">\n          <button type=\"submit\"\n             class=\"btn btn-primary btn-sm edit-save-handle\"\n             ng-disabled=\"!todoList.canAddTodo()\"\n             ng-click=\"todoList.addTodo()\">\n            Add\n          </button>\n        </form>\n      </div>\n\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <div class=\"existing-todos\">\n          <div class=\"todo\"\n               ng-repeat=\"todo in todoList.todos\">\n            <label>\n              <input type=\"checkbox\"\n                     ng-model=\"todo.completed\"\n                     ng-click=\"todoList.updateTodo(todo)\">\n              <span class=\"todo__role\">{{todoList.steps[todoList.taskSlugs[todo.task]].name}}:&nbsp;</span>\n              <span class=\"todo__description\">{{todo.description}}</span>\n            </label>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n";
+module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Todo List\n          <a class=\"btn\"\n               ng-if=\"todoList.canSendToPending()\"\n               ng-click=\"todoList.sendToPending()\">\n            Send to pending\n          </a>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\" ng-if=\"todoList.ready\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <form class=\"new-todo\">\n          <select name=\"todoList\" id=\"todoList\" ng-model=\"todoList.newTodoTaskId\">\n            <option value=\"\" selected>Select owner</option>\n            <option value=\"{{task.id}}\" ng-repeat=\"task in todoList.possibleTasks\">{{todoList.steps[task.step_slug].name}}</option>\n          </select>\n          <input class=\"new-todo__description\"\n                 type=\"text\"\n                 ng-model=\"todoList.newTodoDescription\"\n                 placeholder=\"Description\">\n          <div class=\"new-todo__date\">\n            <div>\n              <label>Start</label>\n              <date-picker\n                date=\"todoList.newTodoStartDate\"\n                callback=\"todoList.setTimeOfDate\"></date-picker>\n              <time-input datetime=\"todoList.newTodoStartDate\"></time-input>\n            </div>\n            <div>\n              <label>Due</label>\n              <date-picker\n                date=\"todoList.newTodoDueDate\"\n                callback=\"todoList.setTimeOfDate\"></date-picker>\n              <time-input datetime=\"todoList.newTodoDueDate\"></time-input>\n            </div>\n          </div>\n          <button type=\"submit\"\n             class=\"btn btn-primary btn-sm edit-save-handle\"\n             ng-disabled=\"!todoList.canAddTodo()\"\n             ng-click=\"todoList.addTodo()\">\n            Add\n          </button>\n        </form>\n      </div>\n\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <div class=\"existing-todos\">\n          <div class=\"todo\"\n               ng-repeat=\"todo in todoList.todos\">\n            <label>\n              <input type=\"checkbox\"\n                     ng-model=\"todo.completed\"\n                     ng-click=\"todoList.updateTodo(todo)\">\n              <span class=\"todo__role\">{{todoList.steps[todoList.taskSlugs[todo.task]].name}}:&nbsp;</span>\n              <span class=\"todo__description\">{{todo.description}}</span>\n              <span class=\"todo__dates\">{{todoList.datesDisplay(todo)}}</span>\n            </label>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n";
 
 /***/ }),
-/* 205 */
+/* 208 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 206 */
+/* 209 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61334,7 +61493,7 @@ function todoApi($http) {
 };
 
 /***/ }),
-/* 207 */
+/* 210 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61345,19 +61504,19 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = config;
 
-var _dashboard = __webpack_require__(208);
+var _dashboard = __webpack_require__(211);
 
 var _dashboard2 = _interopRequireDefault(_dashboard);
 
-var _task = __webpack_require__(209);
+var _task = __webpack_require__(212);
 
 var _task2 = _interopRequireDefault(_task);
 
-var _timecard = __webpack_require__(210);
+var _timecard = __webpack_require__(213);
 
 var _timecard2 = _interopRequireDefault(_timecard);
 
-var _projectManagement = __webpack_require__(211);
+var _projectManagement = __webpack_require__(214);
 
 var _projectManagement2 = _interopRequireDefault(_projectManagement);
 
@@ -61395,25 +61554,25 @@ function config($locationProvider, $routeProvider) {
 }
 
 /***/ }),
-/* 208 */
+/* 211 */
 /***/ (function(module, exports) {
 
 module.exports = "<section class=\"wrapper\">\n  <div tasktable=\"{label: 'Active', tasks: vm.orchestraTasks.activeTasks(), newTasks: true}\"></div>\n  <div tasktable=\"{label: 'Pending', tasks: vm.orchestraTasks.pendingTasks()}\"></div>\n  <div tasktable=\"{label: 'Completed', tasks: vm.orchestraTasks.completedTasks()}\"></div>\n</section>\n";
 
 /***/ }),
-/* 209 */
+/* 212 */
 /***/ (function(module, exports) {
 
 module.exports = "<section class=\"wrapper task-view\">\n\n\n<script type=\"text/ng-template\" id=\"submit_task_modal.html\">\n  <div class=\"modal-header\">\n    <h3 class=\"modal-title\">{{command | capitalize}} Confirmation</h3>\n  </div>\n  <div class=\"modal-body modal-confirm-body\">\n    <div class=\"modal-confirm-text\">\n      <div class=\"time-question\">\n        Approximately how much time did you spend on <strong>this iteration</strong> of the task?\n      </div>\n        <div class=\"time-summary\">\n          <span class=\"time-report form-inline input-group-sm\">\n            <span class=\"time-unit-group\">\n              <input type=\"text\"\n                     class=\"form-control\"\n                     id=\"current-time-hours\"\n                     ng-model=\"currentIterationHours\">\n                     <span class=\"time-unit\"> hours</span>\n            </span>\n            <span class=\"time-unit-group\">\n              <input type=\"text\"\n                     class=\"form-control\"\n                     id=\"current-time-minutes\"\n                     ng-model=\"currentIterationMinutes\">\n                     <span class=\"time-unit\"> mins</span>\n            </span>\n          </span>\n        </div>\n        <div class=\"time-error-message\" ng-bind=\"secondsErrorMessage\"></div>\n        <div class=\"time-summary\">\n          <span class=\"time-label\">Total time so far</span>\n          <span class=\"time-report\">\n            <span class=\"time-unit-group\">\n              <span class=\"time-value-float\">\n                <span class=\"time-value\" ng-bind=\"totalPreviousHoursMinutes()[0]\"></span>\n              </span>\n              <span class=\"time-unit\"> hours</span>\n            </span>\n            <span class=\"time-unit-group\">\n              <span class=\"time-value-float\">\n                <span class=\"time-value\" ng-bind=\"totalPreviousHoursMinutes()[1]\"></span>\n              </span>\n              <span class=\"time-unit\"> mins</span>\n            </span>\n          </span>\n        </div>\n        <hr />\n        <div class=\"time-summary\">\n          <span class=\"time-label\">Total time on task</span>\n          <span class=\"time-report\">\n            <span class=\"time-unit-group\">\n              <span class=\"time-value-float\">\n                <span class=\"time-value\" ng-bind=\"totalHoursMinutes()[0]\"></span>\n              </span>\n              <span class=\"time-unit\"> hours</span>\n            </span>\n            <span class=\"time-unit-group\">\n              <span class=\"time-value-float\">\n                <span class=\"time-value\" ng-bind=\"totalHoursMinutes()[1]\"></span>\n              </span>\n              <span class=\"time-unit\"> mins</span>\n            </span>\n          </span>\n        </div>\n    </div>\n    <div class=\"pull-center\">\n      <button class=\"btn btn-primary\" ng-disabled=\"secondsErrorMessage !== null\" ng-click=\"submit()\">{{command | capitalize}}</button>\n      <button class=\"btn btn-default\" ng-click=\"cancel()\">Cancel</button>\n    </div>\n  </div>\n</script>\n\n\n<nav class=\"topbar-overview\" ng-class=\"{'reviewer-topbar': vm.taskAssignment.is_reviewer}\">\n    <div class=\"topbar-leader\">\n      <div class=\"project-overview\">\n        <div class=\"workflow\">{{ vm.taskAssignment.workflow.name}}</div>\n        {{ vm.taskAssignment.project.details}}\n      </div>\n      <div class=\"arrow-wrapper\">\n        <div class=\"arrow-with-shadow\"></div>\n      </div>\n    </div>\n    <div class=\"topbar-follower\">\n      <div class=\"task-overview\">\n        {{ vm.taskAssignment.step.name}}\n        <span ng-if=\"vm.taskAssignment.is_reviewer\">\n              Review\n        </span>\n      </div>\n    </div>\n</nav>\n\n<div class=\"fixed-infobox-outer\" ng-if=\"vm.is_read_only\">\n  <div class=\"fixed-infobox bg-info\">\n    This task is in view-only mode. You cannot submit or review it.\n  </div>\n</div>\n\n<div class=\"fixed-infobox-outer\" ng-if=\"vm.autoSaver.saveError\">\n  <div class=\"fixed-infobox btn-danger\">\n    Error saving task. Trying again...\n  </div>\n</div>\n\n<div class=\"step-interface\">\n  <div dynamic-load=\"vm.angularDirective\"></div>\n</div>\n\n<section class=\"task-actions-wrapper\">\n  <div class=\"task-actions\">\n    <div class=\"container-fluid\">\n      <div class=\"row\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <button ng-if=\"!vm.taskAssignment.is_reviewer\"\n                  type=\"button\"\n                  class=\"btn btn-primary navbar-btn\"\n                  ng-click=\"vm.submitTask('submit')\"\n                  ng-disabled=\"vm.is_read_only || vm.autoSaver.saving || vm.submitting\">\n            Submit\n          </button>\n          <button ng-if=\"vm.taskAssignment.is_reviewer\"\n                  type=\"button\"\n                  class=\"btn btn-primary navbar-btn\"\n                  ng-click=\"vm.submitTask('accept')\"\n                  ng-disabled=\"vm.is_read_only || vm.autoSaver.saving || vm.submitting\">\n            Accept\n          </button>\n          <button ng-if=\"vm.taskAssignment.is_reviewer\"\n                  type=\"button\"\n                  class=\"btn btn-default navbar-btn\"\n                  ng-click=\"vm.submitTask('reject')\"\n                  ng-disabled=\"vm.is_read_only || vm.autoSaver.saving || vm.submitting\">\n            Reject\n          </button>\n          <button type=\"button\"\n                  class=\"btn btn-default navbar-btn\"\n                  ng-click=\"vm.autoSaver.save()\"\n                  ng-disabled=\"vm.is_read_only || vm.autoSaver.saving || vm.submitting\">\n            Save\n          </button>\n          <div class=\"save-message\">\n            <div ng-show=\"vm.autoSaver.saving\">Saving...</div>\n            <div ng-show=\"vm.autoSaver.lastSaved && !vm.autoSaver.saving\">\n              Saved at {{ vm.autoSaver.lastSaved | date:'mediumTime' }}\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n\n\n</section><!--/wrapper -->\n";
 
 /***/ }),
-/* 210 */
+/* 213 */
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"timecard-view\" ng-if=\"!vm.dataLoading\">\n  <div class=\"entries\">\n    <div class=\"container-fluid\">\n      <div class=\"row no-padding\">\n        <div class=\"col-xs-10 col-xs-offset-2\">\n          <div class=\"row\">\n            <div class=\"col-xs-12 col-md-10\">\n              <span class=\"edit-label\">\n                Date range\n              </span>\n              <date-picker date=\"vm.minDate\" max-date=\"vm.maxDate\"></date-picker>–\n              <date-picker date=\"vm.maxDate\" min-date=\"vm.minDate\"\n              max-date=\"vm.weekEnd\"></date-picker>\n            </div>\n            <div class=\"col-xs-12 col-md-2\">\n              <a href=\"//orchestra.readthedocs.org/en/stable/features.html#time-tracking\" target=\"_blank\"\n              class=\"pull-right help-icon\"><i class=\"fa fa-question-circle\"></i></a>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n    <div class=\"date-group\" ng-repeat=\"dateEntries in vm.timeEntries.entriesByDate | toArray | orderBy:vm.datetimeFromKey:'true'\">\n      <div class=\"container-fluid\">\n        <div class=\"row no-padding\">\n          <div class=\"col-xs-12 col-md-2\">\n            <span class=\"day-name\">{{ vm.dayName(dateEntries.$key) }}</span>\n          </div>\n          <div class=\"col-xs-12 col-md-10\">\n            <div class=\"date-entries\">\n              <h2>\n                <span class=\"date-label\">{{ vm.prettyDate(dateEntries.$key) }}</span>\n                <i ng-click=\"vm.addEntry(vm.datetimeFromKey(dateEntries))\" class=\"fa fa-plus btn-add-entry\"></i>\n                <span class=\"date-duration\" ng-show=\"vm.timeEntries.invalidEntriesForDate(dateEntries.$key).length\">\n                  <em class=\"incomplete\">Invalid Entries</em>\n                </span>\n                <span class=\"date-duration\" ng-hide=\"vm.timeEntries.invalidEntriesForDate(dateEntries.$key).length\">\n                  {{ vm.timeEntries.timeWorkedForDate(dateEntries.$key).humanizeUnits() }}\n                </span>\n              </h2>\n              <div class=\"entry-row\" ng-if=\"!dateEntries.length\">\n                <div class=\"row\">\n                  <div class=\"col-xs-12\">\n                    <em>No entries for this date</em>\n                  </div>\n                </div>\n              </div>\n              <div class=\"entry-row\" ng-class=\"{'gray-stripe': $index % 2}\" ng-repeat=\"entry in dateEntries | orderBy:'-id'\">\n                <form class=\"container-fluid form-inline\" novalidate name=\"entryForm\">\n                  <div class=\"row\">\n                    <div class=\"col-xs-2 edit-tools disable-select\">\n                      <i ng-click=\"vm.timeEntries.deleteEntry(entry)\" class=\"fa fa-times-circle\"></i>\n                      <i class=\"fa fa-pencil-square-o\" ng-class=\"{active: entry.editing}\" ng-click=\"vm.editEntry(entry)\"></i>\n                    </div>\n\n                    <!-- Readonly view for description and time worked -->\n                    <div class=\"col-xs-6 description\" ng-if=\"!entry.editing\">\n                      <span ng-show=\"entry.description\">\n                        {{ entry.description }}\n                      </span>\n                      <span class=\"incomplete\" ng-hide=\"entry.description\">\n                        <em>No description</em>\n                      </span>\n                    </div>\n                    <div class=\"col-xs-4 edit-time\" ng-if=\"!entry.editing\">\n                      {{ entry.time_worked.roundMinute().humanizeUnits() }}\n                    </div>\n                    <div class=\"col-xs-12\" ng-if=\"!entry.editing\">\n                      <em class=\"pull-right\" ng-show=\"vm.orchestraTasks.tasksByAssignmentId[entry.assignment]\">\n                        {{ vm.orchestraTasks.getDescription(vm.orchestraTasks.tasksByAssignmentId[entry.assignment]) }}\n                      </em>\n                      <em class=\"pull-right incomplete\" ng-hide=\"vm.orchestraTasks.tasksByAssignmentId[entry.assignment]\">\n                        Unassigned\n                      </em>\n                    </div>\n\n                    <!-- Editable view for description and time worked -->\n                    <div class=\"col-xs-6\" ng-if=\"entry.editing\">\n                      <input class=\"form-control\" type=\"text\" ng-model=\"entry.editData.description\" placeholder=\"What did you work on?\">\n                    </div>\n                    <div class=\"col-xs-4 edit-time\" ng-if=\"entry.editing\">\n                      <div class=\"time-component\">\n                        <input class=\"form-control\" type=\"number\" ng-model=\"entry.editData.timeWorked.h\"\n                        min=\"0\" max=\"23\" enforce-integers>\n                        <label>hours</label>\n                      </div>\n                      <div class=\"time-component\">\n                        <input class=\"form-control\" type=\"number\" ng-model=\"entry.editData.timeWorked.m\"\n                        min=\"0\" max=\"59\" enforce-integers>\n                        <label>minutes</label>\n                      </div>\n                    </div>\n                  </div>\n\n                  <div class=\"row\" ng-if=\"entry.editing\">\n                    <div class=\"col-xs-4\">\n                      <div class=\"edit-date\">\n                        <label class=\"edit-label\">Move to date</label>\n                        <date-picker date=\"entry.editData.date\" max-date=\"vm.weekEnd\"></date-picker>\n                      </div>\n                    </div>\n                    <div class=\"col-xs-8\">\n                      <div class=\"edit-task\">\n                        <task-select task=\"entry.editData.task\"></task-select>\n                      </div>\n                    </div>\n                  </div>\n                  <div class=\"row\" ng-if=\"entry.editing\">\n                    <div class=\"col-xs-12\">\n                      <div class=\"edit-options pull-right\">\n                        <div class=\"edit-cancel-handle\" ng-click=\"vm.cancelChanges(entry)\">\n                          Cancel\n                        </div>\n                        <div class=\"btn btn-primary btn-sm edit-save-handle\" ng-disabled=\"vm.entryUnchanged(entry)\"\n                        ng-click=\"vm.saveChanges(entry)\">\n                          Save changes\n                        </div>\n                      </div>\n                    </div>\n                  </div>\n                </form>\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n";
 
 /***/ }),
-/* 211 */
+/* 214 */
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"project-management\">\n  <section class=\"section-panel\">\n    <div class=\"container-fluid\">\n      <div class=\"row padded\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <ui-select class=\"project-description\" ng-model=\"vis.dataService.currentProject\"\n              ng-change=\"vis.dataService.setSelectedProject()\"\n              ng-disabled=\"vis.dataService.loading\">\n            <ui-select-match>\n              <span ng-bind=\"projectDescription($select.selected)\"></span>\n            </ui-select-match>\n            <ui-select-choices repeat=\"item in (vis.dataService.allProjects | toArray | filter: $select.search) track by item.id\">\n              <span ng-bind=\"projectDescription(item)\"></span>\n            </ui-select-choices>\n          </ui-select>\n          <div class=\"project-actions\" ng-show=\"vis.dataService.currentProject.id\">\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.createSubsequentTasks()\" class=\"btn btn-default\">\n              Create subsequent tasks\n            </button>\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.showSlackActions()\" class=\"btn btn-default\">\n              Edit Slack users\n            </button>\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.showProjectData()\" class=\"btn btn-default\">\n              View project data\n            </button>\n            <a ng-href=\"{{vis.dataService.data.project.admin_url}}\" ng-disabled=\"vis.dataService.loading\" target=\"_blank\">\n              <button type=\"button\" class=\"btn btn-default\">View in admin</button>\n            </a>\n            <button ng-click=\"vis.endProject()\" class=\"btn btn-danger\">Abort project</button>\n          </div>\n        </div>\n      </div>\n      <div class=\"row\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <div class=\"vis-wrapper\" ng-show=\"vis.dataService.currentProject.id\">\n            <div class=\"overlay\" ng-if=\"vis.dataService.loading\">\n              <div class=\"spinner\"></div>\n            </div>\n            <div class=\"freeze-pane-left\">\n              <div class=\"scale-buttons\">\n                <button ng-click=\"vis.axis.relativeTime = !vis.axis.relativeTime; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  Switch to {{vis.axis.relativeTime ? 'local' : 'relative'}} time\n                </button>\n                <button ng-click=\"vis.params.scaleWidth = vis.params.scaleWidth / 1.1; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  -\n                </button>\n                <button ng-click=\"vis.params.scaleWidth = vis.params.scaleWidth * 1.1; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  +\n                </button>\n              </div>\n              <div class=\"task-names\"></div>\n            </div>\n            <div class=\"svg-wrapper\"></div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n</div>\n";
