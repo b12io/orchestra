@@ -2265,27 +2265,33 @@ a.logo {
 
 .todo-list .new-todo {
   float: left; }
+  .todo-list .new-todo__box {
+    display: inline-block; }
+    .todo-list .new-todo__box-details {
+      width: 600px; }
   .todo-list .new-todo__description {
-    width: 300px; }
-  .todo-list .new-todo__date {
-    padding-left: 5px;
-    padding-right: 20px;
-    display: inline-block;
-    width: 350px; }
+    width: 600px; }
+    .todo-list .new-todo__description__datetime {
+      display: inline-block;
+      padding-left: 10px; }
 
 .todo-list .existing-todos {
   padding-top: 5px; }
-  .todo-list .existing-todos .todo input[type=checkbox] {
-    transform: scale(1.1); }
-  .todo-list .existing-todos .todo label {
-    align-items: end;
-    display: flex; }
-  .todo-list .existing-todos .todo__role {
-    font-weight: 500;
-    padding-left: 5px; }
-  .todo-list .existing-todos .todo__dates {
-    padding-left: 5px;
-    font-style: italic;
-    color: #999; }
-    .todo-list .existing-todos .todo__dates-separator {
-      font-style: normal; }
+  .todo-list .existing-todos .list-by-status {
+    padding-top: 20px; }
+    .todo-list .existing-todos .list-by-status h4 {
+      padding-bottom: 10px; }
+    .todo-list .existing-todos .list-by-status .todo input[type=checkbox] {
+      transform: scale(1.1); }
+    .todo-list .existing-todos .list-by-status .todo label {
+      align-items: end;
+      display: flex; }
+    .todo-list .existing-todos .list-by-status .todo__role {
+      font-weight: 500;
+      padding-left: 5px; }
+    .todo-list .existing-todos .list-by-status .todo__dates {
+      padding-left: 5px;
+      font-style: italic;
+      color: #999; }
+      .todo-list .existing-todos .list-by-status .todo__dates-separator {
+        font-style: normal; }
