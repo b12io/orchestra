@@ -598,5 +598,5 @@ class Todo(TodoMixin, BaseModel):
         Task, related_name='todos', on_delete=models.CASCADE)
     description = models.CharField(max_length=200)
     completed = models.BooleanField(default=False)
-    start_datetime = models.DateTimeField(null=True, blank=True)
+    start_by_datetime = models.DateTimeField(null=True, blank=True)
     due_datetime = models.DateTimeField(null=True, blank=True)
