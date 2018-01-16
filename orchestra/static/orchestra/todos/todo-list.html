@@ -23,9 +23,15 @@
                  type="text"
                  ng-model="todoList.newTodoDescription"
                  placeholder="Description">
+          <button type="submit"
+             class="btn btn-primary btn-sm edit-save-handle"
+             ng-disabled="!todoList.canAddTodo()"
+             ng-click="todoList.addTodo()">
+            Add
+          </button>
           <div class="new-todo__date">
             <div>
-              <label>Start at</label>
+              <label>Start</label>
               <date-picker
                 date="todoList.newTodoStartDate"
                 callback="todoList.setTimeOfDate"></date-picker>
@@ -35,7 +41,7 @@
                 ></time-input>
             </div>
             <div>
-              <label>Due on</label>
+              <label>Due</label>
               <date-picker
                 date="todoList.newTodoDueDate"
                 callback="todoList.setTimeOfDate"></date-picker>
@@ -45,12 +51,6 @@
                 ></time-input>
             </div>
           </div>
-          <button type="submit"
-             class="btn btn-primary btn-sm edit-save-handle"
-             ng-disabled="!todoList.canAddTodo()"
-             ng-click="todoList.addTodo()">
-            Add
-          </button>
         </form>
       </div>
 
@@ -64,7 +64,14 @@
                      ng-click="todoList.updateTodo(todo)">
               <span class="todo__role">{{todoList.steps[todoList.taskSlugs[todo.task]].name}}:&nbsp;</span>
               <span class="todo__description">{{todo.description}}</span>
-              <span class="todo__dates">{{todoList.getDatesDisplay(todo)}}</span>
+              <span class="todo__dates">
+                <span ng-if="todoList.isNonEmptyString(todo.start_by_datetime)">
+                  Start {{todoList.getDateDisplay(todo.start_by_datetime)}}
+                </span>
+                <span ng-if="todoList.isNonEmptyString(todo.start_by_datetime) && todoList.isNonEmptyString(todo.due_datetime)" class="todo__dates-separator">|</span>
+                <span ng-if="todoList.isNonEmptyString(todo.due_datetime)">
+                  Due {{todoList.getDateDisplay(todo.due_datetime)}}</span>
+              </span>
             </label>
           </div>
         </div>

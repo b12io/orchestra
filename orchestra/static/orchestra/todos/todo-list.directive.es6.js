@@ -65,7 +65,12 @@ export default function todoList (orchestraApi) {
       }
 
       todoList.getPrettyDatetime = (datetime) => {
-        return datetime.format('ddd MMMM D hh:mm a')
+        return datetime.format('ddd, MMM D h:mm a')
+      }
+
+      todoList.isNonEmptyString = (str) => {
+        console.log(str)
+        return str !== null && str !== undefined && str !== ''
       }
 
       todoList.addTodo = () => {
@@ -88,12 +93,10 @@ export default function todoList (orchestraApi) {
         todoApi.update(todo)
       }
 
-      todoList.getDatesDisplay = (todo) => {
-        const startDate = todoList.getLocalTime(todo.start_by_datetime)
-        const dueDate = todoList.getLocalTime(todo.due_datetime)
-        const startDateInfo = startDate ? `Start by ${todoList.getPrettyDatetime(startDate)}` : ''
-        const dueDateInfo = dueDate ? `Due on ${todoList.getPrettyDatetime(dueDate)}` : ''
-        return `${startDateInfo} ${dueDateInfo}`
+      todoList.getDateDisplay = (datetimeString) => {
+        const datetime = todoList.getLocalTime(datetimeString)
+        const datetimeInfo = datetime ? `${todoList.getPrettyDatetime(datetime)}` : ''
+        return datetimeInfo
       }
 
       todoList.setTimeOfDate = (datetime) => {
