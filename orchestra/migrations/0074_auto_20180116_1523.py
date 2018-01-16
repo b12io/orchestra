@@ -13,13 +13,13 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
-            model_name='todo',
-            name='due_datetime',
-            field=models.DateTimeField(blank=True, null=True),
-        ),
+                model_name='todo',
+                name='start_by_datetime',
+                field=models.DateTimeField(blank=True, null=True),
+            ),
         migrations.AddField(
             model_name='todo',
-            name='start_by_datetime',
+            name='due_datetime',
             field=models.DateTimeField(blank=True, null=True),
         ),
     ]
