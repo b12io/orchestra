@@ -61222,8 +61222,6 @@ __webpack_require__(204);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// import moment from 'moment-timezone'
-
 function timeInput() {
   return {
     template: _timeInput2.default,
@@ -61231,13 +61229,13 @@ function timeInput() {
       datetime: '='
     },
     link: function link(scope, elem, attrs) {
-      if (scope.datetime) {
-        scope.datetime.seconds(0);
-        scope.datetime.milliseconds(0);
-        scope.timeDisplay = scope.datetime.toDate();
-      } else {
-        scope.timeDisplay = null;
-      }
+      // if (scope.datetime) {
+      //   scope.datetime.seconds(0)
+      //   scope.datetime.milliseconds(0)
+      //   scope.timeDisplay = scope.datetime.toDate()
+      // } else {
+      //   scope.timeDisplay = null
+      // }
 
       scope.onChange = function () {
         scope.datetime.hours(scope.timeDisplay.getHours());
@@ -61355,7 +61353,7 @@ function todoList(orchestraApi) {
           task: taskId,
           description: description,
           completed: completed,
-          start_datetime: startDate,
+          start_by_datetime: startDate,
           due_datetime: dueDate
         }).then(function (taskData) {
           todoList.todos.unshift(taskData);
@@ -61410,7 +61408,7 @@ function todoList(orchestraApi) {
       };
 
       todoList.getDatesDisplay = function (todo) {
-        var startDate = todoList.getLocalTime(todo.start_datetime);
+        var startDate = todoList.getLocalTime(todo.start_by_datetime);
         var dueDate = todoList.getLocalTime(todo.due_datetime);
         var startDateInfo = startDate ? 'Start by ' + todoList.getPrettyDatetime(startDate) : '';
         var dueDateInfo = dueDate ? 'Due on ' + todoList.getPrettyDatetime(dueDate) : '';
