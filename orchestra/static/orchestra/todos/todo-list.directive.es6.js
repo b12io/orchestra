@@ -29,7 +29,7 @@ export default function todoList (orchestraApi) {
         task: taskId,
         description,
         completed,
-        start_datetime: startDate,
+        start_by_datetime: startDate,
         due_datetime: dueDate
       }).then((taskData) => {
         todoList.todos.unshift(taskData)
@@ -89,7 +89,7 @@ export default function todoList (orchestraApi) {
       }
 
       todoList.getDatesDisplay = (todo) => {
-        const startDate = todoList.getLocalTime(todo.start_datetime)
+        const startDate = todoList.getLocalTime(todo.start_by_datetime)
         const dueDate = todoList.getLocalTime(todo.due_datetime)
         const startDateInfo = startDate ? `Start by ${todoList.getPrettyDatetime(startDate)}` : ''
         const dueDateInfo = dueDate ? `Due on ${todoList.getPrettyDatetime(dueDate)}` : ''
