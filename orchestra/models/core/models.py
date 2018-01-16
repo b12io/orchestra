@@ -580,9 +580,9 @@ class Todo(TodoMixin, BaseModel):
             Whether the todo has been completed.
         description (str):
             A text description of the Todo.
-        start_date (datetime.datetime):
+        start_by_datetime (datetime.datetime):
             The time to start the todo. (inclusive)
-        due_date (datetime.datetime):
+        due_datetime (datetime.datetime):
             The time the todo is due.
 
     Constraints:
