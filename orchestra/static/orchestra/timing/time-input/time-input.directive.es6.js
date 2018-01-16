@@ -5,9 +5,13 @@ export default function timeInput () {
   return {
     template,
     scope: {
-      datetime: '='
+      datetime: '=',
+      defaultHour: '@?'
     },
     link: (scope, elem, attrs) => {
+      if (!scope.defaultHour) {
+        scope.defaultHour = 8
+      }
       scope.onChange = () => {
         scope.datetime.hours(scope.timeDisplay.getHours())
         scope.datetime.minutes(scope.timeDisplay.getMinutes())
@@ -17,6 +21,9 @@ export default function timeInput () {
         return scope.datetime
       }, () => {
         if (scope.datetime) {
+          if (!scope.datetime.hours() && !scope.datetime.minutes()) {
+            scope.datetime.hours(scope.defaultHour)
+          }
           scope.datetime.seconds(0)
           scope.datetime.milliseconds(0)
           scope.timeDisplay = scope.datetime.toDate()

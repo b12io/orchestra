@@ -61226,17 +61226,14 @@ function timeInput() {
   return {
     template: _timeInput2.default,
     scope: {
-      datetime: '='
+      datetime: '=',
+      defaultHour: '@?'
     },
     link: function link(scope, elem, attrs) {
-      // if (scope.datetime) {
-      //   scope.datetime.seconds(0)
-      //   scope.datetime.milliseconds(0)
-      //   scope.timeDisplay = scope.datetime.toDate()
-      // } else {
-      //   scope.timeDisplay = null
-      // }
-
+      console.log(scope.defaultHour);
+      if (!scope.defaultHour) {
+        scope.defaultHour = 8;
+      }
       scope.onChange = function () {
         scope.datetime.hours(scope.timeDisplay.getHours());
         scope.datetime.minutes(scope.timeDisplay.getMinutes());
@@ -61246,6 +61243,9 @@ function timeInput() {
         return scope.datetime;
       }, function () {
         if (scope.datetime) {
+          if (!scope.datetime.hours() && !scope.datetime.minutes()) {
+            scope.datetime.hours(scope.defaultHour);
+          }
           scope.datetime.seconds(0);
           scope.datetime.milliseconds(0);
           scope.timeDisplay = scope.datetime.toDate();
@@ -61416,9 +61416,6 @@ function todoList(orchestraApi) {
       };
 
       todoList.setTimeOfDate = function (datetime) {
-        if (!datetime.hours() && !datetime.minutes()) {
-          datetime.hours(18); // set the default to 6pm
-        }
         $scope.$apply();
       };
 
@@ -61454,7 +61451,7 @@ function todoList(orchestraApi) {
 /* 207 */
 /***/ (function(module, exports) {
 
-module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Todo List\n          <a class=\"btn\"\n               ng-if=\"todoList.canSendToPending()\"\n               ng-click=\"todoList.sendToPending()\">\n            Send to pending\n          </a>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\" ng-if=\"todoList.ready\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <form class=\"new-todo\">\n          <select name=\"todoList\" id=\"todoList\" ng-model=\"todoList.newTodoTaskId\">\n            <option value=\"\" selected>Select owner</option>\n            <option value=\"{{task.id}}\" ng-repeat=\"task in todoList.possibleTasks\">{{todoList.steps[task.step_slug].name}}</option>\n          </select>\n          <input class=\"new-todo__description\"\n                 type=\"text\"\n                 ng-model=\"todoList.newTodoDescription\"\n                 placeholder=\"Description\">\n          <div class=\"new-todo__date\">\n            <div>\n              <label>Start</label>\n              <date-picker\n                date=\"todoList.newTodoStartDate\"\n                callback=\"todoList.setTimeOfDate\"></date-picker>\n              <time-input datetime=\"todoList.newTodoStartDate\"></time-input>\n            </div>\n            <div>\n              <label>Due</label>\n              <date-picker\n                date=\"todoList.newTodoDueDate\"\n                callback=\"todoList.setTimeOfDate\"></date-picker>\n              <time-input datetime=\"todoList.newTodoDueDate\"></time-input>\n            </div>\n          </div>\n          <button type=\"submit\"\n             class=\"btn btn-primary btn-sm edit-save-handle\"\n             ng-disabled=\"!todoList.canAddTodo()\"\n             ng-click=\"todoList.addTodo()\">\n            Add\n          </button>\n        </form>\n      </div>\n\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <div class=\"existing-todos\">\n          <div class=\"todo\"\n               ng-repeat=\"todo in todoList.todos\">\n            <label>\n              <input type=\"checkbox\"\n                     ng-model=\"todo.completed\"\n                     ng-click=\"todoList.updateTodo(todo)\">\n              <span class=\"todo__role\">{{todoList.steps[todoList.taskSlugs[todo.task]].name}}:&nbsp;</span>\n              <span class=\"todo__description\">{{todo.description}}</span>\n              <span class=\"todo__dates\">{{todoList.getDatesDisplay(todo)}}</span>\n            </label>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n";
+module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Todo List\n          <a class=\"btn\"\n               ng-if=\"todoList.canSendToPending()\"\n               ng-click=\"todoList.sendToPending()\">\n            Send to pending\n          </a>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\" ng-if=\"todoList.ready\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <form class=\"new-todo\">\n          <select name=\"todoList\" id=\"todoList\" ng-model=\"todoList.newTodoTaskId\">\n            <option value=\"\" selected>Select owner</option>\n            <option value=\"{{task.id}}\" ng-repeat=\"task in todoList.possibleTasks\">{{todoList.steps[task.step_slug].name}}</option>\n          </select>\n          <input class=\"new-todo__description\"\n                 type=\"text\"\n                 ng-model=\"todoList.newTodoDescription\"\n                 placeholder=\"Description\">\n          <div class=\"new-todo__date\">\n            <div>\n              <label>Start at</label>\n              <date-picker\n                date=\"todoList.newTodoStartDate\"\n                callback=\"todoList.setTimeOfDate\"></date-picker>\n              <time-input\n                datetime=\"todoList.newTodoStartDate\"\n                default-hour=\"8\"\n                ></time-input>\n            </div>\n            <div>\n              <label>Due on</label>\n              <date-picker\n                date=\"todoList.newTodoDueDate\"\n                callback=\"todoList.setTimeOfDate\"></date-picker>\n              <time-input\n                datetime=\"todoList.newTodoDueDate\"\n                default-hour=\"18\"\n                ></time-input>\n            </div>\n          </div>\n          <button type=\"submit\"\n             class=\"btn btn-primary btn-sm edit-save-handle\"\n             ng-disabled=\"!todoList.canAddTodo()\"\n             ng-click=\"todoList.addTodo()\">\n            Add\n          </button>\n        </form>\n      </div>\n\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <div class=\"existing-todos\">\n          <div class=\"todo\"\n               ng-repeat=\"todo in todoList.todos\">\n            <label>\n              <input type=\"checkbox\"\n                     ng-model=\"todo.completed\"\n                     ng-click=\"todoList.updateTodo(todo)\">\n              <span class=\"todo__role\">{{todoList.steps[todoList.taskSlugs[todo.task]].name}}:&nbsp;</span>\n              <span class=\"todo__description\">{{todo.description}}</span>\n              <span class=\"todo__dates\">{{todoList.getDatesDisplay(todo)}}</span>\n            </label>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n";
 
 /***/ }),
 /* 208 */

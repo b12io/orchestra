@@ -97,9 +97,6 @@ export default function todoList (orchestraApi) {
       }
 
       todoList.setTimeOfDate = (datetime) => {
-        if (!datetime.hours() && !datetime.minutes()) {
-          datetime.hours(18) // set the default to 6pm
-        }
         $scope.$apply()
       }
 

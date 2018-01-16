@@ -25,18 +25,24 @@
                  placeholder="Description">
           <div class="new-todo__date">
             <div>
-              <label>Start</label>
+              <label>Start at</label>
               <date-picker
                 date="todoList.newTodoStartDate"
                 callback="todoList.setTimeOfDate"></date-picker>
-              <time-input datetime="todoList.newTodoStartDate"></time-input>
+              <time-input
+                datetime="todoList.newTodoStartDate"
+                default-hour="8"
+                ></time-input>
             </div>
             <div>
-              <label>Due</label>
+              <label>Due on</label>
               <date-picker
                 date="todoList.newTodoDueDate"
                 callback="todoList.setTimeOfDate"></date-picker>
-              <time-input datetime="todoList.newTodoDueDate"></time-input>
+              <time-input
+                datetime="todoList.newTodoDueDate"
+                default-hour="18"
+                ></time-input>
             </div>
           </div>
           <button type="submit"
