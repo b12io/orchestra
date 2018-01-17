@@ -560,13 +560,7 @@ workflow_fixtures = [
     {
         'slug': 'sanitybot',
         'name': 'SanityBot workflow',
-        'certifications': [
-            {
-                'slug': 'certification1',
-                'name': 'The first certification',
-                'required_certifications': []
-            },
-        ],
+        'certifications': [],
         'versions': [
             {
                 'slug': 'sanitybot_workflow',
@@ -596,7 +590,7 @@ workflow_fixtures = [
                                         'first step'),
                         'is_human': True,
                         'creation_depends_on': [],
-                        'required_certifications': ['certification1'],
+                        'required_certifications': [],
                         'review_policy': {
                             'policy': 'sampled_review',
                             'rate': 1,
@@ -611,7 +605,6 @@ workflow_fixtures = [
                     },
                 ],
             },
-
         ],
     },
 ]
