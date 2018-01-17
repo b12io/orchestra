@@ -20,6 +20,8 @@ export default function datePicker (timeEntries) {
         maxDate: scope.maxDate ? scope.maxDate.toDate() : null,
         onSelect: function (date) {
           const newDate = this.getMoment()
+
+          // Don't overwrite time when the date changes.
           if (!scope.date) {
             scope.date = newDate
           } else {

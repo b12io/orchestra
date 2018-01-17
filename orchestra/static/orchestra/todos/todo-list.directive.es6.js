@@ -60,19 +60,6 @@ export default function todoList (orchestraApi) {
         return datetimeUtc.format('YYYY-MM-DD HH:mm')
       }
 
-      todoList.getLocalTime = (datetimeString) => {
-        return datetimeString ? moment.utc(datetimeString).tz(moment.tz.guess()) : null
-      }
-
-      todoList.getPrettyDatetime = (datetime) => {
-        return datetime.format('ddd, MMM D h:mm a')
-      }
-
-      todoList.isNonEmptyString = (str) => {
-        console.log(str)
-        return str !== null && str !== undefined && str !== ''
-      }
-
       todoList.addTodo = () => {
         const start = todoList.getUTCDateTimeString(todoList.newTodoStartDate)
         const due = todoList.getUTCDateTimeString(todoList.newTodoDueDate)
@@ -91,12 +78,6 @@ export default function todoList (orchestraApi) {
 
       todoList.updateTodo = (todo) => {
         todoApi.update(todo)
-      }
-
-      todoList.getDateDisplay = (datetimeString) => {
-        const datetime = todoList.getLocalTime(datetimeString)
-        const datetimeInfo = datetime ? `${todoList.getPrettyDatetime(datetime)}` : ''
-        return datetimeInfo
       }
 
       todoList.setTimeOfDate = (datetime) => {
