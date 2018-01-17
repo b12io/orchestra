@@ -72,7 +72,6 @@ class TimeEntriesEndpointTests(EndpointTestCase):
         if success:
             self.assertEqual(resp.status_code, 200)
             data = load_encoded_json(resp.content)
-            print(data)
             for todo, expected_todo in zip(data, expected_todos):
                 self._verify_todo_content(todo, expected_todo)
         else:
