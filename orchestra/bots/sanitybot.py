@@ -6,8 +6,8 @@ from orchestra.core.errors import SanityBotError
 from orchestra.models import Project
 from orchestra.models import SanityCheck
 from orchestra.models import WorkflowVersion
-from orchestra.utils.project_properties import incomplete_projects
 from orchestra.utils.notifications import message_experts_slack_group
+from orchestra.utils.project_properties import incomplete_projects
 
 
 def _workflow_versions_with_sanity_checks():

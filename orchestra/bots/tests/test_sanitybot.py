@@ -3,9 +3,9 @@ from unittest.mock import patch
 
 from orchestra.bots.sanitybot import create_and_handle_sanity_checks
 from orchestra.models import SanityCheck
-from orchestra.utils.task_lifecycle import create_subsequent_tasks
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_models
+from orchestra.utils.task_lifecycle import create_subsequent_tasks
 
 
 class SanityBotTestCase(OrchestraTestCase):
