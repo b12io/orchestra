@@ -153,7 +153,8 @@ class TimeEntriesEndpointTests(EndpointTestCase):
             description='Start by!!!')
         self._verify_todo_content(
             TodoSerializer(start_by_todo).data,
-            self._todo_data(start_by_todo.task,
+            self._todo_data(
+                start_by_todo.task,
                 'Start by!!!',
                 False,
                 deadline.strftime('%Y-%m-%dT%H:%M:%SZ'),
