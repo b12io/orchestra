@@ -1,3 +1,4 @@
+from dateutil.parser import parse
 import json
 
 from django.core.urlresolvers import reverse
@@ -12,8 +13,6 @@ from orchestra.tests.helpers.fixtures import TodoFactory
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.todos.serializers import TodoSerializer
 from orchestra.utils.load_json import load_encoded_json
-
-from dateutil.parser import parse
 
 
 class TimeEntriesEndpointTests(EndpointTestCase):
