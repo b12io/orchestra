@@ -54,8 +54,8 @@
                 <td>{{task.step}}</td>
                 <td>{{task.detail|limitTo:50}}{{task.detail.length > 50 ? '...' : ''}}</td>
                 <td>{{task.next_todo_dict.description|limitTo:50}}{{task.next_todo_dict.description.length > 50 ? '...' : ''}}</td>
-                <td>{{task.next_todo_dict.start_by_datetime}}</td>
-                <td>{{task.next_todo_dict.due_datetime}}</td>
+                <td><datetime-display datetime="task.next_todo_dict.start_by_datetime" show-time="false" /></td>
+                <td><datetime-display datetime="task.next_todo_dict.due_datetime" show-time="false" /></td>
               </tr>
             </tbody>
           </table>
