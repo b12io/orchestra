@@ -47,7 +47,8 @@ class TimeEntriesEndpointTests(EndpointTestCase):
             serializer = TimeEntrySerializer(data=time_entry)
             self.assertTrue(serializer.is_valid())
 
-    def _todo_data(self, task, description, completed, start_by=None, due=None):
+    def _todo_data(self, task, description, completed,
+        start_by=None, due=None):
         return {
             'task': task.id,
             'completed': completed,
