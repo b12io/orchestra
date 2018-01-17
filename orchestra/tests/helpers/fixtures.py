@@ -290,6 +290,7 @@ def setup_models(test_case):
         'staffbot_assignment_policy': 'staffbot_assignment_policy_workflow',
         'creation_policy': 'creation_policy_workflow',
         'next_todo_proj': 'test_workflow',
+        'sanitybot': 'sanitybot_workflow',
     }
 
     # Task generation data
@@ -394,6 +395,7 @@ def _setup_workflows(test_case, workflows):
                 slug=version_details['slug'],
                 name=version_details['name'],
                 description=version_details['description'],
+                sanity_checks=version_details.get('sanity_checks', {})
             )
             test_case.workflow_versions[version_details['slug']] = version
 
