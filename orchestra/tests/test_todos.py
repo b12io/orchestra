@@ -1,4 +1,5 @@
 import json
+from dateutil.parser import parse
 
 from django.core.urlresolvers import reverse
 
@@ -46,11 +47,13 @@ class TimeEntriesEndpointTests(EndpointTestCase):
             serializer = TimeEntrySerializer(data=time_entry)
             self.assertTrue(serializer.is_valid())
 
-    def _todo_data(self, task, description, completed):
+    def _todo_data(self, task, description, completed, start_by, due):
         return {
             'task': task.id,
             'completed': completed,
-            'description': description
+            'description': description,
+            'start_by_datetime': start_by,
+            'due_datetime': due
         }
 
     def _verify_todo_content(self, todo, expected_todo):
@@ -82,7 +85,7 @@ class TimeEntriesEndpointTests(EndpointTestCase):
             self.assertEqual(Todo.objects.all().count(), num_todos + 1)
             todo = load_encoded_json(resp.content)
             self._verify_todo_content(
-                todo, self._todo_data(task, self.todo_description, False))
+                todo, self._todo_data(task, self.todo_description, False, None, None))
         else:
             self.assertEqual(resp.status_code, 403)
             self.assertEqual(Todo.objects.all().count(), num_todos)
@@ -94,13 +97,13 @@ class TimeEntriesEndpointTests(EndpointTestCase):
             kwargs={'pk': todo.id})
         resp = self.request_client.put(
             list_details_url,
-            json.dumps(self._todo_data(todo.task, description, True)),
+            json.dumps(self._todo_data(todo.task, description, True, None, None)),
             content_type='application/json')
         updated_todo = TodoSerializer(Todo.objects.get(id=todo.id)).data
         if success:
             self.assertEqual(resp.status_code, 200)
             self._verify_todo_content(
-                updated_todo, self._todo_data(todo.task, description, True))
+                updated_todo, self._todo_data(todo.task, description, True, None, None))
         else:
             self.assertEqual(resp.status_code, 403)
             self.assertNotEqual(updated_todo['description'], description)
@@ -110,7 +113,7 @@ class TimeEntriesEndpointTests(EndpointTestCase):
         self._verify_todo_creation(self.task, True)
         self._verify_todos_list(self.task.project.id,
                                 [self._todo_data(
-                                    self.task, self.todo_description, False)],
+                                    self.task, self.todo_description, False, None, None)],
                                 True)
 
     def test_todos_list_create_permissions(self):
@@ -126,3 +129,23 @@ class TimeEntriesEndpointTests(EndpointTestCase):
         self._verify_todo_update(good_todo, True)
         bad_todo = TodoFactory()
         self._verify_todo_update(bad_todo, False)
+
+    def test_create_todo_with_start_deadline(self):
+        TEST_DEADLINE = '2018-01-16T07:03:00+00:00'
+        deadline = parse(TEST_DEADLINE)
+        due_todo = TodoFactory(
+            task=self.task,
+            due_datetime=deadline,
+            description='Due!!!')
+
+        self._verify_todo_content(
+            TodoSerializer(due_todo).data,
+            self._todo_data(due_todo.task, 'Due!!!', False, None, deadline.strftime('%Y-%m-%dT%H:%M:%SZ')))
+
+        start_by_todo = TodoFactory(
+            task=self.task,
+            start_by_datetime=deadline,
+            description='Start by!!!')
+        self._verify_todo_content(
+            TodoSerializer(start_by_todo).data,
+            self._todo_data(start_by_todo.task, 'Start by!!!', False, deadline.strftime('%Y-%m-%dT%H:%M:%SZ'), None))
