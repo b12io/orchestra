@@ -9,7 +9,10 @@ clean:
 	find . -name '*~' -delete
 
 lint:
-	flake8 .
+<<<<<<< HEAD
+	# TODO(marcua): reenable isort when it works the same in dev and
+	# on CircleCI
+	flake8 . # && isort --check-only --recursive .
 	gulp lint --production
 	!(find . -wholename '**migrations**/*.py' -print0 | xargs -0 grep 'RemoveField\|DeleteModel\|AlterModelTable\|AlterUniqueTogether\|RunSQL\|RunPython\|SeparateDatabaseAndState' | grep -v '# manually-reviewed') || { echo "Migrations need to be manually reviewed!"; exit 1; }
 	!(cd example_project && python3 manage.py makemigrations --dry-run --exit) || { printf "Migrations need to be created. Try: \n\t python3 manage.py makemigrations\n"; exit 1; }
