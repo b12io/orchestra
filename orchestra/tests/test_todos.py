@@ -1,6 +1,6 @@
-from dateutil.parser import parse
 import json
 
+from dateutil.parser import parse
 from django.core.urlresolvers import reverse
 
 from orchestra.models import Task
