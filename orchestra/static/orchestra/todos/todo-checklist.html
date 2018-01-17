@@ -1,0 +1,21 @@
+<div class="list-by-status" ng-if="(todos | filter: {completed: showChecked}).length > 0">
+  <h4>{{title}}</h4>
+  <div class="todo"
+       ng-repeat="todo in todos | filter: {completed: showChecked}">
+    <label>
+      <input type="checkbox"
+             ng-model="todo.completed"
+             ng-change="updateTodo(todo)">
+      <span class="todo__role">{{steps[taskSlugs[todo.task]].name}}:&nbsp;</span>
+      <span class="todo__description">{{todo.description}}</span>
+      <span class="todo__dates">
+        <span ng-if="isNonEmptyString(todo.start_by_datetime)">
+          Start {{getDatetimeDisplay(todo.start_by_datetime)}}
+        </span>
+        <span ng-if="isNonEmptyString(todo.start_by_datetime) && isNonEmptyString(todo.due_datetime)" class="todo__dates-separator">|</span>
+        <span ng-if="isNonEmptyString(todo.due_datetime)">
+          Due {{getDatetimeDisplay(todo.due_datetime)}}</span>
+      </span>
+    </label>
+  </div>
+</div>
