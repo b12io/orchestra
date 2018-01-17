@@ -5,7 +5,12 @@ from pydoc import locate
 from django.conf import settings
 from django.db import connection
 from django.db import transaction
+from django.db.models import Case
+from django.db.models import When
+from django.db.models import Value
+from django.db.models import IntegerField
 from django.utils import timezone
+
 
 from orchestra.communication.slack import add_worker_to_project_team
 from orchestra.communication.utils import mark_worker_as_winner
@@ -23,6 +28,7 @@ from orchestra.models import Iteration
 from orchestra.models import Project
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
+from orchestra.models import Todo
 from orchestra.models import Worker
 from orchestra.models import WorkerCertification
 from orchestra.utils.notifications import notify_status_change
@@ -498,20 +504,34 @@ def tasks_assigned_to_worker(worker):
         'complete': complete_task_assignments}
 
     tasks_assigned = []
+    time_now = timezone.now()
     for state, task_assignments in iter(task_assignments_overview.items()):
         for task_assignment in task_assignments:
             step = task_assignment.task.step
             workflow_version = step.workflow_version
             next_todo_description = None
+            next_todo_dict = {}
             should_be_active = False
             if state in ('returned', 'in_progress'):
                 next_todo = (
                     task_assignment.task.todos
                     .filter(completed=False)
-                    .order_by('-created_at')
+                    .annotate(
+                        todo_order=Case(
+                            When(start_by_datetime__gt=time_now, then=Value(2)),
+                            default=Value(1),
+                            output_field=IntegerField()
+                        )
+                    )
+                    .order_by('todo_order', 'due_datetime', 'start_by_datetime', '-created_at')
                     .first())
                 if next_todo:
                     next_todo_description = next_todo.description
+                    next_todo_dict = {
+                        'description': next_todo.description,
+                        'start_by_datetime': next_todo.start_by_datetime.strftime('%Y-%m-%dT%H:%M:%SZ') if next_todo.start_by_datetime else '',
+                        'due_datetime': next_todo.due_datetime.strftime('%Y-%m-%dT%H:%M:%SZ') if next_todo.due_datetime else ''
+                    }
                 num_todos = task_assignment.task.todos.count()
                 # If a task has no todos (complete or incomplete)
                 # assigned to it, then by default the task would be
@@ -522,8 +542,10 @@ def tasks_assigned_to_worker(worker):
                 # or more todos assigned to it, its active/pending
                 # state is determined by the presence of incomplete
                 # todos.
-                should_be_active = ((num_todos == 0) or
-                                    (next_todo_description is not None))
+                should_be_active = ((num_todos == 0)
+                    or ((next_todo_description is not None))
+                        and (next_todo.start_by_datetime is None
+                            or next_todo.start_by_datetime <= time_now))
             tasks_assigned.append({
                 'id': task_assignment.task.id,
                 'assignment_id': task_assignment.id,
@@ -532,7 +554,7 @@ def tasks_assigned_to_worker(worker):
                 'detail': task_assignment.task.project.short_description,
                 'priority': task_assignment.task.project.priority,
                 'state': state,
-                'next_todo_description': next_todo_description,
+                'next_todo_dict': next_todo_dict,
                 'should_be_active': should_be_active})
     return tasks_assigned
 
