@@ -55725,7 +55725,8 @@ function tasktable() {
         vm.waiting = false;
       });
 
-      vm.isDueInOneDay = function (task) {
+      vm.isInDanger = function (task) {
+        console.log(task.description, _momentTimezone2.default.isBeforeNowBy(task.next_todo_dict.due_datetime, 1, 'days'));
         return _momentTimezone2.default.isBeforeNowBy(task.next_todo_dict.due_datetime, 1, 'days');
       };
 
