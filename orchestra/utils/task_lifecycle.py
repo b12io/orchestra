@@ -565,7 +565,7 @@ def tasks_assigned_to_worker(worker):
                         or next_todo.start_by_datetime <= time_now
                     )
                 )
-                should_be_active = (num_todos == 0) and task_started
+                should_be_active = (num_todos == 0) or task_started
             tasks_assigned.append({
                 'id': task_assignment.task.id,
                 'assignment_id': task_assignment.id,
