@@ -22,10 +22,14 @@
         padding-left: 5px;
         font-style: italic;
         color: #999;
+        &-danger {
+          color: #a94442;
+        }
         &-separator {
           font-style: normal;
         }
       }
+
     }
   }
 }

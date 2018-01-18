@@ -7,12 +7,9 @@ export default function datetimeDisplay () {
     restrict: 'E',
     scope: {
       datetime: '=',
-      showTime: '=?'
+      showTime: '='
     },
     link: (scope, elem, attrs) => {
-      if (!scope.showTime) {
-        scope.showTime = true
-      }
       const getLocalTime = (datetimeString) => {
         return datetimeString ? moment.utc(datetimeString).tz(moment.tz.guess()) : null
       }

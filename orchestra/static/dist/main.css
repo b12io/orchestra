@@ -2292,5 +2292,7 @@ a.logo {
       padding-left: 5px;
       font-style: italic;
       color: #999; }
+      .existing-todos .list-by-status .todo__dates-danger {
+        color: #a94442; }
       .existing-todos .list-by-status .todo__dates-separator {
         font-style: normal; }

@@ -1896,7 +1896,7 @@ function loadLocale(name) {
             module && module.exports) {
         try {
             oldLocale = globalLocale._abbr;
-            __webpack_require__(168)("./" + name);
+            __webpack_require__(163)("./" + name);
             // because defineLocale currently also sets the global locale, we
             // want to undo that for lazy loaded locales
             getSetGlobalLocale(oldLocale);
@@ -4537,8 +4537,8 @@ return hooks;
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var moment = module.exports = __webpack_require__(167);
-moment.tz.load(__webpack_require__(169));
+var moment = module.exports = __webpack_require__(162);
+moment.tz.load(__webpack_require__(164));
 
 
 /***/ }),
@@ -42405,7 +42405,7 @@ var _dashboardModuleEs = __webpack_require__(159);
 
 var _dashboardModuleEs2 = _interopRequireDefault(_dashboardModuleEs);
 
-var _projectManagementModuleEs = __webpack_require__(164);
+var _projectManagementModuleEs = __webpack_require__(167);
 
 var _projectManagementModuleEs2 = _interopRequireDefault(_projectManagementModuleEs);
 
@@ -55665,7 +55665,7 @@ var _tasktableDirectiveEs = __webpack_require__(160);
 
 var _tasktableDirectiveEs2 = _interopRequireDefault(_tasktableDirectiveEs);
 
-var _dashboardControllerEs = __webpack_require__(162);
+var _dashboardControllerEs = __webpack_require__(165);
 
 var _dashboardControllerEs2 = _interopRequireDefault(_dashboardControllerEs);
 
@@ -55694,6 +55694,10 @@ var _tasktable = __webpack_require__(161);
 
 var _tasktable2 = _interopRequireDefault(_tasktable);
 
+var _momentTimezone = __webpack_require__(1);
+
+var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function tasktable() {
@@ -55712,16 +55716,18 @@ function tasktable() {
       vm.openTask = function (task) {
         $location.path('task/' + task.id);
       };
-
       // Surface service to interpolator
       vm.orchestraTasks = orchestraTasks;
-      console.log(orchestraTasks);
       vm.enableNewTaskButtons = vm.tasktable.newTasks && window.orchestra.enable_new_task_buttons;
 
       vm.waiting = true;
       orchestraTasks.data.finally(function () {
         vm.waiting = false;
       });
+
+      vm.isDueInOneDay = function (task) {
+        return _momentTimezone2.default.isBeforeNow(task.next_todo_dict.due_datetime, 1, 'days');
+      };
 
       vm.newTask = function (taskType) {
         // To allow users to read the "no tasks left" message while debouncing
@@ -55754,361 +55760,10 @@ function tasktable() {
 /* 161 */
 /***/ (function(module, exports) {
 
-module.exports = "<section class=\"section-panel tasks-section\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12\">\n        <h3>\n          {{vm.tasktable.label}} ({{ vm.tasktable.tasks.length || 0 }})\n          <button type=\"button\"\n                    ng-if=\"vm.enableNewTaskButtons\"\n                    ng-click=\"vm.newTask('entry_level')\"\n                    ng-class=\"{'disabled': vm.orchestraTasks.preventNew ||\n                                           vm.noTaskTimer}\"\n                    class=\"btn btn-primary btn-new-entry-task\">\n              New delivery task\n            </button>\n            <button type=\"button\"\n                    ng-if=\"vm.orchestraTasks.reviewerStatus &&\n                           vm.enableNewTaskButtons\"\n                    ng-click=\"vm.newTask('reviewer')\"\n                    ng-class=\"{'disabled': vm.orchestraTasks.preventNew ||\n                                           vm.noTaskTimer}\"\n                    class=\"btn btn-primary btn-new-review-task\">\n              New review task\n            </button>\n            <span class=\"warning-message\"\n                  ng-show=\"vm.newTaskError && !vm.orchestraTasks.preventNew\">\n              No tasks available at the moment\n            </span>\n            <i class=\"fa fa-spinner fa-spin\" ng-show=\"vm.waiting\"></i>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row\">\n          <table ng-if=\"vm.tasktable.tasks.length > 0\"\n                 st-table=\"vm.tasktable.tasks\"\n                 class=\"table table-striped\">\n            <thead>\n              <tr>\n                <th>Priority</th>\n                <th>Project</th>\n                <th>Task</th>\n                <th>Details</th>\n                <th>Next steps</th>\n                <th>Start by</th>\n                <th>Due on</th>\n              </tr>\n            </thead>\n            <tbody>\n              <tr\n                 class=\"task-row\"\n                 ng-repeat=\"task in vm.tasktable.tasks\"\n                 ng-click=\"vm.openTask(task)\">\n                <td>{{task.priority}}</td>\n                <td>{{task.project}}</td>\n                <td>{{task.step}}</td>\n                <td>{{task.detail|limitTo:50}}{{task.detail.length > 50 ? '...' : ''}}</td>\n                <td>{{task.next_todo_dict.description|limitTo:50}}{{task.next_todo_dict.description.length > 50 ? '...' : ''}}</td>\n                <td><datetime-display datetime=\"task.next_todo_dict.start_by_datetime\" show-time=\"false\" /></td>\n                <td><datetime-display datetime=\"task.next_todo_dict.due_datetime\" show-time=\"false\" /></td>\n              </tr>\n            </tbody>\n          </table>\n    </div>\n  </div>\n</section>\n";
+module.exports = "<section class=\"section-panel tasks-section\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12\">\n        <h3>\n          {{vm.tasktable.label}} ({{ vm.tasktable.tasks.length || 0 }})\n          <button type=\"button\"\n                    ng-if=\"vm.enableNewTaskButtons\"\n                    ng-click=\"vm.newTask('entry_level')\"\n                    ng-class=\"{'disabled': vm.orchestraTasks.preventNew ||\n                                           vm.noTaskTimer}\"\n                    class=\"btn btn-primary btn-new-entry-task\">\n              New delivery task\n            </button>\n            <button type=\"button\"\n                    ng-if=\"vm.orchestraTasks.reviewerStatus &&\n                           vm.enableNewTaskButtons\"\n                    ng-click=\"vm.newTask('reviewer')\"\n                    ng-class=\"{'disabled': vm.orchestraTasks.preventNew ||\n                                           vm.noTaskTimer}\"\n                    class=\"btn btn-primary btn-new-review-task\">\n              New review task\n            </button>\n            <span class=\"warning-message\"\n                  ng-show=\"vm.newTaskError && !vm.orchestraTasks.preventNew\">\n              No tasks available at the moment\n            </span>\n            <i class=\"fa fa-spinner fa-spin\" ng-show=\"vm.waiting\"></i>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row\">\n          <table ng-if=\"vm.tasktable.tasks.length > 0\"\n                 st-table=\"vm.tasktable.tasks\"\n                 class=\"table table-striped\">\n            <thead>\n              <tr>\n                <th>Priority</th>\n                <th>Project</th>\n                <th>Task</th>\n                <th>Details</th>\n                <th>Next steps</th>\n                <th>Start by</th>\n                <th>Due on</th>\n              </tr>\n            </thead>\n            <tbody>\n              <tr\n                 ng-class=\"{'task-row':true, 'danger': vm.isInDanger(task)}\"\n                 ng-repeat=\"task in vm.tasktable.tasks\"\n                 ng-click=\"vm.openTask(task)\">\n                <td>{{task.priority}}</td>\n                <td>{{task.project}}</td>\n                <td>{{task.step}}</td>\n                <td>{{task.detail|limitTo:50}}{{task.detail.length > 50 ? '...' : ''}}</td>\n                <td>{{task.next_todo_dict.description|limitTo:50}}{{task.next_todo_dict.description.length > 50 ? '...' : ''}}</td>\n                <td><datetime-display datetime=\"task.next_todo_dict.start_by_datetime\" show-time=\"false\" /></td>\n                <td><datetime-display datetime=\"task.next_todo_dict.due_datetime\" show-time=\"false\" /></td>\n              </tr>\n            </tbody>\n          </table>\n    </div>\n  </div>\n</section>\n";
 
 /***/ }),
 /* 162 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-      value: true
-});
-exports.default = DashboardController;
-
-__webpack_require__(163);
-
-function DashboardController(orchestraTasks) {
-      'ngAnnotate';
-
-      var vm = this;
-
-      vm.orchestraTasks = orchestraTasks;
-      orchestraTasks.updateTasks();
-}
-
-/***/ }),
-/* 163 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 164 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _commonModuleEs = __webpack_require__(4);
-
-var _commonModuleEs2 = _interopRequireDefault(_commonModuleEs);
-
-var _assignmentsVisEs = __webpack_require__(165);
-
-var _assignmentsVisEs2 = _interopRequireDefault(_assignmentsVisEs);
-
-var _axisEs = __webpack_require__(166);
-
-var _axisEs2 = _interopRequireDefault(_axisEs);
-
-var _crosshairEs = __webpack_require__(170);
-
-var _crosshairEs2 = _interopRequireDefault(_crosshairEs);
-
-var _dataServiceEs = __webpack_require__(171);
-
-var _dataServiceEs2 = _interopRequireDefault(_dataServiceEs);
-
-var _iterationsVisEs = __webpack_require__(172);
-
-var _iterationsVisEs2 = _interopRequireDefault(_iterationsVisEs);
-
-var _projectVisEs = __webpack_require__(173);
-
-var _projectVisEs2 = _interopRequireDefault(_projectVisEs);
-
-var _tasksVisEs = __webpack_require__(175);
-
-var _tasksVisEs2 = _interopRequireDefault(_tasksVisEs);
-
-var _visUtilsEs = __webpack_require__(177);
-
-var _visUtilsEs2 = _interopRequireDefault(_visUtilsEs);
-
-var _projectManagementControllerEs = __webpack_require__(178);
-
-var _projectManagementControllerEs2 = _interopRequireDefault(_projectManagementControllerEs);
-
-__webpack_require__(179);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var name = 'orchestra.project_management'; /* global angular */
-
-angular.module(name, ['ui.bootstrap', 'ui.select', _commonModuleEs2.default]).controller('ProjectManagementController', _projectManagementControllerEs2.default).factory('assignmentsVis', _assignmentsVisEs2.default).factory('axis', _axisEs2.default).factory('crosshair', _crosshairEs2.default).factory('dataService', _dataServiceEs2.default).factory('iterationsVis', _iterationsVisEs2.default).factory('projectVis', _projectVisEs2.default).factory('tasksVis', _tasksVisEs2.default).factory('visUtils', _visUtilsEs2.default);
-
-exports.default = name;
-
-/***/ }),
-/* 165 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = assignmentsVis;
-var d3 = __webpack_require__(3);
-
-function assignmentsVis(dataService, orchestraApi, iterationsVis, visUtils) {
-  /**
-   * Service to modularize assignment visualization and manipulation within
-   * the project management view.
-   */
-  'ngAnnotate';
-
-  var assignmentsVis;
-
-  return {
-    addingAssignment: false,
-    setup: function setup(vis) {
-      assignmentsVis = this;
-    },
-    draw: function draw() {
-      /**
-       * Draws/updates assignments within project management visualization.
-       */
-      var tasks = visUtils.parentContainer.selectAll('.task');
-
-      var assignments = tasks.selectAll('.assignment').data(function (taskKey) {
-        var assignments = dataService.taskFromKey(taskKey).assignments.map(function (assignment) {
-          return dataService.keyFromAssignment(assignment);
-        });
-        assignments.push();
-        return assignments;
-      });
-
-      assignments.exit().remove();
-      var assignmentsEnter = assignments.enter().append('g').attr('class', 'assignment');
-
-      iterationsVis.draw();
-
-      assignmentsEnter.append('circle').attr({
-        'class': 'active-assignment',
-        'cx': 0,
-        'cy': 15,
-        'r': 5
-      });
-
-      assignments.selectAll('.active-assignment').attr({
-        'fill': function fill(assignmentKey) {
-          var assignment = dataService.assignmentFromKey(assignmentKey);
-          return assignment.status === 'Submitted' ? 'rgb(0, 121, 191)' : 'white';
-        },
-        'stroke': function stroke(assignmentKey) {
-          var assignment = dataService.assignmentFromKey(assignmentKey);
-          return assignment.status === 'Submitted' ? 'white' : 'rgb(0, 121, 191)';
-        }
-      });
-
-      this.drawAssignmentTools();
-    },
-    drawAssignmentTools: function drawAssignmentTools() {
-      /**
-       * Draws absolute-positined HTML elements to allow for assignment
-       * manipulation.
-       */
-      var assignmentsVis = this;
-      var assignmentsMeta = visUtils.parentContainer.selectAll('.task-view').selectAll('.assignment-meta').data(function (taskKey) {
-        return dataService.taskFromKey(taskKey).assignments.map(function (assignment) {
-          return dataService.keyFromAssignment(assignment);
-        });
-      });
-
-      assignmentsMeta.exit().remove();
-      var assignmentsMetaEnter = assignmentsMeta.enter().append('div').attr('class', 'assignment-meta');
-
-      assignmentsMetaEnter.append('input').attr({
-        'class': 'worker-name readonly'
-      }).on('click', function () {
-        d3.select(this).classed('readonly', false);
-      }).on('blur', function (assignmentKey) {
-        var assignment = dataService.assignmentFromKey(assignmentKey);
-        this.value = assignment.task.is_human ? assignment.worker.username : 'Machine';
-        d3.select(this).classed('readonly', true);
-      });
-
-      assignmentsMeta.selectAll('.worker-name').attr({
-        'placeholder': function placeholder(assignmentKey) {
-          var assignment = dataService.assignmentFromKey(assignmentKey);
-          return assignment.worker.username || !assignment.task.is_human ? '' : 'Add new assignment';
-        }
-      }).on('keydown', function (assignmentKey) {
-        var assignment = dataService.assignmentFromKey(assignmentKey);
-        if (d3.event.keyCode === 13 && assignment.task.is_human) {
-          if (!assignment.worker.username) {
-            assignmentsVis.assign_task(assignment.task, d3.select(this));
-          } else {
-            assignmentsVis.reassignAssignment(assignment, d3.select(this));
-          }
-        }
-      }).each(function (assignmentKey) {
-        var assignment = dataService.assignmentFromKey(assignmentKey);
-        this.value = assignment.task.is_human ? assignment.worker.username : 'Machine';
-      });
-    },
-    assign_task: function assign_task(task, inputEl) {
-      /**
-       * Handles the promise returned by orchestraApi.assignTask in the
-       * visualization.
-       */
-      var assignmentsVis = this;
-      if (assignmentsVis.addingAssignment) {
-        return;
-      }
-      assignmentsVis.addingAssignment = true;
-      orchestraApi.assignTask(task, inputEl.node().value).then(function () {
-        inputEl.node().blur();
-        dataService.updateData();
-      }, function (response) {
-        inputEl.node().value = '';
-        inputEl.node().blur();
-        var errorMessage = 'Error assigning task.';
-        if (response.status === 400) {
-          errorMessage = response.data.message;
-        }
-        window.alert(errorMessage);
-      }).finally(function () {
-        assignmentsVis.addingAssignment = false;
-      });
-    },
-    reassignAssignment: function reassignAssignment(assignment, inputEl) {
-      /**
-       * Handles the promise returned by orchestraApi.reassignAssignment in
-       * the visualization.
-       */
-      if (assignment.reassigning) {
-        return;
-      }
-      assignment.reassigning = true;
-      orchestraApi.reassignAssignment(assignment, inputEl.node().value).then(function () {
-        assignment.worker.username = inputEl.node().value;
-        assignmentsVis.draw();
-      }, function (response) {
-        inputEl.node().blur();
-        var errorMessage = 'Error reassigning worker.';
-        if (response.status === 400) {
-          errorMessage = response.data.message;
-        }
-        window.alert(errorMessage);
-      }).finally(function () {
-        inputEl.node().blur();
-        inputEl.node().value = assignment.worker.username;
-        assignment.reassigning = false;
-      });
-    }
-  };
-}
-
-/***/ }),
-/* 166 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = axis;
-
-var _momentTimezone = __webpack_require__(1);
-
-var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var d3 = __webpack_require__(3);
-
-function axis(dataService, visUtils) {
-  /**
-   * Service to handle aligning visualization elements to a common time axis.
-   */
-  'ngAnnotate';
-
-  return {
-    draw: function draw() {
-      /**
-       * Draws/updates axis with both relative and local time scales.
-       */
-      visUtils.parentContainer.select('.x.axis').style('opacity', 0);
-      if (!dataService.timeSortedSlugs.length) {
-        return;
-      }
-      var firstTask = dataService.data.tasks[dataService.timeSortedSlugs[0]];
-      var minDatetime = new Date(firstTask.start_datetime);
-      var taskEndTimes = dataService.timeSortedSlugs.map(function (slug) {
-        return dataService.taskEnd(dataService.taskFromKey(slug));
-      });
-
-      var maxDatetime = minDatetime;
-      taskEndTimes.forEach(function (datetimeString) {
-        var nextDatetime = new Date(datetimeString);
-        if (nextDatetime > minDatetime) {
-          maxDatetime = nextDatetime;
-        }
-      });
-
-      var hourInMilliseconds = 60 * 60 * 1000;
-      var numHours = Math.ceil((maxDatetime - minDatetime) / hourInMilliseconds);
-      maxDatetime = new Date(minDatetime.getTime() + numHours * hourInMilliseconds);
-
-      var hourStep = Math.ceil(numHours * 10 / visUtils.params.scaleWidth);
-
-      var hourTicks = d3.range(0, numHours + 1, hourStep).map(function (hourIndex) {
-        return new Date(minDatetime.getTime() + hourIndex * hourInMilliseconds);
-      });
-
-      this.timeScale = d3.time.scale().domain([minDatetime, maxDatetime]).range([0, visUtils.params.scaleWidth]);
-
-      var tickSize = 6;
-      var xAxis = d3.svg.axis().scale(this.timeScale).tickSize(tickSize).tickPadding(2 * tickSize).tickValues(hourTicks);
-
-      var tickSpread = 10;
-      var xLabelText;
-      if (this.relativeTime) {
-        xAxis.tickFormat(function (d, i) {
-          if (hourTicks.length < tickSpread || i % tickSpread === 0) {
-            return (d - minDatetime) / hourInMilliseconds;
-          }
-        });
-        xLabelText = 'Time (hours)';
-      } else {
-        xAxis.tickFormat(function (d, i) {
-          return i % tickSpread === 0 ? (0, _momentTimezone2.default)(d).format('M/DD ha') : '';
-        });
-        xLabelText = 'Time (local)';
-      }
-
-      visUtils.parentContainer.select('.x.label').text(xLabelText).style('right', visUtils.getSvgWidth() + 5 + 'px');
-
-      visUtils.parentContainer.select('.x.axis').call(xAxis);
-      visUtils.parentContainer.select('.x.axis').style('opacity', 1).attr('width', visUtils.getSvgWidth());
-
-      visUtils.parentContainer.select('.x.axis').selectAll('.tick line').attr('y2', function (d, i) {
-        return i % tickSpread === 0 ? 1.5 * tickSize : tickSize;
-      });
-    },
-    getOffset: function getOffset(datetime) {
-      /**
-       * Calculates the axis offset for a given datetime string.
-       */
-      return this.timeScale(new Date(datetime));
-    }
-  };
-}
-
-/***/ }),
-/* 167 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//! moment-timezone.js
@@ -56718,7 +56373,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
 /***/ }),
-/* 168 */
+/* 163 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
@@ -56967,10 +56622,10 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 168;
+webpackContext.id = 163;
 
 /***/ }),
-/* 169 */
+/* 164 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -57573,6 +57228,357 @@ module.exports = {
 		"Pacific/Tarawa|Pacific/Wallis"
 	]
 };
+
+/***/ }),
+/* 165 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+      value: true
+});
+exports.default = DashboardController;
+
+__webpack_require__(166);
+
+function DashboardController(orchestraTasks) {
+      'ngAnnotate';
+
+      var vm = this;
+
+      vm.orchestraTasks = orchestraTasks;
+      orchestraTasks.updateTasks();
+}
+
+/***/ }),
+/* 166 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 167 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _commonModuleEs = __webpack_require__(4);
+
+var _commonModuleEs2 = _interopRequireDefault(_commonModuleEs);
+
+var _assignmentsVisEs = __webpack_require__(168);
+
+var _assignmentsVisEs2 = _interopRequireDefault(_assignmentsVisEs);
+
+var _axisEs = __webpack_require__(169);
+
+var _axisEs2 = _interopRequireDefault(_axisEs);
+
+var _crosshairEs = __webpack_require__(170);
+
+var _crosshairEs2 = _interopRequireDefault(_crosshairEs);
+
+var _dataServiceEs = __webpack_require__(171);
+
+var _dataServiceEs2 = _interopRequireDefault(_dataServiceEs);
+
+var _iterationsVisEs = __webpack_require__(172);
+
+var _iterationsVisEs2 = _interopRequireDefault(_iterationsVisEs);
+
+var _projectVisEs = __webpack_require__(173);
+
+var _projectVisEs2 = _interopRequireDefault(_projectVisEs);
+
+var _tasksVisEs = __webpack_require__(175);
+
+var _tasksVisEs2 = _interopRequireDefault(_tasksVisEs);
+
+var _visUtilsEs = __webpack_require__(177);
+
+var _visUtilsEs2 = _interopRequireDefault(_visUtilsEs);
+
+var _projectManagementControllerEs = __webpack_require__(178);
+
+var _projectManagementControllerEs2 = _interopRequireDefault(_projectManagementControllerEs);
+
+__webpack_require__(179);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var name = 'orchestra.project_management'; /* global angular */
+
+angular.module(name, ['ui.bootstrap', 'ui.select', _commonModuleEs2.default]).controller('ProjectManagementController', _projectManagementControllerEs2.default).factory('assignmentsVis', _assignmentsVisEs2.default).factory('axis', _axisEs2.default).factory('crosshair', _crosshairEs2.default).factory('dataService', _dataServiceEs2.default).factory('iterationsVis', _iterationsVisEs2.default).factory('projectVis', _projectVisEs2.default).factory('tasksVis', _tasksVisEs2.default).factory('visUtils', _visUtilsEs2.default);
+
+exports.default = name;
+
+/***/ }),
+/* 168 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = assignmentsVis;
+var d3 = __webpack_require__(3);
+
+function assignmentsVis(dataService, orchestraApi, iterationsVis, visUtils) {
+  /**
+   * Service to modularize assignment visualization and manipulation within
+   * the project management view.
+   */
+  'ngAnnotate';
+
+  var assignmentsVis;
+
+  return {
+    addingAssignment: false,
+    setup: function setup(vis) {
+      assignmentsVis = this;
+    },
+    draw: function draw() {
+      /**
+       * Draws/updates assignments within project management visualization.
+       */
+      var tasks = visUtils.parentContainer.selectAll('.task');
+
+      var assignments = tasks.selectAll('.assignment').data(function (taskKey) {
+        var assignments = dataService.taskFromKey(taskKey).assignments.map(function (assignment) {
+          return dataService.keyFromAssignment(assignment);
+        });
+        assignments.push();
+        return assignments;
+      });
+
+      assignments.exit().remove();
+      var assignmentsEnter = assignments.enter().append('g').attr('class', 'assignment');
+
+      iterationsVis.draw();
+
+      assignmentsEnter.append('circle').attr({
+        'class': 'active-assignment',
+        'cx': 0,
+        'cy': 15,
+        'r': 5
+      });
+
+      assignments.selectAll('.active-assignment').attr({
+        'fill': function fill(assignmentKey) {
+          var assignment = dataService.assignmentFromKey(assignmentKey);
+          return assignment.status === 'Submitted' ? 'rgb(0, 121, 191)' : 'white';
+        },
+        'stroke': function stroke(assignmentKey) {
+          var assignment = dataService.assignmentFromKey(assignmentKey);
+          return assignment.status === 'Submitted' ? 'white' : 'rgb(0, 121, 191)';
+        }
+      });
+
+      this.drawAssignmentTools();
+    },
+    drawAssignmentTools: function drawAssignmentTools() {
+      /**
+       * Draws absolute-positined HTML elements to allow for assignment
+       * manipulation.
+       */
+      var assignmentsVis = this;
+      var assignmentsMeta = visUtils.parentContainer.selectAll('.task-view').selectAll('.assignment-meta').data(function (taskKey) {
+        return dataService.taskFromKey(taskKey).assignments.map(function (assignment) {
+          return dataService.keyFromAssignment(assignment);
+        });
+      });
+
+      assignmentsMeta.exit().remove();
+      var assignmentsMetaEnter = assignmentsMeta.enter().append('div').attr('class', 'assignment-meta');
+
+      assignmentsMetaEnter.append('input').attr({
+        'class': 'worker-name readonly'
+      }).on('click', function () {
+        d3.select(this).classed('readonly', false);
+      }).on('blur', function (assignmentKey) {
+        var assignment = dataService.assignmentFromKey(assignmentKey);
+        this.value = assignment.task.is_human ? assignment.worker.username : 'Machine';
+        d3.select(this).classed('readonly', true);
+      });
+
+      assignmentsMeta.selectAll('.worker-name').attr({
+        'placeholder': function placeholder(assignmentKey) {
+          var assignment = dataService.assignmentFromKey(assignmentKey);
+          return assignment.worker.username || !assignment.task.is_human ? '' : 'Add new assignment';
+        }
+      }).on('keydown', function (assignmentKey) {
+        var assignment = dataService.assignmentFromKey(assignmentKey);
+        if (d3.event.keyCode === 13 && assignment.task.is_human) {
+          if (!assignment.worker.username) {
+            assignmentsVis.assign_task(assignment.task, d3.select(this));
+          } else {
+            assignmentsVis.reassignAssignment(assignment, d3.select(this));
+          }
+        }
+      }).each(function (assignmentKey) {
+        var assignment = dataService.assignmentFromKey(assignmentKey);
+        this.value = assignment.task.is_human ? assignment.worker.username : 'Machine';
+      });
+    },
+    assign_task: function assign_task(task, inputEl) {
+      /**
+       * Handles the promise returned by orchestraApi.assignTask in the
+       * visualization.
+       */
+      var assignmentsVis = this;
+      if (assignmentsVis.addingAssignment) {
+        return;
+      }
+      assignmentsVis.addingAssignment = true;
+      orchestraApi.assignTask(task, inputEl.node().value).then(function () {
+        inputEl.node().blur();
+        dataService.updateData();
+      }, function (response) {
+        inputEl.node().value = '';
+        inputEl.node().blur();
+        var errorMessage = 'Error assigning task.';
+        if (response.status === 400) {
+          errorMessage = response.data.message;
+        }
+        window.alert(errorMessage);
+      }).finally(function () {
+        assignmentsVis.addingAssignment = false;
+      });
+    },
+    reassignAssignment: function reassignAssignment(assignment, inputEl) {
+      /**
+       * Handles the promise returned by orchestraApi.reassignAssignment in
+       * the visualization.
+       */
+      if (assignment.reassigning) {
+        return;
+      }
+      assignment.reassigning = true;
+      orchestraApi.reassignAssignment(assignment, inputEl.node().value).then(function () {
+        assignment.worker.username = inputEl.node().value;
+        assignmentsVis.draw();
+      }, function (response) {
+        inputEl.node().blur();
+        var errorMessage = 'Error reassigning worker.';
+        if (response.status === 400) {
+          errorMessage = response.data.message;
+        }
+        window.alert(errorMessage);
+      }).finally(function () {
+        inputEl.node().blur();
+        inputEl.node().value = assignment.worker.username;
+        assignment.reassigning = false;
+      });
+    }
+  };
+}
+
+/***/ }),
+/* 169 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = axis;
+
+var _momentTimezone = __webpack_require__(1);
+
+var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var d3 = __webpack_require__(3);
+
+function axis(dataService, visUtils) {
+  /**
+   * Service to handle aligning visualization elements to a common time axis.
+   */
+  'ngAnnotate';
+
+  return {
+    draw: function draw() {
+      /**
+       * Draws/updates axis with both relative and local time scales.
+       */
+      visUtils.parentContainer.select('.x.axis').style('opacity', 0);
+      if (!dataService.timeSortedSlugs.length) {
+        return;
+      }
+      var firstTask = dataService.data.tasks[dataService.timeSortedSlugs[0]];
+      var minDatetime = new Date(firstTask.start_datetime);
+      var taskEndTimes = dataService.timeSortedSlugs.map(function (slug) {
+        return dataService.taskEnd(dataService.taskFromKey(slug));
+      });
+
+      var maxDatetime = minDatetime;
+      taskEndTimes.forEach(function (datetimeString) {
+        var nextDatetime = new Date(datetimeString);
+        if (nextDatetime > minDatetime) {
+          maxDatetime = nextDatetime;
+        }
+      });
+
+      var hourInMilliseconds = 60 * 60 * 1000;
+      var numHours = Math.ceil((maxDatetime - minDatetime) / hourInMilliseconds);
+      maxDatetime = new Date(minDatetime.getTime() + numHours * hourInMilliseconds);
+
+      var hourStep = Math.ceil(numHours * 10 / visUtils.params.scaleWidth);
+
+      var hourTicks = d3.range(0, numHours + 1, hourStep).map(function (hourIndex) {
+        return new Date(minDatetime.getTime() + hourIndex * hourInMilliseconds);
+      });
+
+      this.timeScale = d3.time.scale().domain([minDatetime, maxDatetime]).range([0, visUtils.params.scaleWidth]);
+
+      var tickSize = 6;
+      var xAxis = d3.svg.axis().scale(this.timeScale).tickSize(tickSize).tickPadding(2 * tickSize).tickValues(hourTicks);
+
+      var tickSpread = 10;
+      var xLabelText;
+      if (this.relativeTime) {
+        xAxis.tickFormat(function (d, i) {
+          if (hourTicks.length < tickSpread || i % tickSpread === 0) {
+            return (d - minDatetime) / hourInMilliseconds;
+          }
+        });
+        xLabelText = 'Time (hours)';
+      } else {
+        xAxis.tickFormat(function (d, i) {
+          return i % tickSpread === 0 ? (0, _momentTimezone2.default)(d).format('M/DD ha') : '';
+        });
+        xLabelText = 'Time (local)';
+      }
+
+      visUtils.parentContainer.select('.x.label').text(xLabelText).style('right', visUtils.getSvgWidth() + 5 + 'px');
+
+      visUtils.parentContainer.select('.x.axis').call(xAxis);
+      visUtils.parentContainer.select('.x.axis').style('opacity', 1).attr('width', visUtils.getSvgWidth());
+
+      visUtils.parentContainer.select('.x.axis').selectAll('.tick line').attr('y2', function (d, i) {
+        return i % tickSpread === 0 ? 1.5 * tickSize : tickSize;
+      });
+    },
+    getOffset: function getOffset(datetime) {
+      /**
+       * Calculates the axis offset for a given datetime string.
+       */
+      return this.timeScale(new Date(datetime));
+    }
+  };
+}
 
 /***/ }),
 /* 170 */
@@ -61131,6 +61137,19 @@ _momentTimezone2.default.duration.fn.humanizeUnits = function (units) {
 };
 
 /**
+ * Check whether the time is a certain range before the current time
+ */
+_momentTimezone2.default.isBeforeNow = function (datetimeString) {
+  var n = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+  var units = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'days';
+
+  if (!datetimeString) {
+    return false;
+  }
+  return _momentTimezone2.default.utc(datetimeString).tz(_momentTimezone2.default.tz.guess()).isSameOrBefore((0, _momentTimezone2.default)().add(n, units));
+};
+
+/**
  * Represents a discrete unit of a worker's work time.
  */
 function TimeEntry($http) {
@@ -61304,12 +61323,9 @@ function datetimeDisplay() {
     restrict: 'E',
     scope: {
       datetime: '=',
-      showTime: '=?'
+      showTime: '='
     },
     link: function link(scope, elem, attrs) {
-      if (!scope.showTime) {
-        scope.showTime = true;
-      }
       var getLocalTime = function getLocalTime(datetimeString) {
         return datetimeString ? _momentTimezone2.default.utc(datetimeString).tz(_momentTimezone2.default.tz.guess()) : null;
       };
@@ -61508,7 +61524,7 @@ function todoList(orchestraApi) {
 /* 209 */
 /***/ (function(module, exports) {
 
-module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Todo List\n          <a class=\"btn\"\n               ng-if=\"todoList.canSendToPending()\"\n               ng-click=\"todoList.sendToPending()\">\n            Send to pending\n          </a>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\" ng-if=\"todoList.ready\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <form class=\"new-todo\">\n          <div class=\"new-todo__box\">\n            <select name=\"todoList\" id=\"todoList\" ng-model=\"todoList.newTodoTaskId\">\n              <option value=\"\" selected>Select owner</option>\n              <option value=\"{{task.id}}\" ng-repeat=\"task in todoList.possibleTasks\">{{todoList.steps[task.step_slug].name}}</option>\n            </select>\n          </div>\n          <div class=\"new-todo__box new-todo__box-details\">\n            <input class=\"new-todo__description\"\n                   type=\"text\"\n                   ng-model=\"todoList.newTodoDescription\"\n                   placeholder=\"Description\">\n            <div class=\"pull-right\">\n              <div class=\"new-todo__description__datetime\">\n                <label>Start</label>\n                <date-picker\n                  date=\"todoList.newTodoStartDate\"\n                  callback=\"todoList.setTimeOfDate\"></date-picker>\n                <time-input\n                  datetime=\"todoList.newTodoStartDate\"\n                  default-hour=\"8\"\n                  ></time-input>\n              </div>\n              <div class=\"new-todo__description__datetime\">\n                <label>Due</label>\n                <date-picker\n                  date=\"todoList.newTodoDueDate\"\n                  callback=\"todoList.setTimeOfDate\"></date-picker>\n                <time-input\n                  datetime=\"todoList.newTodoDueDate\"\n                  default-hour=\"18\"\n                  ></time-input>\n              </div>\n            </div>\n          </div>\n          <div class=\"new-todo__box\">\n            <button type=\"submit\"\n               class=\"btn btn-primary btn-sm edit-save-handle\"\n               ng-disabled=\"!todoList.canAddTodo()\"\n               ng-click=\"todoList.addTodo()\">\n              Add\n            </button>\n          </div>\n        </form>\n      </div>\n\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <div class=\"existing-todos\">\n            <todo-checklist\n              title=\"Incomplete\"\n              todos=\"todoList.todos\"\n              show-checked=\"false\"\n              update-todo=\"todoList.updateTodo\"\n              steps=\"todoList.steps\"\n              task-slugs=\"todoList.taskSlugs\"\n            ></todo-checklist>\n            <todo-checklist\n              title=\"Completed\"\n              todos=\"todoList.todos\"\n              show-checked=\"true\"\n              update-todo=\"todoList.updateTodo\"\n              steps=\"todoList.steps\"\n              task-slugs=\"todoList.taskSlugs\"\n            ></todo-checklist>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n";
+module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Todo List\n          <a class=\"btn\"\n               ng-if=\"todoList.canSendToPending()\"\n               ng-click=\"todoList.sendToPending()\">\n            Send to pending\n          </a>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\" ng-if=\"todoList.ready\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <form class=\"new-todo\">\n          <div class=\"new-todo__box\">\n            <select name=\"todoList\" id=\"todoList\" ng-model=\"todoList.newTodoTaskId\">\n              <option value=\"\" selected>Select owner</option>\n              <option value=\"{{task.id}}\" ng-repeat=\"task in todoList.possibleTasks\">{{todoList.steps[task.step_slug].name}}</option>\n            </select>\n          </div>\n          <div class=\"new-todo__box new-todo__box-details\">\n            <input class=\"new-todo__description\"\n                   type=\"text\"\n                   ng-model=\"todoList.newTodoDescription\"\n                   placeholder=\"Description\">\n            <div class=\"pull-right\">\n              <div class=\"new-todo__description__datetime\">\n                <label>Start</label>\n                <date-picker\n                  date=\"todoList.newTodoStartDate\"\n                  callback=\"todoList.setTimeOfDate\"></date-picker>\n                <time-input\n                  datetime=\"todoList.newTodoStartDate\"\n                  default-hour=\"8\"\n                  ></time-input>\n              </div>\n              <div class=\"new-todo__description__datetime\">\n                <label>Due</label>\n                <date-picker\n                  date=\"todoList.newTodoDueDate\"\n                  callback=\"todoList.setTimeOfDate\"></date-picker>\n                <time-input\n                  datetime=\"todoList.newTodoDueDate\"\n                  default-hour=\"18\"\n                  ></time-input>\n              </div>\n            </div>\n          </div>\n          <div class=\"new-todo__box\">\n            <button type=\"submit\"\n               class=\"btn btn-primary btn-sm edit-save-handle\"\n               ng-disabled=\"!todoList.canAddTodo()\"\n               ng-click=\"todoList.addTodo()\">\n              Add\n            </button>\n          </div>\n        </form>\n      </div>\n\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <div class=\"existing-todos\">\n            <todo-checklist\n              title=\"Todos\"\n              todos=\"todoList.todos\"\n              show-checked=\"false\"\n              update-todo=\"todoList.updateTodo\"\n              steps=\"todoList.steps\"\n              task-slugs=\"todoList.taskSlugs\"\n            ></todo-checklist>\n            <todo-checklist\n              title=\"Completed\"\n              todos=\"todoList.todos\"\n              show-checked=\"true\"\n              update-todo=\"todoList.updateTodo\"\n              steps=\"todoList.steps\"\n              task-slugs=\"todoList.taskSlugs\"\n            ></todo-checklist>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n";
 
 /***/ }),
 /* 210 */
@@ -61534,6 +61550,10 @@ var _todoChecklist2 = _interopRequireDefault(_todoChecklist);
 
 __webpack_require__(213);
 
+var _momentTimezone = __webpack_require__(1);
+
+var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function todoChecklist() {
@@ -61552,6 +61572,10 @@ function todoChecklist() {
       scope.isNonEmptyString = function (str) {
         return str !== null && str !== undefined && str !== '';
       };
+
+      scope.isInDanger = function (todo) {
+        return !todo.completed && _momentTimezone2.default.isBeforeNow(todo.due_datetime, 1, 'days');
+      };
     }
 
   };
@@ -61561,7 +61585,7 @@ function todoChecklist() {
 /* 212 */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"list-by-status\" ng-if=\"(todos | filter: {completed: showChecked}).length > 0\">\n  <h4>{{title}}</h4>\n  <div class=\"todo\"\n       ng-repeat=\"todo in todos | filter: {completed: showChecked}\">\n    <label>\n      <input type=\"checkbox\"\n             ng-model=\"todo.completed\"\n             ng-change=\"updateTodo(todo)\">\n      <span class=\"todo__role\">{{steps[taskSlugs[todo.task]].name}}:&nbsp;</span>\n      <span class=\"todo__description\">{{todo.description}}</span>\n      <span class=\"todo__dates\">\n        <span ng-if=\"isNonEmptyString(todo.start_by_datetime)\">\n          Start <datetime-display datetime=\"todo.start_by_datetime\" />\n        </span>\n        <span ng-if=\"isNonEmptyString(todo.start_by_datetime) && isNonEmptyString(todo.due_datetime)\" class=\"todo__dates-separator\">|</span>\n        <span ng-if=\"isNonEmptyString(todo.due_datetime)\">\n          Due <datetime-display datetime=\"todo.due_datetime\" /></span>\n      </span>\n    </label>\n  </div>\n</div>\n";
+module.exports = "<div class=\"list-by-status\" ng-if=\"(todos | filter: {completed: showChecked}).length > 0\">\n  <h4>{{title}}</h4>\n  <div class=\"todo\"\n       ng-repeat=\"todo in todos | filter: {completed: showChecked}\">\n    <label ng-class=\"{'text-danger': isInDanger(todo)}\">\n      <input type=\"checkbox\"\n             ng-model=\"todo.completed\"\n             ng-change=\"updateTodo(todo)\">\n      <span class=\"todo__role\">{{steps[taskSlugs[todo.task]].name}}:&nbsp;</span>\n      <span class=\"todo__description\">{{todo.description}}</span>\n      <span ng-class=\"{'todo__dates': true, 'todo__dates-danger': isInDanger(todo)}\">\n        <span ng-if=\"isNonEmptyString(todo.start_by_datetime)\">\n          Start <datetime-display datetime=\"todo.start_by_datetime\" show-time=\"true\"/>\n        </span>\n        <span ng-if=\"isNonEmptyString(todo.start_by_datetime) && isNonEmptyString(todo.due_datetime)\" class=\"todo__dates-separator\">|</span>\n        <span ng-if=\"isNonEmptyString(todo.due_datetime)\">\n          Due <datetime-display datetime=\"todo.due_datetime\" show-time=\"true\"/></span>\n      </span>\n    </label>\n  </div>\n</div>\n";
 
 /***/ }),
 /* 213 */
