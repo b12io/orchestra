@@ -28,7 +28,6 @@ from orchestra.models import Iteration
 from orchestra.models import Project
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
-from orchestra.models import Todo
 from orchestra.models import Worker
 from orchestra.models import WorkerCertification
 from orchestra.utils.notifications import notify_status_change
@@ -518,7 +517,9 @@ def tasks_assigned_to_worker(worker):
                     .filter(completed=False)
                     .annotate(
                         todo_order=Case(
-                            When(start_by_datetime__gt=time_now, then=Value(2)),
+                            When(
+                                start_by_datetime__gt=time_now,
+                                then=Value(2)),
                             default=Value(1),
                             output_field=IntegerField()
                         )
@@ -527,10 +528,18 @@ def tasks_assigned_to_worker(worker):
                     .first())
                 if next_todo:
                     next_todo_description = next_todo.description
+                    start_str = (
+                        next_todo.start_by_datetime.strftime('%Y-%m-%dT%H:%M:%SZ')
+                        if next_todo.start_by_datetime
+                        else '')
+                    due_str =(
+                        next_todo.due_datetime.strftime('%Y-%m-%dT%H:%M:%SZ')
+                        if next_todo.due_datetime
+                        else '')
                     next_todo_dict = {
                         'description': next_todo.description,
-                        'start_by_datetime': next_todo.start_by_datetime.strftime('%Y-%m-%dT%H:%M:%SZ') if next_todo.start_by_datetime else '',
-                        'due_datetime': next_todo.due_datetime.strftime('%Y-%m-%dT%H:%M:%SZ') if next_todo.due_datetime else ''
+                        'start_by_datetime': start_str,
+                        'due_datetime': due_str
                     }
                 num_todos = task_assignment.task.todos.count()
                 # If a task has no todos (complete or incomplete)
@@ -542,10 +551,11 @@ def tasks_assigned_to_worker(worker):
                 # or more todos assigned to it, its active/pending
                 # state is determined by the presence of incomplete
                 # todos.
+                task_started = ((next_todo.start_by_datetime is None)
+                    or (next_todo.start_by_datetime <= time_now))
                 should_be_active = ((num_todos == 0)
-                    or ((next_todo_description is not None))
-                        and (next_todo.start_by_datetime is None
-                            or next_todo.start_by_datetime <= time_now))
+                    or (next_todo_description is not None)
+                    and task_started)
             tasks_assigned.append({
                 'id': task_assignment.task.id,
                 'assignment_id': task_assignment.id,
