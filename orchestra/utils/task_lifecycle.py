@@ -551,11 +551,10 @@ def tasks_assigned_to_worker(worker):
                 # or more todos assigned to it, its active/pending
                 # state is determined by the presence of incomplete
                 # todos.
-                task_started = ((next_todo.start_by_datetime is None)
-                    or (next_todo.start_by_datetime <= time_now))
-                should_be_active = ((num_todos == 0)
-                    or (next_todo_description is not None)
-                    and task_started)
+                task_started = (next_todo_description is not None
+                    and ((next_todo.start_by_datetime is None)
+                        or (next_todo.start_by_datetime <= time_now)))
+                should_be_active = (num_todos == 0) and task_started
             tasks_assigned.append({
                 'id': task_assignment.task.id,
                 'assignment_id': task_assignment.id,
