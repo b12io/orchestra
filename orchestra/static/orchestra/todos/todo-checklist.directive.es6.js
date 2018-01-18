@@ -21,7 +21,7 @@ export default function todoChecklist () {
       }
 
       scope.isInDanger = (todo) => {
-        return !todo.completed && moment.isBeforeNow(todo.due_datetime, 1, 'days')
+        return !todo.completed && moment.isBeforeNowBy(todo.due_datetime, 1, 'days')
       }
     }
 

@@ -55726,7 +55726,7 @@ function tasktable() {
       });
 
       vm.isDueInOneDay = function (task) {
-        return _momentTimezone2.default.isBeforeNow(task.next_todo_dict.due_datetime, 1, 'days');
+        return _momentTimezone2.default.isBeforeNowBy(task.next_todo_dict.due_datetime, 1, 'days');
       };
 
       vm.newTask = function (taskType) {
@@ -61139,7 +61139,7 @@ _momentTimezone2.default.duration.fn.humanizeUnits = function (units) {
 /**
  * Check whether the time is a certain range before the current time
  */
-_momentTimezone2.default.isBeforeNow = function (datetimeString) {
+_momentTimezone2.default.isBeforeNowBy = function (datetimeString) {
   var n = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
   var units = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'days';
 
@@ -61574,7 +61574,7 @@ function todoChecklist() {
       };
 
       scope.isInDanger = function (todo) {
-        return !todo.completed && _momentTimezone2.default.isBeforeNow(todo.due_datetime, 1, 'days');
+        return !todo.completed && _momentTimezone2.default.isBeforeNowBy(todo.due_datetime, 1, 'days');
       };
     }
 

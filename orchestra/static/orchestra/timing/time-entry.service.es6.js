@@ -64,7 +64,7 @@ moment.duration.fn.humanizeUnits = function (units) {
 /**
  * Check whether the time is a certain range before the current time
  */
-moment.isBeforeNow = function (datetimeString, n = 0, units = 'days') {
+moment.isBeforeNowBy = function (datetimeString, n = 0, units = 'days') {
   if (!datetimeString) {
     return false
   }

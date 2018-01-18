@@ -25,7 +25,7 @@ export default function tasktable () {
       orchestraTasks.data.finally(() => { vm.waiting = false })
 
       vm.isDueInOneDay = (task) => {
-        return moment.isBeforeNow(task.next_todo_dict.due_datetime, 1, 'days')
+        return moment.isBeforeNowBy(task.next_todo_dict.due_datetime, 1, 'days')
       }
 
       vm.newTask = function (taskType) {
