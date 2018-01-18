@@ -552,8 +552,10 @@ def tasks_assigned_to_worker(worker):
                 # state is determined by the presence of incomplete
                 # todos.
                 task_started = (next_todo_description is not None
-                    and ((next_todo.start_by_datetime is None)
-                        or (next_todo.start_by_datetime <= time_now)))
+                    and (next_todo.start_by_datetime is None
+                            or (next_todo.start_by_datetime <= time_now)
+                        )
+                )
                 should_be_active = (num_todos == 0) and task_started
             tasks_assigned.append({
                 'id': task_assignment.task.id,
