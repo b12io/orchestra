@@ -162,7 +162,8 @@ class TodoFactory(factory.django.DjangoModelFactory):
     completed = False
     description = factory.Sequence(
         lambda n: 'Description {}'.format(n))
-
+    start_by_datetime = None
+    due_datetime = None
     class Meta:
         model = 'orchestra.Todo'
 
@@ -287,6 +288,7 @@ def setup_models(test_case):
         'project_management_project': 'test_workflow',
         'staffbot_assignment_policy': 'staffbot_assignment_policy_workflow',
         'creation_policy': 'creation_policy_workflow',
+        'next_todo_proj': 'test_workflow',
     }
 
     # Task generation data
@@ -339,6 +341,13 @@ def setup_models(test_case):
                 (4, test_data, TaskAssignment.Status.PROCESSING)
             ]
         },
+        'next_todo_task': {
+            'project_name': 'next_todo_proj',
+            'status': Task.Status.PROCESSING,
+            'assignments': [
+                (5, {}, TaskAssignment.Status.PROCESSING)
+            ]
+        }
     }
 
     # Create the objects

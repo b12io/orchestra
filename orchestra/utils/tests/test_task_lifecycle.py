@@ -1,6 +1,8 @@
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
+from dateutil.parser import parse
+
 from django.contrib.auth import get_user_model
 
 from orchestra.core.errors import AssignmentPolicyError
@@ -22,6 +24,7 @@ from orchestra.tests.helpers import OrchestraTransactionTestCase
 from orchestra.tests.helpers.fixtures import StepFactory
 from orchestra.tests.helpers.fixtures import TaskAssignmentFactory
 from orchestra.tests.helpers.fixtures import TaskFactory
+from orchestra.tests.helpers.fixtures import TodoFactory
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.utils.task_lifecycle import AssignmentPolicyType
 from orchestra.utils.task_lifecycle import assign_task
@@ -32,10 +35,15 @@ from orchestra.utils.task_lifecycle import get_task_overview_for_worker
 from orchestra.utils.task_lifecycle import is_worker_certified_for_task
 from orchestra.utils.task_lifecycle import role_counter_required_for_new_task
 from orchestra.utils.task_lifecycle import submit_task
+from orchestra.utils.task_lifecycle import tasks_assigned_to_worker
 from orchestra.utils.task_lifecycle import worker_assigned_to_rejected_task
 from orchestra.utils.task_lifecycle import worker_has_reviewer_status
 from orchestra.utils.task_properties import current_assignment
 from orchestra.workflow.defaults import get_default_creation_policy
+
+MOCK_CURRENT = '2018-01-17T00:00:00Z'
+DEADLINE1_DATETIME = '2018-01-18T00:00:00Z'
+DEADLINE2_DATETIME = '2018-01-19T00:00:00Z'
 
 
 class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
@@ -684,3 +692,63 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
         with self.assertRaises(Exception):
             create_subsequent_tasks(project)
         mock_schedule.assert_not_called()
+
+    def test_next_todo_with_earlier_due_time(self):
+        task = self.tasks['next_todo_task']
+        # create todos with different due date times and one without
+        todo1 = TodoFactory(
+            task=task,
+            description='todo1',
+            due_datetime=parse(DEADLINE2_DATETIME))
+
+        todo2 = TodoFactory(
+            task=task,
+            description='todo2')
+
+        tasks_assigned = tasks_assigned_to_worker(self.workers[5])
+        for t in tasks_assigned:
+            if t['id'] == task.id:
+                next_todo_due = t['next_todo_dict'].get('due_datetime', None)
+
+                # should select the todo with a deadline
+                self.assertEqual(next_todo_due, DEADLINE2_DATETIME)
+                self.assertEqual(t['should_be_active'], True)
+
+        todo3 = TodoFactory(
+            task=task,
+            description='todo3',
+            due_datetime=parse(DEADLINE1_DATETIME))
+
+        tasks_assigned = tasks_assigned_to_worker(self.workers[5])
+        for t in tasks_assigned:
+            if t['id'] == task.id:
+                next_todo_due = t['next_todo_dict'].get('due_datetime', None)
+
+                # should select the todo with earliest deadline
+                self.assertEqual(next_todo_due, DEADLINE1_DATETIME)
+                self.assertEqual(t['should_be_active'], True)
+
+    @patch('orchestra.utils.task_lifecycle.timezone')
+    def test_next_todo_with_earlier_start_time(self, mock_timezone):
+        mock_timezone.now = MagicMock(return_value=parse(
+                                        MOCK_CURRENT))
+        task = self.tasks['next_todo_task']
+        # create todos with different due date times and one without
+        todo1 = TodoFactory(
+            task=task,
+            description='todo1',
+            start_by_datetime=parse(DEADLINE2_DATETIME))
+
+        todo2 = TodoFactory(
+            task=task,
+            description='todo2',
+            start_by_datetime=parse(DEADLINE1_DATETIME))
+
+        tasks_assigned = tasks_assigned_to_worker(self.workers[5])
+        for t in tasks_assigned:
+            if t['id'] == task.id:
+                next_todo_start = t['next_todo_dict'].get(
+                    'start_by_datetime',None)
+                # should select the todo with a deadline
+                self.assertEqual(next_todo_start, DEADLINE1_DATETIME)
+                self.assertEqual(t['should_be_active'], False)
