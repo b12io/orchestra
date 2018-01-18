@@ -524,16 +524,19 @@ def tasks_assigned_to_worker(worker):
                             output_field=IntegerField()
                         )
                     )
-                    .order_by('todo_order', 'due_datetime', 'start_by_datetime', '-created_at')
+                    .order_by('todo_order', 'due_datetime',
+                        'start_by_datetime', '-created_at')
                     .first())
                 if next_todo:
                     next_todo_description = next_todo.description
                     start_str = (
-                        next_todo.start_by_datetime.strftime('%Y-%m-%dT%H:%M:%SZ')
+                        next_todo.start_by_datetime.strftime(
+                            '%Y-%m-%dT%H:%M:%SZ')
                         if next_todo.start_by_datetime
                         else '')
                     due_str =(
-                        next_todo.due_datetime.strftime('%Y-%m-%dT%H:%M:%SZ')
+                        next_todo.due_datetime.strftime(
+                            '%Y-%m-%dT%H:%M:%SZ')
                         if next_todo.due_datetime
                         else '')
                     next_todo_dict = {
@@ -552,9 +555,10 @@ def tasks_assigned_to_worker(worker):
                 # state is determined by the presence of incomplete
                 # todos.
                 task_started = (next_todo_description is not None
-                    and (next_todo.start_by_datetime is None
-                            or (next_todo.start_by_datetime <= time_now)
-                        )
+                    and (
+                        next_todo.start_by_datetime is None
+                        or next_todo.start_by_datetime <= time_now
+                    )
                 )
                 should_be_active = (num_todos == 0) and task_started
             tasks_assigned.append({
