@@ -538,7 +538,7 @@ def tasks_assigned_to_worker(worker):
                             '%Y-%m-%dT%H:%M:%SZ'
                         ) if next_todo.start_by_datetime else ''
                     )
-                    due_str =(
+                    due_str = (
                         next_todo.due_datetime.strftime(
                             '%Y-%m-%dT%H:%M:%SZ'
                         ) if next_todo.due_datetime else ''
