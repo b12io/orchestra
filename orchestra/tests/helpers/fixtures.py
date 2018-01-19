@@ -164,6 +164,7 @@ class TodoFactory(factory.django.DjangoModelFactory):
         lambda n: 'Description {}'.format(n))
     start_by_datetime = None
     due_datetime = None
+
     class Meta:
         model = 'orchestra.Todo'
 

@@ -696,12 +696,12 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
     def test_next_todo_with_earlier_due_time(self):
         task = self.tasks['next_todo_task']
         # create todos with different due date times and one without
-        todo1 = TodoFactory(
+        TodoFactory(
             task=task,
             description='todo1',
             due_datetime=parse(DEADLINE2_DATETIME))
 
-        todo2 = TodoFactory(
+        TodoFactory(
             task=task,
             description='todo2')
 
@@ -714,7 +714,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
                 self.assertEqual(next_todo_due, DEADLINE2_DATETIME)
                 self.assertEqual(t['should_be_active'], True)
 
-        todo3 = TodoFactory(
+        TodoFactory(
             task=task,
             description='todo3',
             due_datetime=parse(DEADLINE1_DATETIME))
@@ -734,12 +734,12 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
                                         MOCK_CURRENT))
         task = self.tasks['next_todo_task']
         # create todos with different due date times and one without
-        todo1 = TodoFactory(
+        TodoFactory(
             task=task,
             description='todo1',
             start_by_datetime=parse(DEADLINE2_DATETIME))
 
-        todo2 = TodoFactory(
+        TodoFactory(
             task=task,
             description='todo2',
             start_by_datetime=parse(DEADLINE1_DATETIME))
