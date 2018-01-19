@@ -521,7 +521,7 @@ def tasks_assigned_to_worker(worker):
                                 start_by_datetime__gt=time_now,
                                 then=Value(3)),
                             When(
-                                due_datetime=None,
+                                due_datetime    =None,
                                 then=Value(2)),
                             default=Value(1),
                             output_field=IntegerField()
@@ -534,28 +534,7 @@ def tasks_assigned_to_worker(worker):
                         '-created_at'
                     )
                     .first())
-                print('===========')
-                _todos = (
-                    task_assignment.task.todos.filter(
-                        completed=False
-                    ).annotate(
-                        todo_order=Case(
-                            When(
-                                start_by_datetime__gt=time_now,
-                                then=Value(2)),
-                            default=Value(1),
-                            output_field=IntegerField()
-                        )
-                    ).order_by(
-                        'todo_order',
-                        'due_datetime',
-                        'start_by_datetime',
-                        '-created_at'
-                    )
-                )
-                for t in _todos:
-                    print(t.description, t.start_by_datetime, t.due_datetime)
-                print('++++++++++++++')
+
                 if next_todo:
                     next_todo_description = next_todo.description
                     start_str = (
