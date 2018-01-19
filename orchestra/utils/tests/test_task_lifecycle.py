@@ -707,11 +707,15 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
 
         tasks_assigned = tasks_assigned_to_worker(self.workers[5])
         for t in tasks_assigned:
+            print(t['next_todo_dict'])
+            print('----')
+
+        for t in tasks_assigned:
+            print(t['next_todo_dict'])
             if t['id'] == task.id:
                 next_todo_due = t['next_todo_dict'].get('due_datetime', None)
 
                 # should select the todo with a deadline
-                print(t['next_todo_dict'])
                 self.assertEqual(next_todo_due, DEADLINE2_DATETIME)
                 self.assertEqual(t['should_be_active'], True)
 
