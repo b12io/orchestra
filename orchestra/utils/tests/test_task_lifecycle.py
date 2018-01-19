@@ -696,16 +696,15 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
     def test_next_todo_with_earlier_due_time(self):
         task = self.tasks['next_todo_task']
         # create todos with different due date times and one without
-        todo1 = TodoFactory(
+        TodoFactory(
             task=task,
             description='todo1',
             due_datetime=parse(DEADLINE2_DATETIME))
 
-        todo2 = TodoFactory(
+        TodoFactory(
             task=task,
             description='todo2')
-        print(todo1)
-        print(todo2)
+
         tasks_assigned = tasks_assigned_to_worker(self.workers[5])
         for t in tasks_assigned:
             print(t['next_todo_dict'])
