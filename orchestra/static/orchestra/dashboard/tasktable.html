@@ -40,18 +40,22 @@
                 <th>Task</th>
                 <th>Details</th>
                 <th>Next steps</th>
+                <th>Start by</th>
+                <th>Due on</th>
               </tr>
             </thead>
             <tbody>
               <tr
-                 class="task-row"
+                 ng-class="{'task-row':true, 'danger': vm.isInDanger(task)}"
                  ng-repeat="task in vm.tasktable.tasks"
                  ng-click="vm.openTask(task)">
                 <td>{{task.priority}}</td>
                 <td>{{task.project}}</td>
                 <td>{{task.step}}</td>
                 <td>{{task.detail|limitTo:50}}{{task.detail.length > 50 ? '...' : ''}}</td>
-                <td>{{task.next_todo_description|limitTo:50}}{{task.next_todo_description.length > 50 ? '...' : ''}}</td>
+                <td>{{task.next_todo_dict.description|limitTo:50}}{{task.next_todo_dict.description.length > 50 ? '...' : ''}}</td>
+                <td><datetime-display datetime="task.next_todo_dict.start_by_datetime" show-time="false" /></td>
+                <td><datetime-display datetime="task.next_todo_dict.due_datetime" show-time="false" /></td>
               </tr>
             </tbody>
           </table>

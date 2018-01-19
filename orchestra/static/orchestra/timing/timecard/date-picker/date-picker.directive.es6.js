@@ -19,9 +19,18 @@ export default function datePicker (timeEntries) {
         minDate: scope.minDate ? scope.minDate.toDate() : null,
         maxDate: scope.maxDate ? scope.maxDate.toDate() : null,
         onSelect: function (date) {
-          scope.date = this.getMoment()
+          const newDate = this.getMoment()
+
+          // Don't overwrite time when the date changes.
+          if (!scope.date) {
+            scope.date = newDate
+          } else {
+            scope.date.year(newDate.year())
+              .month(newDate.month())
+              .date(newDate.date())
+          }
           if (typeof scope.callback === 'function') {
-            scope.callback(date)
+            scope.callback(scope.date)
           }
           scope.$apply()
         }

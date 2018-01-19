@@ -62,6 +62,16 @@ moment.duration.fn.humanizeUnits = function (units) {
 }
 
 /**
+ * Check whether the time is a certain range before the current time
+ */
+moment.isBeforeNowBy = function (datetimeString, n = 0, units = 'days') {
+  if (!datetimeString) {
+    return false
+  }
+  return moment.utc(datetimeString).tz(moment.tz.guess()).isSameOrBefore(moment().add(n, units))
+}
+
+/**
  * Represents a discrete unit of a worker's work time.
  */
 export default function TimeEntry ($http) {

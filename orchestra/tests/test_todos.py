@@ -1,5 +1,6 @@
 import json
 
+from dateutil.parser import parse
 from django.core.urlresolvers import reverse
 
 from orchestra.models import Task
@@ -27,6 +28,7 @@ class TimeEntriesEndpointTests(EndpointTestCase):
         self.tasks = Task.objects.filter(assignments__worker=self.worker)
         self.task = self.tasks[0]
         self.todo_description = 'Let us do this'
+        self.deadline = parse('2018-01-16T07:03:00+00:00')
 
     def _verify_missing_task(self, response):
         self.assertEqual(response.status_code, 400)
@@ -46,11 +48,14 @@ class TimeEntriesEndpointTests(EndpointTestCase):
             serializer = TimeEntrySerializer(data=time_entry)
             self.assertTrue(serializer.is_valid())
 
-    def _todo_data(self, task, description, completed):
+    def _todo_data(
+            self, task, description, completed, start_by=None, due=None):
         return {
             'task': task.id,
             'completed': completed,
-            'description': description
+            'description': description,
+            'start_by_datetime': start_by,
+            'due_datetime': due
         }
 
     def _verify_todo_content(self, todo, expected_todo):
@@ -126,3 +131,37 @@ class TimeEntriesEndpointTests(EndpointTestCase):
         self._verify_todo_update(good_todo, True)
         bad_todo = TodoFactory()
         self._verify_todo_update(bad_todo, False)
+
+    def test_create_todo_with_start_by_datetime(self):
+        START_DESCRIPTION = 'Start soon'
+
+        start_by_todo = TodoFactory(
+            task=self.task,
+            start_by_datetime=self.deadline,
+            description=START_DESCRIPTION)
+
+        self._verify_todos_list(self.task.project.id, [
+            self._todo_data(
+                start_by_todo.task,
+                START_DESCRIPTION,
+                False,
+                self.deadline.strftime('%Y-%m-%dT%H:%M:%SZ'),
+                None)
+            ], True)
+
+    def test_create_todo_with_due_datetime(self):
+        DUE_DESCRIPTION = 'Due soon'
+
+        due_todo = TodoFactory(
+            task=self.task,
+            due_datetime=self.deadline,
+            description=DUE_DESCRIPTION)
+
+        self._verify_todos_list(self.task.project.id, [
+            self._todo_data(
+                due_todo.task,
+                DUE_DESCRIPTION,
+                False,
+                None,
+                self.deadline.strftime('%Y-%m-%dT%H:%M:%SZ')),
+            ], True)

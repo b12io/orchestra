@@ -1896,7 +1896,7 @@ function loadLocale(name) {
             module && module.exports) {
         try {
             oldLocale = globalLocale._abbr;
-            __webpack_require__(168)("./" + name);
+            __webpack_require__(163)("./" + name);
             // because defineLocale currently also sets the global locale, we
             // want to undo that for lazy loaded locales
             getSetGlobalLocale(oldLocale);
@@ -4535,6 +4535,14 @@ return hooks;
 
 /***/ }),
 /* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var moment = module.exports = __webpack_require__(162);
+moment.tz.load(__webpack_require__(164));
+
+
+/***/ }),
+/* 2 */
 /***/ (function(module, exports) {
 
 var g;
@@ -4561,7 +4569,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;!function() {
@@ -14122,14 +14130,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;!function() {
 				__WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)); else if (typeof module === "object" && module.exports) module.exports = d3; else this.d3 = d3;
 }();
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var moment = module.exports = __webpack_require__(167);
-moment.tz.load(__webpack_require__(169));
-
 
 /***/ }),
 /* 4 */
@@ -31272,7 +31272,7 @@ exports.default = name;
   }
 }.call(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(6)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(6)(module)))
 
 /***/ }),
 /* 6 */
@@ -42405,7 +42405,7 @@ var _dashboardModuleEs = __webpack_require__(159);
 
 var _dashboardModuleEs2 = _interopRequireDefault(_dashboardModuleEs);
 
-var _projectManagementModuleEs = __webpack_require__(164);
+var _projectManagementModuleEs = __webpack_require__(167);
 
 var _projectManagementModuleEs2 = _interopRequireDefault(_projectManagementModuleEs);
 
@@ -42417,11 +42417,11 @@ var _timingModuleEs = __webpack_require__(187);
 
 var _timingModuleEs2 = _interopRequireDefault(_timingModuleEs);
 
-var _todosModuleEs = __webpack_require__(202);
+var _todosModuleEs = __webpack_require__(207);
 
 var _todosModuleEs2 = _interopRequireDefault(_todosModuleEs);
 
-var _configEs = __webpack_require__(207);
+var _configEs = __webpack_require__(215);
 
 var _configEs2 = _interopRequireDefault(_configEs);
 
@@ -43558,7 +43558,7 @@ function getCoord (coord, e) {
 
 module.exports = dragula;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
 /* 129 */
@@ -43909,7 +43909,7 @@ exports.clearImmediate = clearImmediate;
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(135)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(135)))
 
 /***/ }),
 /* 135 */
@@ -44208,7 +44208,7 @@ function find (el, type, fn) {
   }
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
 /* 137 */
@@ -44263,7 +44263,7 @@ function CustomEvent (type, params) {
   return e;
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
 /* 138 */
@@ -44284,7 +44284,7 @@ for (eventname in global) {
 
 module.exports = eventmap;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
 /* 139 */
@@ -55468,7 +55468,7 @@ module.exports = SnowTheme;
 
 },{"../../lib/color-picker":16,"../../lib/dom":17,"../../lib/picker":19,"../base":32,"lodash":1}]},{},[15])(15)
 });
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
 /* 149 */
@@ -55665,7 +55665,7 @@ var _tasktableDirectiveEs = __webpack_require__(160);
 
 var _tasktableDirectiveEs2 = _interopRequireDefault(_tasktableDirectiveEs);
 
-var _dashboardControllerEs = __webpack_require__(162);
+var _dashboardControllerEs = __webpack_require__(165);
 
 var _dashboardControllerEs2 = _interopRequireDefault(_dashboardControllerEs);
 
@@ -55694,6 +55694,10 @@ var _tasktable = __webpack_require__(161);
 
 var _tasktable2 = _interopRequireDefault(_tasktable);
 
+var _momentTimezone = __webpack_require__(1);
+
+var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function tasktable() {
@@ -55712,7 +55716,6 @@ function tasktable() {
       vm.openTask = function (task) {
         $location.path('task/' + task.id);
       };
-
       // Surface service to interpolator
       vm.orchestraTasks = orchestraTasks;
       vm.enableNewTaskButtons = vm.tasktable.newTasks && window.orchestra.enable_new_task_buttons;
@@ -55721,6 +55724,11 @@ function tasktable() {
       orchestraTasks.data.finally(function () {
         vm.waiting = false;
       });
+
+      vm.isInDanger = function (task) {
+        console.log(task.description, _momentTimezone2.default.isBeforeNowBy(task.next_todo_dict.due_datetime, 1, 'days'));
+        return _momentTimezone2.default.isBeforeNowBy(task.next_todo_dict.due_datetime, 1, 'days');
+      };
 
       vm.newTask = function (taskType) {
         // To allow users to read the "no tasks left" message while debouncing
@@ -55753,361 +55761,10 @@ function tasktable() {
 /* 161 */
 /***/ (function(module, exports) {
 
-module.exports = "<section class=\"section-panel tasks-section\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12\">\n        <h3>\n          {{vm.tasktable.label}} ({{ vm.tasktable.tasks.length || 0 }})\n          <button type=\"button\"\n                    ng-if=\"vm.enableNewTaskButtons\"\n                    ng-click=\"vm.newTask('entry_level')\"\n                    ng-class=\"{'disabled': vm.orchestraTasks.preventNew ||\n                                           vm.noTaskTimer}\"\n                    class=\"btn btn-primary btn-new-entry-task\">\n              New delivery task\n            </button>\n            <button type=\"button\"\n                    ng-if=\"vm.orchestraTasks.reviewerStatus &&\n                           vm.enableNewTaskButtons\"\n                    ng-click=\"vm.newTask('reviewer')\"\n                    ng-class=\"{'disabled': vm.orchestraTasks.preventNew ||\n                                           vm.noTaskTimer}\"\n                    class=\"btn btn-primary btn-new-review-task\">\n              New review task\n            </button>\n            <span class=\"warning-message\"\n                  ng-show=\"vm.newTaskError && !vm.orchestraTasks.preventNew\">\n              No tasks available at the moment\n            </span>\n            <i class=\"fa fa-spinner fa-spin\" ng-show=\"vm.waiting\"></i>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row\">\n          <table ng-if=\"vm.tasktable.tasks.length > 0\"\n                 st-table=\"vm.tasktable.tasks\"\n                 class=\"table table-striped\">\n            <thead>\n              <tr>\n                <th>Priority</th>\n                <th>Project</th>\n                <th>Task</th>\n                <th>Details</th>\n                <th>Next steps</th>\n              </tr>\n            </thead>\n            <tbody>\n              <tr\n                 class=\"task-row\"\n                 ng-repeat=\"task in vm.tasktable.tasks\"\n                 ng-click=\"vm.openTask(task)\">\n                <td>{{task.priority}}</td>\n                <td>{{task.project}}</td>\n                <td>{{task.step}}</td>\n                <td>{{task.detail|limitTo:50}}{{task.detail.length > 50 ? '...' : ''}}</td>\n                <td>{{task.next_todo_description|limitTo:50}}{{task.next_todo_description.length > 50 ? '...' : ''}}</td>\n              </tr>\n            </tbody>\n          </table>\n    </div>\n  </div>\n</section>\n";
+module.exports = "<section class=\"section-panel tasks-section\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12\">\n        <h3>\n          {{vm.tasktable.label}} ({{ vm.tasktable.tasks.length || 0 }})\n          <button type=\"button\"\n                    ng-if=\"vm.enableNewTaskButtons\"\n                    ng-click=\"vm.newTask('entry_level')\"\n                    ng-class=\"{'disabled': vm.orchestraTasks.preventNew ||\n                                           vm.noTaskTimer}\"\n                    class=\"btn btn-primary btn-new-entry-task\">\n              New delivery task\n            </button>\n            <button type=\"button\"\n                    ng-if=\"vm.orchestraTasks.reviewerStatus &&\n                           vm.enableNewTaskButtons\"\n                    ng-click=\"vm.newTask('reviewer')\"\n                    ng-class=\"{'disabled': vm.orchestraTasks.preventNew ||\n                                           vm.noTaskTimer}\"\n                    class=\"btn btn-primary btn-new-review-task\">\n              New review task\n            </button>\n            <span class=\"warning-message\"\n                  ng-show=\"vm.newTaskError && !vm.orchestraTasks.preventNew\">\n              No tasks available at the moment\n            </span>\n            <i class=\"fa fa-spinner fa-spin\" ng-show=\"vm.waiting\"></i>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row\">\n          <table ng-if=\"vm.tasktable.tasks.length > 0\"\n                 st-table=\"vm.tasktable.tasks\"\n                 class=\"table table-striped\">\n            <thead>\n              <tr>\n                <th>Priority</th>\n                <th>Project</th>\n                <th>Task</th>\n                <th>Details</th>\n                <th>Next steps</th>\n                <th>Start by</th>\n                <th>Due on</th>\n              </tr>\n            </thead>\n            <tbody>\n              <tr\n                 ng-class=\"{'task-row':true, 'danger': vm.isInDanger(task)}\"\n                 ng-repeat=\"task in vm.tasktable.tasks\"\n                 ng-click=\"vm.openTask(task)\">\n                <td>{{task.priority}}</td>\n                <td>{{task.project}}</td>\n                <td>{{task.step}}</td>\n                <td>{{task.detail|limitTo:50}}{{task.detail.length > 50 ? '...' : ''}}</td>\n                <td>{{task.next_todo_dict.description|limitTo:50}}{{task.next_todo_dict.description.length > 50 ? '...' : ''}}</td>\n                <td><datetime-display datetime=\"task.next_todo_dict.start_by_datetime\" show-time=\"false\" /></td>\n                <td><datetime-display datetime=\"task.next_todo_dict.due_datetime\" show-time=\"false\" /></td>\n              </tr>\n            </tbody>\n          </table>\n    </div>\n  </div>\n</section>\n";
 
 /***/ }),
 /* 162 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-      value: true
-});
-exports.default = DashboardController;
-
-__webpack_require__(163);
-
-function DashboardController(orchestraTasks) {
-      'ngAnnotate';
-
-      var vm = this;
-
-      vm.orchestraTasks = orchestraTasks;
-      orchestraTasks.updateTasks();
-}
-
-/***/ }),
-/* 163 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 164 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _commonModuleEs = __webpack_require__(4);
-
-var _commonModuleEs2 = _interopRequireDefault(_commonModuleEs);
-
-var _assignmentsVisEs = __webpack_require__(165);
-
-var _assignmentsVisEs2 = _interopRequireDefault(_assignmentsVisEs);
-
-var _axisEs = __webpack_require__(166);
-
-var _axisEs2 = _interopRequireDefault(_axisEs);
-
-var _crosshairEs = __webpack_require__(170);
-
-var _crosshairEs2 = _interopRequireDefault(_crosshairEs);
-
-var _dataServiceEs = __webpack_require__(171);
-
-var _dataServiceEs2 = _interopRequireDefault(_dataServiceEs);
-
-var _iterationsVisEs = __webpack_require__(172);
-
-var _iterationsVisEs2 = _interopRequireDefault(_iterationsVisEs);
-
-var _projectVisEs = __webpack_require__(173);
-
-var _projectVisEs2 = _interopRequireDefault(_projectVisEs);
-
-var _tasksVisEs = __webpack_require__(175);
-
-var _tasksVisEs2 = _interopRequireDefault(_tasksVisEs);
-
-var _visUtilsEs = __webpack_require__(177);
-
-var _visUtilsEs2 = _interopRequireDefault(_visUtilsEs);
-
-var _projectManagementControllerEs = __webpack_require__(178);
-
-var _projectManagementControllerEs2 = _interopRequireDefault(_projectManagementControllerEs);
-
-__webpack_require__(179);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var name = 'orchestra.project_management'; /* global angular */
-
-angular.module(name, ['ui.bootstrap', 'ui.select', _commonModuleEs2.default]).controller('ProjectManagementController', _projectManagementControllerEs2.default).factory('assignmentsVis', _assignmentsVisEs2.default).factory('axis', _axisEs2.default).factory('crosshair', _crosshairEs2.default).factory('dataService', _dataServiceEs2.default).factory('iterationsVis', _iterationsVisEs2.default).factory('projectVis', _projectVisEs2.default).factory('tasksVis', _tasksVisEs2.default).factory('visUtils', _visUtilsEs2.default);
-
-exports.default = name;
-
-/***/ }),
-/* 165 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = assignmentsVis;
-var d3 = __webpack_require__(2);
-
-function assignmentsVis(dataService, orchestraApi, iterationsVis, visUtils) {
-  /**
-   * Service to modularize assignment visualization and manipulation within
-   * the project management view.
-   */
-  'ngAnnotate';
-
-  var assignmentsVis;
-
-  return {
-    addingAssignment: false,
-    setup: function setup(vis) {
-      assignmentsVis = this;
-    },
-    draw: function draw() {
-      /**
-       * Draws/updates assignments within project management visualization.
-       */
-      var tasks = visUtils.parentContainer.selectAll('.task');
-
-      var assignments = tasks.selectAll('.assignment').data(function (taskKey) {
-        var assignments = dataService.taskFromKey(taskKey).assignments.map(function (assignment) {
-          return dataService.keyFromAssignment(assignment);
-        });
-        assignments.push();
-        return assignments;
-      });
-
-      assignments.exit().remove();
-      var assignmentsEnter = assignments.enter().append('g').attr('class', 'assignment');
-
-      iterationsVis.draw();
-
-      assignmentsEnter.append('circle').attr({
-        'class': 'active-assignment',
-        'cx': 0,
-        'cy': 15,
-        'r': 5
-      });
-
-      assignments.selectAll('.active-assignment').attr({
-        'fill': function fill(assignmentKey) {
-          var assignment = dataService.assignmentFromKey(assignmentKey);
-          return assignment.status === 'Submitted' ? 'rgb(0, 121, 191)' : 'white';
-        },
-        'stroke': function stroke(assignmentKey) {
-          var assignment = dataService.assignmentFromKey(assignmentKey);
-          return assignment.status === 'Submitted' ? 'white' : 'rgb(0, 121, 191)';
-        }
-      });
-
-      this.drawAssignmentTools();
-    },
-    drawAssignmentTools: function drawAssignmentTools() {
-      /**
-       * Draws absolute-positined HTML elements to allow for assignment
-       * manipulation.
-       */
-      var assignmentsVis = this;
-      var assignmentsMeta = visUtils.parentContainer.selectAll('.task-view').selectAll('.assignment-meta').data(function (taskKey) {
-        return dataService.taskFromKey(taskKey).assignments.map(function (assignment) {
-          return dataService.keyFromAssignment(assignment);
-        });
-      });
-
-      assignmentsMeta.exit().remove();
-      var assignmentsMetaEnter = assignmentsMeta.enter().append('div').attr('class', 'assignment-meta');
-
-      assignmentsMetaEnter.append('input').attr({
-        'class': 'worker-name readonly'
-      }).on('click', function () {
-        d3.select(this).classed('readonly', false);
-      }).on('blur', function (assignmentKey) {
-        var assignment = dataService.assignmentFromKey(assignmentKey);
-        this.value = assignment.task.is_human ? assignment.worker.username : 'Machine';
-        d3.select(this).classed('readonly', true);
-      });
-
-      assignmentsMeta.selectAll('.worker-name').attr({
-        'placeholder': function placeholder(assignmentKey) {
-          var assignment = dataService.assignmentFromKey(assignmentKey);
-          return assignment.worker.username || !assignment.task.is_human ? '' : 'Add new assignment';
-        }
-      }).on('keydown', function (assignmentKey) {
-        var assignment = dataService.assignmentFromKey(assignmentKey);
-        if (d3.event.keyCode === 13 && assignment.task.is_human) {
-          if (!assignment.worker.username) {
-            assignmentsVis.assign_task(assignment.task, d3.select(this));
-          } else {
-            assignmentsVis.reassignAssignment(assignment, d3.select(this));
-          }
-        }
-      }).each(function (assignmentKey) {
-        var assignment = dataService.assignmentFromKey(assignmentKey);
-        this.value = assignment.task.is_human ? assignment.worker.username : 'Machine';
-      });
-    },
-    assign_task: function assign_task(task, inputEl) {
-      /**
-       * Handles the promise returned by orchestraApi.assignTask in the
-       * visualization.
-       */
-      var assignmentsVis = this;
-      if (assignmentsVis.addingAssignment) {
-        return;
-      }
-      assignmentsVis.addingAssignment = true;
-      orchestraApi.assignTask(task, inputEl.node().value).then(function () {
-        inputEl.node().blur();
-        dataService.updateData();
-      }, function (response) {
-        inputEl.node().value = '';
-        inputEl.node().blur();
-        var errorMessage = 'Error assigning task.';
-        if (response.status === 400) {
-          errorMessage = response.data.message;
-        }
-        window.alert(errorMessage);
-      }).finally(function () {
-        assignmentsVis.addingAssignment = false;
-      });
-    },
-    reassignAssignment: function reassignAssignment(assignment, inputEl) {
-      /**
-       * Handles the promise returned by orchestraApi.reassignAssignment in
-       * the visualization.
-       */
-      if (assignment.reassigning) {
-        return;
-      }
-      assignment.reassigning = true;
-      orchestraApi.reassignAssignment(assignment, inputEl.node().value).then(function () {
-        assignment.worker.username = inputEl.node().value;
-        assignmentsVis.draw();
-      }, function (response) {
-        inputEl.node().blur();
-        var errorMessage = 'Error reassigning worker.';
-        if (response.status === 400) {
-          errorMessage = response.data.message;
-        }
-        window.alert(errorMessage);
-      }).finally(function () {
-        inputEl.node().blur();
-        inputEl.node().value = assignment.worker.username;
-        assignment.reassigning = false;
-      });
-    }
-  };
-}
-
-/***/ }),
-/* 166 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = axis;
-
-var _momentTimezone = __webpack_require__(3);
-
-var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var d3 = __webpack_require__(2);
-
-function axis(dataService, visUtils) {
-  /**
-   * Service to handle aligning visualization elements to a common time axis.
-   */
-  'ngAnnotate';
-
-  return {
-    draw: function draw() {
-      /**
-       * Draws/updates axis with both relative and local time scales.
-       */
-      visUtils.parentContainer.select('.x.axis').style('opacity', 0);
-      if (!dataService.timeSortedSlugs.length) {
-        return;
-      }
-      var firstTask = dataService.data.tasks[dataService.timeSortedSlugs[0]];
-      var minDatetime = new Date(firstTask.start_datetime);
-      var taskEndTimes = dataService.timeSortedSlugs.map(function (slug) {
-        return dataService.taskEnd(dataService.taskFromKey(slug));
-      });
-
-      var maxDatetime = minDatetime;
-      taskEndTimes.forEach(function (datetimeString) {
-        var nextDatetime = new Date(datetimeString);
-        if (nextDatetime > minDatetime) {
-          maxDatetime = nextDatetime;
-        }
-      });
-
-      var hourInMilliseconds = 60 * 60 * 1000;
-      var numHours = Math.ceil((maxDatetime - minDatetime) / hourInMilliseconds);
-      maxDatetime = new Date(minDatetime.getTime() + numHours * hourInMilliseconds);
-
-      var hourStep = Math.ceil(numHours * 10 / visUtils.params.scaleWidth);
-
-      var hourTicks = d3.range(0, numHours + 1, hourStep).map(function (hourIndex) {
-        return new Date(minDatetime.getTime() + hourIndex * hourInMilliseconds);
-      });
-
-      this.timeScale = d3.time.scale().domain([minDatetime, maxDatetime]).range([0, visUtils.params.scaleWidth]);
-
-      var tickSize = 6;
-      var xAxis = d3.svg.axis().scale(this.timeScale).tickSize(tickSize).tickPadding(2 * tickSize).tickValues(hourTicks);
-
-      var tickSpread = 10;
-      var xLabelText;
-      if (this.relativeTime) {
-        xAxis.tickFormat(function (d, i) {
-          if (hourTicks.length < tickSpread || i % tickSpread === 0) {
-            return (d - minDatetime) / hourInMilliseconds;
-          }
-        });
-        xLabelText = 'Time (hours)';
-      } else {
-        xAxis.tickFormat(function (d, i) {
-          return i % tickSpread === 0 ? (0, _momentTimezone2.default)(d).format('M/DD ha') : '';
-        });
-        xLabelText = 'Time (local)';
-      }
-
-      visUtils.parentContainer.select('.x.label').text(xLabelText).style('right', visUtils.getSvgWidth() + 5 + 'px');
-
-      visUtils.parentContainer.select('.x.axis').call(xAxis);
-      visUtils.parentContainer.select('.x.axis').style('opacity', 1).attr('width', visUtils.getSvgWidth());
-
-      visUtils.parentContainer.select('.x.axis').selectAll('.tick line').attr('y2', function (d, i) {
-        return i % tickSpread === 0 ? 1.5 * tickSize : tickSize;
-      });
-    },
-    getOffset: function getOffset(datetime) {
-      /**
-       * Calculates the axis offset for a given datetime string.
-       */
-      return this.timeScale(new Date(datetime));
-    }
-  };
-}
-
-/***/ }),
-/* 167 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//! moment-timezone.js
@@ -56717,7 +56374,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
 /***/ }),
-/* 168 */
+/* 163 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
@@ -56966,10 +56623,10 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 168;
+webpackContext.id = 163;
 
 /***/ }),
-/* 169 */
+/* 164 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -57574,6 +57231,357 @@ module.exports = {
 };
 
 /***/ }),
+/* 165 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+      value: true
+});
+exports.default = DashboardController;
+
+__webpack_require__(166);
+
+function DashboardController(orchestraTasks) {
+      'ngAnnotate';
+
+      var vm = this;
+
+      vm.orchestraTasks = orchestraTasks;
+      orchestraTasks.updateTasks();
+}
+
+/***/ }),
+/* 166 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 167 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _commonModuleEs = __webpack_require__(4);
+
+var _commonModuleEs2 = _interopRequireDefault(_commonModuleEs);
+
+var _assignmentsVisEs = __webpack_require__(168);
+
+var _assignmentsVisEs2 = _interopRequireDefault(_assignmentsVisEs);
+
+var _axisEs = __webpack_require__(169);
+
+var _axisEs2 = _interopRequireDefault(_axisEs);
+
+var _crosshairEs = __webpack_require__(170);
+
+var _crosshairEs2 = _interopRequireDefault(_crosshairEs);
+
+var _dataServiceEs = __webpack_require__(171);
+
+var _dataServiceEs2 = _interopRequireDefault(_dataServiceEs);
+
+var _iterationsVisEs = __webpack_require__(172);
+
+var _iterationsVisEs2 = _interopRequireDefault(_iterationsVisEs);
+
+var _projectVisEs = __webpack_require__(173);
+
+var _projectVisEs2 = _interopRequireDefault(_projectVisEs);
+
+var _tasksVisEs = __webpack_require__(175);
+
+var _tasksVisEs2 = _interopRequireDefault(_tasksVisEs);
+
+var _visUtilsEs = __webpack_require__(177);
+
+var _visUtilsEs2 = _interopRequireDefault(_visUtilsEs);
+
+var _projectManagementControllerEs = __webpack_require__(178);
+
+var _projectManagementControllerEs2 = _interopRequireDefault(_projectManagementControllerEs);
+
+__webpack_require__(179);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var name = 'orchestra.project_management'; /* global angular */
+
+angular.module(name, ['ui.bootstrap', 'ui.select', _commonModuleEs2.default]).controller('ProjectManagementController', _projectManagementControllerEs2.default).factory('assignmentsVis', _assignmentsVisEs2.default).factory('axis', _axisEs2.default).factory('crosshair', _crosshairEs2.default).factory('dataService', _dataServiceEs2.default).factory('iterationsVis', _iterationsVisEs2.default).factory('projectVis', _projectVisEs2.default).factory('tasksVis', _tasksVisEs2.default).factory('visUtils', _visUtilsEs2.default);
+
+exports.default = name;
+
+/***/ }),
+/* 168 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = assignmentsVis;
+var d3 = __webpack_require__(3);
+
+function assignmentsVis(dataService, orchestraApi, iterationsVis, visUtils) {
+  /**
+   * Service to modularize assignment visualization and manipulation within
+   * the project management view.
+   */
+  'ngAnnotate';
+
+  var assignmentsVis;
+
+  return {
+    addingAssignment: false,
+    setup: function setup(vis) {
+      assignmentsVis = this;
+    },
+    draw: function draw() {
+      /**
+       * Draws/updates assignments within project management visualization.
+       */
+      var tasks = visUtils.parentContainer.selectAll('.task');
+
+      var assignments = tasks.selectAll('.assignment').data(function (taskKey) {
+        var assignments = dataService.taskFromKey(taskKey).assignments.map(function (assignment) {
+          return dataService.keyFromAssignment(assignment);
+        });
+        assignments.push();
+        return assignments;
+      });
+
+      assignments.exit().remove();
+      var assignmentsEnter = assignments.enter().append('g').attr('class', 'assignment');
+
+      iterationsVis.draw();
+
+      assignmentsEnter.append('circle').attr({
+        'class': 'active-assignment',
+        'cx': 0,
+        'cy': 15,
+        'r': 5
+      });
+
+      assignments.selectAll('.active-assignment').attr({
+        'fill': function fill(assignmentKey) {
+          var assignment = dataService.assignmentFromKey(assignmentKey);
+          return assignment.status === 'Submitted' ? 'rgb(0, 121, 191)' : 'white';
+        },
+        'stroke': function stroke(assignmentKey) {
+          var assignment = dataService.assignmentFromKey(assignmentKey);
+          return assignment.status === 'Submitted' ? 'white' : 'rgb(0, 121, 191)';
+        }
+      });
+
+      this.drawAssignmentTools();
+    },
+    drawAssignmentTools: function drawAssignmentTools() {
+      /**
+       * Draws absolute-positined HTML elements to allow for assignment
+       * manipulation.
+       */
+      var assignmentsVis = this;
+      var assignmentsMeta = visUtils.parentContainer.selectAll('.task-view').selectAll('.assignment-meta').data(function (taskKey) {
+        return dataService.taskFromKey(taskKey).assignments.map(function (assignment) {
+          return dataService.keyFromAssignment(assignment);
+        });
+      });
+
+      assignmentsMeta.exit().remove();
+      var assignmentsMetaEnter = assignmentsMeta.enter().append('div').attr('class', 'assignment-meta');
+
+      assignmentsMetaEnter.append('input').attr({
+        'class': 'worker-name readonly'
+      }).on('click', function () {
+        d3.select(this).classed('readonly', false);
+      }).on('blur', function (assignmentKey) {
+        var assignment = dataService.assignmentFromKey(assignmentKey);
+        this.value = assignment.task.is_human ? assignment.worker.username : 'Machine';
+        d3.select(this).classed('readonly', true);
+      });
+
+      assignmentsMeta.selectAll('.worker-name').attr({
+        'placeholder': function placeholder(assignmentKey) {
+          var assignment = dataService.assignmentFromKey(assignmentKey);
+          return assignment.worker.username || !assignment.task.is_human ? '' : 'Add new assignment';
+        }
+      }).on('keydown', function (assignmentKey) {
+        var assignment = dataService.assignmentFromKey(assignmentKey);
+        if (d3.event.keyCode === 13 && assignment.task.is_human) {
+          if (!assignment.worker.username) {
+            assignmentsVis.assign_task(assignment.task, d3.select(this));
+          } else {
+            assignmentsVis.reassignAssignment(assignment, d3.select(this));
+          }
+        }
+      }).each(function (assignmentKey) {
+        var assignment = dataService.assignmentFromKey(assignmentKey);
+        this.value = assignment.task.is_human ? assignment.worker.username : 'Machine';
+      });
+    },
+    assign_task: function assign_task(task, inputEl) {
+      /**
+       * Handles the promise returned by orchestraApi.assignTask in the
+       * visualization.
+       */
+      var assignmentsVis = this;
+      if (assignmentsVis.addingAssignment) {
+        return;
+      }
+      assignmentsVis.addingAssignment = true;
+      orchestraApi.assignTask(task, inputEl.node().value).then(function () {
+        inputEl.node().blur();
+        dataService.updateData();
+      }, function (response) {
+        inputEl.node().value = '';
+        inputEl.node().blur();
+        var errorMessage = 'Error assigning task.';
+        if (response.status === 400) {
+          errorMessage = response.data.message;
+        }
+        window.alert(errorMessage);
+      }).finally(function () {
+        assignmentsVis.addingAssignment = false;
+      });
+    },
+    reassignAssignment: function reassignAssignment(assignment, inputEl) {
+      /**
+       * Handles the promise returned by orchestraApi.reassignAssignment in
+       * the visualization.
+       */
+      if (assignment.reassigning) {
+        return;
+      }
+      assignment.reassigning = true;
+      orchestraApi.reassignAssignment(assignment, inputEl.node().value).then(function () {
+        assignment.worker.username = inputEl.node().value;
+        assignmentsVis.draw();
+      }, function (response) {
+        inputEl.node().blur();
+        var errorMessage = 'Error reassigning worker.';
+        if (response.status === 400) {
+          errorMessage = response.data.message;
+        }
+        window.alert(errorMessage);
+      }).finally(function () {
+        inputEl.node().blur();
+        inputEl.node().value = assignment.worker.username;
+        assignment.reassigning = false;
+      });
+    }
+  };
+}
+
+/***/ }),
+/* 169 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = axis;
+
+var _momentTimezone = __webpack_require__(1);
+
+var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var d3 = __webpack_require__(3);
+
+function axis(dataService, visUtils) {
+  /**
+   * Service to handle aligning visualization elements to a common time axis.
+   */
+  'ngAnnotate';
+
+  return {
+    draw: function draw() {
+      /**
+       * Draws/updates axis with both relative and local time scales.
+       */
+      visUtils.parentContainer.select('.x.axis').style('opacity', 0);
+      if (!dataService.timeSortedSlugs.length) {
+        return;
+      }
+      var firstTask = dataService.data.tasks[dataService.timeSortedSlugs[0]];
+      var minDatetime = new Date(firstTask.start_datetime);
+      var taskEndTimes = dataService.timeSortedSlugs.map(function (slug) {
+        return dataService.taskEnd(dataService.taskFromKey(slug));
+      });
+
+      var maxDatetime = minDatetime;
+      taskEndTimes.forEach(function (datetimeString) {
+        var nextDatetime = new Date(datetimeString);
+        if (nextDatetime > minDatetime) {
+          maxDatetime = nextDatetime;
+        }
+      });
+
+      var hourInMilliseconds = 60 * 60 * 1000;
+      var numHours = Math.ceil((maxDatetime - minDatetime) / hourInMilliseconds);
+      maxDatetime = new Date(minDatetime.getTime() + numHours * hourInMilliseconds);
+
+      var hourStep = Math.ceil(numHours * 10 / visUtils.params.scaleWidth);
+
+      var hourTicks = d3.range(0, numHours + 1, hourStep).map(function (hourIndex) {
+        return new Date(minDatetime.getTime() + hourIndex * hourInMilliseconds);
+      });
+
+      this.timeScale = d3.time.scale().domain([minDatetime, maxDatetime]).range([0, visUtils.params.scaleWidth]);
+
+      var tickSize = 6;
+      var xAxis = d3.svg.axis().scale(this.timeScale).tickSize(tickSize).tickPadding(2 * tickSize).tickValues(hourTicks);
+
+      var tickSpread = 10;
+      var xLabelText;
+      if (this.relativeTime) {
+        xAxis.tickFormat(function (d, i) {
+          if (hourTicks.length < tickSpread || i % tickSpread === 0) {
+            return (d - minDatetime) / hourInMilliseconds;
+          }
+        });
+        xLabelText = 'Time (hours)';
+      } else {
+        xAxis.tickFormat(function (d, i) {
+          return i % tickSpread === 0 ? (0, _momentTimezone2.default)(d).format('M/DD ha') : '';
+        });
+        xLabelText = 'Time (local)';
+      }
+
+      visUtils.parentContainer.select('.x.label').text(xLabelText).style('right', visUtils.getSvgWidth() + 5 + 'px');
+
+      visUtils.parentContainer.select('.x.axis').call(xAxis);
+      visUtils.parentContainer.select('.x.axis').style('opacity', 1).attr('width', visUtils.getSvgWidth());
+
+      visUtils.parentContainer.select('.x.axis').selectAll('.tick line').attr('y2', function (d, i) {
+        return i % tickSpread === 0 ? 1.5 * tickSize : tickSize;
+      });
+    },
+    getOffset: function getOffset(datetime) {
+      /**
+       * Calculates the axis offset for a given datetime string.
+       */
+      return this.timeScale(new Date(datetime));
+    }
+  };
+}
+
+/***/ }),
 /* 170 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -57659,7 +57667,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = dataService;
-var d3 = __webpack_require__(2);
+var d3 = __webpack_require__(3);
 
 function dataService($location, $rootScope, $route, orchestraApi) {
   /**
@@ -57893,7 +57901,7 @@ var _dataModal2 = _interopRequireDefault(_dataModal);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var d3 = __webpack_require__(2);
+var d3 = __webpack_require__(3);
 
 function iterationsVis($uibModal, dataService, visUtils, axis) {
   /**
@@ -57980,7 +57988,7 @@ var _slackModal2 = _interopRequireDefault(_slackModal);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var d3 = __webpack_require__(2);
+var d3 = __webpack_require__(3);
 
 function projectVis($uibModal, $location, dataService, orchestraApi, crosshair, visUtils, tasksVis, assignmentsVis, iterationsVis, axis) {
   /**
@@ -58136,7 +58144,7 @@ var _revertModal2 = _interopRequireDefault(_revertModal);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var d3 = __webpack_require__(2);
+var d3 = __webpack_require__(3);
 
 function tasksVis($uibModal, dataService, orchestraApi, visUtils, assignmentsVis, crosshair, axis) {
   /**
@@ -58530,7 +58538,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = visUtils;
-var d3 = __webpack_require__(2);
+var d3 = __webpack_require__(3);
 
 function visUtils(dataService) {
   /**
@@ -58599,7 +58607,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = ProjectManagementController;
 
-var _momentTimezone = __webpack_require__(3);
+var _momentTimezone = __webpack_require__(1);
 
 var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
 
@@ -59091,12 +59099,20 @@ var _timeEntryServiceEs = __webpack_require__(201);
 
 var _timeEntryServiceEs2 = _interopRequireDefault(_timeEntryServiceEs);
 
+var _timeInputDirectiveEs = __webpack_require__(202);
+
+var _timeInputDirectiveEs2 = _interopRequireDefault(_timeInputDirectiveEs);
+
+var _datetimeDisplayDirectiveEs = __webpack_require__(205);
+
+var _datetimeDisplayDirectiveEs2 = _interopRequireDefault(_datetimeDisplayDirectiveEs);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /* global angular */
 
 var name = 'orchestra.timing';
-angular.module(name, ['ui.select', 'ngSanitize', _commonModuleEs2.default]).directive('datePicker', _datePickerDirectiveEs2.default).directive('taskSelect', _taskSelectDirectiveEs2.default).directive('enforceIntegers', _enforceIntegersDirectiveEs2.default).directive('workTimer', _timerDirectiveEs2.default).controller('TimecardController', _timecardControllerEs2.default).factory('timeEntries', _timeEntriesServiceEs2.default).factory('TimeEntry', _timeEntryServiceEs2.default);
+angular.module(name, ['ui.select', 'ngSanitize', _commonModuleEs2.default]).directive('datePicker', _datePickerDirectiveEs2.default).directive('taskSelect', _taskSelectDirectiveEs2.default).directive('enforceIntegers', _enforceIntegersDirectiveEs2.default).directive('workTimer', _timerDirectiveEs2.default).directive('timeInput', _timeInputDirectiveEs2.default).directive('datetimeDisplay', _datetimeDisplayDirectiveEs2.default).controller('TimecardController', _timecardControllerEs2.default).factory('timeEntries', _timeEntriesServiceEs2.default).factory('TimeEntry', _timeEntryServiceEs2.default);
 exports.default = name;
 
 /***/ }),
@@ -59139,9 +59155,16 @@ function datePicker(timeEntries) {
         minDate: scope.minDate ? scope.minDate.toDate() : null,
         maxDate: scope.maxDate ? scope.maxDate.toDate() : null,
         onSelect: function onSelect(date) {
-          scope.date = this.getMoment();
+          var newDate = this.getMoment();
+
+          // Don't overwrite time when the date changes.
+          if (!scope.date) {
+            scope.date = newDate;
+          } else {
+            scope.date.year(newDate.year()).month(newDate.month()).date(newDate.date());
+          }
           if (typeof scope.callback === 'function') {
-            scope.callback(date);
+            scope.callback(scope.date);
           }
           scope.$apply();
         }
@@ -59230,22 +59253,6 @@ function datePicker(timeEntries) {
         }
     },
 
-    fireEvent = function(el, eventName, data)
-    {
-        var ev;
-
-        if (document.createEvent) {
-            ev = document.createEvent('HTMLEvents');
-            ev.initEvent(eventName, true, false);
-            ev = extend(ev, data);
-            el.dispatchEvent(ev);
-        } else if (document.createEventObject) {
-            ev = document.createEventObject();
-            ev = extend(ev, data);
-            el.fireEvent('on' + eventName, ev);
-        }
-    },
-
     trim = function(str)
     {
         return str.trim ? str.trim() : str.replace(/^\s+|\s+$/g,'');
@@ -59331,6 +59338,22 @@ function datePicker(timeEntries) {
         return to;
     },
 
+    fireEvent = function(el, eventName, data)
+    {
+        var ev;
+
+        if (document.createEvent) {
+            ev = document.createEvent('HTMLEvents');
+            ev.initEvent(eventName, true, false);
+            ev = extend(ev, data);
+            el.dispatchEvent(ev);
+        } else if (document.createEventObject) {
+            ev = document.createEventObject();
+            ev = extend(ev, data);
+            el.fireEvent('on' + eventName, ev);
+        }
+    },
+
     adjustCalendar = function(calendar) {
         if (calendar.month < 0) {
             calendar.year -= Math.ceil(Math.abs(calendar.month)/12);
@@ -59364,6 +59387,13 @@ function datePicker(timeEntries) {
         // the default output format for `.toString()` and `field` value
         format: 'YYYY-MM-DD',
 
+        // the toString function which gets passed a current date object and format
+        // and returns a string
+        toString: null,
+
+        // used to create date object from current input string
+        parse: null,
+
         // the initial date to view when first opened
         defaultDate: null,
 
@@ -59387,6 +59417,9 @@ function datePicker(timeEntries) {
         // show week numbers at head of row
         showWeekNumber: false,
 
+        // Week picker mode
+        pickWholeWeek: false,
+
         // used internally (don't config outside)
         minYear: 0,
         maxYear: 9999,
@@ -59407,6 +59440,9 @@ function datePicker(timeEntries) {
         // Render days of the calendar grid that fall in the next or previous month
         showDaysInNextAndPreviousMonths: false,
 
+        // Allows user to select days that fall in the next or previous month
+        enableSelectionDaysInNextAndPreviousMonths: false,
+
         // how many months are visible
         numberOfMonths: 1,
 
@@ -59416,6 +59452,9 @@ function datePicker(timeEntries) {
 
         // Specify a DOM element to render the calendar in
         container: undefined,
+
+        // Blur field when date is selected
+        blurFieldOnSelect : true,
 
         // internationalization
         i18n: {
@@ -59429,11 +59468,17 @@ function datePicker(timeEntries) {
         // Theme Classname
         theme: null,
 
+        // events array
+        events: [],
+
         // callback function
         onSelect: null,
         onOpen: null,
         onClose: null,
-        onDraw: null
+        onDraw: null,
+
+        // Enable keyboard input
+        keyboardInput: true
     },
 
 
@@ -59456,6 +59501,11 @@ function datePicker(timeEntries) {
         if (opts.isEmpty) {
             if (opts.showDaysInNextAndPreviousMonths) {
                 arr.push('is-outside-current-month');
+
+                if(!opts.enableSelectionDaysInNextAndPreviousMonths) {
+                    arr.push('is-selection-disabled');
+                }
+
             } else {
                 return '<td class="is-empty"></td>';
             }
@@ -59469,6 +59519,9 @@ function datePicker(timeEntries) {
         if (opts.isSelected) {
             arr.push('is-selected');
             ariaSelected = 'true';
+        }
+        if (opts.hasEvent) {
+            arr.push('has-event');
         }
         if (opts.isInRange) {
             arr.push('is-inrange');
@@ -59494,9 +59547,9 @@ function datePicker(timeEntries) {
         return '<td class="pika-week">' + weekNum + '</td>';
     },
 
-    renderRow = function(days, isRTL)
+    renderRow = function(days, isRTL, pickWholeWeek, isRowSelected)
     {
-        return '<tr>' + (isRTL ? days.reverse() : days).join('') + '</tr>';
+        return '<tr class="pika-row' + (pickWholeWeek ? ' pick-whole-week' : '') + (isRowSelected ? ' is-selected' : '') + '">' + (isRTL ? days.reverse() : days).join('') + '</tr>';
     },
 
     renderBody = function(rows)
@@ -59607,7 +59660,7 @@ function datePicker(timeEntries) {
                     if (opts.bound) {
                         sto(function() {
                             self.hide();
-                            if (opts.field) {
+                            if (opts.blurFieldOnSelect && opts.field) {
                                 opts.field.blur();
                             }
                         }, 100);
@@ -59657,7 +59710,9 @@ function datePicker(timeEntries) {
                 switch(e.keyCode){
                     case 13:
                     case 27:
-                        opts.field.blur();
+                        if (opts.field) {
+                            opts.field.blur();
+                        }
                         break;
                     case 37:
                         e.preventDefault();
@@ -59683,7 +59738,9 @@ function datePicker(timeEntries) {
             if (e.firedBy === self) {
                 return;
             }
-            if (hasMoment) {
+            if (opts.parse) {
+                date = opts.parse(opts.field.value, opts.format);
+            } else if (hasMoment) {
                 date = moment(opts.field.value, opts.format, opts.formatStrict);
                 date = (date && date.isValid()) ? date.toDate() : null;
             }
@@ -59758,7 +59815,10 @@ function datePicker(timeEntries) {
         addEvent(self.el, 'mousedown', self._onMouseDown, true);
         addEvent(self.el, 'touchend', self._onMouseDown, true);
         addEvent(self.el, 'change', self._onChange);
-        addEvent(document, 'keydown', self._onKeyChange);
+
+        if (opts.keyboardInput) {
+            addEvent(document, 'keydown', self._onKeyChange);
+        }
 
         if (opts.field) {
             if (opts.container) {
@@ -59873,7 +59933,17 @@ function datePicker(timeEntries) {
          */
         toString: function(format)
         {
-            return !isDate(this._d) ? '' : hasMoment ? moment(this._d).format(format || this._o.format) : this._d.toDateString();
+            format = format || this._o.format;
+            if (!isDate(this._d)) {
+                return '';
+            }
+            if (this._o.toString) {
+              return this._o.toString(this._d, format);
+            }
+            if (hasMoment) {
+              return moment(this._d).format(format);
+            }
+            return this._d.toDateString();
         },
 
         /**
@@ -59895,11 +59965,11 @@ function datePicker(timeEntries) {
         },
 
         /**
-         * return a Date object of the current selection with fallback for the current date
+         * return a Date object of the current selection
          */
         getDate: function()
         {
-            return isDate(this._d) ? new Date(this._d.getTime()) : new Date();
+            return isDate(this._d) ? new Date(this._d.getTime()) : null;
         },
 
         /**
@@ -59982,7 +60052,7 @@ function datePicker(timeEntries) {
 
         adjustDate: function(sign, days) {
 
-            var day = this.getDate();
+            var day = this.getDate() || new Date();
             var difference = parseInt(days)*24*60*60*1000;
 
             var newDay;
@@ -59991,14 +60061,6 @@ function datePicker(timeEntries) {
                 newDay = new Date(day.valueOf() + difference);
             } else if (sign === 'subtract') {
                 newDay = new Date(day.valueOf() - difference);
-            }
-
-            if (hasMoment) {
-                if (sign === 'add') {
-                    newDay = moment(day).add(days, "days").toDate();
-                } else if (sign === 'subtract') {
-                    newDay = moment(day).subtract(days, "days").toDate();
-                }
             }
 
             this.setDate(newDay);
@@ -60152,7 +60214,7 @@ function datePicker(timeEntries) {
             if (typeof this._o.onDraw === 'function') {
                 this._o.onDraw(this);
             }
-            
+
             if (opts.bound) {
                 // let the screen reader user know to use arrow keys
                 opts.field.setAttribute('aria-label', 'Use the arrow keys to pick a date');
@@ -60239,11 +60301,13 @@ function datePicker(timeEntries) {
                 after -= 7;
             }
             cells += 7 - after;
+            var isWeekSelected = false;
             for (var i = 0, r = 0; i < cells; i++)
             {
                 var day = new Date(year, month, 1 + (i - before)),
                     isSelected = isDate(this._d) ? compareDates(day, this._d) : false,
                     isToday = compareDates(day, now),
+                    hasEvent = opts.events.indexOf(day.toDateString()) !== -1 ? true : false,
                     isEmpty = i < before || i >= (days + before),
                     dayNumber = 1 + (i - before),
                     monthNumber = month,
@@ -60272,6 +60336,7 @@ function datePicker(timeEntries) {
                         day: dayNumber,
                         month: monthNumber,
                         year: yearNumber,
+                        hasEvent: hasEvent,
                         isSelected: isSelected,
                         isToday: isToday,
                         isDisabled: isDisabled,
@@ -60279,8 +60344,13 @@ function datePicker(timeEntries) {
                         isStartRange: isStartRange,
                         isEndRange: isEndRange,
                         isInRange: isInRange,
-                        showDaysInNextAndPreviousMonths: opts.showDaysInNextAndPreviousMonths
+                        showDaysInNextAndPreviousMonths: opts.showDaysInNextAndPreviousMonths,
+                        enableSelectionDaysInNextAndPreviousMonths: opts.enableSelectionDaysInNextAndPreviousMonths
                     };
+
+                if (opts.pickWholeWeek && isSelected) {
+                    isWeekSelected = true;
+                }
 
                 row.push(renderDay(dayConfig));
 
@@ -60288,9 +60358,10 @@ function datePicker(timeEntries) {
                     if (opts.showWeekNumber) {
                         row.unshift(renderWeek(i - before, month, year));
                     }
-                    data.push(renderRow(row, opts.isRTL));
+                    data.push(renderRow(row, opts.isRTL, opts.pickWholeWeek, isWeekSelected));
                     row = [];
                     r = 0;
+                    isWeekSelected = false;
                 }
             }
             return renderTable(opts, data, randId);
@@ -60304,9 +60375,9 @@ function datePicker(timeEntries) {
         show: function()
         {
             if (!this.isVisible()) {
-                removeClass(this.el, 'is-hidden');
                 this._v = true;
                 this.draw();
+                removeClass(this.el, 'is-hidden');
                 if (this._o.bound) {
                     addEvent(document, 'click', this._onClick);
                     this.adjustPosition();
@@ -60340,16 +60411,21 @@ function datePicker(timeEntries) {
          */
         destroy: function()
         {
+            var opts = this._o;
+
             this.hide();
             removeEvent(this.el, 'mousedown', this._onMouseDown, true);
             removeEvent(this.el, 'touchend', this._onMouseDown, true);
             removeEvent(this.el, 'change', this._onChange);
-            if (this._o.field) {
-                removeEvent(this._o.field, 'change', this._onInputChange);
-                if (this._o.bound) {
-                    removeEvent(this._o.trigger, 'click', this._onInputClick);
-                    removeEvent(this._o.trigger, 'focus', this._onInputFocus);
-                    removeEvent(this._o.trigger, 'blur', this._onInputBlur);
+            if (opts.keyboardInput) {
+                removeEvent(document, 'keydown', this._onKeyChange);
+            }
+            if (opts.field) {
+                removeEvent(opts.field, 'change', this._onInputChange);
+                if (opts.bound) {
+                    removeEvent(opts.trigger, 'click', this._onInputClick);
+                    removeEvent(opts.trigger, 'focus', this._onInputFocus);
+                    removeEvent(opts.trigger, 'blur', this._onInputBlur);
                 }
             }
             if (this.el.parentNode) {
@@ -60360,7 +60436,6 @@ function datePicker(timeEntries) {
     };
 
     return Pikaday;
-
 }));
 
 
@@ -60374,7 +60449,7 @@ function datePicker(timeEntries) {
 /* 191 */
 /***/ (function(module, exports) {
 
-module.exports = "<span class=\"date-picker\">\n  <i class=\"fa fa-calendar-o\"></i>{{ date.format('MMMM D') }}\n</span>\n";
+module.exports = "<span class=\"date-picker\">\n  <i class=\"fa fa-calendar-o\"></i>{{ date.format(' ddd, MMM D') }}\n</span>\n";
 
 /***/ }),
 /* 192 */
@@ -60487,7 +60562,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = TimecardController;
 
-var _momentTimezone = __webpack_require__(3);
+var _momentTimezone = __webpack_require__(1);
 
 var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
 
@@ -60669,7 +60744,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = workTimer;
 
-var _momentTimezone = __webpack_require__(3);
+var _momentTimezone = __webpack_require__(1);
 
 var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
 
@@ -60823,7 +60898,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = timeEntries;
 
-var _momentTimezone = __webpack_require__(3);
+var _momentTimezone = __webpack_require__(1);
 
 var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
 
@@ -60995,7 +61070,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = TimeEntry;
 
-var _momentTimezone = __webpack_require__(3);
+var _momentTimezone = __webpack_require__(1);
 
 var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
 
@@ -61060,6 +61135,19 @@ _momentTimezone2.default.duration.fn.humanizeUnits = function (units) {
   }
 
   return durationString;
+};
+
+/**
+ * Check whether the time is a certain range before the current time
+ */
+_momentTimezone2.default.isBeforeNowBy = function (datetimeString) {
+  var n = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+  var units = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'days';
+
+  if (!datetimeString) {
+    return false;
+  }
+  return _momentTimezone2.default.utc(datetimeString).tz(_momentTimezone2.default.tz.guess()).isSameOrBefore((0, _momentTimezone2.default)().add(n, units));
 };
 
 /**
@@ -61152,28 +61240,157 @@ function TimeEntry($http) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.default = timeInput;
+
+var _timeInput = __webpack_require__(203);
+
+var _timeInput2 = _interopRequireDefault(_timeInput);
+
+__webpack_require__(204);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function timeInput() {
+  return {
+    template: _timeInput2.default,
+    scope: {
+      datetime: '=',
+      defaultHour: '@?'
+    },
+    link: function link(scope, elem, attrs) {
+      if (!scope.defaultHour) {
+        scope.defaultHour = 8;
+      }
+      scope.onChange = function () {
+        scope.datetime.hours(scope.timeDisplay.getHours());
+        scope.datetime.minutes(scope.timeDisplay.getMinutes());
+      };
+
+      scope.$watch(function () {
+        return scope.datetime;
+      }, function () {
+        if (scope.datetime) {
+          if (!scope.datetime.hours() && !scope.datetime.minutes()) {
+            scope.datetime.hours(scope.defaultHour);
+          }
+          scope.datetime.seconds(0);
+          scope.datetime.milliseconds(0);
+          scope.timeDisplay = scope.datetime.toDate();
+        } else {
+          scope.timeDisplay = null;
+        }
+      });
+    }
+  };
+}
+
+/***/ }),
+/* 203 */
+/***/ (function(module, exports) {
+
+module.exports = "<span class=\"time-input\">\n  <input type=\"time\"\n    ng-model=\"timeDisplay\"\n    ng-change=\"onChange()\"\n    ng-disabled=\"datetime === null\"\n    />\n</span>\n";
+
+/***/ }),
+/* 204 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 205 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = datetimeDisplay;
+
+var _datetimeDisplay = __webpack_require__(206);
+
+var _datetimeDisplay2 = _interopRequireDefault(_datetimeDisplay);
+
+var _momentTimezone = __webpack_require__(1);
+
+var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function datetimeDisplay() {
+  return {
+    template: _datetimeDisplay2.default,
+    restrict: 'E',
+    scope: {
+      datetime: '=',
+      showTime: '='
+    },
+    link: function link(scope, elem, attrs) {
+      var getLocalTime = function getLocalTime(datetimeString) {
+        return datetimeString ? _momentTimezone2.default.utc(datetimeString).tz(_momentTimezone2.default.tz.guess()) : null;
+      };
+
+      var getPrettyDatetime = function getPrettyDatetime(datetime) {
+        if (scope.showTime) {
+          return datetime.format('ddd, MMM D h:mm a');
+        } else {
+          return datetime.format('ddd, MMM D');
+        }
+      };
+
+      scope.getDatetimeDisplay = function (datetimeString) {
+        var datetime = getLocalTime(datetimeString);
+        var datetimeInfo = datetime ? '' + getPrettyDatetime(datetime) : '';
+        return datetimeInfo;
+      };
+    }
+  };
+}
+
+/***/ }),
+/* 206 */
+/***/ (function(module, exports) {
+
+module.exports = "<span>{{getDatetimeDisplay(datetime)}}</span>\n";
+
+/***/ }),
+/* 207 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 var _commonModuleEs = __webpack_require__(4);
 
 var _commonModuleEs2 = _interopRequireDefault(_commonModuleEs);
 
-var _todoListDirectiveEs = __webpack_require__(203);
+var _todoListDirectiveEs = __webpack_require__(208);
 
 var _todoListDirectiveEs2 = _interopRequireDefault(_todoListDirectiveEs);
 
-var _todosServiceEs = __webpack_require__(206);
+var _todoChecklistDirectiveEs = __webpack_require__(211);
+
+var _todoChecklistDirectiveEs2 = _interopRequireDefault(_todoChecklistDirectiveEs);
+
+var _todosServiceEs = __webpack_require__(214);
 
 var _todosServiceEs2 = _interopRequireDefault(_todosServiceEs);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var name = 'orchestra.todos'; /* global angular */
+/* global angular */
 
-angular.module(name, ['ui.select', 'ngSanitize', _commonModuleEs2.default]).directive('todoList', _todoListDirectiveEs2.default).factory('todoApi', _todosServiceEs2.default);
+var name = 'orchestra.todos';
+angular.module(name, ['ui.select', 'ngSanitize', _commonModuleEs2.default]).directive('todoList', _todoListDirectiveEs2.default).directive('todoChecklist', _todoChecklistDirectiveEs2.default).factory('todoApi', _todosServiceEs2.default);
 exports.default = name;
 
 /***/ }),
-/* 203 */
+/* 208 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61186,11 +61403,15 @@ exports.default = todoList;
 
 var _lodash = __webpack_require__(5);
 
-var _todoList = __webpack_require__(204);
+var _todoList = __webpack_require__(209);
 
 var _todoList2 = _interopRequireDefault(_todoList);
 
-__webpack_require__(205);
+var _momentTimezone = __webpack_require__(1);
+
+var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
+
+__webpack_require__(210);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -61206,20 +61427,24 @@ function todoList(orchestraApi) {
     },
     controllerAs: 'todoList',
     bindToController: true,
-    controller: function controller(todoApi) {
+    controller: function controller(todoApi, $scope) {
       var todoList = this;
       todoList.possibleTasks = [];
       todoList.newTodoTaskId = null;
       todoList.newTodoDescription = null;
+      todoList.newTodoStartDate = null;
+      todoList.newTodoDueDate = null;
       todoList.ready = false;
       todoList.taskSlugs = {};
       todoList.todos = [];
 
-      var createTodo = function createTodo(taskId, description, completed) {
+      var createTodo = function createTodo(taskId, description, completed, startDate, dueDate) {
         return todoApi.create({
           task: taskId,
           description: description,
-          completed: completed
+          completed: completed,
+          start_by_datetime: startDate,
+          due_datetime: dueDate
         }).then(function (taskData) {
           todoList.todos.unshift(taskData);
           return taskData;
@@ -61241,14 +61466,31 @@ function todoList(orchestraApi) {
         createTodo(todoList.taskId, 'Send task to pending state', true);
       };
 
+      todoList.getUTCDateTimeString = function (datetime) {
+        if (!datetime) {
+          return null;
+        }
+        var datetimeUtc = _momentTimezone2.default.tz(datetime.format('YYYY-MM-DD HH:mm'), _momentTimezone2.default.tz.guess()).utc();
+        return datetimeUtc.format('YYYY-MM-DD HH:mm');
+      };
+
       todoList.addTodo = function () {
-        createTodo(todoList.newTodoTaskId, todoList.newTodoDescription, false).then(function (taskData) {
+        var start = todoList.getUTCDateTimeString(todoList.newTodoStartDate);
+        var due = todoList.getUTCDateTimeString(todoList.newTodoDueDate);
+
+        createTodo(todoList.newTodoTaskId, todoList.newTodoDescription, false, start, due).then(function (taskData) {
           todoList.newTodoDescription = null;
+          todoList.newTodoStartDate = null;
+          todoList.newTodoDueDate = null;
         });
       };
 
       todoList.updateTodo = function (todo) {
         todoApi.update(todo);
+      };
+
+      todoList.setTimeOfDate = function (datetime) {
+        $scope.$apply();
       };
 
       orchestraApi.projectInformation(todoList.projectId).then(function (response) {
@@ -61280,19 +61522,80 @@ function todoList(orchestraApi) {
 }
 
 /***/ }),
-/* 204 */
+/* 209 */
 /***/ (function(module, exports) {
 
-module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Todo List\n          <a class=\"btn\"\n               ng-if=\"todoList.canSendToPending()\"\n               ng-click=\"todoList.sendToPending()\">\n            Send to pending\n          </a>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\" ng-if=\"todoList.ready\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <form class=\"new-todo\">\n          <select name=\"todoList\" id=\"todoList\" ng-model=\"todoList.newTodoTaskId\">\n            <option value=\"\" selected>Select owner</option>\n            <option value=\"{{task.id}}\" ng-repeat=\"task in todoList.possibleTasks\">{{todoList.steps[task.step_slug].name}}</option>\n          </select>\n          <input class=\"new-todo__description\"\n                 type=\"text\"\n                 ng-model=\"todoList.newTodoDescription\"\n                 placeholder=\"Description\">\n          <button type=\"submit\"\n             class=\"btn btn-primary btn-sm edit-save-handle\"\n             ng-disabled=\"!todoList.canAddTodo()\"\n             ng-click=\"todoList.addTodo()\">\n            Add\n          </button>\n        </form>\n      </div>\n\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <div class=\"existing-todos\">\n          <div class=\"todo\"\n               ng-repeat=\"todo in todoList.todos\">\n            <label>\n              <input type=\"checkbox\"\n                     ng-model=\"todo.completed\"\n                     ng-click=\"todoList.updateTodo(todo)\">\n              <span class=\"todo__role\">{{todoList.steps[todoList.taskSlugs[todo.task]].name}}:&nbsp;</span>\n              <span class=\"todo__description\">{{todo.description}}</span>\n            </label>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n";
+module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Todo List\n          <a class=\"btn\"\n               ng-if=\"todoList.canSendToPending()\"\n               ng-click=\"todoList.sendToPending()\">\n            Send to pending\n          </a>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\" ng-if=\"todoList.ready\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <form class=\"new-todo\">\n          <div class=\"new-todo__box\">\n            <select name=\"todoList\" id=\"todoList\" ng-model=\"todoList.newTodoTaskId\">\n              <option value=\"\" selected>Select owner</option>\n              <option value=\"{{task.id}}\" ng-repeat=\"task in todoList.possibleTasks\">{{todoList.steps[task.step_slug].name}}</option>\n            </select>\n          </div>\n          <div class=\"new-todo__box new-todo__box-details\">\n            <input class=\"new-todo__description\"\n                   type=\"text\"\n                   ng-model=\"todoList.newTodoDescription\"\n                   placeholder=\"Description\">\n            <div class=\"pull-right\">\n              <div class=\"new-todo__description__datetime\">\n                <label>Start</label>\n                <date-picker\n                  date=\"todoList.newTodoStartDate\"\n                  callback=\"todoList.setTimeOfDate\"></date-picker>\n                <time-input\n                  datetime=\"todoList.newTodoStartDate\"\n                  default-hour=\"8\"\n                  ></time-input>\n              </div>\n              <div class=\"new-todo__description__datetime\">\n                <label>Due</label>\n                <date-picker\n                  date=\"todoList.newTodoDueDate\"\n                  callback=\"todoList.setTimeOfDate\"></date-picker>\n                <time-input\n                  datetime=\"todoList.newTodoDueDate\"\n                  default-hour=\"18\"\n                  ></time-input>\n              </div>\n            </div>\n          </div>\n          <div class=\"new-todo__box\">\n            <button type=\"submit\"\n               class=\"btn btn-primary btn-sm edit-save-handle\"\n               ng-disabled=\"!todoList.canAddTodo()\"\n               ng-click=\"todoList.addTodo()\">\n              Add\n            </button>\n          </div>\n        </form>\n      </div>\n\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <div class=\"existing-todos\">\n            <todo-checklist\n              title=\"Todos\"\n              todos=\"todoList.todos\"\n              show-checked=\"false\"\n              update-todo=\"todoList.updateTodo\"\n              steps=\"todoList.steps\"\n              task-slugs=\"todoList.taskSlugs\"\n            ></todo-checklist>\n            <todo-checklist\n              title=\"Completed\"\n              todos=\"todoList.todos\"\n              show-checked=\"true\"\n              update-todo=\"todoList.updateTodo\"\n              steps=\"todoList.steps\"\n              task-slugs=\"todoList.taskSlugs\"\n            ></todo-checklist>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n";
 
 /***/ }),
-/* 205 */
+/* 210 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 206 */
+/* 211 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = todoChecklist;
+
+var _todoChecklist = __webpack_require__(212);
+
+var _todoChecklist2 = _interopRequireDefault(_todoChecklist);
+
+__webpack_require__(213);
+
+var _momentTimezone = __webpack_require__(1);
+
+var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function todoChecklist() {
+  return {
+    template: _todoChecklist2.default,
+    restrict: 'E',
+    scope: {
+      title: '@',
+      todos: '<',
+      showChecked: '=',
+      updateTodo: '=',
+      steps: '<',
+      taskSlugs: '<'
+    },
+    link: function link(scope, elem, attrs) {
+      scope.isNonEmptyString = function (str) {
+        return str !== null && str !== undefined && str !== '';
+      };
+
+      scope.isInDanger = function (todo) {
+        return !todo.completed && _momentTimezone2.default.isBeforeNowBy(todo.due_datetime, 1, 'days');
+      };
+    }
+
+  };
+}
+
+/***/ }),
+/* 212 */
+/***/ (function(module, exports) {
+
+module.exports = "<div class=\"list-by-status\" ng-if=\"(todos | filter: {completed: showChecked}).length > 0\">\n  <h4>{{title}}</h4>\n  <div class=\"todo\"\n       ng-repeat=\"todo in todos | filter: {completed: showChecked}\">\n    <label ng-class=\"{'text-danger': isInDanger(todo)}\">\n      <input type=\"checkbox\"\n             ng-model=\"todo.completed\"\n             ng-change=\"updateTodo(todo)\">\n      <span class=\"todo__role\">{{steps[taskSlugs[todo.task]].name}}:&nbsp;</span>\n      <span class=\"todo__description\">{{todo.description}}</span>\n      <span ng-class=\"{'todo__dates': true, 'todo__dates-danger': isInDanger(todo)}\">\n        <span ng-if=\"isNonEmptyString(todo.start_by_datetime)\">\n          Start <datetime-display datetime=\"todo.start_by_datetime\" show-time=\"true\"/>\n        </span>\n        <span ng-if=\"isNonEmptyString(todo.start_by_datetime) && isNonEmptyString(todo.due_datetime)\" class=\"todo__dates-separator\">|</span>\n        <span ng-if=\"isNonEmptyString(todo.due_datetime)\">\n          Due <datetime-display datetime=\"todo.due_datetime\" show-time=\"true\"/></span>\n      </span>\n    </label>\n  </div>\n</div>\n";
+
+/***/ }),
+/* 213 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 214 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61334,7 +61637,7 @@ function todoApi($http) {
 };
 
 /***/ }),
-/* 207 */
+/* 215 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61345,19 +61648,19 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = config;
 
-var _dashboard = __webpack_require__(208);
+var _dashboard = __webpack_require__(216);
 
 var _dashboard2 = _interopRequireDefault(_dashboard);
 
-var _task = __webpack_require__(209);
+var _task = __webpack_require__(217);
 
 var _task2 = _interopRequireDefault(_task);
 
-var _timecard = __webpack_require__(210);
+var _timecard = __webpack_require__(218);
 
 var _timecard2 = _interopRequireDefault(_timecard);
 
-var _projectManagement = __webpack_require__(211);
+var _projectManagement = __webpack_require__(219);
 
 var _projectManagement2 = _interopRequireDefault(_projectManagement);
 
@@ -61395,25 +61698,25 @@ function config($locationProvider, $routeProvider) {
 }
 
 /***/ }),
-/* 208 */
+/* 216 */
 /***/ (function(module, exports) {
 
 module.exports = "<section class=\"wrapper\">\n  <div tasktable=\"{label: 'Active', tasks: vm.orchestraTasks.activeTasks(), newTasks: true}\"></div>\n  <div tasktable=\"{label: 'Pending', tasks: vm.orchestraTasks.pendingTasks()}\"></div>\n  <div tasktable=\"{label: 'Completed', tasks: vm.orchestraTasks.completedTasks()}\"></div>\n</section>\n";
 
 /***/ }),
-/* 209 */
+/* 217 */
 /***/ (function(module, exports) {
 
 module.exports = "<section class=\"wrapper task-view\">\n\n\n<script type=\"text/ng-template\" id=\"submit_task_modal.html\">\n  <div class=\"modal-header\">\n    <h3 class=\"modal-title\">{{command | capitalize}} Confirmation</h3>\n  </div>\n  <div class=\"modal-body modal-confirm-body\">\n    <div class=\"modal-confirm-text\">\n      <div class=\"time-question\">\n        Approximately how much time did you spend on <strong>this iteration</strong> of the task?\n      </div>\n        <div class=\"time-summary\">\n          <span class=\"time-report form-inline input-group-sm\">\n            <span class=\"time-unit-group\">\n              <input type=\"text\"\n                     class=\"form-control\"\n                     id=\"current-time-hours\"\n                     ng-model=\"currentIterationHours\">\n                     <span class=\"time-unit\"> hours</span>\n            </span>\n            <span class=\"time-unit-group\">\n              <input type=\"text\"\n                     class=\"form-control\"\n                     id=\"current-time-minutes\"\n                     ng-model=\"currentIterationMinutes\">\n                     <span class=\"time-unit\"> mins</span>\n            </span>\n          </span>\n        </div>\n        <div class=\"time-error-message\" ng-bind=\"secondsErrorMessage\"></div>\n        <div class=\"time-summary\">\n          <span class=\"time-label\">Total time so far</span>\n          <span class=\"time-report\">\n            <span class=\"time-unit-group\">\n              <span class=\"time-value-float\">\n                <span class=\"time-value\" ng-bind=\"totalPreviousHoursMinutes()[0]\"></span>\n              </span>\n              <span class=\"time-unit\"> hours</span>\n            </span>\n            <span class=\"time-unit-group\">\n              <span class=\"time-value-float\">\n                <span class=\"time-value\" ng-bind=\"totalPreviousHoursMinutes()[1]\"></span>\n              </span>\n              <span class=\"time-unit\"> mins</span>\n            </span>\n          </span>\n        </div>\n        <hr />\n        <div class=\"time-summary\">\n          <span class=\"time-label\">Total time on task</span>\n          <span class=\"time-report\">\n            <span class=\"time-unit-group\">\n              <span class=\"time-value-float\">\n                <span class=\"time-value\" ng-bind=\"totalHoursMinutes()[0]\"></span>\n              </span>\n              <span class=\"time-unit\"> hours</span>\n            </span>\n            <span class=\"time-unit-group\">\n              <span class=\"time-value-float\">\n                <span class=\"time-value\" ng-bind=\"totalHoursMinutes()[1]\"></span>\n              </span>\n              <span class=\"time-unit\"> mins</span>\n            </span>\n          </span>\n        </div>\n    </div>\n    <div class=\"pull-center\">\n      <button class=\"btn btn-primary\" ng-disabled=\"secondsErrorMessage !== null\" ng-click=\"submit()\">{{command | capitalize}}</button>\n      <button class=\"btn btn-default\" ng-click=\"cancel()\">Cancel</button>\n    </div>\n  </div>\n</script>\n\n\n<nav class=\"topbar-overview\" ng-class=\"{'reviewer-topbar': vm.taskAssignment.is_reviewer}\">\n    <div class=\"topbar-leader\">\n      <div class=\"project-overview\">\n        <div class=\"workflow\">{{ vm.taskAssignment.workflow.name}}</div>\n        {{ vm.taskAssignment.project.details}}\n      </div>\n      <div class=\"arrow-wrapper\">\n        <div class=\"arrow-with-shadow\"></div>\n      </div>\n    </div>\n    <div class=\"topbar-follower\">\n      <div class=\"task-overview\">\n        {{ vm.taskAssignment.step.name}}\n        <span ng-if=\"vm.taskAssignment.is_reviewer\">\n              Review\n        </span>\n      </div>\n    </div>\n</nav>\n\n<div class=\"fixed-infobox-outer\" ng-if=\"vm.is_read_only\">\n  <div class=\"fixed-infobox bg-info\">\n    This task is in view-only mode. You cannot submit or review it.\n  </div>\n</div>\n\n<div class=\"fixed-infobox-outer\" ng-if=\"vm.autoSaver.saveError\">\n  <div class=\"fixed-infobox btn-danger\">\n    Error saving task. Trying again...\n  </div>\n</div>\n\n<div class=\"step-interface\">\n  <div dynamic-load=\"vm.angularDirective\"></div>\n</div>\n\n<section class=\"task-actions-wrapper\">\n  <div class=\"task-actions\">\n    <div class=\"container-fluid\">\n      <div class=\"row\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <button ng-if=\"!vm.taskAssignment.is_reviewer\"\n                  type=\"button\"\n                  class=\"btn btn-primary navbar-btn\"\n                  ng-click=\"vm.submitTask('submit')\"\n                  ng-disabled=\"vm.is_read_only || vm.autoSaver.saving || vm.submitting\">\n            Submit\n          </button>\n          <button ng-if=\"vm.taskAssignment.is_reviewer\"\n                  type=\"button\"\n                  class=\"btn btn-primary navbar-btn\"\n                  ng-click=\"vm.submitTask('accept')\"\n                  ng-disabled=\"vm.is_read_only || vm.autoSaver.saving || vm.submitting\">\n            Accept\n          </button>\n          <button ng-if=\"vm.taskAssignment.is_reviewer\"\n                  type=\"button\"\n                  class=\"btn btn-default navbar-btn\"\n                  ng-click=\"vm.submitTask('reject')\"\n                  ng-disabled=\"vm.is_read_only || vm.autoSaver.saving || vm.submitting\">\n            Reject\n          </button>\n          <button type=\"button\"\n                  class=\"btn btn-default navbar-btn\"\n                  ng-click=\"vm.autoSaver.save()\"\n                  ng-disabled=\"vm.is_read_only || vm.autoSaver.saving || vm.submitting\">\n            Save\n          </button>\n          <div class=\"save-message\">\n            <div ng-show=\"vm.autoSaver.saving\">Saving...</div>\n            <div ng-show=\"vm.autoSaver.lastSaved && !vm.autoSaver.saving\">\n              Saved at {{ vm.autoSaver.lastSaved | date:'mediumTime' }}\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n\n\n</section><!--/wrapper -->\n";
 
 /***/ }),
-/* 210 */
+/* 218 */
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"timecard-view\" ng-if=\"!vm.dataLoading\">\n  <div class=\"entries\">\n    <div class=\"container-fluid\">\n      <div class=\"row no-padding\">\n        <div class=\"col-xs-10 col-xs-offset-2\">\n          <div class=\"row\">\n            <div class=\"col-xs-12 col-md-10\">\n              <span class=\"edit-label\">\n                Date range\n              </span>\n              <date-picker date=\"vm.minDate\" max-date=\"vm.maxDate\"></date-picker>–\n              <date-picker date=\"vm.maxDate\" min-date=\"vm.minDate\"\n              max-date=\"vm.weekEnd\"></date-picker>\n            </div>\n            <div class=\"col-xs-12 col-md-2\">\n              <a href=\"//orchestra.readthedocs.org/en/stable/features.html#time-tracking\" target=\"_blank\"\n              class=\"pull-right help-icon\"><i class=\"fa fa-question-circle\"></i></a>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n    <div class=\"date-group\" ng-repeat=\"dateEntries in vm.timeEntries.entriesByDate | toArray | orderBy:vm.datetimeFromKey:'true'\">\n      <div class=\"container-fluid\">\n        <div class=\"row no-padding\">\n          <div class=\"col-xs-12 col-md-2\">\n            <span class=\"day-name\">{{ vm.dayName(dateEntries.$key) }}</span>\n          </div>\n          <div class=\"col-xs-12 col-md-10\">\n            <div class=\"date-entries\">\n              <h2>\n                <span class=\"date-label\">{{ vm.prettyDate(dateEntries.$key) }}</span>\n                <i ng-click=\"vm.addEntry(vm.datetimeFromKey(dateEntries))\" class=\"fa fa-plus btn-add-entry\"></i>\n                <span class=\"date-duration\" ng-show=\"vm.timeEntries.invalidEntriesForDate(dateEntries.$key).length\">\n                  <em class=\"incomplete\">Invalid Entries</em>\n                </span>\n                <span class=\"date-duration\" ng-hide=\"vm.timeEntries.invalidEntriesForDate(dateEntries.$key).length\">\n                  {{ vm.timeEntries.timeWorkedForDate(dateEntries.$key).humanizeUnits() }}\n                </span>\n              </h2>\n              <div class=\"entry-row\" ng-if=\"!dateEntries.length\">\n                <div class=\"row\">\n                  <div class=\"col-xs-12\">\n                    <em>No entries for this date</em>\n                  </div>\n                </div>\n              </div>\n              <div class=\"entry-row\" ng-class=\"{'gray-stripe': $index % 2}\" ng-repeat=\"entry in dateEntries | orderBy:'-id'\">\n                <form class=\"container-fluid form-inline\" novalidate name=\"entryForm\">\n                  <div class=\"row\">\n                    <div class=\"col-xs-2 edit-tools disable-select\">\n                      <i ng-click=\"vm.timeEntries.deleteEntry(entry)\" class=\"fa fa-times-circle\"></i>\n                      <i class=\"fa fa-pencil-square-o\" ng-class=\"{active: entry.editing}\" ng-click=\"vm.editEntry(entry)\"></i>\n                    </div>\n\n                    <!-- Readonly view for description and time worked -->\n                    <div class=\"col-xs-6 description\" ng-if=\"!entry.editing\">\n                      <span ng-show=\"entry.description\">\n                        {{ entry.description }}\n                      </span>\n                      <span class=\"incomplete\" ng-hide=\"entry.description\">\n                        <em>No description</em>\n                      </span>\n                    </div>\n                    <div class=\"col-xs-4 edit-time\" ng-if=\"!entry.editing\">\n                      {{ entry.time_worked.roundMinute().humanizeUnits() }}\n                    </div>\n                    <div class=\"col-xs-12\" ng-if=\"!entry.editing\">\n                      <em class=\"pull-right\" ng-show=\"vm.orchestraTasks.tasksByAssignmentId[entry.assignment]\">\n                        {{ vm.orchestraTasks.getDescription(vm.orchestraTasks.tasksByAssignmentId[entry.assignment]) }}\n                      </em>\n                      <em class=\"pull-right incomplete\" ng-hide=\"vm.orchestraTasks.tasksByAssignmentId[entry.assignment]\">\n                        Unassigned\n                      </em>\n                    </div>\n\n                    <!-- Editable view for description and time worked -->\n                    <div class=\"col-xs-6\" ng-if=\"entry.editing\">\n                      <input class=\"form-control\" type=\"text\" ng-model=\"entry.editData.description\" placeholder=\"What did you work on?\">\n                    </div>\n                    <div class=\"col-xs-4 edit-time\" ng-if=\"entry.editing\">\n                      <div class=\"time-component\">\n                        <input class=\"form-control\" type=\"number\" ng-model=\"entry.editData.timeWorked.h\"\n                        min=\"0\" max=\"23\" enforce-integers>\n                        <label>hours</label>\n                      </div>\n                      <div class=\"time-component\">\n                        <input class=\"form-control\" type=\"number\" ng-model=\"entry.editData.timeWorked.m\"\n                        min=\"0\" max=\"59\" enforce-integers>\n                        <label>minutes</label>\n                      </div>\n                    </div>\n                  </div>\n\n                  <div class=\"row\" ng-if=\"entry.editing\">\n                    <div class=\"col-xs-4\">\n                      <div class=\"edit-date\">\n                        <label class=\"edit-label\">Move to date</label>\n                        <date-picker date=\"entry.editData.date\" max-date=\"vm.weekEnd\"></date-picker>\n                      </div>\n                    </div>\n                    <div class=\"col-xs-8\">\n                      <div class=\"edit-task\">\n                        <task-select task=\"entry.editData.task\"></task-select>\n                      </div>\n                    </div>\n                  </div>\n                  <div class=\"row\" ng-if=\"entry.editing\">\n                    <div class=\"col-xs-12\">\n                      <div class=\"edit-options pull-right\">\n                        <div class=\"edit-cancel-handle\" ng-click=\"vm.cancelChanges(entry)\">\n                          Cancel\n                        </div>\n                        <div class=\"btn btn-primary btn-sm edit-save-handle\" ng-disabled=\"vm.entryUnchanged(entry)\"\n                        ng-click=\"vm.saveChanges(entry)\">\n                          Save changes\n                        </div>\n                      </div>\n                    </div>\n                  </div>\n                </form>\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n";
 
 /***/ }),
-/* 211 */
+/* 219 */
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"project-management\">\n  <section class=\"section-panel\">\n    <div class=\"container-fluid\">\n      <div class=\"row padded\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <ui-select class=\"project-description\" ng-model=\"vis.dataService.currentProject\"\n              ng-change=\"vis.dataService.setSelectedProject()\"\n              ng-disabled=\"vis.dataService.loading\">\n            <ui-select-match>\n              <span ng-bind=\"projectDescription($select.selected)\"></span>\n            </ui-select-match>\n            <ui-select-choices repeat=\"item in (vis.dataService.allProjects | toArray | filter: $select.search) track by item.id\">\n              <span ng-bind=\"projectDescription(item)\"></span>\n            </ui-select-choices>\n          </ui-select>\n          <div class=\"project-actions\" ng-show=\"vis.dataService.currentProject.id\">\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.createSubsequentTasks()\" class=\"btn btn-default\">\n              Create subsequent tasks\n            </button>\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.showSlackActions()\" class=\"btn btn-default\">\n              Edit Slack users\n            </button>\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.showProjectData()\" class=\"btn btn-default\">\n              View project data\n            </button>\n            <a ng-href=\"{{vis.dataService.data.project.admin_url}}\" ng-disabled=\"vis.dataService.loading\" target=\"_blank\">\n              <button type=\"button\" class=\"btn btn-default\">View in admin</button>\n            </a>\n            <button ng-click=\"vis.endProject()\" class=\"btn btn-danger\">Abort project</button>\n          </div>\n        </div>\n      </div>\n      <div class=\"row\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <div class=\"vis-wrapper\" ng-show=\"vis.dataService.currentProject.id\">\n            <div class=\"overlay\" ng-if=\"vis.dataService.loading\">\n              <div class=\"spinner\"></div>\n            </div>\n            <div class=\"freeze-pane-left\">\n              <div class=\"scale-buttons\">\n                <button ng-click=\"vis.axis.relativeTime = !vis.axis.relativeTime; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  Switch to {{vis.axis.relativeTime ? 'local' : 'relative'}} time\n                </button>\n                <button ng-click=\"vis.params.scaleWidth = vis.params.scaleWidth / 1.1; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  -\n                </button>\n                <button ng-click=\"vis.params.scaleWidth = vis.params.scaleWidth * 1.1; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  +\n                </button>\n              </div>\n              <div class=\"task-names\"></div>\n            </div>\n            <div class=\"svg-wrapper\"></div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n</div>\n";
