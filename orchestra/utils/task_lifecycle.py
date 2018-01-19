@@ -519,6 +519,9 @@ def tasks_assigned_to_worker(worker):
                         todo_order=Case(
                             When(
                                 start_by_datetime__gt=time_now,
+                                then=Value(3)),
+                            When(
+                                due_datetime=None,
                                 then=Value(2)),
                             default=Value(1),
                             output_field=IntegerField()
