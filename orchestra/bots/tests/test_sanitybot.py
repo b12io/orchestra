@@ -1,3 +1,4 @@
+from collections import Counter
 from datetime import timedelta
 from unittest.mock import patch
 
@@ -16,51 +17,69 @@ class SanityBotTestCase(OrchestraTestCase):
 
     @patch('orchestra.bots.sanitybot.message_experts_slack_group')
     def test_create_and_handle_sanity_checks(self, mock_slack):
-        # Initialize relevant project
+        # Initialize relevant project.
         create_subsequent_tasks(self.projects['sanitybot'])
-        # Initialize irrelevant project
+        # Initialize irrelevant project.
         create_subsequent_tasks(self.projects['test_human_and_machine'])
 
-        # No sanity checks exist
+        # No sanity checks exist, and Slack hasn't received a message.
         sanity_checks = SanityCheck.objects.all()
         self.assertEqual(sanity_checks.count(), 0)
+        self.assertEqual(mock_slack.call_count, 0)
 
         create_and_handle_sanity_checks()
-        # One sanity check exists for the relevant project
+        # Of the four sanity checks for this project, three were
+        # triggered by orchestra.tests.helpers.workflow.check_project.
         sanity_checks = SanityCheck.objects.all()
-        self.assertEqual(sanity_checks.count(), 1)
-        sanity_check = sanity_checks.first()
-        self.assertEqual(sanity_check.project.workflow_version.slug,
-                         'sanitybot_workflow')
-        # Slack got called once
-        self.assertEqual(mock_slack.call_count, 1)
-
-        create_and_handle_sanity_checks()
-        # Still only one sanity check exists for the relevant project
-        sanity_checks = SanityCheck.objects.all()
-        self.assertEqual(sanity_checks.count(), 1)
-        # Slack didn't get called
-        self.assertEqual(mock_slack.call_count, 1)
-
-        # Change created datetime of the sanity check. If it happened
-        # more than a day ago, the workflow is configured to create
-        # another sanity check.
-        sanity_check.created_at = sanity_check.created_at - timedelta(days=2)
-        sanity_check.save()
-        create_and_handle_sanity_checks()
-        # Two sanity checks exist for the relevant project
-        sanity_checks = SanityCheck.objects.all()
-        self.assertEqual(sanity_checks.count(), 2)
+        self.assertEqual(
+            dict(Counter(sanity_checks.values_list('check_slug', flat=True))),
+            {
+                'frequently_repeating_check': 1,
+                'infrequently_repeating_check': 1,
+                'onetime_check': 1
+            })
         for sanity_check in sanity_checks:
             self.assertEqual(
                 sanity_check.project.workflow_version.slug,
                 'sanitybot_workflow')
-        # Slack got called twice
-        self.assertEqual(mock_slack.call_count, 2)
+        # Three slack messages for three sanity checks.
+        self.assertEqual(mock_slack.call_count, 3)
+
+        # Too little time has passed, so we expect no new sanity checks.
+        create_and_handle_sanity_checks()
+        # Still only three sanity check exists for the relevant project.
+        sanity_checks = SanityCheck.objects.all()
+        self.assertEqual(sanity_checks.count(), 3)
+        # Slack didn't get called again.
+        self.assertEqual(mock_slack.call_count, 3)
+
+        # Mark the sanity checks as having happened two days ago. Only
+        # the `frequently_repeating_check` should trigger.
+        for sanity_check in sanity_checks:
+            sanity_check.created_at = (
+                sanity_check.created_at - timedelta(days=2))
+            sanity_check.save()
+        create_and_handle_sanity_checks()
+        # Look for the three old sanity checks and a new
+        # `frequently_repeating_check`.
+        sanity_checks = SanityCheck.objects.all()
+        self.assertEqual(
+            dict(Counter(sanity_checks.values_list('check_slug', flat=True))),
+            {
+                'frequently_repeating_check': 2,
+                'infrequently_repeating_check': 1,
+                'onetime_check': 1
+            })
+        for sanity_check in sanity_checks:
+            self.assertEqual(
+                sanity_check.project.workflow_version.slug,
+                'sanitybot_workflow')
+        # Slack got called another time.
+        self.assertEqual(mock_slack.call_count, 4)
 
         create_and_handle_sanity_checks()
-        # Still only two sanity checks exists for the relevant project
+        # Still only four sanity checks exists for the relevant project.
         sanity_checks = SanityCheck.objects.all()
-        self.assertEqual(sanity_checks.count(), 2)
-        # Slack didn't get called
-        self.assertEqual(mock_slack.call_count, 2)
+        self.assertEqual(sanity_checks.count(), 4)
+        # Slack didn't get called again.
+        self.assertEqual(mock_slack.call_count, 4)

@@ -67,6 +67,9 @@ class WorkflowVersion(WorkflowVersionMixin, models.Model):
             The workflow that this is a version of.
         sanity_checks (str):
             A JSON blob used to define the sanity checks we run.
+            An example configuration can be found in
+            `orchestra.tests.helpers.workflow.py` in the
+            `sanitybot_workflow` configuration.
     """
     created_at = models.DateTimeField(default=timezone.now)
     slug = models.CharField(max_length=200)

@@ -15,7 +15,11 @@ def machine_task_function():
 
 
 def check_project(project):
-    return [SanityCheck(check_slug='friendly_check')]
+    return [
+        SanityCheck(check_slug='frequently_repeating_check'),
+        SanityCheck(check_slug='infrequently_repeating_check'),
+        SanityCheck(check_slug='onetime_check'),
+    ]
 
 
 workflow_fixtures = [
@@ -572,13 +576,35 @@ workflow_fixtures = [
                                  '.check_project')
                     },
                     'check_configurations': {
-                        "friendly_check": {
+                        "frequently_repeating_check": {
                             "handlers": [{
                                 "type": "slack_project_channel",
-                                "message": "Friendly message",
+                                "message": "Frequently repeating message",
                                 "steps": ["step1"]
                             }],
-                            "repetition_seconds": 86400
+                            "repetition_seconds": 86400  # One day
+                        },
+                        "infrequently_repeating_check": {
+                            "handlers": [{
+                                "type": "slack_project_channel",
+                                "message": "Infrequently repeating message",
+                                "steps": ["step1"]
+                            }],
+                            "repetition_seconds": 864000  # Ten days
+                        },
+                        "onetime_check": {
+                            "handlers": [{
+                                "type": "slack_project_channel",
+                                "message": "One-time message",
+                                "steps": ["step1"]
+                            }],
+                        },
+                        "unused_check": {
+                            "handlers": [{
+                                "type": "slack_project_channel",
+                                "message": "Unused message",
+                                "steps": ["step1"]
+                            }],
                         },
                     }
                 },

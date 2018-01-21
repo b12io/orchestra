@@ -10,11 +10,6 @@ from orchestra.utils.notifications import message_experts_slack_group
 from orchestra.utils.project_properties import incomplete_projects
 
 
-def _workflow_versions_with_sanity_checks():
-    # TODO(marcua): make more specific.
-    return WorkflowVersion.objects.all()
-
-
 def _handle(project, sanity_check, handler):
     handler_type = handler.get('type')
     handler_message = handler.get('message')
@@ -37,13 +32,12 @@ def _handle(project, sanity_check, handler):
 
 
 def _filter_checks(project, checks, check_configurations):
-    latest_check_creation = (SanityCheck.objects
-                             .filter(project=project)
-                             .values('check_slug')
-                             .annotate(max_created_at=Max('created_at')))
     latest_check_creation = {
         check['check_slug']: check['max_created_at']
-        for check in latest_check_creation}
+        for check in (SanityCheck.objects
+                      .filter(project=project)
+                      .values('check_slug')
+                      .annotate(max_created_at=Max('created_at')))}
     for check in checks:
         max_created_at = latest_check_creation.get(check.check_slug)
         seconds = (
@@ -76,7 +70,7 @@ def _handle_sanity_checks(project, sanity_checks, check_configurations):
 
 
 def create_and_handle_sanity_checks():
-    workflow_versions = _workflow_versions_with_sanity_checks()
+    workflow_versions = WorkflowVersion.objects.all()
     for project in incomplete_projects(
             Project.objects.filter(
                 workflow_version__in=workflow_versions)):
