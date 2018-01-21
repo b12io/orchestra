@@ -9,7 +9,6 @@ clean:
 	find . -name '*~' -delete
 
 lint:
-<<<<<<< HEAD
 	# TODO(marcua): reenable isort when it works the same in dev and
 	# on CircleCI
 	flake8 . # && isort --check-only --recursive .
