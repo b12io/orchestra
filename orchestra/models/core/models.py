@@ -9,6 +9,7 @@ from orchestra.models.core.mixins import CertificationMixin
 from orchestra.models.core.mixins import PayRateMixin
 from orchestra.models.core.mixins import ProjectMixin
 from orchestra.models.core.mixins import StepMixin
+from orchestra.models.core.mixins import SanityCheckMixin
 from orchestra.models.core.mixins import TaskAssignmentMixin
 from orchestra.models.core.mixins import TaskMixin
 from orchestra.models.core.mixins import TodoMixin
@@ -64,6 +65,11 @@ class WorkflowVersion(WorkflowVersionMixin, models.Model):
             A longer description of the workflow version.
         workflow (orchestra.models.Workflow):
             The workflow that this is a version of.
+        sanity_checks (str):
+            A JSON blob used to define the sanity checks we run.
+            An example configuration can be found in
+            `orchestra.tests.helpers.workflow.py` in the
+            `sanitybot_workflow` configuration.
     """
     created_at = models.DateTimeField(default=timezone.now)
     slug = models.CharField(max_length=200)
@@ -71,6 +77,7 @@ class WorkflowVersion(WorkflowVersionMixin, models.Model):
     description = models.TextField()
     workflow = models.ForeignKey(
         Workflow, related_name='versions', on_delete=models.CASCADE)
+    sanity_checks = JSONField(default={})
 
     class Meta:
         app_label = 'orchestra'
@@ -600,3 +607,24 @@ class Todo(TodoMixin, BaseModel):
     completed = models.BooleanField(default=False)
     start_by_datetime = models.DateTimeField(null=True, blank=True)
     due_datetime = models.DateTimeField(null=True, blank=True)
+
+
+class SanityCheck(SanityCheckMixin, BaseModel):
+    """
+    A sanity check that SanityBot raises on a project.
+
+    Attributes:
+        project (orchestra.models.Project):
+            The project for which the sanity check is raised.
+        handled_at (boolean):
+            When the sanity check was handled (e.g., messaging a team member).
+        check_slug (str):
+            A project-specific slug describing the sanity check.
+    """
+    class Meta:
+        app_label = 'orchestra'
+
+    project = models.ForeignKey(
+        Project, related_name='sanity_checks', on_delete=models.CASCADE)
+    handled_at = models.DateTimeField(blank=True, null=True)
+    check_slug = models.CharField(max_length=200)

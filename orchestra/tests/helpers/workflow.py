@@ -1,4 +1,5 @@
 from orchestra.models import Certification
+from orchestra.models import SanityCheck
 from orchestra.models import Step
 from orchestra.models import Workflow
 from orchestra.models import WorkflowVersion
@@ -11,6 +12,14 @@ def simple_json(project_data, dependencies):
 
 def machine_task_function():
     pass
+
+
+def check_project(project):
+    return [
+        SanityCheck(check_slug='frequently_repeating_check'),
+        SanityCheck(check_slug='infrequently_repeating_check'),
+        SanityCheck(check_slug='onetime_check'),
+    ]
 
 
 workflow_fixtures = [
@@ -547,6 +556,78 @@ workflow_fixtures = [
                         'creation_depends_on': [],
                         'required_certifications': [],
                         'execution_function': {},
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        'slug': 'sanitybot',
+        'name': 'SanityBot workflow',
+        'certifications': [],
+        'versions': [
+            {
+                'slug': 'sanitybot_workflow',
+                'name': 'SanityBot workflow',
+                'description': 'A description of the SanityBot workflow',
+                'sanity_checks': {
+                    'sanity_check_function': {
+                        'path': ('orchestra.tests.helpers.workflow'
+                                 '.check_project')
+                    },
+                    'check_configurations': {
+                        "frequently_repeating_check": {
+                            "handlers": [{
+                                "type": "slack_project_channel",
+                                "message": "Frequently repeating message",
+                                "steps": ["step1"]
+                            }],
+                            "repetition_seconds": 86400  # One day
+                        },
+                        "infrequently_repeating_check": {
+                            "handlers": [{
+                                "type": "slack_project_channel",
+                                "message": "Infrequently repeating message",
+                                "steps": ["step1"]
+                            }],
+                            "repetition_seconds": 864000  # Ten days
+                        },
+                        "onetime_check": {
+                            "handlers": [{
+                                "type": "slack_project_channel",
+                                "message": "One-time message",
+                                "steps": ["step1"]
+                            }],
+                        },
+                        "unused_check": {
+                            "handlers": [{
+                                "type": "slack_project_channel",
+                                "message": "Unused message",
+                                "steps": ["step1"]
+                            }],
+                        },
+                    }
+                },
+                'steps': [
+                    {
+                        'slug': 'step1',
+                        'name': 'The first step',
+                        'description': ('The longer description of the '
+                                        'first step'),
+                        'is_human': True,
+                        'creation_depends_on': [],
+                        'required_certifications': [],
+                        'review_policy': {
+                            'policy': 'sampled_review',
+                            'rate': 1,
+                            'max_reviews': 2,
+                        },
+                        'user_interface': {
+                            'javascript_includes': ['/path/to/some.js'],
+                            'stylesheet_includes': ['/path/to/some.css'],
+                            'angular_module': 'step1',
+                            'angular_directive': 'step1_directive',
+                        },
                     },
                 ],
             },

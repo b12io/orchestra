@@ -202,3 +202,58 @@ To restaff this task you can type::
 
 This will offer the task again to eligible experts, and once a new expert
 accepts, ``joshblum`` will be removed and the new expert will be added.
+
+*********
+SanityBot
+*********
+
+Setup
+-----
+
+``SanityBot`` periodically looks at the state of a project and reminds
+the project team about various things that seem off. For details and
+motivation, see the `original project description
+<https://github.com/b12io/orchestra/issues/434>`_. ``SanityBot``
+currently warns project team members in the project team's Slack
+channel.
+
+Project Configuration
+=====================
+
+To specify which sanity checks to run, and how frequently to run them,
+update ``version.json`` for the workflow you are sanity-checking with
+an optional ``sanity_checks`` entry. As an example::
+
+
+  [...workflow definition...]
+  "sanity_checks": {
+    "sanity_check_function": {
+        "path": "path.to.sanity.check.function"
+    },
+    "check_configurations": {
+      "check_slug1": {
+        "handlers": [{"type": "slack_project_channel", "message": "<message here>", "steps": ["step_slug1", ...]}],
+        "repetition_seconds": 3600
+      },
+      ...
+    },
+  }
+  ...
+
+
+Here's a walkthrough of the configuration above:
+
+* ``sanity_check_function`` is called periodically and generates SanityCheck objects. The function prototype is ``def sanity_check_function(project: Project) -> List[SanityCheck]:``.
+* ``check_configurations`` maps ``SanityCheck.check_slug`` values to a configuration, which consists of a list of handlers and a repetition interval.
+* in v1, the only handler is ``slack_project_channel``, which messages the team slack project, tagging the experts assigned to the tasks specified by in steps.
+* An optional ``repetition_seconds`` contains the number of seconds to wait before re-issuing/re-handling a ``SanityCheck``. If ``repetition_seconds`` does not appear in the map, that ``SanityCheck`` is not repeated.
+
+
+Scheduling function
+===================
+To operationalize ``SanityBot``, you should call
+``orchestra.bots.sanitybot.create_and_handle_sanity_checks`` through
+``cron`` or some other scheduling utility. This function will look at
+all active projects with ``sanity_checks`` in their workflow
+definitions, and call the appropriate ``sanity_check_function`` to
+trigger sanity checks.

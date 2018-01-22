@@ -706,12 +706,8 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
             description='todo2')
 
         tasks_assigned = tasks_assigned_to_worker(self.workers[5])
-        for t in tasks_assigned:
-            print(t['next_todo_dict'])
-            print('----')
 
         for t in tasks_assigned:
-            print(t['next_todo_dict'])
             if t['id'] == task.id:
                 next_todo_due = t['next_todo_dict'].get('due_datetime', None)
 

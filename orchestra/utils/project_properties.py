@@ -1,4 +1,5 @@
 from django.db.models import Count
+from django.db.models import Q
 
 from orchestra.models import Project
 from orchestra.models import Task
@@ -21,3 +22,11 @@ def completed_projects(projects):
         projects.annotate(num_tasks=Count('tasks'))
         .filter(num_tasks__gt=0)
         .exclude(id__in=in_progress_projects))
+
+
+def incomplete_projects(projects):
+    incomplete_project_ids = (
+        Task.objects.exclude(Q(status=Task.Status.COMPLETE) |
+                             Q(status=Task.Status.ABORTED))
+        .values_list('project', flat=True))
+    return projects.filter(id__in=incomplete_project_ids)

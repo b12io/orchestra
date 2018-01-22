@@ -16,6 +16,7 @@ from orchestra.models import CommunicationPreference
 from orchestra.models import Iteration
 from orchestra.models import PayRate
 from orchestra.models import Project
+from orchestra.models import SanityCheck
 from orchestra.models import StaffBotRequest
 from orchestra.models import StaffingRequestInquiry
 from orchestra.models import StaffingResponse
@@ -85,6 +86,18 @@ class ProjectAdmin(admin.ModelAdmin):
                      'workflow_version__slug',
                      'workflow_version__workflow__slug',)
     list_filter = ('workflow_version',)
+
+
+@admin.register(SanityCheck)
+class SanityCheckAdmin(AjaxSelectAdmin):
+    form = make_ajax_form(SanityCheck, {
+        'project': 'projects',
+    })
+    list_display = ('id', 'created_at', 'project', 'check_slug', 'handled_at')
+    ordering = ('-created_at',)
+    search_fields = (
+        'project__short_description', 'check_slug')
+    list_filter = ('project__workflow_version',)
 
 
 @admin.register(Step)
