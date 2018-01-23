@@ -10,7 +10,6 @@ import projectManagement from 'orchestra/project-management/project-management.m
 import task from 'orchestra/task/task.module.es6.js'
 import timing from 'orchestra/timing/timing.module.es6.js'
 import todos from 'orchestra/todos/todos.module.es6.js'
-import teamInfo from 'orchestra/team-info/team-info.module.es6.js'
 
 import config from 'orchestra/config.es6.js'
 
@@ -22,7 +21,7 @@ angular.module('orchestra.workflows', window.orchestra.angular_modules)
 
 angular
   .module('orchestra', [
-    'ngRoute', common, timing, dashboard, task, todos, teamInfo,
+    'ngRoute', common, timing, dashboard, task, todos,
     projectManagement, 'orchestra.analytics', 'orchestra.workflows'
   ])
   .config(config)
