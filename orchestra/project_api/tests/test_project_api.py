@@ -213,7 +213,7 @@ class ProjectAPITestCase(OrchestraTestCase):
         returned = load_encoded_json(response.content)
         returned_task = returned['tasks']
         recorded_time = returned_task['step1']['assignments'][0]['recorded_work_time']
-        self.assertEqual(recorded_time, None)
+        self.assertEqual(recorded_time, '1:45:00') # 1:15 + 0:30
 
     def test_get_workflow_steps(self):
         # See orchestra.tests.helpers.fixtures for workflow description
