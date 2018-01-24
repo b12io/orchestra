@@ -1,4 +1,5 @@
 import template from './team-info-card.html'
+import moment from 'moment-timezone'
 
 export default function teamInfoCard (orchestraApi) {
   'ngAnnotate'
@@ -23,7 +24,8 @@ export default function teamInfoCard (orchestraApi) {
               teamInfoCard.assignments = teamInfoCard.assignments.concat(task.assignments.map(a => {
                 return {
                   role: stepSlug,
-                  worker: a.worker
+                  worker: a.worker,
+                  recordedTime: moment.duration(a.recorded_work_time).roundMinute().humanizeUnits()
                 }
               }))
             }

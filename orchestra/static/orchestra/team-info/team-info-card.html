@@ -19,9 +19,9 @@
           <tbody>
             <tr ng-repeat="assignment in teamInfoCard.assignments">
               <td>{{assignment.role}}</td>
-              <td>{{assignment.worker.username}}
+              <td>{{assignment.worker.username}}</td>
               <td>{{assignment.worker.first_name}} {{assignment.worker.last_name}}</td>
-              <td>30 m</td>
+              <td>{{assignment.recordedTime}}</td>
             </tr>
           </tbody>
         </table>

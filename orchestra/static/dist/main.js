@@ -61683,6 +61683,10 @@ var _teamInfoCard = __webpack_require__(217);
 
 var _teamInfoCard2 = _interopRequireDefault(_teamInfoCard);
 
+var _momentTimezone = __webpack_require__(1);
+
+var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function teamInfoCard(orchestraApi) {
@@ -61722,7 +61726,8 @@ function teamInfoCard(orchestraApi) {
               teamInfoCard.assignments = teamInfoCard.assignments.concat(task.assignments.map(function (a) {
                 return {
                   role: stepSlug,
-                  worker: a.worker
+                  worker: a.worker,
+                  recordedTime: _momentTimezone2.default.duration(a.recorded_work_time).roundMinute().humanizeUnits()
                 };
               }));
             }
@@ -61754,7 +61759,7 @@ function teamInfoCard(orchestraApi) {
 /* 217 */
 /***/ (function(module, exports) {
 
-module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Team info\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <table class=\"table table-striped\">\n          <thead>\n            <th>Role</th>\n            <th>Username</th>\n            <th>Name</th>\n            <th>Recorded time spent</th>\n          </thead>\n          <tbody>\n            <tr ng-repeat=\"assignment in teamInfoCard.assignments\">\n              <td>{{assignment.role}}</td>\n              <td>{{assignment.worker.username}}\n              <td>{{assignment.worker.first_name}} {{assignment.worker.last_name}}</td>\n              <td>30 m</td>\n            </tr>\n          </tbody>\n        </table>\n      </div>\n    </div>\n  </div>\n</section>\n";
+module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Team info\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <table class=\"table table-striped\">\n          <thead>\n            <th>Role</th>\n            <th>Username</th>\n            <th>Name</th>\n            <th>Recorded time spent</th>\n          </thead>\n          <tbody>\n            <tr ng-repeat=\"assignment in teamInfoCard.assignments\">\n              <td>{{assignment.role}}</td>\n              <td>{{assignment.worker.username}}</td>\n              <td>{{assignment.worker.first_name}} {{assignment.worker.last_name}}</td>\n              <td>{{assignment.recordedTime}}</td>\n            </tr>\n          </tbody>\n        </table>\n      </div>\n    </div>\n  </div>\n</section>\n";
 
 /***/ }),
 /* 218 */
