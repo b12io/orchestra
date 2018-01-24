@@ -7,7 +7,6 @@ from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import TaskTimer
 from orchestra.models import TimeEntry
-from orchestra.models import Worker
 from orchestra.models import WorkerCertification
 
 
@@ -107,6 +106,7 @@ class TaskSerializer(serializers.ModelSerializer):
 
 class TaskAssignmentSerializer(serializers.ModelSerializer):
     recorded_work_time = serializers.SerializerMethodField()
+
     class Meta:
         model = TaskAssignment
         fields = (
@@ -158,7 +158,7 @@ class TaskAssignmentSerializer(serializers.ModelSerializer):
         return obj.in_progress_task_data
 
     def get_recorded_work_time(self, obj):
-        query = TimeEntry.objects.filter(worker=obj.worker,assignment=obj)
+        query = TimeEntry.objects.filter(worker=obj.worker, assignment=obj)
         if not query:
             return None
 
