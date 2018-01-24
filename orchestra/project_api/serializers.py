@@ -1,3 +1,4 @@
+import datetime
 from rest_framework import serializers
 
 from orchestra.models import Iteration
@@ -104,6 +105,7 @@ class TaskSerializer(serializers.ModelSerializer):
 
 
 class TaskAssignmentSerializer(serializers.ModelSerializer):
+    recorded_work_time = serializers.SerializerMethodField()
 
     class Meta:
         model = TaskAssignment
@@ -115,6 +117,7 @@ class TaskAssignmentSerializer(serializers.ModelSerializer):
             'status',
             'in_progress_task_data',
             'iterations',
+            'recorded_work_time'
         )
 
     worker = serializers.SerializerMethodField()
@@ -153,6 +156,17 @@ class TaskAssignmentSerializer(serializers.ModelSerializer):
         TODO(derek): maybe make a custom JSON serializer field type?
         """
         return obj.in_progress_task_data
+
+    def get_recorded_work_time(self, obj):
+        query = TimeEntry.objects.filter(worker=obj.worker, assignment=obj)
+        if not query:
+            return None
+
+        total_time = datetime.timedelta()
+        for t in query:
+            total_time += t.time_worked
+
+        return total_time.total_seconds()
 
 
 class TimeEntrySerializer(serializers.ModelSerializer):

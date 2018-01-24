@@ -1,3 +1,4 @@
+import datetime
 from unittest.mock import patch
 
 from django.conf import settings
@@ -11,6 +12,7 @@ from orchestra.google_apps.service import Service
 from orchestra.models import Project
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
+from orchestra.models import TimeEntry
 from orchestra.models import WorkerCertification
 from orchestra.project_api.api import MalformedDependencyException
 from orchestra.project_api.api import get_workflow_steps
@@ -20,6 +22,7 @@ from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.google_apps import mock_create_drive_service
 from orchestra.utils.load_json import load_encoded_json
+from orchestra.utils.task_lifecycle import get_new_task_assignment
 
 
 class ProjectAPITestCase(OrchestraTestCase):
@@ -112,6 +115,7 @@ class ProjectAPITestCase(OrchestraTestCase):
                             'status': 'Requested Review',
                             'submitted_data': {'test_key': 'test_value'},
                         }],
+                        'recorded_work_time': 30*60,
                     }],
                     'latest_data': {
                         'test_key': 'test_value'
@@ -174,6 +178,43 @@ class ProjectAPITestCase(OrchestraTestCase):
                 'step_slug': 'step1'
             }
         })
+
+    def test_project_assignment_recorded_time(self):
+        project = self.projects['base_test_project']
+        worker = self.workers[0]
+
+        task = self.tasks['review_task']
+        assignment = TaskAssignment.objects.filter(
+            worker=worker, task=task).first()
+        other_assignment = get_new_task_assignment(
+            worker, Task.Status.AWAITING_PROCESSING)
+
+        # create 3 time entries
+        TimeEntry.objects.create(
+            worker=self.workers[0],
+            date=datetime.datetime.now().date(),
+            time_worked=datetime.timedelta(hours=1),
+            assignment=assignment)
+        TimeEntry.objects.create(
+            worker=self.workers[0],
+            date=datetime.datetime.now().date(),
+            time_worked=datetime.timedelta(hours=1),
+            assignment=other_assignment)
+        TimeEntry.objects.create(
+            worker=self.workers[0],
+            date=datetime.datetime.now().date(),
+            time_worked=datetime.timedelta(minutes=15),
+            assignment=assignment)
+
+        response = self.api_client.post(
+            '/orchestra/api/project/project_information/',
+            {'project_id': project.id},
+            format='json')
+        returned = load_encoded_json(response.content)
+        returned_task = returned['tasks']
+        returned_assignment = returned_task['step1']['assignments'][0]
+        recorded_time = returned_assignment['recorded_work_time']
+        self.assertEqual(recorded_time, 105*60)  # 1:15 + 0:30
 
     def test_get_workflow_steps(self):
         # See orchestra.tests.helpers.fixtures for workflow description
