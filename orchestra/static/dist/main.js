@@ -61679,6 +61679,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = teamInfoCard;
 
+var _lodash = __webpack_require__(5);
+
 var _teamInfoCard = __webpack_require__(217);
 
 var _teamInfoCard2 = _interopRequireDefault(_teamInfoCard);
@@ -61703,6 +61705,7 @@ function teamInfoCard(orchestraApi) {
     controller: function controller($scope) {
       var teamInfoCard = $scope.teamInfoCard;
       orchestraApi.projectInformation(teamInfoCard.projectId).then(function (response) {
+        console.log(response.data);
         var _response$data = response.data,
             steps = _response$data.steps,
             tasks = _response$data.tasks;
@@ -61712,6 +61715,10 @@ function teamInfoCard(orchestraApi) {
         }).map(function (step) {
           return step.slug;
         }));
+        teamInfoCard.steps = (0, _lodash.reduce)(Object.values(response.data.steps), function (result, step) {
+          result[step.slug] = step;
+          return result;
+        }, {});
         teamInfoCard.assignments = [];
         var _iteratorNormalCompletion = true;
         var _didIteratorError = false;
@@ -61725,7 +61732,7 @@ function teamInfoCard(orchestraApi) {
             if (task) {
               teamInfoCard.assignments = teamInfoCard.assignments.concat(task.assignments.map(function (a) {
                 return {
-                  role: stepSlug,
+                  role: teamInfoCard.steps[stepSlug].name,
                   worker: a.worker,
                   recordedTime: _momentTimezone2.default.duration(a.recorded_work_time).roundMinute().humanizeUnits()
                 };

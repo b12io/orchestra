@@ -1,3 +1,4 @@
+import { reduce } from 'lodash'
 import template from './team-info-card.html'
 import moment from 'moment-timezone'
 
@@ -17,13 +18,18 @@ export default function teamInfoCard (orchestraApi) {
         .then(response => {
           const {steps, tasks} = response.data
           const humanSteps = new Set(steps.filter(step => step.is_human).map(step => step.slug))
+          teamInfoCard.steps = reduce(
+            Object.values(response.data.steps), (result, step) => {
+              result[step.slug] = step
+              return result
+            }, {})
           teamInfoCard.assignments = []
           for (let stepSlug of humanSteps.values()) {
             const task = tasks[stepSlug]
             if (task) {
               teamInfoCard.assignments = teamInfoCard.assignments.concat(task.assignments.map(a => {
                 return {
-                  role: stepSlug,
+                  role: teamInfoCard.steps[stepSlug].name,
                   worker: a.worker,
                   recordedTime: moment.duration(a.recorded_work_time).roundMinute().humanizeUnits()
                 }
