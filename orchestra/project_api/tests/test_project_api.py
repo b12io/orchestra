@@ -115,7 +115,7 @@ class ProjectAPITestCase(OrchestraTestCase):
                             'status': 'Requested Review',
                             'submitted_data': {'test_key': 'test_value'},
                         }],
-                        'recorded_work_time': None,
+                        'recorded_work_time': '0:30:00',
                     }],
                     'latest_data': {
                         'test_key': 'test_value'
