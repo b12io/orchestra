@@ -31,7 +31,7 @@ export default function teamInfoCard (orchestraApi) {
                 return {
                   role: teamInfoCard.steps[stepSlug].name,
                   worker: a.worker,
-                  recordedTime: moment.duration(a.recorded_work_time).roundMinute().humanizeUnits()
+                  recordedTime: moment.duration(a.recorded_work_time, 'seconds').roundMinute().humanizeUnits()
                 }
               }))
             }

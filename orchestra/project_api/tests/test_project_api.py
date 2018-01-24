@@ -115,7 +115,7 @@ class ProjectAPITestCase(OrchestraTestCase):
                             'status': 'Requested Review',
                             'submitted_data': {'test_key': 'test_value'},
                         }],
-                        'recorded_work_time': '0:30:00',
+                        'recorded_work_time': 30*60,
                     }],
                     'latest_data': {
                         'test_key': 'test_value'
@@ -214,7 +214,7 @@ class ProjectAPITestCase(OrchestraTestCase):
         returned_task = returned['tasks']
         returned_assignment = returned_task['step1']['assignments'][0]
         recorded_time = returned_assignment['recorded_work_time']
-        self.assertEqual(recorded_time, '1:45:00')  # 1:15 + 0:30
+        self.assertEqual(recorded_time, 105*60)  # 1:15 + 0:30
 
     def test_get_workflow_steps(self):
         # See orchestra.tests.helpers.fixtures for workflow description

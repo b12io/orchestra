@@ -166,7 +166,7 @@ class TaskAssignmentSerializer(serializers.ModelSerializer):
         for t in query:
             total_time += t.time_worked
 
-        return str(total_time)
+        return total_time.total_seconds()
 
 
 class TimeEntrySerializer(serializers.ModelSerializer):

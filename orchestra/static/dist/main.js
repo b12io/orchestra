@@ -61705,7 +61705,6 @@ function teamInfoCard(orchestraApi) {
     controller: function controller($scope) {
       var teamInfoCard = $scope.teamInfoCard;
       orchestraApi.projectInformation(teamInfoCard.projectId).then(function (response) {
-        console.log(response.data);
         var _response$data = response.data,
             steps = _response$data.steps,
             tasks = _response$data.tasks;
@@ -61734,7 +61733,7 @@ function teamInfoCard(orchestraApi) {
                 return {
                   role: teamInfoCard.steps[stepSlug].name,
                   worker: a.worker,
-                  recordedTime: _momentTimezone2.default.duration(a.recorded_work_time).roundMinute().humanizeUnits()
+                  recordedTime: _momentTimezone2.default.duration(a.recorded_work_time, 'seconds').roundMinute().humanizeUnits()
                 };
               }));
             }
