@@ -109,7 +109,11 @@ class ProjectAPITestCase(OrchestraTestCase):
                         'worker': {
                             'username': self.workers[0].user.username,
                             'first_name': self.workers[0].user.first_name,
-                            'last_name': self.workers[0].user.last_name
+                            'last_name': self.workers[0].user.last_name,
+                            'slack_username':
+                                self.workers[0].slack_username,
+                            'slack_user_id':
+                                self.workers[0].slack_user_id
                         },
                         'iterations': [{
                             'status': 'Requested Review',

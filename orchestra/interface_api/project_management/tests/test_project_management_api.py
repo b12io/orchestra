@@ -110,6 +110,8 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
                 'first_name': assignment.worker.user.first_name,
                 'last_name': assignment.worker.user.last_name,
                 'id': assignment.worker.id,
+                'slack_username': assignment.worker.slack_username,
+                'slack_user_id': assignment.worker.slack_user_id
             },
             'iterations': [
                 {
