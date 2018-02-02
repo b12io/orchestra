@@ -132,12 +132,16 @@ class TaskAssignmentSerializer(serializers.ModelSerializer):
                 'username': None,
                 'first_name': None,
                 'last_name': None,
+                'slack_username': None,
+                'slack_user_id': None
             }
         return {
             'id': obj.worker.id,
             'username': obj.worker.user.username,
             'first_name': obj.worker.user.first_name,
             'last_name': obj.worker.user.last_name,
+            'slack_username': obj.worker.slack_username,
+            'slack_user_id': obj.worker.slack_user_id
         }
 
     def get_status(self, obj):
