@@ -8,7 +8,8 @@ export default function teamInfoCard (orchestraApi) {
     template,
     restrict: 'E',
     scope: {
-      projectId: '='
+      projectId: '=',
+      isProjectAdmin: '='
     },
     controllerAs: 'teamInfoCard',
     bindToController: true,

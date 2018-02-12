@@ -4,6 +4,12 @@
       <div class="col-lg-12 col-md-12 col-sm-12">
         <h3>
           Team info
+          <a class="btn"
+             ng-if="teamInfoCard.isProjectAdmin"
+             ng-href="project/{{teamInfoCard.projectId}}"
+             target="_blank">
+            Project Management
+          </a>
         </h3>
       </div>
     </div>

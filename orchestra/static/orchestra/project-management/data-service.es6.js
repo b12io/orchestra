@@ -20,10 +20,12 @@ export default function dataService ($location, $rootScope, $route, orchestraApi
     },
     getAllProjects: function () {
       var dataService = this
+      dataService.loading = true
       dataService.ready = orchestraApi.allProjects().then(function (response) {
         response.data.forEach(function (project) {
           dataService.allProjects[project.id] = project
         })
+        dataService.loading = false
       })
       return dataService.ready
     },
