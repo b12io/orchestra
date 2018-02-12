@@ -419,6 +419,7 @@ def get_task_overview_for_worker(task_id, worker):
     """
     task = Task.objects.get(id=task_id)
     task_details = get_task_details(task_id)
+    task_details['is_project_admin'] = worker.is_project_admin()
 
     if task.is_worker_assigned(worker):
         task_assignment = TaskAssignment.objects.get(worker=worker, task=task)
