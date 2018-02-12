@@ -12,10 +12,10 @@ export default function tasktable () {
     },
     controllerAs: 'vm',
     bindToController: true,
-    controller: function ($location, $timeout, orchestraTasks) {
+    controller: function ($location, $timeout, $window, orchestraTasks) {
       const vm = this
       vm.openTask = (task) => {
-        $location.path(`task/${task.id}`)
+        $window.open(`task/${task.id}`, '_blank')
       }
       // Surface service to interpolator
       vm.orchestraTasks = orchestraTasks
