@@ -37,6 +37,12 @@
   padding-left: 0;
   padding-right: 0; }
 
+@keyframes spin {
+  from {
+    transform: rotate(0deg); }
+  to {
+    transform: rotate(360deg); } }
+
 .checklist-wrapper {
   width: 100%;
   padding: 15px; }
@@ -1366,6 +1372,12 @@ li.checklist-item, .new-item {
   padding-left: 0;
   padding-right: 0; }
 
+@keyframes spin {
+  from {
+    transform: rotate(0deg); }
+  to {
+    transform: rotate(360deg); } }
+
 .website-iframe {
   width: 100%;
   border: 1px solid #cccccc; }
@@ -1386,6 +1398,12 @@ li.checklist-item, .new-item {
 .row.no-padding, .row.no-padding > [class*="col-"] {
   padding-left: 0;
   padding-right: 0; }
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg); }
+  to {
+    transform: rotate(360deg); } }
 
 /**
  * Base stylesheet for Orchestra.
@@ -1522,7 +1540,7 @@ a.logo {
   padding-left: 0;
   padding-right: 0; }
 
-.project-management .vis-wrapper .overlay .spinner::after {
+.project-management .overlay .spinner::after {
   position: absolute;
   top: 0;
   left: 0;
@@ -1533,6 +1551,12 @@ a.logo {
   border-radius: 50%;
   content: "";
   animation: spin .75s linear infinite; }
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg); }
+  to {
+    transform: rotate(360deg); } }
 
 .project-management-modal, .slack-modal, .data-modal, .revert-modal {
   font-size: 1.5rem;
@@ -1566,6 +1590,22 @@ a.logo {
   margin-top: 75px;
   font-size: 1.5rem;
   position: relative; }
+  .project-management .overlay {
+    position: absolute;
+    top: 0;
+    left: 20px;
+    right: 20px;
+    bottom: 0;
+    background-color: white;
+    opacity: 0.75;
+    z-index: 100; }
+    .project-management .overlay .spinner {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%); }
   .project-management .project-description.ui-select-bootstrap {
     margin: 10px 0; }
     .project-management .project-description.ui-select-bootstrap > .ui-select-match > .btn {
@@ -1608,22 +1648,6 @@ a.logo {
     position: relative;
     margin-bottom: 75px;
     min-height: 200px; }
-    .project-management .vis-wrapper .overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: white;
-      opacity: 0.75;
-      z-index: 100; }
-      .project-management .vis-wrapper .overlay .spinner {
-        position: absolute;
-        width: 40px;
-        height: 40px;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%); }
     .project-management .vis-wrapper .svg-wrapper {
       overflow-x: auto;
       overflow-y: hidden;
@@ -1672,6 +1696,12 @@ a.logo {
 .row.no-padding, .row.no-padding > [class*="col-"] {
   padding-left: 0;
   padding-right: 0; }
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg); }
+  to {
+    transform: rotate(360deg); } }
 
 /* Confirmation modals */
 .modal-confirm-submit {
@@ -1984,19 +2014,15 @@ a.logo {
     border-radius: 3px; }
   .is-disabled .pika-button,
   .is-outside-current-month .pika-button {
+    pointer-events: none;
+    cursor: default;
     color: #999;
     opacity: .3; }
-  .is-disabled .pika-button {
-    pointer-events: none;
-    cursor: default; }
   .pika-button:hover {
     color: #fff;
     background: #ff8000;
     box-shadow: none;
     border-radius: 3px; }
-  .pika-button .is-selection-disabled {
-    pointer-events: none;
-    cursor: default; }
 
 .pika-week {
   font-size: 11px;
@@ -2033,6 +2059,12 @@ a.logo {
 .row.no-padding, .row.no-padding > [class*="col-"] {
   padding-left: 0;
   padding-right: 0; }
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg); }
+  to {
+    transform: rotate(360deg); } }
 
 .timecard-view {
   position: absolute;
@@ -2163,6 +2195,12 @@ a.logo {
 .row.no-padding, .row.no-padding > [class*="col-"] {
   padding-left: 0;
   padding-right: 0; }
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg); }
+  to {
+    transform: rotate(360deg); } }
 
 .timer {
   font-size: 18px; }
