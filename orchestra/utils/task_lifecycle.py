@@ -312,12 +312,21 @@ def complete_and_skip_task(task_id):
             The completed and skipped task.
     """
     task = Task.objects.get(id=task_id)
-    task.status = Task.Status.COMPLETE
-    task.save()
-    for assignment in task.assignments.all():
-        assignment.status = TaskAssignment.Status.SUBMITTED
-        assignment.save()
-    create_subsequent_tasks(task.project)
+    assignment = current_assignment(task)
+    if assignment and assignment.worker:
+        # TODO(marcua): iteration status and task data
+        task_data = assignment.in_progress_task_data or {}
+        task_data.update(_orchestra_internal={'complete_and_skip_task': True})
+        submit_task(
+            task_id, task_data,
+            Iteration.Status.REQUESTED_REVIEW, assignment.worker)
+    else:
+        task.status = Task.Status.COMPLETE
+        task.save()
+        for assignment in task.assignments.all():
+            assignment.status = TaskAssignment.Status.SUBMITTED
+            assignment.save()
+        create_subsequent_tasks(task.project)
     return task
 
 
