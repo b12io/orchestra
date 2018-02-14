@@ -8,13 +8,16 @@ export default function teamInfoCard (orchestraApi) {
     template,
     restrict: 'E',
     scope: {
-      projectId: '=',
-      isProjectAdmin: '='
+      taskAssignment: '=',
     },
     controllerAs: 'teamInfoCard',
     bindToController: true,
     controller: ($scope) => {
       const teamInfoCard = $scope.teamInfoCard
+      teamInfoCard.projectId = teamInfoCard.taskAssignment.project.id
+      teamInfoCard.step = teamInfoCard.taskAssignment.step
+      teamInfoCard.isProjectAdmin = teamInfoCard.taskAssignment.is_project_admin
+
       teamInfoCard.loadTeamInfo = () => {
         orchestraApi.projectInformation(teamInfoCard.projectId)
           .then(response => {
@@ -31,6 +34,7 @@ export default function teamInfoCard (orchestraApi) {
               if (task) {
                 teamInfoCard.assignments = teamInfoCard.assignments.concat(task.assignments.map(a => {
                   return {
+                    stepSlug,
                     role: teamInfoCard.steps[stepSlug].name,
                     worker: a.worker,
                     recordedTime: moment.duration(a.recorded_work_time, 'seconds').roundMinute().humanizeUnits(),
