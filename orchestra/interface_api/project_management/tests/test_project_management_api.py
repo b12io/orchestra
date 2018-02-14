@@ -233,7 +233,7 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
             self.assertEqual(
                 assignment.status, assignment_statuses[index])
 
-        task = self.tasks['no_task_assignments']
+        task = self.tasks['awaiting_processing']
         response = self.api_client.post(
             reverse(
                 'orchestra:orchestra:project_management:'
