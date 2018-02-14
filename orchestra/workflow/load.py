@@ -182,12 +182,6 @@ def load_workflow_version(version_data, workflow, force=False):
         _set_step_dependencies(step, step_data, 'creation_depends_on', Step,
                                workflow_version=version)
 
-        # Set step submission dependencies.
-        _verify_dependencies_not_updated(
-            step_data,
-            'submission_depends_on',
-            old_submission_dependencies.get(step_slug)
-        )
         _set_step_dependencies(step, step_data, 'submission_depends_on', Step,
                                workflow_version=version)
 
