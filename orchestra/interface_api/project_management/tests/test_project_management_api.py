@@ -224,13 +224,45 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
             content_type='application/json')
         self.assertEqual(response.status_code, 200)
         task.refresh_from_db()
-        self.assertEqual(task.status, Task.Status.COMPLETE)
+        self.assertEqual(task.status, Task.Status.REVIEWING)
+        assignment_statuses = [
+            TaskAssignment.Status.SUBMITTED, TaskAssignment.Status.SUBMITTED,
+            TaskAssignment.Status.PROCESSING]
+        for index, assignment in enumerate(
+                task.assignments.all().order_by('assignment_counter')):
+            self.assertEqual(
+                assignment.status, assignment_statuses[index])
+
+        task = self.tasks['no_task_assignments']
+        response = self.api_client.post(
+            reverse(
+                'orchestra:orchestra:project_management:'
+                'complete_and_skip_task'),
+            json.dumps({
+                'task_id': task.id,
+            }),
+            content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        task.refresh_from_db()
+        self.assertEqual(task.status, Task.Status.COMPLETED)
+
+        task = self.tasks['next_todo_task']
+        response = self.api_client.post(
+            reverse(
+                'orchestra:orchestra:project_management:'
+                'complete_and_skip_task'),
+            json.dumps({
+                'task_id': task.id,
+            }),
+            content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        task.refresh_from_db()
+        self.assertEqual(task.status, Task.Status.COMPLETED)
         for assignment in task.assignments.all():
             self.assertEqual(
                 assignment.status, TaskAssignment.Status.SUBMITTED)
 
         # Check that dependent tasks have already been created
-        # TODO(jrbotros): Create a `get_dependent_tasks` function
         num_tasks = task.project.tasks.count()
         create_subsequent_tasks(task.project)
         self.assertEqual(task.project.tasks.count(), num_tasks)

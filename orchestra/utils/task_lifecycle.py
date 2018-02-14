@@ -301,7 +301,9 @@ def reassign_assignment(worker_id, assignment_id,
 @transaction.atomic
 def complete_and_skip_task(task_id):
     """
-    Marks a task and its assignments as complete and creates subsequent tasks.
+    Submits a task on behalf of the worker working on it. If the task
+    isn't assigned to a worker, marks it and its assignments as
+    complete and creates subsequent tasks.
 
     Args:
         task_id (int):
@@ -310,11 +312,11 @@ def complete_and_skip_task(task_id):
     Returns:
         task (orchestra.models.Task):
             The completed and skipped task.
+
     """
     task = Task.objects.get(id=task_id)
     assignment = current_assignment(task)
     if assignment and assignment.worker:
-        # TODO(marcua): iteration status and task data
         task_data = assignment.in_progress_task_data or {}
         task_data.update(_orchestra_internal={'complete_and_skip_task': True})
         submit_task(
