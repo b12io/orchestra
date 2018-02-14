@@ -61648,13 +61648,16 @@ function teamInfoCard(orchestraApi) {
     template: _teamInfoCard2.default,
     restrict: 'E',
     scope: {
-      projectId: '=',
-      isProjectAdmin: '='
+      taskAssignment: '='
     },
     controllerAs: 'teamInfoCard',
     bindToController: true,
     controller: function controller($scope) {
       var teamInfoCard = $scope.teamInfoCard;
+      teamInfoCard.projectId = teamInfoCard.taskAssignment.project.id;
+      teamInfoCard.step = teamInfoCard.taskAssignment.step;
+      teamInfoCard.isProjectAdmin = teamInfoCard.taskAssignment.is_project_admin;
+
       teamInfoCard.loadTeamInfo = function () {
         orchestraApi.projectInformation(teamInfoCard.projectId).then(function (response) {
           var _response$data = response.data,
@@ -61683,6 +61686,7 @@ function teamInfoCard(orchestraApi) {
               if (task) {
                 teamInfoCard.assignments = teamInfoCard.assignments.concat(task.assignments.map(function (a) {
                   return {
+                    stepSlug: stepSlug,
                     role: teamInfoCard.steps[stepSlug].name,
                     worker: a.worker,
                     recordedTime: _momentTimezone2.default.duration(a.recorded_work_time, 'seconds').roundMinute().humanizeUnits(),
@@ -61733,7 +61737,7 @@ function teamInfoCard(orchestraApi) {
 /* 217 */
 /***/ (function(module, exports) {
 
-module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Team info\n          <a class=\"btn\"\n             ng-if=\"teamInfoCard.isProjectAdmin\"\n             ng-href=\"project/{{teamInfoCard.projectId}}\"\n             target=\"_blank\">\n            Project Management\n          </a>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <table class=\"table table-striped\">\n          <thead>\n            <th>Role</th>\n            <th>Username</th>\n            <th>Name</th>\n            <th>Recorded time spent</th>\n            <th>Status</th>\n          </thead>\n          <tbody>\n            <tr ng-repeat=\"assignment in teamInfoCard.assignments\">\n              <td>{{assignment.role}}</td>\n              <td>{{assignment.worker.username}}</td>\n              <td>{{assignment.worker.first_name}} {{assignment.worker.last_name}}</td>\n              <td>{{assignment.recordedTime}}</td>\n              <td>\n                {{assignment.status}}\n                <button type=\"submit\"\n                        class=\"btn btn-secondary btn-sm\"\n                        ng-if=\"teamInfoCard.isProjectAdmin &&\n                               assignment.status == 'Processing'\"\n                        ng-click=\"teamInfoCard.submitTask(assignment.task_id)\">\n                  Submit\n                </button>\n              </td>\n            </tr>\n          </tbody>\n        </table>\n      </div>\n    </div>\n  </div>\n</section>\n";
+module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Team info\n          <a class=\"btn\"\n             ng-if=\"teamInfoCard.isProjectAdmin\"\n             ng-href=\"project/{{teamInfoCard.projectId}}\"\n             target=\"_blank\">\n            Project Management\n          </a>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <table class=\"table table-striped\">\n          <thead>\n            <th>Role</th>\n            <th>Username</th>\n            <th>Name</th>\n            <th>Recorded time spent</th>\n            <th>Status</th>\n          </thead>\n          <tbody>\n            <tr ng-repeat=\"assignment in teamInfoCard.assignments\">\n              <td>{{assignment.role}}</td>\n              <td>{{assignment.worker.username}}</td>\n              <td>{{assignment.worker.first_name}} {{assignment.worker.last_name}}</td>\n              <td>{{assignment.recordedTime}}</td>\n              <td>\n                {{assignment.status}}\n                <button type=\"submit\"\n                        class=\"btn btn-default btn-sm\"\n                        ng-if=\"teamInfoCard.isProjectAdmin &&\n                               assignment.status == 'Processing' &&\n                               assignment.stepSlug != teamInfoCard.step.slug\"\n                        ng-click=\"teamInfoCard.submitTask(assignment.task_id)\">\n                  Submit\n                </button>\n              </td>\n            </tr>\n          </tbody>\n        </table>\n      </div>\n    </div>\n  </div>\n</section>\n";
 
 /***/ }),
 /* 218 */
