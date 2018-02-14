@@ -21,6 +21,7 @@
             <th>Username</th>
             <th>Name</th>
             <th>Recorded time spent</th>
+            <th>Status</th>
           </thead>
           <tbody>
             <tr ng-repeat="assignment in teamInfoCard.assignments">
@@ -28,6 +29,16 @@
               <td>{{assignment.worker.username}}</td>
               <td>{{assignment.worker.first_name}} {{assignment.worker.last_name}}</td>
               <td>{{assignment.recordedTime}}</td>
+              <td>
+                {{assignment.status}}
+                <button type="submit"
+                        class="btn btn-secondary btn-sm"
+                        ng-if="teamInfoCard.isProjectAdmin &&
+                               assignment.status == 'Processing'"
+                        ng-click="teamInfoCard.submitTask(assignment.task_id)">
+                  Submit
+                </button>
+              </td>
             </tr>
           </tbody>
         </table>

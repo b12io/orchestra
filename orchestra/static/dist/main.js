@@ -42496,9 +42496,9 @@ function orchestraApi($http) {
       });
     },
 
-    completeAndSkipTask: function completeAndSkipTask(task) {
+    completeAndSkipTask: function completeAndSkipTask(taskId) {
       return $http.post(getApiUrl('complete_and_skip_task'), {
-        'task_id': task.id
+        'task_id': taskId
       });
     },
 
@@ -58468,7 +58468,7 @@ function tasksVis($uibModal, dataService, orchestraApi, visUtils, assignmentsVis
       if (!window.confirm('Are you sure you want to skip this task and mark it ' + 'as complete? This might leave the project in a ' + 'corrupted/unrecoverable state.')) {
         return;
       }
-      orchestraApi.completeAndSkipTask(task).then(function () {
+      orchestraApi.completeAndSkipTask(task.id).then(function () {
         dataService.updateData();
       }, function (response) {
         var errorMessage = 'Error skipping task.';
@@ -61655,61 +61655,76 @@ function teamInfoCard(orchestraApi) {
     bindToController: true,
     controller: function controller($scope) {
       var teamInfoCard = $scope.teamInfoCard;
-      orchestraApi.projectInformation(teamInfoCard.projectId).then(function (response) {
-        var _response$data = response.data,
-            steps = _response$data.steps,
-            tasks = _response$data.tasks;
+      teamInfoCard.loadTeamInfo = function () {
+        orchestraApi.projectInformation(teamInfoCard.projectId).then(function (response) {
+          var _response$data = response.data,
+              steps = _response$data.steps,
+              tasks = _response$data.tasks;
 
-        var humanSteps = new Set(steps.filter(function (step) {
-          return step.is_human;
-        }).map(function (step) {
-          return step.slug;
-        }));
-        teamInfoCard.steps = (0, _lodash.reduce)(Object.values(response.data.steps), function (result, step) {
-          result[step.slug] = step;
-          return result;
-        }, {});
-        teamInfoCard.assignments = [];
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
+          var humanSteps = new Set(steps.filter(function (step) {
+            return step.is_human;
+          }).map(function (step) {
+            return step.slug;
+          }));
+          teamInfoCard.steps = (0, _lodash.reduce)(Object.values(response.data.steps), function (result, step) {
+            result[step.slug] = step;
+            return result;
+          }, {});
+          teamInfoCard.assignments = [];
+          var _iteratorNormalCompletion = true;
+          var _didIteratorError = false;
+          var _iteratorError = undefined;
 
-        try {
-          var _loop = function _loop() {
-            var stepSlug = _step.value;
-
-            var task = tasks[stepSlug];
-            if (task) {
-              teamInfoCard.assignments = teamInfoCard.assignments.concat(task.assignments.map(function (a) {
-                return {
-                  role: teamInfoCard.steps[stepSlug].name,
-                  worker: a.worker,
-                  recordedTime: _momentTimezone2.default.duration(a.recorded_work_time, 'seconds').roundMinute().humanizeUnits(),
-                  status: task.status,
-                  task_id: a.task
-                };
-              }));
-            }
-          };
-
-          for (var _iterator = humanSteps.values()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            _loop();
-          }
-        } catch (err) {
-          _didIteratorError = true;
-          _iteratorError = err;
-        } finally {
           try {
-            if (!_iteratorNormalCompletion && _iterator.return) {
-              _iterator.return();
+            var _loop = function _loop() {
+              var stepSlug = _step.value;
+
+              var task = tasks[stepSlug];
+              if (task) {
+                teamInfoCard.assignments = teamInfoCard.assignments.concat(task.assignments.map(function (a) {
+                  return {
+                    role: teamInfoCard.steps[stepSlug].name,
+                    worker: a.worker,
+                    recordedTime: _momentTimezone2.default.duration(a.recorded_work_time, 'seconds').roundMinute().humanizeUnits(),
+                    status: task.status,
+                    task_id: a.task
+                  };
+                }));
+              }
+            };
+
+            for (var _iterator = humanSteps.values()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              _loop();
             }
+          } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
           } finally {
-            if (_didIteratorError) {
-              throw _iteratorError;
+            try {
+              if (!_iteratorNormalCompletion && _iterator.return) {
+                _iterator.return();
+              }
+            } finally {
+              if (_didIteratorError) {
+                throw _iteratorError;
+              }
             }
           }
-        }
-      });
+        });
+      };
+      teamInfoCard.submitTask = function (taskId) {
+        orchestraApi.completeAndSkipTask(taskId).then(function () {
+          teamInfoCard.loadTeamInfo();
+        }, function (response) {
+          var errorMessage = 'Error completing task.';
+          if (response.status === 400) {
+            errorMessage = response.data.message;
+          }
+          window.alert(errorMessage);
+        });
+      };
+
+      teamInfoCard.loadTeamInfo();
     }
   };
 }
@@ -61718,7 +61733,7 @@ function teamInfoCard(orchestraApi) {
 /* 217 */
 /***/ (function(module, exports) {
 
-module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Team info\n          <a class=\"btn\"\n             ng-if=\"teamInfoCard.isProjectAdmin\"\n             ng-href=\"project/{{teamInfoCard.projectId}}\"\n             target=\"_blank\">\n            Project Management\n          </a>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <table class=\"table table-striped\">\n          <thead>\n            <th>Role</th>\n            <th>Username</th>\n            <th>Name</th>\n            <th>Recorded time spent</th>\n            <th>Status</th>\n          </thead>\n          <tbody>\n            <tr ng-repeat=\"assignment in teamInfoCard.assignments\">\n              <td>{{assignment.role}}</td>\n              <td>{{assignment.worker.username}}</td>\n              <td>{{assignment.worker.first_name}} {{assignment.worker.last_name}}</td>\n              <td>{{assignment.recordedTime}}</td>\n              <td>\n                {{assignment.status}}\n                <button type=\"submit\"\n                        class=\"btn btn-secondary btn-sm\"\n                        ng-if=\"teamInfoCard.isProjectAdmin &&\n                               assignment.status == 'Processing'\"\n                        ng-click=\"teamInfoCard.something()\">\n                  Submit\n                </button>\n              </td>\n            </tr>\n          </tbody>\n        </table>\n      </div>\n    </div>\n  </div>\n</section>\n";
+module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Team info\n          <a class=\"btn\"\n             ng-if=\"teamInfoCard.isProjectAdmin\"\n             ng-href=\"project/{{teamInfoCard.projectId}}\"\n             target=\"_blank\">\n            Project Management\n          </a>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <table class=\"table table-striped\">\n          <thead>\n            <th>Role</th>\n            <th>Username</th>\n            <th>Name</th>\n            <th>Recorded time spent</th>\n            <th>Status</th>\n          </thead>\n          <tbody>\n            <tr ng-repeat=\"assignment in teamInfoCard.assignments\">\n              <td>{{assignment.role}}</td>\n              <td>{{assignment.worker.username}}</td>\n              <td>{{assignment.worker.first_name}} {{assignment.worker.last_name}}</td>\n              <td>{{assignment.recordedTime}}</td>\n              <td>\n                {{assignment.status}}\n                <button type=\"submit\"\n                        class=\"btn btn-secondary btn-sm\"\n                        ng-if=\"teamInfoCard.isProjectAdmin &&\n                               assignment.status == 'Processing'\"\n                        ng-click=\"teamInfoCard.submitTask(assignment.task_id)\">\n                  Submit\n                </button>\n              </td>\n            </tr>\n          </tbody>\n        </table>\n      </div>\n    </div>\n  </div>\n</section>\n";
 
 /***/ }),
 /* 218 */
