@@ -8,7 +8,7 @@ export default function teamInfoCard (orchestraApi) {
     template,
     restrict: 'E',
     scope: {
-      taskAssignment: '=',
+      taskAssignment: '='
     },
     controllerAs: 'teamInfoCard',
     bindToController: true,

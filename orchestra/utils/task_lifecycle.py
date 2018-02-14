@@ -328,7 +328,6 @@ def complete_and_skip_task(task_id):
         for assignment in task.assignments.all():
             assignment.status = TaskAssignment.Status.SUBMITTED
             assignment.save()
-        create_subsequent_tasks(task.project)
     return task
 
 
