@@ -143,16 +143,6 @@ class LoadWorkflowTestCase(OrchestraTestCase):
         v1_data['steps'][1]['creation_depends_on'] = (
             step_2_create_dependencies[:-1])
 
-        # Even with --force, can't change a step's submission dependencies.
-        step_3_submit_dependencies = v1_data['steps'][2][
-            'submission_depends_on']
-        step_3_submit_dependencies.append('s1')
-        with self.assertRaisesMessage(WorkflowError, topology_change_err_msg):
-            with transaction.atomic():
-                load_workflow_version(v1_data, workflow, force=True)
-        v1_data['steps'][2]['submission_depends_on'] = (
-            step_3_submit_dependencies[:-1])
-
         # Otherwise, --force should reload versions correctly.
         with transaction.atomic():
             load_workflow_version(v1_data, workflow, force=True)
