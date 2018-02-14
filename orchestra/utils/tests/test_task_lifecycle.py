@@ -335,6 +335,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
             'assignment_id': task.assignments.get(worker=self.workers[0]).id,
             'is_reviewer': False,
             'is_read_only': True,
+            'is_project_admin': False,
             'worker': {
                 'username': self.workers[0].user.username,
                 'first_name': self.workers[0].user.first_name,
