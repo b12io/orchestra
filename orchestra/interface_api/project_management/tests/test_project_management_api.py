@@ -244,7 +244,7 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
             content_type='application/json')
         self.assertEqual(response.status_code, 200)
         task.refresh_from_db()
-        self.assertEqual(task.status, Task.Status.COMPLETED)
+        self.assertEqual(task.status, Task.Status.COMPLETE)
 
         task = self.tasks['next_todo_task']
         response = self.api_client.post(
@@ -257,7 +257,7 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
             content_type='application/json')
         self.assertEqual(response.status_code, 200)
         task.refresh_from_db()
-        self.assertEqual(task.status, Task.Status.COMPLETED)
+        self.assertEqual(task.status, Task.Status.COMPLETE)
         for assignment in task.assignments.all():
             self.assertEqual(
                 assignment.status, TaskAssignment.Status.SUBMITTED)
