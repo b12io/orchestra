@@ -213,6 +213,8 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
         self.assertEqual(second_review_assignment.worker, self.workers[3])
 
     def test_complete_and_skip_task_api(self):
+        # This task, when submitted, will be moved into reviewing
+        # state because it's already been assigned.
         task = self.tasks['project_management_task']
         response = self.api_client.post(
             reverse(
@@ -232,7 +234,13 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
                 task.assignments.all().order_by('assignment_counter')):
             self.assertEqual(
                 assignment.status, assignment_statuses[index])
+        # Check that dependent tasks have already been created
+        num_tasks = task.project.tasks.count()
+        create_subsequent_tasks(task.project)
+        self.assertEqual(task.project.tasks.count(), num_tasks)
 
+        # This task, when submitted, will be moved into a completed
+        # state because it has no assignments.
         task = self.tasks['awaiting_processing']
         response = self.api_client.post(
             reverse(
@@ -245,23 +253,6 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
         self.assertEqual(response.status_code, 200)
         task.refresh_from_db()
         self.assertEqual(task.status, Task.Status.COMPLETE)
-
-        task = self.tasks['next_todo_task']
-        response = self.api_client.post(
-            reverse(
-                'orchestra:orchestra:project_management:'
-                'complete_and_skip_task'),
-            json.dumps({
-                'task_id': task.id,
-            }),
-            content_type='application/json')
-        self.assertEqual(response.status_code, 200)
-        task.refresh_from_db()
-        self.assertEqual(task.status, Task.Status.COMPLETE)
-        for assignment in task.assignments.all():
-            self.assertEqual(
-                assignment.status, TaskAssignment.Status.SUBMITTED)
-
         # Check that dependent tasks have already been created
         num_tasks = task.project.tasks.count()
         create_subsequent_tasks(task.project)
