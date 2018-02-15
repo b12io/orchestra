@@ -253,10 +253,6 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
         self.assertEqual(response.status_code, 200)
         task.refresh_from_db()
         self.assertEqual(task.status, Task.Status.COMPLETE)
-        # Check that dependent tasks have already been created
-        num_tasks = task.project.tasks.count()
-        create_subsequent_tasks(task.project)
-        self.assertEqual(task.project.tasks.count(), num_tasks)
 
     def test_end_project_api(self):
         project = self.projects['project_to_end']
