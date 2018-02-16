@@ -353,11 +353,11 @@ def setup_models(test_case):
         },
         'review_nearly_complete_task': {
             'project_name': 'review_nearly_complete_proj',
-            'status': Task.Status.REVIEWING,
+            'status': Task.Status.AWAITING_PROCESSING,
             'assignments': [
                 (5, {}, TaskAssignment.Status.SUBMITTED),
                 (6, {}, TaskAssignment.Status.SUBMITTED),
-                (7, {}, TaskAssignment.Status.PROCESSING)
+                (7, {}, TaskAssignment.Status.SUBMITTED)
             ],
         },
     }
