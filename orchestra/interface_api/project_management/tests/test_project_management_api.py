@@ -254,28 +254,6 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
         task.refresh_from_db()
         self.assertEqual(task.status, Task.Status.COMPLETE)
 
-        # This task, when submitted, will be marked as completed because
-        # it has been reviewed enough times.
-        task = self.tasks['review_nearly_complete_task']
-        response = self.api_client.post(
-            reverse(
-                'orchestra:orchestra:project_management:'
-                'complete_and_skip_task'),
-            json.dumps({
-                'task_id': task.id,
-            }),
-            content_type='application/json')
-        self.assertEqual(response.status_code, 200)
-        task.refresh_from_db()
-        self.assertEqual(task.status, Task.Status.COMPLETE)
-        assignment_statuses = [
-            TaskAssignment.Status.SUBMITTED, TaskAssignment.Status.SUBMITTED,
-            TaskAssignment.Status.SUBMITTED]
-        for index, assignment in enumerate(
-                task.assignments.all().order_by('assignment_counter')):
-            self.assertEqual(
-                assignment.status, assignment_statuses[index])
-
     def test_end_project_api(self):
         project = self.projects['project_to_end']
         response = self.api_client.post(

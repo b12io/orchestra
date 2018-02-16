@@ -291,7 +291,6 @@ def setup_models(test_case):
         'creation_policy': 'creation_policy_workflow',
         'next_todo_proj': 'test_workflow',
         'sanitybot': 'sanitybot_workflow',
-        'review_nearly_complete_proj': 'test_workflow',
     }
 
     # Task generation data
@@ -350,14 +349,6 @@ def setup_models(test_case):
             'assignments': [
                 (5, {}, TaskAssignment.Status.PROCESSING)
             ]
-        },
-        'review_nearly_complete_task': {
-            'project_name': 'review_nearly_complete_proj',
-            'status': Task.Status.AWAITING_PROCESSING,
-            'assignments': [
-                (5, {}, TaskAssignment.Status.SUBMITTED),
-                (6, {}, TaskAssignment.Status.SUBMITTED),
-            ],
         },
     }
 
