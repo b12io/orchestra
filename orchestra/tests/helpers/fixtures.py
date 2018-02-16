@@ -357,7 +357,6 @@ def setup_models(test_case):
             'assignments': [
                 (5, {}, TaskAssignment.Status.SUBMITTED),
                 (6, {}, TaskAssignment.Status.SUBMITTED),
-                (7, {}, TaskAssignment.Status.SUBMITTED)
             ],
         },
     }
