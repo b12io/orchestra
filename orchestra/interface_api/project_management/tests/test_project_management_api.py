@@ -213,6 +213,8 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
         self.assertEqual(second_review_assignment.worker, self.workers[3])
 
     def test_complete_and_skip_task_api(self):
+        # This task, when submitted, will be moved into reviewing
+        # state because it's already been assigned.
         task = self.tasks['project_management_task']
         response = self.api_client.post(
             reverse(
@@ -224,16 +226,33 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
             content_type='application/json')
         self.assertEqual(response.status_code, 200)
         task.refresh_from_db()
-        self.assertEqual(task.status, Task.Status.COMPLETE)
-        for assignment in task.assignments.all():
+        self.assertEqual(task.status, Task.Status.REVIEWING)
+        assignment_statuses = [
+            TaskAssignment.Status.SUBMITTED, TaskAssignment.Status.SUBMITTED,
+            TaskAssignment.Status.PROCESSING]
+        for index, assignment in enumerate(
+                task.assignments.all().order_by('assignment_counter')):
             self.assertEqual(
-                assignment.status, TaskAssignment.Status.SUBMITTED)
-
+                assignment.status, assignment_statuses[index])
         # Check that dependent tasks have already been created
-        # TODO(jrbotros): Create a `get_dependent_tasks` function
         num_tasks = task.project.tasks.count()
         create_subsequent_tasks(task.project)
         self.assertEqual(task.project.tasks.count(), num_tasks)
+
+        # This task, when submitted, will be moved into a completed
+        # state because it has no assignments.
+        task = self.tasks['awaiting_processing']
+        response = self.api_client.post(
+            reverse(
+                'orchestra:orchestra:project_management:'
+                'complete_and_skip_task'),
+            json.dumps({
+                'task_id': task.id,
+            }),
+            content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        task.refresh_from_db()
+        self.assertEqual(task.status, Task.Status.COMPLETE)
 
     def test_end_project_api(self):
         project = self.projects['project_to_end']

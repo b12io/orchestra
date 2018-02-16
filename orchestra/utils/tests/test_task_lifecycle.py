@@ -335,6 +335,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
             'assignment_id': task.assignments.get(worker=self.workers[0]).id,
             'is_reviewer': False,
             'is_read_only': True,
+            'is_project_admin': False,
             'worker': {
                 'username': self.workers[0].user.username,
                 'first_name': self.workers[0].user.first_name,
@@ -348,6 +349,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
             'superuser', 'superuser@b12.io', 'test-password')
         superworker = Worker.objects.create(user=superuser)
         data = get_task_overview_for_worker(task.id, superworker)
+        expected['is_project_admin'] = True
         self.assertEqual(data, expected)
 
     def test_task_assignment_saving(self):

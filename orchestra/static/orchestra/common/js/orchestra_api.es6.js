@@ -16,9 +16,9 @@ export default function orchestraApi ($http) {
       })
     },
 
-    completeAndSkipTask: function (task) {
+    completeAndSkipTask: function (taskId) {
       return $http.post(getApiUrl('complete_and_skip_task'), {
-        'task_id': task.id
+        'task_id': taskId
       })
     },
 

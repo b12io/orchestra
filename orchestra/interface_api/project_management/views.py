@@ -17,7 +17,7 @@ from orchestra.interface_api.project_management.decorators import \
 from orchestra.models import Project
 from orchestra.models import Task
 from orchestra.models import Worker
-from orchestra.project_api.serializers import ProjectSerializer
+from orchestra.project_api.serializers import ProjectSummarySerializer
 from orchestra.utils.load_json import load_encoded_json
 from orchestra.utils.revert import revert_task_to_iteration
 from orchestra.utils.task_lifecycle import assign_task
@@ -34,7 +34,7 @@ class IsProjectAdmin(permissions.BasePermission):
 
 class ProjectList(generics.ListCreateAPIView):
     permission_classes = (permissions.IsAuthenticated, IsProjectAdmin)
-    serializer_class = ProjectSerializer
+    serializer_class = ProjectSummarySerializer
     queryset = Project.objects.exclude(status=Project.Status.ABORTED)
 
 

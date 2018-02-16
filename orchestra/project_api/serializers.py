@@ -47,6 +47,17 @@ class ProjectSerializer(serializers.ModelSerializer):
         return obj.project_data
 
 
+class ProjectSummarySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Project
+        fields = (
+            'id',
+            'short_description',
+            'start_datetime',
+        )
+
+
 class TaskSerializer(serializers.ModelSerializer):
 
     class Meta:

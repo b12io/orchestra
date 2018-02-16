@@ -42496,9 +42496,9 @@ function orchestraApi($http) {
       });
     },
 
-    completeAndSkipTask: function completeAndSkipTask(task) {
+    completeAndSkipTask: function completeAndSkipTask(taskId) {
       return $http.post(getApiUrl('complete_and_skip_task'), {
-        'task_id': task.id
+        'task_id': taskId
       });
     },
 
@@ -55715,10 +55715,10 @@ function tasktable() {
     },
     controllerAs: 'vm',
     bindToController: true,
-    controller: function controller($location, $timeout, orchestraTasks) {
+    controller: function controller($location, $timeout, $window, orchestraTasks) {
       var vm = this;
       vm.openTask = function (task) {
-        $location.path('task/' + task.id);
+        $window.open('task/' + task.id, '_blank');
       };
       // Surface service to interpolator
       vm.orchestraTasks = orchestraTasks;
@@ -57693,10 +57693,12 @@ function dataService($location, $rootScope, $route, orchestraApi) {
     },
     getAllProjects: function getAllProjects() {
       var dataService = this;
+      dataService.loading = true;
       dataService.ready = orchestraApi.allProjects().then(function (response) {
         response.data.forEach(function (project) {
           dataService.allProjects[project.id] = project;
         });
+        dataService.loading = false;
       });
       return dataService.ready;
     },
@@ -58466,7 +58468,7 @@ function tasksVis($uibModal, dataService, orchestraApi, visUtils, assignmentsVis
       if (!window.confirm('Are you sure you want to skip this task and mark it ' + 'as complete? This might leave the project in a ' + 'corrupted/unrecoverable state.')) {
         return;
       }
-      orchestraApi.completeAndSkipTask(task).then(function () {
+      orchestraApi.completeAndSkipTask(task.id).then(function () {
         dataService.updateData();
       }, function (response) {
         var errorMessage = 'Error skipping task.';
@@ -59256,6 +59258,22 @@ function datePicker(timeEntries) {
         }
     },
 
+    fireEvent = function(el, eventName, data)
+    {
+        var ev;
+
+        if (document.createEvent) {
+            ev = document.createEvent('HTMLEvents');
+            ev.initEvent(eventName, true, false);
+            ev = extend(ev, data);
+            el.dispatchEvent(ev);
+        } else if (document.createEventObject) {
+            ev = document.createEventObject();
+            ev = extend(ev, data);
+            el.fireEvent('on' + eventName, ev);
+        }
+    },
+
     trim = function(str)
     {
         return str.trim ? str.trim() : str.replace(/^\s+|\s+$/g,'');
@@ -59341,22 +59359,6 @@ function datePicker(timeEntries) {
         return to;
     },
 
-    fireEvent = function(el, eventName, data)
-    {
-        var ev;
-
-        if (document.createEvent) {
-            ev = document.createEvent('HTMLEvents');
-            ev.initEvent(eventName, true, false);
-            ev = extend(ev, data);
-            el.dispatchEvent(ev);
-        } else if (document.createEventObject) {
-            ev = document.createEventObject();
-            ev = extend(ev, data);
-            el.fireEvent('on' + eventName, ev);
-        }
-    },
-
     adjustCalendar = function(calendar) {
         if (calendar.month < 0) {
             calendar.year -= Math.ceil(Math.abs(calendar.month)/12);
@@ -59390,13 +59392,6 @@ function datePicker(timeEntries) {
         // the default output format for `.toString()` and `field` value
         format: 'YYYY-MM-DD',
 
-        // the toString function which gets passed a current date object and format
-        // and returns a string
-        toString: null,
-
-        // used to create date object from current input string
-        parse: null,
-
         // the initial date to view when first opened
         defaultDate: null,
 
@@ -59420,9 +59415,6 @@ function datePicker(timeEntries) {
         // show week numbers at head of row
         showWeekNumber: false,
 
-        // Week picker mode
-        pickWholeWeek: false,
-
         // used internally (don't config outside)
         minYear: 0,
         maxYear: 9999,
@@ -59443,9 +59435,6 @@ function datePicker(timeEntries) {
         // Render days of the calendar grid that fall in the next or previous month
         showDaysInNextAndPreviousMonths: false,
 
-        // Allows user to select days that fall in the next or previous month
-        enableSelectionDaysInNextAndPreviousMonths: false,
-
         // how many months are visible
         numberOfMonths: 1,
 
@@ -59455,9 +59444,6 @@ function datePicker(timeEntries) {
 
         // Specify a DOM element to render the calendar in
         container: undefined,
-
-        // Blur field when date is selected
-        blurFieldOnSelect : true,
 
         // internationalization
         i18n: {
@@ -59471,17 +59457,11 @@ function datePicker(timeEntries) {
         // Theme Classname
         theme: null,
 
-        // events array
-        events: [],
-
         // callback function
         onSelect: null,
         onOpen: null,
         onClose: null,
-        onDraw: null,
-
-        // Enable keyboard input
-        keyboardInput: true
+        onDraw: null
     },
 
 
@@ -59504,11 +59484,6 @@ function datePicker(timeEntries) {
         if (opts.isEmpty) {
             if (opts.showDaysInNextAndPreviousMonths) {
                 arr.push('is-outside-current-month');
-
-                if(!opts.enableSelectionDaysInNextAndPreviousMonths) {
-                    arr.push('is-selection-disabled');
-                }
-
             } else {
                 return '<td class="is-empty"></td>';
             }
@@ -59522,9 +59497,6 @@ function datePicker(timeEntries) {
         if (opts.isSelected) {
             arr.push('is-selected');
             ariaSelected = 'true';
-        }
-        if (opts.hasEvent) {
-            arr.push('has-event');
         }
         if (opts.isInRange) {
             arr.push('is-inrange');
@@ -59550,9 +59522,9 @@ function datePicker(timeEntries) {
         return '<td class="pika-week">' + weekNum + '</td>';
     },
 
-    renderRow = function(days, isRTL, pickWholeWeek, isRowSelected)
+    renderRow = function(days, isRTL)
     {
-        return '<tr class="pika-row' + (pickWholeWeek ? ' pick-whole-week' : '') + (isRowSelected ? ' is-selected' : '') + '">' + (isRTL ? days.reverse() : days).join('') + '</tr>';
+        return '<tr>' + (isRTL ? days.reverse() : days).join('') + '</tr>';
     },
 
     renderBody = function(rows)
@@ -59663,7 +59635,7 @@ function datePicker(timeEntries) {
                     if (opts.bound) {
                         sto(function() {
                             self.hide();
-                            if (opts.blurFieldOnSelect && opts.field) {
+                            if (opts.field) {
                                 opts.field.blur();
                             }
                         }, 100);
@@ -59713,9 +59685,7 @@ function datePicker(timeEntries) {
                 switch(e.keyCode){
                     case 13:
                     case 27:
-                        if (opts.field) {
-                            opts.field.blur();
-                        }
+                        opts.field.blur();
                         break;
                     case 37:
                         e.preventDefault();
@@ -59741,9 +59711,7 @@ function datePicker(timeEntries) {
             if (e.firedBy === self) {
                 return;
             }
-            if (opts.parse) {
-                date = opts.parse(opts.field.value, opts.format);
-            } else if (hasMoment) {
+            if (hasMoment) {
                 date = moment(opts.field.value, opts.format, opts.formatStrict);
                 date = (date && date.isValid()) ? date.toDate() : null;
             }
@@ -59818,10 +59786,7 @@ function datePicker(timeEntries) {
         addEvent(self.el, 'mousedown', self._onMouseDown, true);
         addEvent(self.el, 'touchend', self._onMouseDown, true);
         addEvent(self.el, 'change', self._onChange);
-
-        if (opts.keyboardInput) {
-            addEvent(document, 'keydown', self._onKeyChange);
-        }
+        addEvent(document, 'keydown', self._onKeyChange);
 
         if (opts.field) {
             if (opts.container) {
@@ -59936,17 +59901,7 @@ function datePicker(timeEntries) {
          */
         toString: function(format)
         {
-            format = format || this._o.format;
-            if (!isDate(this._d)) {
-                return '';
-            }
-            if (this._o.toString) {
-              return this._o.toString(this._d, format);
-            }
-            if (hasMoment) {
-              return moment(this._d).format(format);
-            }
-            return this._d.toDateString();
+            return !isDate(this._d) ? '' : hasMoment ? moment(this._d).format(format || this._o.format) : this._d.toDateString();
         },
 
         /**
@@ -59968,11 +59923,11 @@ function datePicker(timeEntries) {
         },
 
         /**
-         * return a Date object of the current selection
+         * return a Date object of the current selection with fallback for the current date
          */
         getDate: function()
         {
-            return isDate(this._d) ? new Date(this._d.getTime()) : null;
+            return isDate(this._d) ? new Date(this._d.getTime()) : new Date();
         },
 
         /**
@@ -60055,7 +60010,7 @@ function datePicker(timeEntries) {
 
         adjustDate: function(sign, days) {
 
-            var day = this.getDate() || new Date();
+            var day = this.getDate();
             var difference = parseInt(days)*24*60*60*1000;
 
             var newDay;
@@ -60064,6 +60019,14 @@ function datePicker(timeEntries) {
                 newDay = new Date(day.valueOf() + difference);
             } else if (sign === 'subtract') {
                 newDay = new Date(day.valueOf() - difference);
+            }
+
+            if (hasMoment) {
+                if (sign === 'add') {
+                    newDay = moment(day).add(days, "days").toDate();
+                } else if (sign === 'subtract') {
+                    newDay = moment(day).subtract(days, "days").toDate();
+                }
             }
 
             this.setDate(newDay);
@@ -60217,7 +60180,7 @@ function datePicker(timeEntries) {
             if (typeof this._o.onDraw === 'function') {
                 this._o.onDraw(this);
             }
-
+            
             if (opts.bound) {
                 // let the screen reader user know to use arrow keys
                 opts.field.setAttribute('aria-label', 'Use the arrow keys to pick a date');
@@ -60304,13 +60267,11 @@ function datePicker(timeEntries) {
                 after -= 7;
             }
             cells += 7 - after;
-            var isWeekSelected = false;
             for (var i = 0, r = 0; i < cells; i++)
             {
                 var day = new Date(year, month, 1 + (i - before)),
                     isSelected = isDate(this._d) ? compareDates(day, this._d) : false,
                     isToday = compareDates(day, now),
-                    hasEvent = opts.events.indexOf(day.toDateString()) !== -1 ? true : false,
                     isEmpty = i < before || i >= (days + before),
                     dayNumber = 1 + (i - before),
                     monthNumber = month,
@@ -60339,7 +60300,6 @@ function datePicker(timeEntries) {
                         day: dayNumber,
                         month: monthNumber,
                         year: yearNumber,
-                        hasEvent: hasEvent,
                         isSelected: isSelected,
                         isToday: isToday,
                         isDisabled: isDisabled,
@@ -60347,13 +60307,8 @@ function datePicker(timeEntries) {
                         isStartRange: isStartRange,
                         isEndRange: isEndRange,
                         isInRange: isInRange,
-                        showDaysInNextAndPreviousMonths: opts.showDaysInNextAndPreviousMonths,
-                        enableSelectionDaysInNextAndPreviousMonths: opts.enableSelectionDaysInNextAndPreviousMonths
+                        showDaysInNextAndPreviousMonths: opts.showDaysInNextAndPreviousMonths
                     };
-
-                if (opts.pickWholeWeek && isSelected) {
-                    isWeekSelected = true;
-                }
 
                 row.push(renderDay(dayConfig));
 
@@ -60361,10 +60316,9 @@ function datePicker(timeEntries) {
                     if (opts.showWeekNumber) {
                         row.unshift(renderWeek(i - before, month, year));
                     }
-                    data.push(renderRow(row, opts.isRTL, opts.pickWholeWeek, isWeekSelected));
+                    data.push(renderRow(row, opts.isRTL));
                     row = [];
                     r = 0;
-                    isWeekSelected = false;
                 }
             }
             return renderTable(opts, data, randId);
@@ -60378,9 +60332,9 @@ function datePicker(timeEntries) {
         show: function()
         {
             if (!this.isVisible()) {
+                removeClass(this.el, 'is-hidden');
                 this._v = true;
                 this.draw();
-                removeClass(this.el, 'is-hidden');
                 if (this._o.bound) {
                     addEvent(document, 'click', this._onClick);
                     this.adjustPosition();
@@ -60414,21 +60368,16 @@ function datePicker(timeEntries) {
          */
         destroy: function()
         {
-            var opts = this._o;
-
             this.hide();
             removeEvent(this.el, 'mousedown', this._onMouseDown, true);
             removeEvent(this.el, 'touchend', this._onMouseDown, true);
             removeEvent(this.el, 'change', this._onChange);
-            if (opts.keyboardInput) {
-                removeEvent(document, 'keydown', this._onKeyChange);
-            }
-            if (opts.field) {
-                removeEvent(opts.field, 'change', this._onInputChange);
-                if (opts.bound) {
-                    removeEvent(opts.trigger, 'click', this._onInputClick);
-                    removeEvent(opts.trigger, 'focus', this._onInputFocus);
-                    removeEvent(opts.trigger, 'blur', this._onInputBlur);
+            if (this._o.field) {
+                removeEvent(this._o.field, 'change', this._onInputChange);
+                if (this._o.bound) {
+                    removeEvent(this._o.trigger, 'click', this._onInputClick);
+                    removeEvent(this._o.trigger, 'focus', this._onInputFocus);
+                    removeEvent(this._o.trigger, 'blur', this._onInputBlur);
                 }
             }
             if (this.el.parentNode) {
@@ -60439,6 +60388,7 @@ function datePicker(timeEntries) {
     };
 
     return Pikaday;
+
 }));
 
 
@@ -61698,65 +61648,87 @@ function teamInfoCard(orchestraApi) {
     template: _teamInfoCard2.default,
     restrict: 'E',
     scope: {
-      projectId: '='
+      taskAssignment: '='
     },
     controllerAs: 'teamInfoCard',
     bindToController: true,
     controller: function controller($scope) {
       var teamInfoCard = $scope.teamInfoCard;
-      orchestraApi.projectInformation(teamInfoCard.projectId).then(function (response) {
-        var _response$data = response.data,
-            steps = _response$data.steps,
-            tasks = _response$data.tasks;
+      teamInfoCard.projectId = teamInfoCard.taskAssignment.project.id;
+      teamInfoCard.step = teamInfoCard.taskAssignment.step;
+      teamInfoCard.isProjectAdmin = teamInfoCard.taskAssignment.is_project_admin;
 
-        var humanSteps = new Set(steps.filter(function (step) {
-          return step.is_human;
-        }).map(function (step) {
-          return step.slug;
-        }));
-        teamInfoCard.steps = (0, _lodash.reduce)(Object.values(response.data.steps), function (result, step) {
-          result[step.slug] = step;
-          return result;
-        }, {});
-        teamInfoCard.assignments = [];
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
+      teamInfoCard.loadTeamInfo = function () {
+        orchestraApi.projectInformation(teamInfoCard.projectId).then(function (response) {
+          var _response$data = response.data,
+              steps = _response$data.steps,
+              tasks = _response$data.tasks;
 
-        try {
-          var _loop = function _loop() {
-            var stepSlug = _step.value;
+          var humanSteps = new Set(steps.filter(function (step) {
+            return step.is_human;
+          }).map(function (step) {
+            return step.slug;
+          }));
+          teamInfoCard.steps = (0, _lodash.reduce)(Object.values(response.data.steps), function (result, step) {
+            result[step.slug] = step;
+            return result;
+          }, {});
+          teamInfoCard.assignments = [];
+          var _iteratorNormalCompletion = true;
+          var _didIteratorError = false;
+          var _iteratorError = undefined;
 
-            var task = tasks[stepSlug];
-            if (task) {
-              teamInfoCard.assignments = teamInfoCard.assignments.concat(task.assignments.map(function (a) {
-                return {
-                  role: teamInfoCard.steps[stepSlug].name,
-                  worker: a.worker,
-                  recordedTime: _momentTimezone2.default.duration(a.recorded_work_time, 'seconds').roundMinute().humanizeUnits()
-                };
-              }));
-            }
-          };
-
-          for (var _iterator = humanSteps.values()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            _loop();
-          }
-        } catch (err) {
-          _didIteratorError = true;
-          _iteratorError = err;
-        } finally {
           try {
-            if (!_iteratorNormalCompletion && _iterator.return) {
-              _iterator.return();
+            var _loop = function _loop() {
+              var stepSlug = _step.value;
+
+              var task = tasks[stepSlug];
+              if (task) {
+                teamInfoCard.assignments = teamInfoCard.assignments.concat(task.assignments.map(function (a) {
+                  return {
+                    stepSlug: stepSlug,
+                    role: teamInfoCard.steps[stepSlug].name,
+                    worker: a.worker,
+                    recordedTime: _momentTimezone2.default.duration(a.recorded_work_time, 'seconds').roundMinute().humanizeUnits(),
+                    status: task.status,
+                    task_id: a.task
+                  };
+                }));
+              }
+            };
+
+            for (var _iterator = humanSteps.values()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              _loop();
             }
+          } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
           } finally {
-            if (_didIteratorError) {
-              throw _iteratorError;
+            try {
+              if (!_iteratorNormalCompletion && _iterator.return) {
+                _iterator.return();
+              }
+            } finally {
+              if (_didIteratorError) {
+                throw _iteratorError;
+              }
             }
           }
-        }
-      });
+        });
+      };
+      teamInfoCard.submitTask = function (taskId) {
+        orchestraApi.completeAndSkipTask(taskId).then(function () {
+          teamInfoCard.loadTeamInfo();
+        }, function (response) {
+          var errorMessage = 'Error completing task.';
+          if (response.status === 400) {
+            errorMessage = response.data.message;
+          }
+          window.alert(errorMessage);
+        });
+      };
+
+      teamInfoCard.loadTeamInfo();
     }
   };
 }
@@ -61765,7 +61737,7 @@ function teamInfoCard(orchestraApi) {
 /* 217 */
 /***/ (function(module, exports) {
 
-module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Team info\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <table class=\"table table-striped\">\n          <thead>\n            <th>Role</th>\n            <th>Username</th>\n            <th>Name</th>\n            <th>Recorded time spent</th>\n          </thead>\n          <tbody>\n            <tr ng-repeat=\"assignment in teamInfoCard.assignments\">\n              <td>{{assignment.role}}</td>\n              <td>{{assignment.worker.username}}</td>\n              <td>{{assignment.worker.first_name}} {{assignment.worker.last_name}}</td>\n              <td>{{assignment.recordedTime}}</td>\n            </tr>\n          </tbody>\n        </table>\n      </div>\n    </div>\n  </div>\n</section>\n";
+module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Team info\n          <a class=\"btn\"\n             ng-if=\"teamInfoCard.isProjectAdmin\"\n             ng-href=\"project/{{teamInfoCard.projectId}}\"\n             target=\"_blank\">\n            Project Management\n          </a>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <table class=\"table table-striped\">\n          <thead>\n            <th>Role</th>\n            <th>Username</th>\n            <th>Name</th>\n            <th>Recorded time spent</th>\n            <th>Status</th>\n          </thead>\n          <tbody>\n            <tr ng-repeat=\"assignment in teamInfoCard.assignments\">\n              <td>{{assignment.role}}</td>\n              <td>{{assignment.worker.username}}</td>\n              <td>{{assignment.worker.first_name}} {{assignment.worker.last_name}}</td>\n              <td>{{assignment.recordedTime}}</td>\n              <td>\n                {{assignment.status}}\n                <button type=\"submit\"\n                        class=\"btn btn-default btn-sm\"\n                        ng-if=\"teamInfoCard.isProjectAdmin &&\n                               assignment.status == 'Processing' &&\n                               assignment.stepSlug != teamInfoCard.step.slug\"\n                        ng-click=\"teamInfoCard.submitTask(assignment.task_id)\">\n                  Submit\n                </button>\n              </td>\n            </tr>\n          </tbody>\n        </table>\n      </div>\n    </div>\n  </div>\n</section>\n";
 
 /***/ }),
 /* 218 */
@@ -61850,7 +61822,7 @@ module.exports = "<div class=\"timecard-view\" ng-if=\"!vm.dataLoading\">\n  <di
 /* 222 */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"project-management\">\n  <section class=\"section-panel\">\n    <div class=\"container-fluid\">\n      <div class=\"row padded\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <ui-select class=\"project-description\" ng-model=\"vis.dataService.currentProject\"\n              ng-change=\"vis.dataService.setSelectedProject()\"\n              ng-disabled=\"vis.dataService.loading\">\n            <ui-select-match>\n              <span ng-bind=\"projectDescription($select.selected)\"></span>\n            </ui-select-match>\n            <ui-select-choices repeat=\"item in (vis.dataService.allProjects | toArray | filter: $select.search) track by item.id\">\n              <span ng-bind=\"projectDescription(item)\"></span>\n            </ui-select-choices>\n          </ui-select>\n          <div class=\"project-actions\" ng-show=\"vis.dataService.currentProject.id\">\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.createSubsequentTasks()\" class=\"btn btn-default\">\n              Create subsequent tasks\n            </button>\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.showSlackActions()\" class=\"btn btn-default\">\n              Edit Slack users\n            </button>\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.showProjectData()\" class=\"btn btn-default\">\n              View project data\n            </button>\n            <a ng-href=\"{{vis.dataService.data.project.admin_url}}\" ng-disabled=\"vis.dataService.loading\" target=\"_blank\">\n              <button type=\"button\" class=\"btn btn-default\">View in admin</button>\n            </a>\n            <button ng-click=\"vis.endProject()\" class=\"btn btn-danger\">Abort project</button>\n          </div>\n        </div>\n      </div>\n      <div class=\"row\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <div class=\"vis-wrapper\" ng-show=\"vis.dataService.currentProject.id\">\n            <div class=\"overlay\" ng-if=\"vis.dataService.loading\">\n              <div class=\"spinner\"></div>\n            </div>\n            <div class=\"freeze-pane-left\">\n              <div class=\"scale-buttons\">\n                <button ng-click=\"vis.axis.relativeTime = !vis.axis.relativeTime; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  Switch to {{vis.axis.relativeTime ? 'local' : 'relative'}} time\n                </button>\n                <button ng-click=\"vis.params.scaleWidth = vis.params.scaleWidth / 1.1; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  -\n                </button>\n                <button ng-click=\"vis.params.scaleWidth = vis.params.scaleWidth * 1.1; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  +\n                </button>\n              </div>\n              <div class=\"task-names\"></div>\n            </div>\n            <div class=\"svg-wrapper\"></div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n</div>\n";
+module.exports = "<div class=\"project-management\">\n  <div class=\"overlay\" ng-if=\"vis.dataService.loading\">\n    <div class=\"spinner\"></div>\n  </div>\n  <section class=\"section-panel\">\n    <div class=\"container-fluid\">\n      <div class=\"row padded\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <ui-select class=\"project-description\" ng-model=\"vis.dataService.currentProject\"\n              ng-change=\"vis.dataService.setSelectedProject()\"\n              ng-disabled=\"vis.dataService.loading\">\n            <ui-select-match>\n              <span ng-bind=\"projectDescription($select.selected)\"></span>\n            </ui-select-match>\n            <ui-select-choices repeat=\"item in (vis.dataService.allProjects | toArray | filter: $select.search) track by item.id\">\n              <span ng-bind=\"projectDescription(item)\"></span>\n            </ui-select-choices>\n          </ui-select>\n          <div class=\"project-actions\" ng-show=\"vis.dataService.currentProject.id\">\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.createSubsequentTasks()\" class=\"btn btn-default\">\n              Create subsequent tasks\n            </button>\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.showSlackActions()\" class=\"btn btn-default\">\n              Edit Slack users\n            </button>\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.showProjectData()\" class=\"btn btn-default\">\n              View project data\n            </button>\n            <a ng-href=\"{{vis.dataService.data.project.admin_url}}\" ng-disabled=\"vis.dataService.loading\" target=\"_blank\">\n              <button type=\"button\" class=\"btn btn-default\">View in admin</button>\n            </a>\n            <button ng-click=\"vis.endProject()\" class=\"btn btn-danger\">Abort project</button>\n          </div>\n        </div>\n      </div>\n      <div class=\"row\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <div class=\"vis-wrapper\" ng-show=\"vis.dataService.currentProject.id\">\n            <div class=\"freeze-pane-left\">\n              <div class=\"scale-buttons\">\n                <button ng-click=\"vis.axis.relativeTime = !vis.axis.relativeTime; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  Switch to {{vis.axis.relativeTime ? 'local' : 'relative'}} time\n                </button>\n                <button ng-click=\"vis.params.scaleWidth = vis.params.scaleWidth / 1.1; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  -\n                </button>\n                <button ng-click=\"vis.params.scaleWidth = vis.params.scaleWidth * 1.1; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  +\n                </button>\n              </div>\n              <div class=\"task-names\"></div>\n            </div>\n            <div class=\"svg-wrapper\"></div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n</div>\n";
 
 /***/ })
 /******/ ]);

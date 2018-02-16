@@ -1,4 +1,7 @@
 <div class="project-management">
+  <div class="overlay" ng-if="vis.dataService.loading">
+    <div class="spinner"></div>
+  </div>
   <section class="section-panel">
     <div class="container-fluid">
       <div class="row padded">
@@ -33,9 +36,6 @@
       <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12">
           <div class="vis-wrapper" ng-show="vis.dataService.currentProject.id">
-            <div class="overlay" ng-if="vis.dataService.loading">
-              <div class="spinner"></div>
-            </div>
             <div class="freeze-pane-left">
               <div class="scale-buttons">
                 <button ng-click="vis.axis.relativeTime = !vis.axis.relativeTime; vis.draw()"

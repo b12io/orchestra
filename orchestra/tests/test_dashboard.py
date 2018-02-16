@@ -521,6 +521,7 @@ class DashboardTestCase(OrchestraTransactionTestCase):
             'step': {'slug': 'step1', 'name': 'The first step'},
             'is_reviewer': is_reviewer,
             'is_read_only': is_read_only,
+            'is_project_admin': False,
             'worker': {
                 'username': worker.user.username,
                 'first_name': worker.user.first_name,

@@ -367,7 +367,7 @@ export default function tasksVis (
         'corrupted/unrecoverable state.')) {
         return
       }
-      orchestraApi.completeAndSkipTask(task)
+      orchestraApi.completeAndSkipTask(task.id)
         .then(function () {
           dataService.updateData()
         }, function (response) {

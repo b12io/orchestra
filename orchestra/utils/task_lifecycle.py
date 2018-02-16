@@ -301,7 +301,9 @@ def reassign_assignment(worker_id, assignment_id,
 @transaction.atomic
 def complete_and_skip_task(task_id):
     """
-    Marks a task and its assignments as complete and creates subsequent tasks.
+    Submits a task on behalf of the worker working on it. If the task
+    isn't assigned to a worker, marks it and its assignments as
+    complete and creates subsequent tasks.
 
     Args:
         task_id (int):
@@ -310,14 +312,22 @@ def complete_and_skip_task(task_id):
     Returns:
         task (orchestra.models.Task):
             The completed and skipped task.
+
     """
     task = Task.objects.get(id=task_id)
-    task.status = Task.Status.COMPLETE
-    task.save()
-    for assignment in task.assignments.all():
-        assignment.status = TaskAssignment.Status.SUBMITTED
-        assignment.save()
-    create_subsequent_tasks(task.project)
+    assignment = current_assignment(task)
+    if assignment and assignment.worker:
+        task_data = assignment.in_progress_task_data or {}
+        task_data.update(_orchestra_internal={'complete_and_skip_task': True})
+        submit_task(
+            task_id, task_data,
+            Iteration.Status.REQUESTED_REVIEW, assignment.worker)
+    else:
+        task.status = Task.Status.COMPLETE
+        task.save()
+        for assignment in task.assignments.all():
+            assignment.status = TaskAssignment.Status.SUBMITTED
+            assignment.save()
     return task
 
 
@@ -419,6 +429,7 @@ def get_task_overview_for_worker(task_id, worker):
     """
     task = Task.objects.get(id=task_id)
     task_details = get_task_details(task_id)
+    task_details['is_project_admin'] = worker.is_project_admin()
 
     if task.is_worker_assigned(worker):
         task_assignment = TaskAssignment.objects.get(worker=worker, task=task)

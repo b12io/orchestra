@@ -349,7 +349,7 @@ def setup_models(test_case):
             'assignments': [
                 (5, {}, TaskAssignment.Status.PROCESSING)
             ]
-        }
+        },
     }
 
     # Create the objects

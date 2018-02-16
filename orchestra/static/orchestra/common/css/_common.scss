@@ -61,8 +61,16 @@ $main-font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helveti
     border-bottom: 1px solid $black;
     border-right: 1px solid $black;
     border-radius: 50%;
-
     content: "";
     animation: spin .75s linear infinite;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform:rotate(0deg);
+  }
+  to {
+     transform:rotate(360deg);
   }
 }
