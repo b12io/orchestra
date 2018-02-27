@@ -4,7 +4,6 @@ import re
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-from django.template import Context
 from django.template.loader import render_to_string
 
 from orchestra.bots.basebot import BaseBot
@@ -299,10 +298,9 @@ class StaffBot(BaseBot):
 
     def _get_staffing_request_message(self, staffing_request_inquiry,
                                       template):
-        metadata = self.get_staffing_request_metadata(staffing_request_inquiry)
-        metadata['available_requests_url'] = self._get_staffing_url(
+        context = self.get_staffing_request_metadata(staffing_request_inquiry)
+        context['available_requests_url'] = self._get_staffing_url(
             'orchestra:communication:available_staffing_requests', {})
-        context = Context(metadata)
         message_body = render_to_string(template, context)
         return message_body
 
