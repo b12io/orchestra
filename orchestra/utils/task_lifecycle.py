@@ -745,7 +745,7 @@ def get_new_task_assignment(worker, task_status):
              .order_by('project__start_datetime'))
 
     certification_error = False
-    for task in tasks.iterator():
+    for task in tasks:
         try:
             task = assign_task(worker.id, task.id)
             return current_assignment(task)
