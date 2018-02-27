@@ -13,7 +13,7 @@ Orchestra, take a look at our :doc:`API documentation <api>`.
 Install Dependencies
 ********************
 
-Orchestra requires Python 3 and Django version 1.8 or higher to run, so make
+Orchestra requires Python 3 and Django version 1.11 or higher to run, so make
 sure you
 `have them installed <https://docs.djangoproject.com/en/1.8/topics/install/>`_.
 We recommend setting up a
