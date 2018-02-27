@@ -147,7 +147,7 @@ class TaskMixin(object):
         try:
             function = locate(path)
             return function(get_task_details(self.id), **kwargs)
-        except:
+        except Exception:
             return ''
 
     def __str__(self):

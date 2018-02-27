@@ -1,3 +1,4 @@
+# flake8: noqa
 # Copy pasted from
 # https://raw.githubusercontent.com/greyside/django-bitfield/04efae91d292bffb569bd7cc13e5c941e42e8698/bitfield/forms.py
 from bitfield.types import BitHandler

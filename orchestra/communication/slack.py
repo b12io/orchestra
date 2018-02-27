@@ -65,7 +65,7 @@ def add_worker_to_project_team(worker, project):
                 '<@{}|{}> has been added to the team. '
                 'Welcome aboard!').format(user_id, worker.slack_username)
             slack.chat.post_message(project.slack_group_id, welcome_message)
-    except:
+    except Exception:
         # TODO(jrbotros): for now, using slack on a per-worker basis is
         # optional; we'll want to rethink this in the future
         pass

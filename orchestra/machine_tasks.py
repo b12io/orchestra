@@ -70,7 +70,7 @@ def execute(project_id, step_slug):
         project_data = project.project_data
         project_data['project_id'] = project_id
         task_data = function(project_data, prerequisites, **kwargs)
-    except:
+    except Exception:
         task_assignment.status = TaskAssignment.Status.FAILED
         logger.exception('Machine task has failed')
         task_assignment.save()
