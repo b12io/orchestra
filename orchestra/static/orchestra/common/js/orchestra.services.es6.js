@@ -48,7 +48,11 @@ export function orchestraService () {
       var success = true
       registered[signalType] = registered[signalType] || []
       registered[signalType].forEach(function (callback) {
-        success = callback() && success
+        // Explicitly check for falsiness in case callback returns
+        // undefined.
+        if (callback() === false) {
+          success = false
+        }
       })
       return success
     }

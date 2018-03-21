@@ -24,8 +24,8 @@ export default function TaskController (
         })
       })
 
+      requiredFields.setup(vm)
       if (!vm.is_read_only) {
-        requiredFields.setup(vm)
         $scope.$watch('vm.taskAssignment.task.data', function (newVal, oldVal) {
           // Ensure save fired at initialization
           // [http://stackoverflow.com/a/18915585]
@@ -80,7 +80,7 @@ export default function TaskController (
         vm.autoSaver.cancel()
         orchestraService.signals.fireSignal('submit.success')
         orchestraTasks.updateTasks()
-        $location.path('/timecard')
+        $location.path('/')
       })
       .error(function (data, status, headers, config) {
         orchestraService.signals.fireSignal('submit.error')
