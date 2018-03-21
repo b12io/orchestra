@@ -42609,7 +42609,11 @@ function orchestraService() {
       var success = true;
       registered[signalType] = registered[signalType] || [];
       registered[signalType].forEach(function (callback) {
-        success = callback() && success;
+        // Explicitly check for falsiness in case callback returns
+        // undefined.
+        if (callback() === false) {
+          success = false;
+        }
       });
       return success;
     }
@@ -58988,8 +58992,8 @@ function TaskController($location, $scope, $routeParams, $http, $rootScope, auto
         });
       });
 
+      requiredFields.setup(vm);
       if (!vm.is_read_only) {
-        requiredFields.setup(vm);
         $scope.$watch('vm.taskAssignment.task.data', function (newVal, oldVal) {
           // Ensure save fired at initialization
           // [http://stackoverflow.com/a/18915585]
@@ -59036,7 +59040,7 @@ function TaskController($location, $scope, $routeParams, $http, $rootScope, auto
       vm.autoSaver.cancel();
       orchestraService.signals.fireSignal('submit.success');
       orchestraTasks.updateTasks();
-      $location.path('/timecard');
+      $location.path('/');
     }).error(function (data, status, headers, config) {
       orchestraService.signals.fireSignal('submit.error');
       window.alert(data.message);
