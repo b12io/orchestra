@@ -194,6 +194,7 @@ class ChecklistTemplateMixin(object):
         return '{} - {}'.format(
             self.name, self.description)
 
+
 class PayRateMixin(object):
 
     def __str__(self):
