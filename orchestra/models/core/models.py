@@ -648,7 +648,7 @@ class Todo(TodoMixin, BaseModel):
     due_datetime = models.DateTimeField(null=True, blank=True)
     skipped = models.BooleanField(default=False)
     parent_todo = models.ForeignKey(
-        'self', null=True, related_name='parent_todo')
+        'self', null=True, related_name='parent')
     template = models.ForeignKey(
         ChecklistTemplate, null=True, related_name='template')
     log = JSONField(default={'actions': []})
