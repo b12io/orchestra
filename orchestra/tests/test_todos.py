@@ -5,11 +5,13 @@ from django.core.urlresolvers import reverse
 
 from orchestra.models import Task
 from orchestra.models import Todo
+from orchestra.models import ChecklistTemplate
 from orchestra.models import Worker
 from orchestra.project_api.serializers import TimeEntrySerializer
 from orchestra.tests.helpers import EndpointTestCase
 from orchestra.tests.helpers.fixtures import TaskFactory
 from orchestra.tests.helpers.fixtures import TodoFactory
+# from orchestra.tests.helpers.fixtures import ChecklistTemplateFactory
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.todos.serializers import TodoSerializer
 from orchestra.utils.load_json import load_encoded_json
@@ -150,7 +152,7 @@ class TimeEntriesEndpointTests(EndpointTestCase):
                 False,
                 self.deadline.strftime('%Y-%m-%dT%H:%M:%SZ'),
                 None)
-            ], True)
+        ], True)
 
     def test_create_todo_with_due_datetime(self):
         DUE_DESCRIPTION = 'Due soon'
@@ -168,4 +170,114 @@ class TimeEntriesEndpointTests(EndpointTestCase):
                 False,
                 None,
                 self.deadline.strftime('%Y-%m-%dT%H:%M:%SZ')),
-            ], True)
+        ], True)
+
+
+class ChecklistTemplateEndpointTests(EndpointTestCase):
+
+    def setUp(self):
+        super().setUp()
+        setup_models(self)
+        self.worker = Worker.objects.get(user__username='test_user_6')
+        self.request_client.login(username=self.worker.user.username,
+                                  password='defaultpassword')
+        self.checklist_template_list_url = reverse(
+            'orchestra:todos:checklists')
+        self.checklist_template_detail_url_name = 'orchestra:todos:checklist'
+        self.checklist_template_slug = 'test_checklist_template_slug'
+        self.checklist_template_name = 'test_checklist_template_name'
+        self.checklist_template_description = \
+            'test_checklist_template_description'
+
+    def _checklist_template_data(
+            self, slug, name, description, creator=None,
+            todos="{'list': []}"):
+        return {
+            'slug': slug,
+            'name': name,
+            'description': description,
+            'creator': creator,
+            'todos': todos
+        }
+
+    def _verify_checklist_template_content(self, checklist_template,
+                                           expected_checklist_template):
+        checklist_template = dict(checklist_template)
+        created_at = checklist_template.pop('created_at')
+        checklist_template_id = checklist_template.pop('id')
+        self.assertEqual(checklist_template, expected_checklist_template)
+        self.assertGreater(len(created_at), 0)
+        self.assertGreaterEqual(checklist_template_id, 0)
+
+    def _verify_checklist_template_list(self, expected_checklist_templates,
+                                        success):
+        resp = self.request_client.get(self.checklist_template_list_url)
+        if success:
+            self.assertEqual(resp.status_code, 200)
+            data = load_encoded_json(resp.content)
+            for checklist_template, expected_checklist_template in \
+                    zip(data, expected_checklist_templates):
+                self._verify_checklist_template_content(
+                    checklist_template, expected_checklist_template)
+        else:
+            self.assertEqual(resp.status_code, 403)
+
+    def _verify_checklist_template_creation(self, success):
+        num_checklist_templates = ChecklistTemplate.objects.all().count()
+        resp = self.request_client.post(self.checklist_template_list_url, {
+            'slug': self.checklist_template_slug,
+            'name': self.checklist_template_name,
+            'description': self.checklist_template_description})
+
+        if success:
+            self.assertEqual(resp.status_code, 201)
+            self.assertEqual(ChecklistTemplate.objects.all().count(),
+                             num_checklist_templates + 1)
+            checklist_template = load_encoded_json(resp.content)
+            self._verify_checklist_template_content(
+                checklist_template, self._checklist_template_data(
+                    self.checklist_template_slug,
+                    self.checklist_template_name,
+                    self.checklist_template_description))
+        else:
+            self.assertEqual(resp.status_code, 403)
+            self.assertEqual(ChecklistTemplate.objects.all().count(),
+                             num_checklist_templates)
+
+    def _verify_checklist_template_update(self, checklist_template, success):
+        updated_description = 'updated description'
+        num_checklist_templates = ChecklistTemplate.objects.all().count()
+        checklist_template_detail_url = reverse(
+            self.checklist_template_detail_url_name,
+            kwargs={'pk': checklist_template.id})
+        resp = self.request_client.put(
+            self.checklist_template_detail_url,
+            json.dumps(self._checklist_template_data(
+                checklist_template.slug,
+                checklist_template.name,
+                updated_description)),
+            content_type='application/json')
+        updated_checklist_template = ChecklistTemplateSerializer(
+            ChecklistTemplate.objects.get(id=checklist_template.id)).data
+
+        if success:
+            self.assertEqual(resp.status_code, 200)
+            self._verify_checklist_template_content(
+                updated_checklist_template, self._checklist_template_data(
+                    checklist_template.slug,
+                    checklist_template.name,
+                    updated_description))
+        else:
+            self.assertEqual(resp.status_code, 403)
+            self.assertNotEqual(
+                updated_checklist_template['description'], updated_description)
+
+    def test_checklist_template_list_create(self):
+        self._verify_checklist_template_list([], True)
+        self._verify_checklist_template_creation(True)
+        self._verify_checklist_template_list(
+            [self._checklist_template_data(
+                self.checklist_template_slug,
+                self.checklist_template_name,
+                self.checklist_template_description)],
+            True)

@@ -3,8 +3,10 @@ from rest_framework import permissions
 
 from orchestra.models import Task
 from orchestra.models import Todo
+from orchestra.models import ChecklistTemplate
 from orchestra.models import Worker
 from orchestra.todos.serializers import TodoSerializer
+from orchestra.todos.serializers import ChecklistTemplateSerializer
 from orchestra.utils.notifications import message_experts_slack_group
 
 
@@ -42,6 +44,27 @@ class IsAssociatedWithProject(permissions.BasePermission):
             project = Task.objects.get(id=task_id).project
             return worker.assignments.filter(task__project=project).exists()
         return False
+
+
+class ChecklistTemplateDetail(generics.RetrieveUpdateAPIView):
+    permission_classes = (permissions.IsAuthenticated,
+                          IsAssociatedWithProject)
+
+    serializer_class = ChecklistTemplateSerializer
+    queryset = ChecklistTemplate.objects.all()
+
+    def perform_update(self, serializer):
+        serializer.save()
+
+
+class ChecklistTemplateList(generics.ListCreateAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    serializer_class = ChecklistTemplateSerializer
+    queryset = ChecklistTemplate.objects.all()
+
+    def perform_create(self, serializer):
+        serializer.save()
 
 
 class TodoList(generics.ListCreateAPIView):

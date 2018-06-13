@@ -169,6 +169,19 @@ class TodoFactory(factory.django.DjangoModelFactory):
         model = 'orchestra.Todo'
 
 
+class ChecklistTemplateFactory(factory.django.DjangoModelFactory):
+    slug = factory.Sequence(
+        lambda n: 'test_checklist_template_{}'.format(n))
+    name = 'Test Checklist'
+    description = factory.Sequence(
+        lambda n: 'Description {}'.format(n))
+    creator = None
+    # todos = None
+
+    class Meta:
+        model = 'orchestra.ChecklistTemplate'
+
+
 class CommunicationPreferenceFactory(factory.django.DjangoModelFactory):
 
     worker = factory.SubFactory(WorkerFactory)
