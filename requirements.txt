@@ -34,6 +34,7 @@ django-gulp==2.5.1
 django-related-admin==0.5.0
 django-ajax-selects==1.7.0
 django-kronos==1.0
+httpsig==1.1.2 # The 1.2.0 release breaks our tests
 markdown2==2.3.4
 timeout-decorator==0.4.0
 phonenumbers==8.9.0
