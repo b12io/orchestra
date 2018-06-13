@@ -188,6 +188,13 @@ class TodoMixin(object):
             self.completed)
 
 
+class ChecklistTemplateMixin(object):
+
+    def __str__(self):
+        return '{} - {}'.format(
+            self.name, self.description)
+
+
 class PayRateMixin(object):
 
     def __str__(self):
