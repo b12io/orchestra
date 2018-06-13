@@ -1,85 +1,88 @@
 <section class="section-panel todo-list">
   <div class="container-fluid">
+
     <div class="row section-header">
       <div class="col-lg-12 col-md-12 col-sm-12">
         <h3>
-          Todo List
-          <a class="btn"
-               ng-if="todoList.canSendToPending()"
-               ng-click="todoList.sendToPending()">
-            Send to pending
-          </a>
+          Checklist
         </h3>
       </div>
     </div>
     <div class="row section-body" ng-if="todoList.ready">
-      <div class="col-lg-12 col-md-12 col-sm-12">
-        <form class="new-todo">
-          <div class="new-todo__box">
+      <div class="col-lg-6 col-md-6 col-sm-12">
+        <div class="checklist-pane">
+          <div class="new-todo__box checklist-pane__heading col-sm-3">
             <select name="todoList" id="todoList" ng-model="todoList.newTodoTaskId">
-              <option value="" selected>Select owner</option>
-              <option value="{{task.id}}" ng-repeat="task in todoList.possibleTasks">{{todoList.steps[task.step_slug].name}}</option>
+              <option value="" selected>Select role</option>
+              <option value="{{role}}" ng-repeat="role in todoList.possibleRoles">{{role}}</option>
             </select>
           </div>
-          <div class="new-todo__box new-todo__box-details">
-            <input class="new-todo__description"
-                   type="text"
-                   ng-model="todoList.newTodoDescription"
-                   placeholder="Description">
-            <div class="pull-right">
-              <div class="new-todo__description__datetime">
-                <label>Start</label>
-                <date-picker
-                  date="todoList.newTodoStartDate"
-                  callback="todoList.setTimeOfDate"></date-picker>
-                <time-input
-                  datetime="todoList.newTodoStartDate"
-                  default-hour="8"
-                  ></time-input>
-              </div>
-              <div class="new-todo__description__datetime">
-                <label>Due</label>
-                <date-picker
-                  date="todoList.newTodoDueDate"
-                  callback="todoList.setTimeOfDate"></date-picker>
-                <time-input
-                  datetime="todoList.newTodoDueDate"
-                  default-hour="18"
-                  ></time-input>
+
+          <form class="new-todo">
+            <div class="new-todo__box new-todo__box-details">
+              <input class="new-todo__description"
+                     type="text"
+                     ng-model="todoList.newTodoDescription"
+                     placeholder="Add a checklist item">
+              <div class="pull-right">
+                <div class="new-todo__description__datetime">
+                  <label>Start</label>
+                  <date-picker
+                    date="todoList.newTodoStartDate"
+                    callback="todoList.setTimeOfDate"></date-picker>
+                  <time-input
+                    datetime="todoList.newTodoStartDate"
+                    default-hour="8"
+                    ></time-input>
+                </div>
+                <div class="new-todo__description__datetime">
+                  <label>Due</label>
+                  <date-picker
+                    date="todoList.newTodoDueDate"
+                    callback="todoList.setTimeOfDate"></date-picker>
+                  <time-input
+                    datetime="todoList.newTodoDueDate"
+                    default-hour="18"
+                    ></time-input>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="new-todo__box">
-            <button type="submit"
-               class="btn btn-primary btn-sm edit-save-handle"
-               ng-disabled="!todoList.canAddTodo()"
-               ng-click="todoList.addTodo()">
-              Add
-            </button>
-          </div>
-        </form>
-      </div>
+            <div class="new-todo__box">
+              <button type="submit"
+                 class="btn btn-primary btn-sm edit-save-handle"
+                 ng-disabled="!todoList.canAddTodo()"
+                 ng-click="todoList.addTodo()">
+                Add
+              </button>
+            </div>
+          </form>
 
-      <div class="col-lg-12 col-md-12 col-sm-12">
-          <div class="existing-todos">
-            <todo-checklist
+          <todo-checklist
               title="Todos"
               todos="todoList.todos"
-              show-checked="false"
+              show-skipped="false"
               update-todo="todoList.updateTodo"
+              toggle-skip-todo="todoList.toggleSkipTodo"
               steps="todoList.steps"
               task-slugs="todoList.taskSlugs"
-            ></todo-checklist>
-            <todo-checklist
-              title="Completed"
+          ></todo-checklist>
+        </div>
+      </div>
+      <div class="col-lg-6 col-md-6 col-sm-12">
+        <div class="checklist-pane">
+          <p class="checklist-pane__heading col-sm-4">Skipped checklist items</p>
+          <todo-checklist
+              title="Todos"
               todos="todoList.todos"
-              show-checked="true"
+              show-skipped="true"
               update-todo="todoList.updateTodo"
               steps="todoList.steps"
+              toggle-skip-todo="todoList.toggleSkipTodo"
               task-slugs="todoList.taskSlugs"
-            ></todo-checklist>
+          ></todo-checklist>
         </div>
       </div>
     </div>
+
   </div>
 </section>
