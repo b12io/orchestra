@@ -61364,10 +61364,6 @@ var _todoList = __webpack_require__(209);
 
 var _todoList2 = _interopRequireDefault(_todoList);
 
-var _momentTimezone = __webpack_require__(1);
-
-var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
-
 __webpack_require__(210);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -61395,59 +61391,18 @@ function todoList(orchestraApi) {
       todoList.taskSlugs = {};
       todoList.todos = [];
 
-      var createTodo = function createTodo(taskId, description, completed, startDate, dueDate) {
-        return todoApi.create({
-          task: taskId,
-          description: description,
-          completed: completed,
-          start_by_datetime: startDate,
-          due_datetime: dueDate
-        }).then(function (taskData) {
-          todoList.todos.unshift(taskData);
-          return taskData;
-        });
-      };
-
       todoList.canAddTodo = function () {
         return todoList.newTodoTaskId && todoList.newTodoDescription;
       };
 
-      todoList.canSendToPending = function () {
-        var numTodosOnThisTask = (0, _lodash.reduce)(todoList.todos, function (result, todo) {
-          return result + (todo.task === todoList.taskId ? 1 : 0);
-        }, 0);
-        return todoList.ready && numTodosOnThisTask === 0;
-      };
-
-      todoList.sendToPending = function () {
-        createTodo(todoList.taskId, 'Send task to pending state', true);
-      };
-
-      todoList.getUTCDateTimeString = function (datetime) {
-        if (!datetime) {
-          return null;
-        }
-        var datetimeUtc = _momentTimezone2.default.tz(datetime.format('YYYY-MM-DD HH:mm'), _momentTimezone2.default.tz.guess()).utc();
-        return datetimeUtc.format('YYYY-MM-DD HH:mm');
-      };
-
-      todoList.addTodo = function () {
-        var start = todoList.getUTCDateTimeString(todoList.newTodoStartDate);
-        var due = todoList.getUTCDateTimeString(todoList.newTodoDueDate);
-
-        createTodo(todoList.newTodoTaskId, todoList.newTodoDescription, false, start, due).then(function (taskData) {
-          todoList.newTodoDescription = null;
-          todoList.newTodoStartDate = null;
-          todoList.newTodoDueDate = null;
-        });
-      };
-
       todoList.updateTodo = function (todo) {
-        todoApi.update(todo);
+        console.log(todo);
+        // todoApi.update(todo)
       };
 
-      todoList.setTimeOfDate = function (datetime) {
-        $scope.$apply();
+      todoList.toggleSkipTodo = function (todo) {
+        todo.skipped = !todo.skipped;
+        // todoApi.update(todo)
       };
 
       orchestraApi.projectInformation(todoList.projectId).then(function (response) {
@@ -61467,22 +61422,25 @@ function todoList(orchestraApi) {
         todoList.possibleTasks = Object.values(response.data.tasks).filter(function (task) {
           return task.status !== 'Complete' && humanSteps.has(task.step_slug);
         });
+        todoList.possibleRoles = ['CSM', 'Designer'];
 
         // TODO(marcua): parallelize requests rather than chaining `then`s.
         todoApi.list(todoList.projectId).then(function (todos) {
           todoList.todos = todos;
           todoList.ready = true;
+          console.log(todoList);
         });
       });
     }
   };
 }
+// import moment from 'moment-timezone'
 
 /***/ }),
 /* 209 */
 /***/ (function(module, exports) {
 
-module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Todo List\n          <a class=\"btn\"\n               ng-if=\"todoList.canSendToPending()\"\n               ng-click=\"todoList.sendToPending()\">\n            Send to pending\n          </a>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\" ng-if=\"todoList.ready\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <form class=\"new-todo\">\n          <div class=\"new-todo__box\">\n            <select name=\"todoList\" id=\"todoList\" ng-model=\"todoList.newTodoTaskId\">\n              <option value=\"\" selected>Select owner</option>\n              <option value=\"{{task.id}}\" ng-repeat=\"task in todoList.possibleTasks\">{{todoList.steps[task.step_slug].name}}</option>\n            </select>\n          </div>\n          <div class=\"new-todo__box new-todo__box-details\">\n            <input class=\"new-todo__description\"\n                   type=\"text\"\n                   ng-model=\"todoList.newTodoDescription\"\n                   placeholder=\"Description\">\n            <div class=\"pull-right\">\n              <div class=\"new-todo__description__datetime\">\n                <label>Start</label>\n                <date-picker\n                  date=\"todoList.newTodoStartDate\"\n                  callback=\"todoList.setTimeOfDate\"></date-picker>\n                <time-input\n                  datetime=\"todoList.newTodoStartDate\"\n                  default-hour=\"8\"\n                  ></time-input>\n              </div>\n              <div class=\"new-todo__description__datetime\">\n                <label>Due</label>\n                <date-picker\n                  date=\"todoList.newTodoDueDate\"\n                  callback=\"todoList.setTimeOfDate\"></date-picker>\n                <time-input\n                  datetime=\"todoList.newTodoDueDate\"\n                  default-hour=\"18\"\n                  ></time-input>\n              </div>\n            </div>\n          </div>\n          <div class=\"new-todo__box\">\n            <button type=\"submit\"\n               class=\"btn btn-primary btn-sm edit-save-handle\"\n               ng-disabled=\"!todoList.canAddTodo()\"\n               ng-click=\"todoList.addTodo()\">\n              Add\n            </button>\n          </div>\n        </form>\n      </div>\n\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <div class=\"existing-todos\">\n            <todo-checklist\n              title=\"Todos\"\n              todos=\"todoList.todos\"\n              show-checked=\"false\"\n              update-todo=\"todoList.updateTodo\"\n              steps=\"todoList.steps\"\n              task-slugs=\"todoList.taskSlugs\"\n            ></todo-checklist>\n            <todo-checklist\n              title=\"Completed\"\n              todos=\"todoList.todos\"\n              show-checked=\"true\"\n              update-todo=\"todoList.updateTodo\"\n              steps=\"todoList.steps\"\n              task-slugs=\"todoList.taskSlugs\"\n            ></todo-checklist>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n";
+module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Checklist\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\" ng-if=\"todoList.ready\">\n      <div class=\"col-lg-6 col-md-6 col-sm-12\">\n        <div class=\"checklist-pane\">\n          <div class=\"new-todo__box checklist-pane__heading col-sm-3\">\n            <select name=\"todoList\" id=\"todoList\" ng-model=\"todoList.newTodoTaskId\">\n              <option value=\"\" selected>Select role</option>\n              <option value=\"{{role}}\" ng-repeat=\"role in todoList.possibleRoles\">{{role}}</option>\n            </select>\n          </div>\n\n          <form class=\"new-todo\">\n            <div class=\"new-todo__box new-todo__box-details\">\n              <input class=\"new-todo__description\"\n                     type=\"text\"\n                     ng-model=\"todoList.newTodoDescription\"\n                     placeholder=\"Add a checklist item\">\n              <div class=\"pull-right\">\n                <div class=\"new-todo__description__datetime\">\n                  <label>Start</label>\n                  <date-picker\n                    date=\"todoList.newTodoStartDate\"\n                    callback=\"todoList.setTimeOfDate\"></date-picker>\n                  <time-input\n                    datetime=\"todoList.newTodoStartDate\"\n                    default-hour=\"8\"\n                    ></time-input>\n                </div>\n                <div class=\"new-todo__description__datetime\">\n                  <label>Due</label>\n                  <date-picker\n                    date=\"todoList.newTodoDueDate\"\n                    callback=\"todoList.setTimeOfDate\"></date-picker>\n                  <time-input\n                    datetime=\"todoList.newTodoDueDate\"\n                    default-hour=\"18\"\n                    ></time-input>\n                </div>\n              </div>\n            </div>\n            <div class=\"new-todo__box\">\n              <button type=\"submit\"\n                 class=\"btn btn-primary btn-sm edit-save-handle\"\n                 ng-disabled=\"!todoList.canAddTodo()\"\n                 ng-click=\"todoList.addTodo()\">\n                Add\n              </button>\n            </div>\n          </form>\n\n          <todo-checklist\n              title=\"Todos\"\n              todos=\"todoList.todos\"\n              show-skipped=\"false\"\n              update-todo=\"todoList.updateTodo\"\n              toggle-skip-todo=\"todoList.toggleSkipTodo\"\n              steps=\"todoList.steps\"\n              task-slugs=\"todoList.taskSlugs\"\n          ></todo-checklist>\n        </div>\n      </div>\n      <div class=\"col-lg-6 col-md-6 col-sm-12\">\n        <div class=\"checklist-pane\">\n          <p class=\"checklist-pane__heading col-sm-4\">Skipped checklist items</p>\n          <todo-checklist\n              title=\"Todos\"\n              todos=\"todoList.todos\"\n              show-skipped=\"true\"\n              update-todo=\"todoList.updateTodo\"\n              steps=\"todoList.steps\"\n              toggle-skip-todo=\"todoList.toggleSkipTodo\"\n              task-slugs=\"todoList.taskSlugs\"\n          ></todo-checklist>\n        </div>\n      </div>\n    </div>\n\n  </div>\n</section>\n";
 
 /***/ }),
 /* 210 */
@@ -61522,7 +61480,9 @@ function todoChecklist() {
       title: '@',
       todos: '<',
       showChecked: '=',
+      showSkipped: '=',
       updateTodo: '=',
+      toggleSkipTodo: '=',
       steps: '<',
       taskSlugs: '<'
     },
@@ -61543,7 +61503,7 @@ function todoChecklist() {
 /* 212 */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"list-by-status\" ng-if=\"(todos | filter: {completed: showChecked}).length > 0\">\n  <h4>{{title}}</h4>\n  <div class=\"todo\"\n       ng-repeat=\"todo in todos | filter: {completed: showChecked}\">\n    <label ng-class=\"{'text-danger': isInDanger(todo)}\">\n      <input type=\"checkbox\"\n             ng-model=\"todo.completed\"\n             ng-change=\"updateTodo(todo)\">\n      <span class=\"todo__role\">{{steps[taskSlugs[todo.task]].name}}:&nbsp;</span>\n      <span class=\"todo__description\">{{todo.description}}</span>\n      <span ng-class=\"{'todo__dates': true, 'todo__dates-danger': isInDanger(todo)}\">\n        <span ng-if=\"isNonEmptyString(todo.start_by_datetime)\">\n          Start <datetime-display datetime=\"todo.start_by_datetime\" show-time=\"true\"/>\n        </span>\n        <span ng-if=\"isNonEmptyString(todo.start_by_datetime) && isNonEmptyString(todo.due_datetime)\" class=\"todo__dates-separator\">|</span>\n        <span ng-if=\"isNonEmptyString(todo.due_datetime)\">\n          Due <datetime-display datetime=\"todo.due_datetime\" show-time=\"true\"/></span>\n      </span>\n    </label>\n  </div>\n</div>\n";
+module.exports = "<div class=\"list-by-status\" ng-if=\"(todos | filter: {skipped: showSkipped}).length > 0\">\n  <!-- <h4>{{title}}</h4> -->\n  <div class=\"todo\"\n       ng-repeat=\"todo in todos | filter: {skipped: showSkipped}\">\n    <label ng-class=\"{'text-danger': isInDanger(todo)}\">\n      <input type=\"checkbox\"\n             ng-hide=\"showSkipped\"\n             ng-model=\"todo.completed\"\n             ng-change=\"updateTodo(todo)\">\n      <span class=\"todo__role\">{{steps[taskSlugs[todo.task]].name}}:&nbsp;</span>\n      <span class=\"todo__description\">{{todo.description}}</span>\n      <span ng-class=\"{'todo__dates': true, 'todo__dates-danger': isInDanger(todo)}\">\n        <span ng-if=\"isNonEmptyString(todo.start_by_datetime)\">\n          Start <datetime-display datetime=\"todo.start_by_datetime\" show-time=\"true\"/>\n        </span>\n        <span ng-if=\"isNonEmptyString(todo.start_by_datetime) && isNonEmptyString(todo.due_datetime)\" class=\"todo__dates-separator\">|</span>\n        <span ng-if=\"isNonEmptyString(todo.due_datetime)\">\n          Due <datetime-display datetime=\"todo.due_datetime\" show-time=\"true\"/></span>\n      </span>\n      <span>\n        &nbsp;&nbsp;<a href=\"#\" ng-click=\"toggleSkipTodo(todo)\">[{{showSkipped?\"add\":\"skip\"}}]</a>\n      </span>\n    </label>\n  </div>\n</div>\n";
 
 /***/ }),
 /* 213 */
@@ -61575,7 +61535,16 @@ function todoApi($http) {
   var details = function details(todoId) {
     return '' + apiBase + todoId + '/';
   };
-
+  var response1 = {
+    'data': [{ 'id': 2410, 'created_at': '2018-06-11T21:43:38.681252Z', 'task': 14231, 'description': 'Guideline A', 'completed': false, 'skipped': true, 'start_by_datetime': null, 'due_datetime': null }, { 'id': 2411, 'created_at': '2018-06-11T21:43:38.681252Z', 'task': 14231, 'description': 'Guideline B', 'completed': false, 'skipped': true, 'start_by_datetime': null, 'due_datetime': null }, { 'id': 2412, 'created_at': '2018-06-11T21:43:38.681252Z', 'task': 14231, 'description': 'Guideline C', 'completed': false, 'skipped': true, 'start_by_datetime': null, 'due_datetime': null }, { 'id': 2413, 'created_at': '2018-06-11T21:43:38.681252Z', 'task': 14231, 'description': 'Guideline D', 'completed': false, 'skipped': false, 'start_by_datetime': null, 'due_datetime': null }, { 'id': 2414, 'created_at': '2018-06-11T21:43:38.681252Z', 'task': 14231, 'description': 'Guideline E', 'completed': false, 'skipped': false, 'start_by_datetime': null, 'due_datetime': null }, { 'id': 2415, 'created_at': '2018-06-11T21:43:38.681252Z', 'task': 14231, 'description': 'Guideline F', 'completed': false, 'skipped': false, 'start_by_datetime': null, 'due_datetime': null }]
+  };
+  // return {
+  //   create: (todo) => $http.post(listCreate(), todo)
+  //     .then(response => response.data),
+  //   list: (projectId) => $http.get(listCreate(projectId))
+  //     .then(response => response.data),
+  //   update: (todo) => $http.put(details(todo.id), todo)
+  // }
   return {
     create: function create(todo) {
       return $http.post(listCreate(), todo).then(function (response) {
@@ -61584,7 +61553,7 @@ function todoApi($http) {
     },
     list: function list(projectId) {
       return $http.get(listCreate(projectId)).then(function (response) {
-        return response.data;
+        return response1.data;
       });
     },
     update: function update(todo) {

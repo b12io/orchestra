@@ -8,7 +8,7 @@
     border: 1px solid black;
     padding: 1.5rem;
     &__heading {
-      margin-top: -2.8rem;
+      margin-top: -2.5rem;
       background-color: white;
       text-align: center;
     }
@@ -17,13 +17,13 @@
   .new-todo {
     float: left;
     &__box {
-      display: inline-block;
+      // display: inline-block;
       &-details {
-        width: 550px
+        width: 600px
       }
     }
     &__description {
-      width: 550px;
+      width: 600px;
       &__datetime {
         display: inline-block;
         padding-left:10px;
