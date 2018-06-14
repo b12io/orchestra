@@ -80,6 +80,12 @@ export default function todoList (orchestraApi) {
         todoApi.update(todo)
       }
 
+      todoList.toggleSkipTodo = (todo) => {
+        todo.skipped = !todo.skipped
+        // TODO(aditya): Uncomment update when skipped field is added
+        // todoApi.update(todo)
+      }
+
       todoList.setTimeOfDate = (datetime) => {
         $scope.$apply()
       }
@@ -98,7 +104,7 @@ export default function todoList (orchestraApi) {
               return result
             }, {})
           todoList.possibleTasks = Object.values(response.data.tasks).filter(task => task.status !== 'Complete' && humanSteps.has(task.step_slug))
-          todoList.possibleRoles = ['Customer Success', 'Boost Sales']
+          todoList.possibleRoles = ['CSM', 'Designer']
 
           // TODO(marcua): parallelize requests rather than chaining `then`s.
           todoApi.list(todoList.projectId).then((todos) => {

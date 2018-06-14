@@ -61364,6 +61364,10 @@ var _todoList = __webpack_require__(209);
 
 var _todoList2 = _interopRequireDefault(_todoList);
 
+var _momentTimezone = __webpack_require__(1);
+
+var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
+
 __webpack_require__(210);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -61391,18 +61395,65 @@ function todoList(orchestraApi) {
       todoList.taskSlugs = {};
       todoList.todos = [];
 
+      var createTodo = function createTodo(taskId, description, completed, startDate, dueDate) {
+        return todoApi.create({
+          task: taskId,
+          description: description,
+          completed: completed,
+          start_by_datetime: startDate,
+          due_datetime: dueDate
+        }).then(function (taskData) {
+          todoList.todos.unshift(taskData);
+          return taskData;
+        });
+      };
+
       todoList.canAddTodo = function () {
         return todoList.newTodoTaskId && todoList.newTodoDescription;
       };
 
+      todoList.canSendToPending = function () {
+        var numTodosOnThisTask = (0, _lodash.reduce)(todoList.todos, function (result, todo) {
+          return result + (todo.task === todoList.taskId ? 1 : 0);
+        }, 0);
+        return todoList.ready && numTodosOnThisTask === 0;
+      };
+
+      todoList.sendToPending = function () {
+        createTodo(todoList.taskId, 'Send task to pending state', true);
+      };
+
+      todoList.getUTCDateTimeString = function (datetime) {
+        if (!datetime) {
+          return null;
+        }
+        var datetimeUtc = _momentTimezone2.default.tz(datetime.format('YYYY-MM-DD HH:mm'), _momentTimezone2.default.tz.guess()).utc();
+        return datetimeUtc.format('YYYY-MM-DD HH:mm');
+      };
+
+      todoList.addTodo = function () {
+        var start = todoList.getUTCDateTimeString(todoList.newTodoStartDate);
+        var due = todoList.getUTCDateTimeString(todoList.newTodoDueDate);
+
+        createTodo(todoList.newTodoTaskId, todoList.newTodoDescription, false, start, due).then(function (taskData) {
+          todoList.newTodoDescription = null;
+          todoList.newTodoStartDate = null;
+          todoList.newTodoDueDate = null;
+        });
+      };
+
       todoList.updateTodo = function (todo) {
-        console.log(todo);
-        // todoApi.update(todo)
+        todoApi.update(todo);
       };
 
       todoList.toggleSkipTodo = function (todo) {
         todo.skipped = !todo.skipped;
+        // TODO(aditya): Uncomment update when skipped field is added
         // todoApi.update(todo)
+      };
+
+      todoList.setTimeOfDate = function (datetime) {
+        $scope.$apply();
       };
 
       orchestraApi.projectInformation(todoList.projectId).then(function (response) {
@@ -61428,13 +61479,11 @@ function todoList(orchestraApi) {
         todoApi.list(todoList.projectId).then(function (todos) {
           todoList.todos = todos;
           todoList.ready = true;
-          console.log(todoList);
         });
       });
     }
   };
 }
-// import moment from 'moment-timezone'
 
 /***/ }),
 /* 209 */
