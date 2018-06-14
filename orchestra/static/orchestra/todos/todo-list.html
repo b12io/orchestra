@@ -84,5 +84,30 @@
       </div>
     </div>
 
+    <script type="text/ng-template" id="nodes_renderer.html">
+      <div ui-tree-handle class="tree-node tree-node-content">
+        <i aria-hidden="true" ng-if="item.items && item.items.length > 0" data-nodrag ng-click="toggle(this)"
+          class="fa"
+          ng-class="{
+            'fa-caret-right': collapsed,
+            'fa-caret-down': !collapsed
+          }"></i>
+        <i class="fa fa-circle-o" aria-hidden="true" ng-if="!item.items || item.items.length === 0" data-nodrag></i>
+        {{item.description}}
+        <span>&nbsp;&nbsp;<a data-nodrag>[add]</a></span>
+      </div>
+      <ol ui-tree-nodes="" ng-model="item.items" ng-class="{hidden: collapsed}">
+        <li ng-repeat="item in item.items" ui-tree-node ng-include="'nodes_renderer.html'">
+        </li>
+      </ol>
+    </script>
+
+    <div ui-tree id="tree-root">
+      <ol ui-tree-nodes ng-model="todoList.list">
+        <li ng-repeat="item in todoList.list" ui-tree-node ng-include="'nodes_renderer.html'"></li>
+      </ol>
+    </div>
+
+
   </div>
 </section>

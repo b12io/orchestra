@@ -24,6 +24,56 @@ export default function todoList (orchestraApi) {
       todoList.ready = false
       todoList.taskSlugs = {}
       todoList.todos = []
+      todoList.list = [{
+        'id': 1,
+        'description': 'THINGS NOT TO DO',
+        'items': [
+          {
+            'id': 11,
+            'description': 'node1.1',
+            'items': [
+              {
+                'id': 111,
+                'description': 'node1.1.1',
+                'items': []
+              }
+            ]
+          },
+          {
+            'id': 12,
+            'description': 'node1.2',
+            'items': []
+          }
+        ]
+      },
+      {
+        'id': 2,
+        'description': 'GETTING STARTED',
+        'nodrop': true,
+        'items': [
+          {
+            'id': 21,
+            'description': 'node2.1',
+            'items': []
+          },
+          {
+            'id': 22,
+            'description': 'node2.2',
+            'items': []
+          }
+        ]
+      },
+      {
+        'id': 3,
+        'description': 'ADD/UPDATE CONTENT',
+        'items': [
+          {
+            'id': 31,
+            'description': 'node3.1',
+            'items': []
+          }
+        ]
+      }]
 
       todoList.canAddTodo = () => {
         return todoList.newTodoTaskId && todoList.newTodoDescription
