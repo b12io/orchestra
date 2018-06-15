@@ -10,7 +10,6 @@ export default function todoApi ($http) {
 
   const details = (todoId) => `${apiBase}${todoId}/`
 
-  //TODO(aditya): Stop using dummy response when model schema is updated.
   const dummyResponse = {
     'data': [{'id': 2410, 'created_at': '2018-06-11T21:43:38.681252Z', 'task': 14231, 'description': 'Guideline A', 'completed': false, 'skipped': true, 'start_by_datetime': null, 'due_datetime': null},
       {'id': 2411, 'created_at': '2018-06-11T21:43:38.681252Z', 'task': 14231, 'description': 'Guideline B', 'completed': false, 'skipped': true, 'start_by_datetime': null, 'due_datetime': null},

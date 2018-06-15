@@ -601,7 +601,8 @@ class TodoListTemplate (TodoListTemplateMixin, BaseModel):
     name = models.CharField(max_length=200)
     description = models.TextField()
     creator = models.ForeignKey(
-        Worker, null=True, blank=True, related_name='creator', on_delete=models.CASCADE)
+        Worker, null=True, blank=True,
+        related_name='creator', on_delete=models.CASCADE)
     todos = JSONField(default={'list': []})
 
 
@@ -647,7 +648,7 @@ class Todo(TodoMixin, BaseModel):
     start_by_datetime = models.DateTimeField(null=True, blank=True)
     due_datetime = models.DateTimeField(null=True, blank=True)
     skipped = models.BooleanField(default=False)
-    skipped_datetime = models.BooleanField(null=True, blank=True)
+    skipped_datetime = models.DateTimeField(null=True, blank=True)
     parent_todo = models.ForeignKey(
         'self', null=True, related_name='parent')
     template = models.ForeignKey(
