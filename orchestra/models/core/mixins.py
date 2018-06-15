@@ -188,7 +188,7 @@ class TodoMixin(object):
             self.completed)
 
 
-class ChecklistTemplateMixin(object):
+class TodoListTemplateMixin(object):
 
     def __str__(self):
         return '{} - {}'.format(

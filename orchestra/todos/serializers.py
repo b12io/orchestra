@@ -14,6 +14,7 @@ class TodoSerializer(serializers.ModelSerializer):
             'description',
             'completed',
             'skipped',
+            'skipped_datetime',
             'start_by_datetime',
             'due_datetime')
         read_only_fields = ('id',)
