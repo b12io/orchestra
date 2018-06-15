@@ -61472,7 +61472,6 @@ function todoList(orchestraApi) {
         todoList.possibleTasks = Object.values(response.data.tasks).filter(function (task) {
           return task.status !== 'Complete' && humanSteps.has(task.step_slug);
         });
-        todoList.possibleRoles = ['CSM', 'Designer'];
 
         // TODO(marcua): parallelize requests rather than chaining `then`s.
         todoApi.list(todoList.projectId).then(function (todos) {

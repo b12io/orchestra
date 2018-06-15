@@ -103,7 +103,6 @@ export default function todoList (orchestraApi) {
               return result
             }, {})
           todoList.possibleTasks = Object.values(response.data.tasks).filter(task => task.status !== 'Complete' && humanSteps.has(task.step_slug))
-          todoList.possibleRoles = ['CSM', 'Designer']
 
           // TODO(marcua): parallelize requests rather than chaining `then`s.
           todoApi.list(todoList.projectId).then((todos) => {
