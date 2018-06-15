@@ -150,6 +150,7 @@ class TimeEntriesEndpointTests(EndpointTestCase):
                 False,
                 False,
                 None,
+                None,
                 self.deadline.strftime('%Y-%m-%dT%H:%M:%SZ'),
                 None)
         ], True)
@@ -167,6 +168,7 @@ class TimeEntriesEndpointTests(EndpointTestCase):
                 due_todo.task,
                 DUE_DESCRIPTION,
                 False,
+                None,
                 None,
                 None,
                 self.deadline.strftime('%Y-%m-%dT%H:%M:%SZ')),
