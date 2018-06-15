@@ -82,8 +82,7 @@ export default function todoList (orchestraApi) {
 
       todoList.toggleSkipTodo = (todo) => {
         todo.skipped = !todo.skipped
-        // TODO(aditya): Uncomment update when skipped field is added
-        // todoApi.update(todo)
+        todoApi.update(todo)
       }
 
       todoList.setTimeOfDate = (datetime) => {

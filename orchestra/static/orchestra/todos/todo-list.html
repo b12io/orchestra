@@ -3,17 +3,17 @@
     <div class="row section-header">
       <div class="col-lg-12 col-md-12 col-sm-12">
         <h3>
-          Checklist
+          Todo List
         </h3>
       </div>
     </div>
     <div class="row section-body" ng-if="todoList.ready">
       <div class="col-lg-6 col-md-6 col-sm-12">
-        <div class="checklist-pane">
-          <div class="new-todo__box checklist-pane__heading col-sm-3">
+        <div class="todolist-pane">
+          <div class="new-todo__box todolist-pane__heading col-sm-3">
             <select name="todoList" id="todoList" ng-model="todoList.newTodoTaskId">
-              <option value="" selected>Select role</option>
-              <option value="{{role}}" ng-repeat="role in todoList.possibleRoles">{{role}}</option>
+              <option value="" selected>Select owner</option>
+              <option value="{{task.id}}" ng-repeat="task in todoList.possibleTasks">{{todoList.steps[task.step_slug].name}}</option>
             </select>
           </div>
 
@@ -22,7 +22,7 @@
               <input class="new-todo__description"
                      type="text"
                      ng-model="todoList.newTodoDescription"
-                     placeholder="Add a checklist item">
+                     placeholder="Add a todo item">
               <div class="pull-right">
                 <div class="new-todo__description__datetime">
                   <label>Start</label>
@@ -68,8 +68,8 @@
         </div>
       </div>
       <div class="col-lg-6 col-md-6 col-sm-12">
-        <div class="checklist-pane">
-          <p class="checklist-pane__heading col-sm-4">Skipped checklist items</p>
+        <div class="todolist-pane">
+          <p class="todolist-pane__heading col-sm-4">Skipped todo items</p>
           <todo-checklist
               title="Todos"
               todos="todoList.todos"

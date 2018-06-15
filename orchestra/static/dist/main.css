@@ -2301,10 +2301,10 @@ a.logo {
   padding-top: 1.5rem;
   padding-bottom: 1.5rem; }
 
-.todo-list .checklist-pane {
+.todo-list .todolist-pane {
   border: 1px solid black;
   padding: 1.5rem; }
-  .todo-list .checklist-pane__heading {
+  .todo-list .todolist-pane__heading {
     margin-top: -2.8rem;
     background-color: white;
     text-align: center; }
