@@ -4,7 +4,6 @@ from django.utils import timezone
 from djmoney.models.fields import MoneyField
 from jsonfield import JSONField
 from phonenumber_field.modelfields import PhoneNumberField
-
 from orchestra.models.core.mixins import CertificationMixin
 from orchestra.models.core.mixins import TodoListTemplateMixin
 from orchestra.models.core.mixins import PayRateMixin
@@ -577,6 +576,7 @@ class PayRate(PayRateMixin, models.Model):
     end_date = models.DateField(null=True, blank=True)
 
 
+
 class TodoListTemplate (TodoListTemplateMixin, BaseModel):
     """
     A todo template
@@ -604,6 +604,7 @@ class TodoListTemplate (TodoListTemplateMixin, BaseModel):
         Worker, null=True, blank=True,
         related_name='creator', on_delete=models.CASCADE)
     todos = JSONField(default={'list': []})
+
 
 
 class Todo(TodoMixin, BaseModel):
