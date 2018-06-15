@@ -576,7 +576,6 @@ class PayRate(PayRateMixin, models.Model):
     end_date = models.DateField(null=True, blank=True)
 
 
-
 class TodoListTemplate (TodoListTemplateMixin, BaseModel):
     """
     A todo template
@@ -603,8 +602,7 @@ class TodoListTemplate (TodoListTemplateMixin, BaseModel):
     creator = models.ForeignKey(
         Worker, null=True, blank=True,
         related_name='creator', on_delete=models.CASCADE)
-    todos = JSONField(default={'list': []})
-
+    todos = JSONField(default={'items': []})
 
 
 class Todo(TodoMixin, BaseModel):

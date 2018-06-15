@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
                 ('slug', models.CharField(max_length=200, unique=True)),
                 ('name', models.CharField(max_length=200)),
                 ('description', models.TextField()),
-                ('todos', jsonfield.fields.JSONField(default={'list': []})),
+                ('todos', jsonfield.fields.JSONField(default={'items': []})),
                 ('creator', models.ForeignKey(blank=True, null=True,
                                               on_delete=django.db.models.deletion.CASCADE, related_name='creator', to='orchestra.Worker')),
             ],
