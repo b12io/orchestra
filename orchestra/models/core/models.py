@@ -601,7 +601,7 @@ class TodoListTemplate (TodoListTemplateMixin, BaseModel):
     description = models.TextField()
     creator = models.ForeignKey(
         Worker, null=True, blank=True,
-        related_name='creator', on_delete=models.CASCADE)
+        related_name='creator', on_delete=models.SET_NULL)
     todos = JSONField(default={'items': []})
 
 
@@ -626,7 +626,7 @@ class Todo(TodoMixin, BaseModel):
             The parent todo item
         template (orchestra.models.TodoListTemplate)
             The template the todo is based on
-        log (str)
+        activity_log (str)
             A JSON blob that records the user actions
             with this todo
 
@@ -648,9 +648,10 @@ class Todo(TodoMixin, BaseModel):
     due_datetime = models.DateTimeField(null=True, blank=True)
     skipped_datetime = models.DateTimeField(null=True, blank=True)
     parent_todo = models.ForeignKey(
-        'self', null=True, related_name='parent')
+        'self', null=True, related_name='parent', on_delete=models.CASCADE)
     template = models.ForeignKey(
-        TodoListTemplate, null=True, blank=True, related_name='template')
+        TodoListTemplate, null=True, blank=True, related_name='template',
+        on_delete=models.SET_NULL)
     activity_log = JSONField(default={'actions': []})
 
 
