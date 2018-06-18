@@ -2301,14 +2301,22 @@ a.logo {
   padding-top: 1.5rem;
   padding-bottom: 1.5rem; }
 
+.todo-list .todolist-pane {
+  border: 1px solid black;
+  padding: 1.5rem; }
+  .todo-list .todolist-pane__heading {
+    margin-top: -2.8rem;
+    background-color: white;
+    text-align: center; }
+
 .todo-list .new-todo {
   float: left; }
   .todo-list .new-todo__box {
     display: inline-block; }
     .todo-list .new-todo__box-details {
-      width: 600px; }
+      width: 550px; }
   .todo-list .new-todo__description {
-    width: 600px; }
+    width: 550px; }
     .todo-list .new-todo__description__datetime {
       display: inline-block;
       padding-left: 10px; }

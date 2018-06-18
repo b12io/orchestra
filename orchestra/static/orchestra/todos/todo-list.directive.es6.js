@@ -80,6 +80,16 @@ export default function todoList (orchestraApi) {
         todoApi.update(todo)
       }
 
+      todoList.toggleSkipTodo = (todo) => {
+        if (todo.skipped_datetime) {
+          todo.skipped_datetime = null
+        } else {
+          const datetimeUtc = moment.tz(moment(), moment.tz.guess()).utc()
+          todo.skipped_datetime = datetimeUtc.format('YYYY-MM-DD HH:mm')
+        }
+        todoApi.update(todo)
+      }
+
       todoList.setTimeOfDate = (datetime) => {
         $scope.$apply()
       }

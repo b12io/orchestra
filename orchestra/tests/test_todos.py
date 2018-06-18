@@ -49,13 +49,15 @@ class TimeEntriesEndpointTests(EndpointTestCase):
             self.assertTrue(serializer.is_valid())
 
     def _todo_data(
-            self, task, description, completed, start_by=None, due=None):
+            self, task, description, completed,
+            skipped_datetime=None, start_by=None, due=None):
         return {
             'task': task.id,
             'completed': completed,
             'description': description,
             'start_by_datetime': start_by,
-            'due_datetime': due
+            'due_datetime': due,
+            'skipped_datetime': skipped_datetime
         }
 
     def _verify_todo_content(self, todo, expected_todo):
@@ -145,9 +147,10 @@ class TimeEntriesEndpointTests(EndpointTestCase):
                 start_by_todo.task,
                 START_DESCRIPTION,
                 False,
+                None,
                 self.deadline.strftime('%Y-%m-%dT%H:%M:%SZ'),
                 None)
-            ], True)
+        ], True)
 
     def test_create_todo_with_due_datetime(self):
         DUE_DESCRIPTION = 'Due soon'
@@ -163,5 +166,6 @@ class TimeEntriesEndpointTests(EndpointTestCase):
                 DUE_DESCRIPTION,
                 False,
                 None,
+                None,
                 self.deadline.strftime('%Y-%m-%dT%H:%M:%SZ')),
-            ], True)
+        ], True)
