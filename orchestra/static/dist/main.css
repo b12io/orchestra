@@ -2320,17 +2320,6 @@ a.logo {
     .todo-list .new-todo__description__datetime {
       display: inline-block;
       padding-left: 10px; }
-
-li.angular-ui-tree-node {
-  padding-top: 5px !important;
-  padding-bottom: 0 !important; }
-
-.fa-circle-o {
-  font-size: xx-small;
-  vertical-align: middle; }
-
-.angular-ui-tree-handle {
-  cursor: pointer; }
 .list-by-status {
   padding-top: 20px;
   margin-top: 70px; }
@@ -2351,3 +2340,11 @@ li.angular-ui-tree-node {
       color: #a94442; }
     .list-by-status .todo__dates-separator {
       font-style: normal; }
+  .list-by-status .angular-ui-tree-node {
+    padding-top: 5px !important;
+    padding-bottom: 0 !important; }
+  .list-by-status .fa-circle-o {
+    font-size: xx-small;
+    vertical-align: middle; }
+  .list-by-status .angular-ui-tree-handle {
+    cursor: pointer; }
