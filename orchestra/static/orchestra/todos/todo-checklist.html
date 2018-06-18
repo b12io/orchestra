@@ -1,28 +1,3 @@
-<!-- <div class="list-by-status" ng-if="(todos | filter: {skipped_datetime: showSkipped?'!!':'!'}).length > 0">
-  <div class="todo"
-       ng-repeat="todo in todos | filter: {skipped_datetime: showSkipped?'!!':'!'}">
-    <label ng-class="{'text-danger': isInDanger(todo)}">
-      <input type="checkbox"
-             ng-hide="showSkipped"
-             ng-model="todo.completed"
-             ng-change="updateTodo(todo)">
-      <span class="todo__role">{{steps[taskSlugs[todo.task]].name}}:&nbsp;</span>
-      <span class="todo__description">{{todo.description}}</span>
-      <span ng-class="{'todo__dates': true, 'todo__dates-danger': isInDanger(todo)}">
-        <span ng-if="isNonEmptyString(todo.start_by_datetime)">
-          Start <datetime-display datetime="todo.start_by_datetime" show-time="true"/>
-        </span>
-        <span ng-if="isNonEmptyString(todo.start_by_datetime) && isNonEmptyString(todo.due_datetime)" class="todo__dates-separator">|</span>
-        <span ng-if="isNonEmptyString(todo.due_datetime)">
-          Due <datetime-display datetime="todo.due_datetime" show-time="true"/></span>
-      </span>
-      <span>
-        &nbsp;&nbsp;<a href="#" ng-click="toggleSkipTodo(todo)">[{{showSkipped?"add":"skip"}}]</a>
-      </span>
-    </label>
-  </div>
-</div> -->
-
 <script type="text/ng-template" id="nodes_renderer.html">
   <div ui-tree-handle class="tree-node tree-node-content">
     <label ng-class="{'text-danger': isInDanger(todo)}">
