@@ -48,11 +48,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='todo',
-            name='skipped',
-            field=models.BooleanField(default=False),
-        ),
-        migrations.AddField(
-            model_name='todo',
             name='skipped_datetime',
             field=models.DateTimeField(blank=True, null=True),
         ),

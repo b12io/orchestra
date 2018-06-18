@@ -18,7 +18,6 @@ class TodoSerializer(serializers.ModelSerializer, JSONSchemaValidationMixin):
             'task',
             'description',
             'completed',
-            'skipped',
             'skipped_datetime',
             'start_by_datetime',
             'due_datetime')

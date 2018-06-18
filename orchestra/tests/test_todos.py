@@ -50,14 +50,13 @@ class TimeEntriesEndpointTests(EndpointTestCase):
 
     def _todo_data(
             self, task, description, completed,
-            skipped=False, skipped_datetime=None, start_by=None, due=None):
+            skipped_datetime=None, start_by=None, due=None):
         return {
             'task': task.id,
             'completed': completed,
             'description': description,
             'start_by_datetime': start_by,
             'due_datetime': due,
-            'skipped': skipped,
             'skipped_datetime': skipped_datetime
         }
 
@@ -148,7 +147,6 @@ class TimeEntriesEndpointTests(EndpointTestCase):
                 start_by_todo.task,
                 START_DESCRIPTION,
                 False,
-                False,
                 None,
                 self.deadline.strftime('%Y-%m-%dT%H:%M:%SZ'),
                 None)
@@ -166,7 +164,6 @@ class TimeEntriesEndpointTests(EndpointTestCase):
             self._todo_data(
                 due_todo.task,
                 DUE_DESCRIPTION,
-                False,
                 False,
                 None,
                 None,

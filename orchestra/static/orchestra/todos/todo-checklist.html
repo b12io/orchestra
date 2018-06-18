@@ -1,7 +1,7 @@
-<div class="list-by-status" ng-if="(todos | filter: {skipped: showSkipped}).length > 0">
+<div class="list-by-status" ng-if="(todos | filter: {skipped_datetime: showSkipped?'!!':'!'}).length > 0">
   <!-- <h4>{{title}}</h4> -->
   <div class="todo"
-       ng-repeat="todo in todos | filter: {skipped: showSkipped}">
+       ng-repeat="todo in todos | filter: {skipped_datetime: showSkipped?'!!':'!'}">
     <label ng-class="{'text-danger': isInDanger(todo)}">
       <input type="checkbox"
              ng-hide="showSkipped"

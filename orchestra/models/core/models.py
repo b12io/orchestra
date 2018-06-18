@@ -646,7 +646,6 @@ class Todo(TodoMixin, BaseModel):
     completed = models.BooleanField(default=False)
     start_by_datetime = models.DateTimeField(null=True, blank=True)
     due_datetime = models.DateTimeField(null=True, blank=True)
-    skipped = models.BooleanField(default=False)
     skipped_datetime = models.DateTimeField(null=True, blank=True)
     parent_todo = models.ForeignKey(
         'self', null=True, related_name='parent')

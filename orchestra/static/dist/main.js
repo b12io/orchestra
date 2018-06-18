@@ -61447,7 +61447,12 @@ function todoList(orchestraApi) {
       };
 
       todoList.toggleSkipTodo = function (todo) {
-        todo.skipped = !todo.skipped;
+        if (todo.skipped_datetime) {
+          todo.skipped_datetime = null;
+        } else {
+          var datetimeUtc = _momentTimezone2.default.tz((0, _momentTimezone2.default)(), _momentTimezone2.default.tz.guess()).utc();
+          todo.skipped_datetime = datetimeUtc.format('YYYY-MM-DD HH:mm');
+        }
         todoApi.update(todo);
       };
 
@@ -61550,7 +61555,7 @@ function todoChecklist() {
 /* 212 */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"list-by-status\" ng-if=\"(todos | filter: {skipped: showSkipped}).length > 0\">\n  <!-- <h4>{{title}}</h4> -->\n  <div class=\"todo\"\n       ng-repeat=\"todo in todos | filter: {skipped: showSkipped}\">\n    <label ng-class=\"{'text-danger': isInDanger(todo)}\">\n      <input type=\"checkbox\"\n             ng-hide=\"showSkipped\"\n             ng-model=\"todo.completed\"\n             ng-change=\"updateTodo(todo)\">\n      <span class=\"todo__role\">{{steps[taskSlugs[todo.task]].name}}:&nbsp;</span>\n      <span class=\"todo__description\">{{todo.description}}</span>\n      <span ng-class=\"{'todo__dates': true, 'todo__dates-danger': isInDanger(todo)}\">\n        <span ng-if=\"isNonEmptyString(todo.start_by_datetime)\">\n          Start <datetime-display datetime=\"todo.start_by_datetime\" show-time=\"true\"/>\n        </span>\n        <span ng-if=\"isNonEmptyString(todo.start_by_datetime) && isNonEmptyString(todo.due_datetime)\" class=\"todo__dates-separator\">|</span>\n        <span ng-if=\"isNonEmptyString(todo.due_datetime)\">\n          Due <datetime-display datetime=\"todo.due_datetime\" show-time=\"true\"/></span>\n      </span>\n      <span>\n        &nbsp;&nbsp;<a href=\"#\" ng-click=\"toggleSkipTodo(todo)\">[{{showSkipped?\"add\":\"skip\"}}]</a>\n      </span>\n    </label>\n  </div>\n</div>\n";
+module.exports = "<div class=\"list-by-status\" ng-if=\"(todos | filter: {skipped_datetime: showSkipped?'!!':'!'}).length > 0\">\n  <!-- <h4>{{title}}</h4> -->\n  <div class=\"todo\"\n       ng-repeat=\"todo in todos | filter: {skipped_datetime: showSkipped?'!!':'!'}\">\n    <label ng-class=\"{'text-danger': isInDanger(todo)}\">\n      <input type=\"checkbox\"\n             ng-hide=\"showSkipped\"\n             ng-model=\"todo.completed\"\n             ng-change=\"updateTodo(todo)\">\n      <span class=\"todo__role\">{{steps[taskSlugs[todo.task]].name}}:&nbsp;</span>\n      <span class=\"todo__description\">{{todo.description}}</span>\n      <span ng-class=\"{'todo__dates': true, 'todo__dates-danger': isInDanger(todo)}\">\n        <span ng-if=\"isNonEmptyString(todo.start_by_datetime)\">\n          Start <datetime-display datetime=\"todo.start_by_datetime\" show-time=\"true\"/>\n        </span>\n        <span ng-if=\"isNonEmptyString(todo.start_by_datetime) && isNonEmptyString(todo.due_datetime)\" class=\"todo__dates-separator\">|</span>\n        <span ng-if=\"isNonEmptyString(todo.due_datetime)\">\n          Due <datetime-display datetime=\"todo.due_datetime\" show-time=\"true\"/></span>\n      </span>\n      <span>\n        &nbsp;&nbsp;<a href=\"#\" ng-click=\"toggleSkipTodo(todo)\">[{{showSkipped?\"add\":\"skip\"}}]</a>\n      </span>\n    </label>\n  </div>\n</div>\n";
 
 /***/ }),
 /* 213 */
