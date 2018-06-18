@@ -155,7 +155,7 @@ export default function todoList (orchestraApi) {
       todoList.checkTodo = (todo) => {
         // todo['completed'] = !todo['completed']
         // console.log(todo.items.filter(todo.completed === true).length)
-        console.log(todoList.list)
+        console.log(todo)
         // $scope.$safeApply()
       }
 
