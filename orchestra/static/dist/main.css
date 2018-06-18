@@ -2320,6 +2320,17 @@ a.logo {
     .todo-list .new-todo__description__datetime {
       display: inline-block;
       padding-left: 10px; }
+
+li.angular-ui-tree-node {
+  padding-top: 5px !important;
+  padding-bottom: 0 !important; }
+
+.fa-circle-o {
+  font-size: xx-small;
+  vertical-align: middle; }
+
+.angular-ui-tree-handle {
+  cursor: pointer; }
 .existing-todos {
   padding-top: 5px; }
   .existing-todos .list-by-status {

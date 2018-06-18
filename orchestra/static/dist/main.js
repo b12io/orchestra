@@ -61343,7 +61343,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /* global angular */
 
 var name = 'orchestra.todos';
-angular.module(name, ['ui.select', 'ngSanitize', _commonModuleEs2.default]).directive('todoList', _todoListDirectiveEs2.default).directive('todoChecklist', _todoChecklistDirectiveEs2.default).factory('todoApi', _todosServiceEs2.default);
+angular.module(name, ['ui.select', 'ngSanitize', 'ui.tree', _commonModuleEs2.default]).directive('todoList', _todoListDirectiveEs2.default).directive('todoChecklist', _todoChecklistDirectiveEs2.default).factory('todoApi', _todosServiceEs2.default);
 exports.default = name;
 
 /***/ }),
@@ -61394,6 +61394,52 @@ function todoList(orchestraApi) {
       todoList.ready = false;
       todoList.taskSlugs = {};
       todoList.todos = [];
+      todoList.list = [{
+        'id': 1,
+        'description': 'THINGS NOT TO DO',
+        'completed': false,
+        'items': [{
+          'id': 11,
+          'description': 'node1.1',
+          'completed': false,
+          'items': [{
+            'id': 111,
+            'description': 'node1.1.1',
+            'completed': false,
+            'items': []
+          }]
+        }, {
+          'id': 12,
+          'description': 'node1.2',
+          'completed': false,
+          'items': []
+        }]
+      }, {
+        'id': 2,
+        'description': 'GETTING STARTED',
+        'completed': false,
+        'items': [{
+          'id': 21,
+          'description': 'node2.1',
+          'completed': false,
+          'items': []
+        }, {
+          'id': 22,
+          'description': 'node2.2',
+          'completed': false,
+          'items': []
+        }]
+      }, {
+        'id': 3,
+        'description': 'ADD/UPDATE CONTENT',
+        'completed': false,
+        'items': [{
+          'id': 31,
+          'description': 'node3.1',
+          'completed': false,
+          'items': []
+        }]
+      }];
 
       var createTodo = function createTodo(taskId, description, completed, startDate, dueDate) {
         return todoApi.create({
@@ -61460,6 +61506,17 @@ function todoList(orchestraApi) {
         $scope.$apply();
       };
 
+      todoList.checkTodo = function (todo) {
+        // todo['completed'] = !todo['completed']
+        // console.log(todo.items.filter(todo.completed === true).length)
+        console.log(todoList.list);
+        // $scope.$safeApply()
+      };
+
+      todoList.countChecked = function (todo) {
+        console.log(todo);
+      };
+
       orchestraApi.projectInformation(todoList.projectId).then(function (response) {
         var humanSteps = new Set(response.data.steps.filter(function (step) {
           return step.is_human;
@@ -61492,7 +61549,7 @@ function todoList(orchestraApi) {
 /* 209 */
 /***/ (function(module, exports) {
 
-module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Todo List\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\" ng-if=\"todoList.ready\">\n      <div class=\"col-lg-6 col-md-6 col-sm-12\">\n        <div class=\"todolist-pane\">\n          <div class=\"new-todo__box todolist-pane__heading col-sm-3\">\n            <select name=\"todoList\" id=\"todoList\" ng-model=\"todoList.newTodoTaskId\">\n              <option value=\"\" selected>Select owner</option>\n              <option value=\"{{task.id}}\" ng-repeat=\"task in todoList.possibleTasks\">{{todoList.steps[task.step_slug].name}}</option>\n            </select>\n          </div>\n\n          <form class=\"new-todo\">\n            <div class=\"new-todo__box new-todo__box-details\">\n              <input class=\"new-todo__description\"\n                     type=\"text\"\n                     ng-model=\"todoList.newTodoDescription\"\n                     placeholder=\"Add a todo item\">\n              <div class=\"pull-right\">\n                <div class=\"new-todo__description__datetime\">\n                  <label>Start</label>\n                  <date-picker\n                    date=\"todoList.newTodoStartDate\"\n                    callback=\"todoList.setTimeOfDate\"></date-picker>\n                  <time-input\n                    datetime=\"todoList.newTodoStartDate\"\n                    default-hour=\"8\"\n                    ></time-input>\n                </div>\n                <div class=\"new-todo__description__datetime\">\n                  <label>Due</label>\n                  <date-picker\n                    date=\"todoList.newTodoDueDate\"\n                    callback=\"todoList.setTimeOfDate\"></date-picker>\n                  <time-input\n                    datetime=\"todoList.newTodoDueDate\"\n                    default-hour=\"18\"\n                    ></time-input>\n                </div>\n              </div>\n            </div>\n            <div class=\"new-todo__box\">\n              <button type=\"submit\"\n                 class=\"btn btn-primary btn-sm edit-save-handle\"\n                 ng-disabled=\"!todoList.canAddTodo()\"\n                 ng-click=\"todoList.addTodo()\">\n                Add\n              </button>\n            </div>\n          </form>\n\n          <todo-checklist\n              title=\"Todos\"\n              todos=\"todoList.todos\"\n              show-skipped=\"false\"\n              update-todo=\"todoList.updateTodo\"\n              toggle-skip-todo=\"todoList.toggleSkipTodo\"\n              steps=\"todoList.steps\"\n              task-slugs=\"todoList.taskSlugs\"\n          ></todo-checklist>\n        </div>\n      </div>\n      <div class=\"col-lg-6 col-md-6 col-sm-12\">\n        <div class=\"todolist-pane\">\n          <p class=\"todolist-pane__heading col-sm-4\">Skipped todo items</p>\n          <todo-checklist\n              title=\"Todos\"\n              todos=\"todoList.todos\"\n              show-skipped=\"true\"\n              update-todo=\"todoList.updateTodo\"\n              steps=\"todoList.steps\"\n              toggle-skip-todo=\"todoList.toggleSkipTodo\"\n              task-slugs=\"todoList.taskSlugs\"\n          ></todo-checklist>\n        </div>\n      </div>\n    </div>\n\n  </div>\n</section>\n";
+module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Todo List\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\" ng-if=\"todoList.ready\">\n      <div class=\"col-lg-6 col-md-6 col-sm-12\">\n        <div class=\"todolist-pane\">\n          <div class=\"new-todo__box todolist-pane__heading col-sm-3\">\n            <select name=\"todoList\" id=\"todoList\" ng-model=\"todoList.newTodoTaskId\">\n              <option value=\"\" selected>Select owner</option>\n              <option value=\"{{task.id}}\" ng-repeat=\"task in todoList.possibleTasks\">{{todoList.steps[task.step_slug].name}}</option>\n            </select>\n          </div>\n\n          <form class=\"new-todo\">\n            <div class=\"new-todo__box new-todo__box-details\">\n              <input class=\"new-todo__description\"\n                     type=\"text\"\n                     ng-model=\"todoList.newTodoDescription\"\n                     placeholder=\"Add a todo item\">\n              <div class=\"pull-right\">\n                <div class=\"new-todo__description__datetime\">\n                  <label>Start</label>\n                  <date-picker\n                    date=\"todoList.newTodoStartDate\"\n                    callback=\"todoList.setTimeOfDate\"></date-picker>\n                  <time-input\n                    datetime=\"todoList.newTodoStartDate\"\n                    default-hour=\"8\"\n                    ></time-input>\n                </div>\n                <div class=\"new-todo__description__datetime\">\n                  <label>Due</label>\n                  <date-picker\n                    date=\"todoList.newTodoDueDate\"\n                    callback=\"todoList.setTimeOfDate\"></date-picker>\n                  <time-input\n                    datetime=\"todoList.newTodoDueDate\"\n                    default-hour=\"18\"\n                    ></time-input>\n                </div>\n              </div>\n            </div>\n            <div class=\"new-todo__box\">\n              <button type=\"submit\"\n                 class=\"btn btn-primary btn-sm edit-save-handle\"\n                 ng-disabled=\"!todoList.canAddTodo()\"\n                 ng-click=\"todoList.addTodo()\">\n                Add\n              </button>\n            </div>\n          </form>\n\n          <todo-checklist\n              title=\"Todos\"\n              todos=\"todoList.todos\"\n              show-skipped=\"false\"\n              update-todo=\"todoList.updateTodo\"\n              toggle-skip-todo=\"todoList.toggleSkipTodo\"\n              steps=\"todoList.steps\"\n              task-slugs=\"todoList.taskSlugs\"\n          ></todo-checklist>\n        </div>\n      </div>\n      <div class=\"col-lg-6 col-md-6 col-sm-12\">\n        <div class=\"todolist-pane\">\n          <p class=\"todolist-pane__heading col-sm-4\">Skipped todo items</p>\n          <todo-checklist\n              title=\"Todos\"\n              todos=\"todoList.todos\"\n              show-skipped=\"true\"\n              update-todo=\"todoList.updateTodo\"\n              steps=\"todoList.steps\"\n              toggle-skip-todo=\"todoList.toggleSkipTodo\"\n              task-slugs=\"todoList.taskSlugs\"\n          ></todo-checklist>\n        </div>\n      </div>\n    </div>\n\n    <script type=\"text/ng-template\" id=\"nodes_renderer.html\">\n      <div ui-tree-handle class=\"tree-node tree-node-content\">\n        <input type=\"checkbox\" ng-model=\"item.completed\" ng-change='todoList.checkTodo(item)'>\n        <span ng-click=\"toggle(item)\">\n          <i aria-hidden=\"true\" ng-if=\"item.items && item.items.length > 0\" data-nodrag\n            class=\"fa\"\n            ng-class=\"{\n              'fa-caret-right': collapsed,\n              'fa-caret-down': !collapsed\n            }\"></i>\n          <i class=\"fa fa-circle-o\" aria-hidden=\"true\" ng-if=\"!item.items || item.items.length === 0\" data-nodrag></i>\n          <span ng-hide=\"item.items.length < 1\">[{{ ( item.items | filter: { completed: true } ).length }}/{{ item.items.length }}]</span>\n          &nbsp;{{item.description}}\n        </span>\n        <span>&nbsp;&nbsp;<a data-nodrag>[add]</a></span>\n      </div>\n      <ol ui-tree-nodes=\"\" ng-model=\"item.items\" ng-class=\"{hidden: collapsed}\">\n        <li ng-repeat=\"item in item.items\" ui-tree-node data-collapsed=\"true\" ng-include=\"'nodes_renderer.html'\">\n        </li>\n      </ol>\n    </script>\n\n    <div ui-tree data-drag-enabled=\"false\" id=\"tree-root\">\n      <ol ui-tree-nodes ng-model=\"todoList.list\">\n        <li ng-repeat=\"item in todoList.list\" ui-tree-node data-collapsed=\"true\" ng-include=\"'nodes_renderer.html'\"></li>\n      </ol>\n    </div>\n\n  </div>\n</section>\n";
 
 /***/ }),
 /* 210 */
