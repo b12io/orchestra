@@ -152,17 +152,6 @@ export default function todoList (orchestraApi) {
         $scope.$apply()
       }
 
-      todoList.checkTodo = (todo) => {
-        // todo['completed'] = !todo['completed']
-        // console.log(todo.items.filter(todo.completed === true).length)
-        console.log(todo)
-        // $scope.$safeApply()
-      }
-
-      todoList.countChecked = (todo) => {
-        console.log(todo)
-      }
-
       orchestraApi.projectInformation(todoList.projectId)
         .then((response) => {
           const humanSteps = new Set(response.data.steps.filter(step => step.is_human).map(step => step.slug))

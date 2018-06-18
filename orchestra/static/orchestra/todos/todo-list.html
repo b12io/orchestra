@@ -83,33 +83,5 @@
       </div>
     </div>
 
-    <script type="text/ng-template" id="nodes_renderer.html">
-      <div ui-tree-handle class="tree-node tree-node-content">
-        <input type="checkbox" ng-model="item.completed" ng-change='todoList.checkTodo(item)'>
-        <span ng-click="toggle(item)">
-          <i aria-hidden="true" ng-if="item.items && item.items.length > 0" data-nodrag
-            class="fa"
-            ng-class="{
-              'fa-caret-right': collapsed,
-              'fa-caret-down': !collapsed
-            }"></i>
-          <i class="fa fa-circle-o" aria-hidden="true" ng-if="!item.items || item.items.length === 0" data-nodrag></i>
-          <span ng-hide="item.items.length < 1">[{{ ( item.items | filter: { completed: true } ).length }}/{{ item.items.length }}]</span>
-          &nbsp;{{item.description}}
-        </span>
-        <span>&nbsp;&nbsp;<a data-nodrag>[add]</a></span>
-      </div>
-      <ol ui-tree-nodes="" ng-model="item.items" ng-class="{hidden: collapsed}">
-        <li ng-repeat="item in item.items" ui-tree-node data-collapsed="true" ng-include="'nodes_renderer.html'">
-        </li>
-      </ol>
-    </script>
-
-    <div ui-tree data-drag-enabled="false" id="tree-root">
-      <ol ui-tree-nodes ng-model="todoList.list">
-        <li ng-repeat="item in todoList.list" ui-tree-node data-collapsed="true" ng-include="'nodes_renderer.html'"></li>
-      </ol>
-    </div>
-
   </div>
 </section>

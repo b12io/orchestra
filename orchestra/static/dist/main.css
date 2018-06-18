@@ -2331,25 +2331,23 @@ li.angular-ui-tree-node {
 
 .angular-ui-tree-handle {
   cursor: pointer; }
-.existing-todos {
-  padding-top: 5px; }
-  .existing-todos .list-by-status {
-    padding-top: 20px; }
-    .existing-todos .list-by-status h4 {
-      padding-bottom: 10px; }
-    .existing-todos .list-by-status .todo input[type=checkbox] {
-      transform: scale(1.1); }
-    .existing-todos .list-by-status .todo label {
-      align-items: end;
-      display: flex; }
-    .existing-todos .list-by-status .todo__role {
-      font-weight: 500;
-      padding-left: 5px; }
-    .existing-todos .list-by-status .todo__dates {
-      padding-left: 5px;
-      font-style: italic;
-      color: #999; }
-      .existing-todos .list-by-status .todo__dates-danger {
-        color: #a94442; }
-      .existing-todos .list-by-status .todo__dates-separator {
-        font-style: normal; }
+.list-by-status {
+  padding-top: 20px;
+  margin-top: 70px; }
+  .list-by-status h4 {
+    padding-bottom: 10px; }
+  .list-by-status .todo input[type=checkbox] {
+    transform: scale(1.1); }
+  .list-by-status .todo label {
+    align-items: end; }
+  .list-by-status .todo__role {
+    font-weight: 500;
+    padding-left: 5px; }
+  .list-by-status .todo__dates {
+    padding-left: 5px;
+    font-style: italic;
+    color: #999; }
+    .list-by-status .todo__dates-danger {
+      color: #a94442; }
+    .list-by-status .todo__dates-separator {
+      font-style: normal; }
