@@ -24,64 +24,6 @@ export default function todoList (orchestraApi) {
       todoList.ready = false
       todoList.taskSlugs = {}
       todoList.todos = []
-      todoList.list = [{
-        'id': 1,
-        'description': 'THINGS NOT TO DO',
-        'completed': false,
-        'items': [
-          {
-            'id': 11,
-            'description': 'node1.1',
-            'completed': false,
-            'items': [
-              {
-                'id': 111,
-                'description': 'node1.1.1',
-                'completed': false,
-                'items': []
-              }
-            ]
-          },
-          {
-            'id': 12,
-            'description': 'node1.2',
-            'completed': false,
-            'items': []
-          }
-        ]
-      },
-      {
-        'id': 2,
-        'description': 'GETTING STARTED',
-        'completed': false,
-        'items': [
-          {
-            'id': 21,
-            'description': 'node2.1',
-            'completed': false,
-            'items': []
-          },
-          {
-            'id': 22,
-            'description': 'node2.2',
-            'completed': false,
-            'items': []
-          }
-        ]
-      },
-      {
-        'id': 3,
-        'description': 'ADD/UPDATE CONTENT',
-        'completed': false,
-        'items': [
-          {
-            'id': 31,
-            'description': 'node3.1',
-            'completed': false,
-            'items': []
-          }
-        ]
-      }]
 
       const createTodo = (taskId, description, completed, startDate, dueDate) => todoApi.create({
         task: taskId,
