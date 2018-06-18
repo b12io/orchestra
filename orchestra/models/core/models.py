@@ -620,8 +620,8 @@ class Todo(TodoMixin, BaseModel):
             The time to start the todo. (inclusive)
         due_datetime (datetime.datetime):
             The time the todo is due
-        skipped (boolean):
-            Whether the todo is skipped
+        skipped_datetime (datetime.datetime):
+            The time the todo was skipped
         parent_todo (orchestra.models.Todo):
             The parent todo item
         template (orchestra.models.TodoListTemplate)
