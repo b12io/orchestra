@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
                 ('description', models.TextField()),
                 ('todos', jsonfield.fields.JSONField(default={'items': []})),
                 ('creator', models.ForeignKey(blank=True, null=True,
-                                              on_delete=django.db.models.deletion.CASCADE, related_name='creator', to='orchestra.Worker')),
+                                              on_delete=django.db.models.deletion.SET_NULL, related_name='creator', to='orchestra.Worker')),
             ],
             bases=(orchestra.models.core.mixins.TodoListTemplateMixin,
                    orchestra.utils.models.DeleteMixin, models.Model),
@@ -54,7 +54,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='todo',
             name='template',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE,
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL,
                                     related_name='template', to='orchestra.TodoListTemplate'),
         ),
     ]
