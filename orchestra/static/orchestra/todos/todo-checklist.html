@@ -29,10 +29,11 @@
       </span>
     </label>
   </div>
-  <ol ui-tree-nodes="" ng-model="todo.items" ng-class="{hidden: collapsed}">
+  <ol ui-tree-nodes ng-model="todo.items" ng-class="{hidden: collapsed}">
     <li ng-repeat="todo in todo.items | filter: {skipped_datetime: showSkipped?'!!':'!'}" ui-tree-node data-collapsed="true" ng-include="'nodes_renderer.html'"></li>
   </ol>
 </script>
+
 
 <div class="list-by-status" ng-if="(todos | filter: {skipped_datetime: showSkipped?'!!':'!'}).length > 0">
   <div class="todo">
