@@ -1,4 +1,4 @@
-<script type="text/ng-template" id="nodes_renderer.html">
+<script type="text/ng-template" id="todoItemTemplate">
   <div ui-tree-handle class="tree-node tree-node-content">
     <label ng-class="{'text-danger': isInDanger(todo)}">
       <input type="checkbox"
@@ -39,7 +39,7 @@
   <div class="todo">
     <div ui-tree data-drag-enabled="false" id="tree-root">
       <ol ui-tree-nodes ng-model="todos">
-        <li ng-repeat="todo in todos | filter: {skipped_datetime: showSkipped?'!!':'!'}" ui-tree-node data-collapsed="true" ng-include="'nodes_renderer.html'"></li>
+        <li ng-repeat="todo in todos | filter: {skipped_datetime: showSkipped?'!!':'!'}" ui-tree-node data-collapsed="true" ng-include="'todoItemTemplate'"></li>
       </ol>
     </div>
   </div>
