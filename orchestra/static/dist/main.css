@@ -2341,8 +2341,8 @@ a.logo {
     .list-by-status .todo__dates-separator {
       font-style: normal; }
   .list-by-status .angular-ui-tree-node {
-    padding-top: 5px !important;
-    padding-bottom: 0 !important; }
+    padding-top: 5px;
+    padding-bottom: 0; }
   .list-by-status .fa-circle-o {
     font-size: xx-small;
     vertical-align: middle; }
