@@ -1,5 +1,6 @@
 import template from './todo-checklist.html'
 import './todo-checklist.scss'
+import 'angular-ui-tree/dist/angular-ui-tree.css'
 
 import moment from 'moment-timezone'
 
