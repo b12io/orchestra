@@ -3,8 +3,10 @@ from rest_framework import permissions
 
 from orchestra.models import Task
 from orchestra.models import Todo
+from orchestra.models import TodoListTemplate
 from orchestra.models import Worker
 from orchestra.todos.serializers import TodoSerializer
+from orchestra.todos.serializers import TodoListTemplateSerializer
 from orchestra.utils.notifications import message_experts_slack_group
 
 
@@ -91,3 +93,18 @@ class TodoDetail(generics.RetrieveUpdateDestroyAPIView):
             'complete' if todo.completed else 'incomplete')
         message_experts_slack_group(
             todo.task.project.slack_group_id, message)
+
+
+class TodoListTemplateDetail(generics.RetrieveUpdateAPIView):
+    permission_classes = (permissions.IsAuthenticated,
+                          IsAssociatedWithProject)
+
+    serializer_class = TodoListTemplateSerializer
+    queryset = TodoListTemplate.objects.all()
+
+
+class TodoListTemplateList(generics.ListCreateAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    serializer_class = TodoListTemplateSerializer
+    queryset = TodoListTemplate.objects.all()
