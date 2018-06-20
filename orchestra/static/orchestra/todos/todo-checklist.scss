@@ -10,6 +10,7 @@
     }
     label {
       align-items: end;
+      display: inline;
     }
     &__role {
       font-weight: 500;
@@ -38,7 +39,7 @@
     vertical-align: middle;
   }
 
-  .angular-ui-tree-handle {
+  .angular-ui-tree-handle > label{
     cursor: pointer;
   }
 }

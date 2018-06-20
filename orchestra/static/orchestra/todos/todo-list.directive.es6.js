@@ -80,12 +80,19 @@ export default function todoList (orchestraApi) {
         todoApi.update(todo)
       }
 
-      todoList.toggleSkipTodo = (todo) => {
-        if (todo.skipped_datetime) {
-          todo.skipped_datetime = null
-        } else {
-          const datetimeUtc = moment.tz(moment(), moment.tz.guess()).utc()
-          todo.skipped_datetime = datetimeUtc.format('YYYY-MM-DD HH:mm')
+      todoList.skipTodo = (todo) => {
+        const datetimeUtc = moment.tz(moment(), moment.tz.guess()).utc()
+        todo.skipped_datetime = datetimeUtc.format('YYYY-MM-DD HH:mm')
+        if (todo.items) {
+          todo.items.forEach(todoList.skipTodo)
+        }
+        todoApi.update(todo)
+      }
+
+      todoList.unskipTodo = (todo) => {
+        todo.skipped_datetime = null
+        if (todo.items) {
+          todo.items.forEach(todoList.unskipTodo)
         }
         todoApi.update(todo)
       }

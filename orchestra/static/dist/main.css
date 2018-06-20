@@ -2328,7 +2328,8 @@ a.logo {
   .list-by-status .todo input[type=checkbox] {
     transform: scale(1.1); }
   .list-by-status .todo label {
-    align-items: end; }
+    align-items: end;
+    display: inline; }
   .list-by-status .todo__role {
     font-weight: 500;
     padding-left: 5px; }
@@ -2346,7 +2347,7 @@ a.logo {
   .list-by-status .fa-circle-o {
     font-size: xx-small;
     vertical-align: middle; }
-  .list-by-status .angular-ui-tree-handle {
+  .list-by-status .angular-ui-tree-handle > label {
     cursor: pointer; }
 .angular-ui-tree-empty, .angular-ui-tree-dropzone {
   border: 1px dashed #bbb;

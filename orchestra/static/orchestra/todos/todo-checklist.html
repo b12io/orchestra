@@ -1,45 +1,48 @@
 <script type="text/ng-template" id="todoItemTemplate">
   <div ui-tree-handle class="tree-node tree-node-content">
+    <input type="checkbox"
+           ng-hide="showSkipped"
+           ng-model="todo.completed"
+           ng-change="updateTodo(todo)">
     <label ng-class="{'text-danger': isInDanger(todo)}">
-      <input type="checkbox"
-             ng-hide="showSkipped"
-             ng-model="todo.completed"
-             ng-change="updateTodo(todo)">
-
-      <i aria-hidden="true" ng-if="todo.items && todo.items.length > 0" data-nodrag
-        class="fa"
-        ng-class="{
-          'fa-caret-right': collapsed,
-          'fa-caret-down': !collapsed
-        }"></i>
-      <i class="fa fa-circle-o" aria-hidden="true" ng-if="(!todo.items || todo.items.length === 0) && showSkipped" data-nodrag></i>
-      <span ng-hide="!todo.items || todo.items.length < 1">[{{ ( todo.items | filter: { completed: true } ).length }}/{{ todo.items.length }}] </span>
-      <span class="todo__role">{{steps[taskSlugs[todo.task]].name}}:&nbsp;</span>
-      <span class="todo__description">{{todo.description}}</span>
-      <span ng-class="{'todo__dates': true, 'todo__dates-danger': isInDanger(todo)}">
-        <span ng-if="isNonEmptyString(todo.start_by_datetime)">
-          Start <datetime-display datetime="todo.start_by_datetime" show-time="true"/>
+      <span ng-click="toggle(this)">
+        <i aria-hidden="true" ng-if="todo.items && todo.items.length > 0" data-nodrag
+          class="fa"
+          ng-class="{
+            'fa-caret-right': collapsed,
+            'fa-caret-down': !collapsed
+          }"></i>
+        <i class="fa fa-circle-o" aria-hidden="true" ng-if="(!todo.items || todo.items.length === 0) && showSkipped" data-nodrag></i>
+        <span ng-hide="!todo.items || todo.items.length < 1 || showSkipped">[{{ ( todo.items | filter: { completed: true, skipped_datetime: '!' } ).length }}/{{ ( todo.items | filter: { skipped_datetime: '!' } ).length }}] </span>
+        <span class="todo__role">{{steps[taskSlugs[todo.task]].name}}:&nbsp;</span>
+        <span class="todo__description">{{todo.description}}</span>
+        <span ng-class="{'todo__dates': true, 'todo__dates-danger': isInDanger(todo)}">
+          <span ng-if="isNonEmptyString(todo.start_by_datetime)">
+            Start <datetime-display datetime="todo.start_by_datetime" show-time="true"/>
+          </span>
+          <span ng-if="isNonEmptyString(todo.start_by_datetime) && isNonEmptyString(todo.due_datetime)" class="todo__dates-separator">|</span>
+          <span ng-if="isNonEmptyString(todo.due_datetime)">
+            Due <datetime-display datetime="todo.due_datetime" show-time="true"/></span>
         </span>
-        <span ng-if="isNonEmptyString(todo.start_by_datetime) && isNonEmptyString(todo.due_datetime)" class="todo__dates-separator">|</span>
-        <span ng-if="isNonEmptyString(todo.due_datetime)">
-          Due <datetime-display datetime="todo.due_datetime" show-time="true"/></span>
       </span>
       <span>
-        &nbsp;&nbsp;<a href="#" ng-click="toggleSkipTodo(todo)">[{{showSkipped?"add":"skip"}}]</a>
+        &nbsp;&nbsp;
+        <a href="#" ng-hide="!showSkipped" ng-click="unskipTodo(todo)">[add]</a>
+        <a href="#" ng-hide="showSkipped" ng-click="skipTodo(todo)">[skip]</a>
       </span>
     </label>
   </div>
   <ol ui-tree-nodes ng-model="todo.items" ng-class="{hidden: collapsed}">
-    <li ng-repeat="todo in todo.items | filter: {skipped_datetime: showSkipped?'!!':'!'}" ui-tree-node data-collapsed="true" ng-include="'nodes_renderer.html'"></li>
+    <li ng-repeat="todo in filterTodoList(todo.items, showSkipped)" ui-tree-node data-collapsed="true" ng-include="'todoItemTemplate'"></li>
   </ol>
 </script>
 
 
-<div class="list-by-status" ng-if="(todos | filter: {skipped_datetime: showSkipped?'!!':'!'}).length > 0">
+<div class="list-by-status" ng-if="todos.length > 0">
   <div class="todo">
     <div ui-tree data-drag-enabled="false" id="tree-root">
       <ol ui-tree-nodes ng-model="todos">
-        <li ng-repeat="todo in todos | filter: {skipped_datetime: showSkipped?'!!':'!'}" ui-tree-node data-collapsed="true" ng-include="'todoItemTemplate'"></li>
+        <li ng-repeat="todo in filterTodoList(todos, showSkipped)" ui-tree-node data-collapsed="true" ng-include="'todoItemTemplate'"></li>
       </ol>
     </div>
   </div>

@@ -42421,11 +42421,11 @@ var _todosModuleEs = __webpack_require__(207);
 
 var _todosModuleEs2 = _interopRequireDefault(_todosModuleEs);
 
-var _teamInfoModuleEs = __webpack_require__(215);
+var _teamInfoModuleEs = __webpack_require__(218);
 
 var _teamInfoModuleEs2 = _interopRequireDefault(_teamInfoModuleEs);
 
-var _configEs = __webpack_require__(218);
+var _configEs = __webpack_require__(221);
 
 var _configEs2 = _interopRequireDefault(_configEs);
 
@@ -61334,11 +61334,11 @@ var _todoChecklistDirectiveEs = __webpack_require__(211);
 
 var _todoChecklistDirectiveEs2 = _interopRequireDefault(_todoChecklistDirectiveEs);
 
-var _todosServiceEs = __webpack_require__(214);
+var _todosServiceEs = __webpack_require__(215);
 
 var _todosServiceEs2 = _interopRequireDefault(_todosServiceEs);
 
-__webpack_require__(241);
+__webpack_require__(216);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -61447,12 +61447,19 @@ function todoList(orchestraApi) {
         todoApi.update(todo);
       };
 
-      todoList.toggleSkipTodo = function (todo) {
-        if (todo.skipped_datetime) {
-          todo.skipped_datetime = null;
-        } else {
-          var datetimeUtc = _momentTimezone2.default.tz((0, _momentTimezone2.default)(), _momentTimezone2.default.tz.guess()).utc();
-          todo.skipped_datetime = datetimeUtc.format('YYYY-MM-DD HH:mm');
+      todoList.skipTodo = function (todo) {
+        var datetimeUtc = _momentTimezone2.default.tz((0, _momentTimezone2.default)(), _momentTimezone2.default.tz.guess()).utc();
+        todo.skipped_datetime = datetimeUtc.format('YYYY-MM-DD HH:mm');
+        if (todo.items) {
+          todo.items.forEach(todoList.skipTodo);
+        }
+        todoApi.update(todo);
+      };
+
+      todoList.unskipTodo = function (todo) {
+        todo.skipped_datetime = null;
+        if (todo.items) {
+          todo.items.forEach(todoList.unskipTodo);
         }
         todoApi.update(todo);
       };
@@ -61493,7 +61500,7 @@ function todoList(orchestraApi) {
 /* 209 */
 /***/ (function(module, exports) {
 
-module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Todo List\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\" ng-if=\"todoList.ready\">\n      <div class=\"col-lg-6 col-md-6 col-sm-12\">\n        <div class=\"todolist-pane\">\n          <div class=\"new-todo__box todolist-pane__heading col-sm-3\">\n            <select name=\"todoList\" id=\"todoList\" ng-model=\"todoList.newTodoTaskId\">\n              <option value=\"\" selected>Select owner</option>\n              <option value=\"{{task.id}}\" ng-repeat=\"task in todoList.possibleTasks\">{{todoList.steps[task.step_slug].name}}</option>\n            </select>\n          </div>\n\n          <form class=\"new-todo\">\n            <div class=\"new-todo__box new-todo__box-details\">\n              <input class=\"new-todo__description\"\n                     type=\"text\"\n                     ng-model=\"todoList.newTodoDescription\"\n                     placeholder=\"Add a todo item\">\n              <div class=\"pull-right\">\n                <div class=\"new-todo__description__datetime\">\n                  <label>Start</label>\n                  <date-picker\n                    date=\"todoList.newTodoStartDate\"\n                    callback=\"todoList.setTimeOfDate\"></date-picker>\n                  <time-input\n                    datetime=\"todoList.newTodoStartDate\"\n                    default-hour=\"8\"\n                    ></time-input>\n                </div>\n                <div class=\"new-todo__description__datetime\">\n                  <label>Due</label>\n                  <date-picker\n                    date=\"todoList.newTodoDueDate\"\n                    callback=\"todoList.setTimeOfDate\"></date-picker>\n                  <time-input\n                    datetime=\"todoList.newTodoDueDate\"\n                    default-hour=\"18\"\n                    ></time-input>\n                </div>\n              </div>\n            </div>\n            <div class=\"new-todo__box\">\n              <button type=\"submit\"\n                 class=\"btn btn-primary btn-sm edit-save-handle\"\n                 ng-disabled=\"!todoList.canAddTodo()\"\n                 ng-click=\"todoList.addTodo()\">\n                Add\n              </button>\n            </div>\n          </form>\n\n          <todo-checklist\n              title=\"Todos\"\n              todos=\"todoList.todos\"\n              show-skipped=\"false\"\n              update-todo=\"todoList.updateTodo\"\n              toggle-skip-todo=\"todoList.toggleSkipTodo\"\n              steps=\"todoList.steps\"\n              task-slugs=\"todoList.taskSlugs\"\n          ></todo-checklist>\n        </div>\n      </div>\n      <div class=\"col-lg-6 col-md-6 col-sm-12\">\n        <div class=\"todolist-pane\">\n          <p class=\"todolist-pane__heading col-sm-4\">Skipped todo items</p>\n          <todo-checklist\n              title=\"Todos\"\n              todos=\"todoList.todos\"\n              show-skipped=\"true\"\n              update-todo=\"todoList.updateTodo\"\n              steps=\"todoList.steps\"\n              toggle-skip-todo=\"todoList.toggleSkipTodo\"\n              task-slugs=\"todoList.taskSlugs\"\n          ></todo-checklist>\n        </div>\n      </div>\n    </div>\n\n  </div>\n</section>\n";
+module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Todo List\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\" ng-if=\"todoList.ready\">\n      <div class=\"col-lg-6 col-md-6 col-sm-12\">\n        <div class=\"todolist-pane\">\n          <div class=\"new-todo__box todolist-pane__heading col-sm-3\">\n            <select name=\"todoList\" id=\"todoList\" ng-model=\"todoList.newTodoTaskId\">\n              <option value=\"\" selected>Select owner</option>\n              <option value=\"{{task.id}}\" ng-repeat=\"task in todoList.possibleTasks\">{{todoList.steps[task.step_slug].name}}</option>\n            </select>\n          </div>\n\n          <form class=\"new-todo\">\n            <div class=\"new-todo__box new-todo__box-details\">\n              <input class=\"new-todo__description\"\n                     type=\"text\"\n                     ng-model=\"todoList.newTodoDescription\"\n                     placeholder=\"Add a todo item\">\n              <div class=\"pull-right\">\n                <div class=\"new-todo__description__datetime\">\n                  <label>Start</label>\n                  <date-picker\n                    date=\"todoList.newTodoStartDate\"\n                    callback=\"todoList.setTimeOfDate\"></date-picker>\n                  <time-input\n                    datetime=\"todoList.newTodoStartDate\"\n                    default-hour=\"8\"\n                    ></time-input>\n                </div>\n                <div class=\"new-todo__description__datetime\">\n                  <label>Due</label>\n                  <date-picker\n                    date=\"todoList.newTodoDueDate\"\n                    callback=\"todoList.setTimeOfDate\"></date-picker>\n                  <time-input\n                    datetime=\"todoList.newTodoDueDate\"\n                    default-hour=\"18\"\n                    ></time-input>\n                </div>\n              </div>\n            </div>\n            <div class=\"new-todo__box\">\n              <button type=\"submit\"\n                 class=\"btn btn-primary btn-sm edit-save-handle\"\n                 ng-disabled=\"!todoList.canAddTodo()\"\n                 ng-click=\"todoList.addTodo()\">\n                Add\n              </button>\n            </div>\n          </form>\n\n          <todo-checklist\n              title=\"Todos\"\n              todos=\"todoList.todos\"\n              show-skipped=\"false\"\n              update-todo=\"todoList.updateTodo\"\n              skip-todo=\"todoList.skipTodo\"\n              unskip-todo=\"todoList.unskipTodo\"\n              steps=\"todoList.steps\"\n              task-slugs=\"todoList.taskSlugs\"\n          ></todo-checklist>\n        </div>\n      </div>\n      <div class=\"col-lg-6 col-md-6 col-sm-12\">\n        <div class=\"todolist-pane\">\n          <p class=\"todolist-pane__heading col-sm-4\">Skipped todo items</p>\n          <todo-checklist\n              title=\"Todos\"\n              todos=\"todoList.todos\"\n              show-skipped=\"true\"\n              update-todo=\"todoList.updateTodo\"\n              steps=\"todoList.steps\"\n              skip-todo=\"todoList.skipTodo\"\n              unskip-todo=\"todoList.unskipTodo\"\n              task-slugs=\"todoList.taskSlugs\"\n          ></todo-checklist>\n        </div>\n      </div>\n    </div>\n\n  </div>\n</section>\n";
 
 /***/ }),
 /* 210 */
@@ -61513,13 +61520,15 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = todoChecklist;
 
+var _lodash = __webpack_require__(5);
+
 var _todoChecklist = __webpack_require__(212);
 
 var _todoChecklist2 = _interopRequireDefault(_todoChecklist);
 
 __webpack_require__(213);
 
-__webpack_require__(243);
+__webpack_require__(214);
 
 var _momentTimezone = __webpack_require__(1);
 
@@ -61537,7 +61546,8 @@ function todoChecklist() {
       showChecked: '=',
       showSkipped: '=',
       updateTodo: '=',
-      toggleSkipTodo: '=',
+      skipTodo: '=',
+      unskipTodo: '=',
       steps: '<',
       taskSlugs: '<'
     },
@@ -61549,6 +61559,26 @@ function todoChecklist() {
       scope.isInDanger = function (todo) {
         return !todo.completed && _momentTimezone2.default.isBeforeNowBy(todo.due_datetime, 1, 'days');
       };
+
+      scope.isSkipped = function (todo) {
+        var items = [];
+        if (todo.items) {
+          items = (0, _lodash.filter)(todo.items, scope.isSkipped);
+        }
+        return todo.skipped_datetime != null && (!todo.items || todo.items.length === 0) || items.length > 0;
+      };
+
+      scope.isNotSkipped = function (todo) {
+        var items = [];
+        if (todo.items) {
+          items = (0, _lodash.filter)(todo.items, scope.isNotSkipped);
+        }
+        return todo.skipped_datetime == null && (!todo.items || todo.items.length === 0) || items.length > 0;
+      };
+
+      scope.filterTodoList = function (todos, showSkipped) {
+        return (0, _lodash.filter)(todos, showSkipped ? scope.isSkipped : scope.isNotSkipped);
+      };
     }
 
   };
@@ -61558,7 +61588,7 @@ function todoChecklist() {
 /* 212 */
 /***/ (function(module, exports) {
 
-module.exports = "<script type=\"text/ng-template\" id=\"todoItemTemplate\">\n  <div ui-tree-handle class=\"tree-node tree-node-content\">\n    <label ng-class=\"{'text-danger': isInDanger(todo)}\">\n      <input type=\"checkbox\"\n             ng-hide=\"showSkipped\"\n             ng-model=\"todo.completed\"\n             ng-change=\"updateTodo(todo)\">\n\n      <i aria-hidden=\"true\" ng-if=\"todo.items && todo.items.length > 0\" data-nodrag\n        class=\"fa\"\n        ng-class=\"{\n          'fa-caret-right': collapsed,\n          'fa-caret-down': !collapsed\n        }\"></i>\n      <i class=\"fa fa-circle-o\" aria-hidden=\"true\" ng-if=\"(!todo.items || todo.items.length === 0) && showSkipped\" data-nodrag></i>\n      <span ng-hide=\"!todo.items || todo.items.length < 1\">[{{ ( todo.items | filter: { completed: true } ).length }}/{{ todo.items.length }}] </span>\n      <span class=\"todo__role\">{{steps[taskSlugs[todo.task]].name}}:&nbsp;</span>\n      <span class=\"todo__description\">{{todo.description}}</span>\n      <span ng-class=\"{'todo__dates': true, 'todo__dates-danger': isInDanger(todo)}\">\n        <span ng-if=\"isNonEmptyString(todo.start_by_datetime)\">\n          Start <datetime-display datetime=\"todo.start_by_datetime\" show-time=\"true\"/>\n        </span>\n        <span ng-if=\"isNonEmptyString(todo.start_by_datetime) && isNonEmptyString(todo.due_datetime)\" class=\"todo__dates-separator\">|</span>\n        <span ng-if=\"isNonEmptyString(todo.due_datetime)\">\n          Due <datetime-display datetime=\"todo.due_datetime\" show-time=\"true\"/></span>\n      </span>\n      <span>\n        &nbsp;&nbsp;<a href=\"#\" ng-click=\"toggleSkipTodo(todo)\">[{{showSkipped?\"add\":\"skip\"}}]</a>\n      </span>\n    </label>\n  </div>\n  <ol ui-tree-nodes ng-model=\"todo.items\" ng-class=\"{hidden: collapsed}\">\n    <li ng-repeat=\"todo in todo.items | filter: {skipped_datetime: showSkipped?'!!':'!'}\" ui-tree-node data-collapsed=\"true\" ng-include=\"'nodes_renderer.html'\"></li>\n  </ol>\n</script>\n\n\n<div class=\"list-by-status\" ng-if=\"(todos | filter: {skipped_datetime: showSkipped?'!!':'!'}).length > 0\">\n  <div class=\"todo\">\n    <div ui-tree data-drag-enabled=\"false\" id=\"tree-root\">\n      <ol ui-tree-nodes ng-model=\"todos\">\n        <li ng-repeat=\"todo in todos | filter: {skipped_datetime: showSkipped?'!!':'!'}\" ui-tree-node data-collapsed=\"true\" ng-include=\"'todoItemTemplate'\"></li>\n      </ol>\n    </div>\n  </div>\n</div>\n";
+module.exports = "<script type=\"text/ng-template\" id=\"todoItemTemplate\">\n  <div ui-tree-handle class=\"tree-node tree-node-content\">\n    <input type=\"checkbox\"\n           ng-hide=\"showSkipped\"\n           ng-model=\"todo.completed\"\n           ng-change=\"updateTodo(todo)\">\n    <label ng-class=\"{'text-danger': isInDanger(todo)}\">\n      <span ng-click=\"toggle(this)\">\n        <i aria-hidden=\"true\" ng-if=\"todo.items && todo.items.length > 0\" data-nodrag\n          class=\"fa\"\n          ng-class=\"{\n            'fa-caret-right': collapsed,\n            'fa-caret-down': !collapsed\n          }\"></i>\n        <i class=\"fa fa-circle-o\" aria-hidden=\"true\" ng-if=\"(!todo.items || todo.items.length === 0) && showSkipped\" data-nodrag></i>\n        <span ng-hide=\"!todo.items || todo.items.length < 1 || showSkipped\">[{{ ( todo.items | filter: { completed: true, skipped_datetime: '!' } ).length }}/{{ ( todo.items | filter: { skipped_datetime: '!' } ).length }}] </span>\n        <span class=\"todo__role\">{{steps[taskSlugs[todo.task]].name}}:&nbsp;</span>\n        <span class=\"todo__description\">{{todo.description}}</span>\n        <span ng-class=\"{'todo__dates': true, 'todo__dates-danger': isInDanger(todo)}\">\n          <span ng-if=\"isNonEmptyString(todo.start_by_datetime)\">\n            Start <datetime-display datetime=\"todo.start_by_datetime\" show-time=\"true\"/>\n          </span>\n          <span ng-if=\"isNonEmptyString(todo.start_by_datetime) && isNonEmptyString(todo.due_datetime)\" class=\"todo__dates-separator\">|</span>\n          <span ng-if=\"isNonEmptyString(todo.due_datetime)\">\n            Due <datetime-display datetime=\"todo.due_datetime\" show-time=\"true\"/></span>\n        </span>\n      </span>\n      <span>\n        &nbsp;&nbsp;\n        <a href=\"#\" ng-hide=\"!showSkipped\" ng-click=\"unskipTodo(todo)\">[add]</a>\n        <a href=\"#\" ng-hide=\"showSkipped\" ng-click=\"skipTodo(todo)\">[skip]</a>\n      </span>\n    </label>\n  </div>\n  <ol ui-tree-nodes ng-model=\"todo.items\" ng-class=\"{hidden: collapsed}\">\n    <li ng-repeat=\"todo in filterTodoList(todo.items, showSkipped)\" ui-tree-node data-collapsed=\"true\" ng-include=\"'todoItemTemplate'\"></li>\n  </ol>\n</script>\n\n\n<div class=\"list-by-status\" ng-if=\"todos.length > 0\">\n  <div class=\"todo\">\n    <div ui-tree data-drag-enabled=\"false\" id=\"tree-root\">\n      <ol ui-tree-nodes ng-model=\"todos\">\n        <li ng-repeat=\"todo in filterTodoList(todos, showSkipped)\" ui-tree-node data-collapsed=\"true\" ng-include=\"'todoItemTemplate'\"></li>\n      </ol>\n    </div>\n  </div>\n</div>\n";
 
 /***/ }),
 /* 213 */
@@ -61568,6 +61598,12 @@ module.exports = "<script type=\"text/ng-template\" id=\"todoItemTemplate\">\n  
 
 /***/ }),
 /* 214 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 215 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61609,268 +61645,15 @@ function todoApi($http) {
 };
 
 /***/ }),
-/* 215 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _commonModuleEs = __webpack_require__(4);
-
-var _commonModuleEs2 = _interopRequireDefault(_commonModuleEs);
-
-var _teamInfoCardDirectiveEs = __webpack_require__(216);
-
-var _teamInfoCardDirectiveEs2 = _interopRequireDefault(_teamInfoCardDirectiveEs);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/* global angular */
-
-var name = 'orchestra.teamInfo';
-angular.module(name, ['ui.select', 'ngSanitize', _commonModuleEs2.default]).directive('teamInfoCard', _teamInfoCardDirectiveEs2.default);
-
-exports.default = name;
-
-/***/ }),
 /* 216 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = teamInfoCard;
-
-var _lodash = __webpack_require__(5);
-
-var _teamInfoCard = __webpack_require__(217);
-
-var _teamInfoCard2 = _interopRequireDefault(_teamInfoCard);
-
-var _momentTimezone = __webpack_require__(1);
-
-var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function teamInfoCard(orchestraApi) {
-  'ngAnnotate';
-
-  return {
-    template: _teamInfoCard2.default,
-    restrict: 'E',
-    scope: {
-      taskAssignment: '='
-    },
-    controllerAs: 'teamInfoCard',
-    bindToController: true,
-    controller: function controller($scope) {
-      var teamInfoCard = $scope.teamInfoCard;
-      teamInfoCard.projectId = teamInfoCard.taskAssignment.project.id;
-      teamInfoCard.step = teamInfoCard.taskAssignment.step;
-      teamInfoCard.isProjectAdmin = teamInfoCard.taskAssignment.is_project_admin;
-
-      teamInfoCard.loadTeamInfo = function () {
-        orchestraApi.projectInformation(teamInfoCard.projectId).then(function (response) {
-          var _response$data = response.data,
-              steps = _response$data.steps,
-              tasks = _response$data.tasks;
-
-          var humanSteps = new Set(steps.filter(function (step) {
-            return step.is_human;
-          }).map(function (step) {
-            return step.slug;
-          }));
-          teamInfoCard.steps = (0, _lodash.reduce)(Object.values(response.data.steps), function (result, step) {
-            result[step.slug] = step;
-            return result;
-          }, {});
-          teamInfoCard.assignments = [];
-          var _iteratorNormalCompletion = true;
-          var _didIteratorError = false;
-          var _iteratorError = undefined;
-
-          try {
-            var _loop = function _loop() {
-              var stepSlug = _step.value;
-
-              var task = tasks[stepSlug];
-              if (task) {
-                teamInfoCard.assignments = teamInfoCard.assignments.concat(task.assignments.map(function (a) {
-                  return {
-                    stepSlug: stepSlug,
-                    role: teamInfoCard.steps[stepSlug].name,
-                    worker: a.worker,
-                    recordedTime: _momentTimezone2.default.duration(a.recorded_work_time, 'seconds').roundMinute().humanizeUnits(),
-                    status: task.status,
-                    task_id: a.task
-                  };
-                }));
-              }
-            };
-
-            for (var _iterator = humanSteps.values()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-              _loop();
-            }
-          } catch (err) {
-            _didIteratorError = true;
-            _iteratorError = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion && _iterator.return) {
-                _iterator.return();
-              }
-            } finally {
-              if (_didIteratorError) {
-                throw _iteratorError;
-              }
-            }
-          }
-        });
-      };
-      teamInfoCard.submitTask = function (taskId) {
-        orchestraApi.completeAndSkipTask(taskId).then(function () {
-          teamInfoCard.loadTeamInfo();
-        }, function (response) {
-          var errorMessage = 'Error completing task.';
-          if (response.status === 400) {
-            errorMessage = response.data.message;
-          }
-          window.alert(errorMessage);
-        });
-      };
-
-      teamInfoCard.loadTeamInfo();
-    }
-  };
-}
-
-/***/ }),
-/* 217 */
-/***/ (function(module, exports) {
-
-module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Team info\n          <a class=\"btn\"\n             ng-if=\"teamInfoCard.isProjectAdmin\"\n             ng-href=\"project/{{teamInfoCard.projectId}}\"\n             target=\"_blank\">\n            Project Management\n          </a>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <table class=\"table table-striped\">\n          <thead>\n            <th>Role</th>\n            <th>Username</th>\n            <th>Name</th>\n            <th>Recorded time spent</th>\n            <th>Status</th>\n          </thead>\n          <tbody>\n            <tr ng-repeat=\"assignment in teamInfoCard.assignments\">\n              <td>{{assignment.role}}</td>\n              <td>{{assignment.worker.username}}</td>\n              <td>{{assignment.worker.first_name}} {{assignment.worker.last_name}}</td>\n              <td>{{assignment.recordedTime}}</td>\n              <td>\n                {{assignment.status}}\n                <button type=\"submit\"\n                        class=\"btn btn-default btn-sm\"\n                        ng-if=\"teamInfoCard.isProjectAdmin &&\n                               assignment.status == 'Processing' &&\n                               assignment.stepSlug != teamInfoCard.step.slug\"\n                        ng-click=\"teamInfoCard.submitTask(assignment.task_id)\">\n                  Submit\n                </button>\n              </td>\n            </tr>\n          </tbody>\n        </table>\n      </div>\n    </div>\n  </div>\n</section>\n";
-
-/***/ }),
-/* 218 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = config;
-
-var _dashboard = __webpack_require__(219);
-
-var _dashboard2 = _interopRequireDefault(_dashboard);
-
-var _task = __webpack_require__(220);
-
-var _task2 = _interopRequireDefault(_task);
-
-var _timecard = __webpack_require__(221);
-
-var _timecard2 = _interopRequireDefault(_timecard);
-
-var _projectManagement = __webpack_require__(222);
-
-var _projectManagement2 = _interopRequireDefault(_projectManagement);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- * @name config
- * @desc Define valid application routes
- */
-function config($locationProvider, $routeProvider) {
-  $locationProvider.html5Mode(true);
-  $locationProvider.hashPrefix('!');
-
-  $routeProvider.when('/', {
-    title: 'Dashboard',
-    controller: 'DashboardController',
-    controllerAs: 'vm',
-    template: _dashboard2.default
-  }).when('/task/:taskId', {
-    title: 'Task',
-    controller: 'TaskController',
-    controllerAs: 'vm',
-    template: _task2.default
-  }).when('/project/:projectId?', {
-    title: 'Project',
-    controller: 'ProjectManagementController',
-    controllerAs: 'vm',
-    template: _projectManagement2.default
-  }).when('/timecard/:taskId?', {
-    title: 'Timecard',
-    controller: 'TimecardController',
-    controllerAs: 'vm',
-    template: _timecard2.default
-  }).otherwise('/');
-}
-
-/***/ }),
-/* 219 */
-/***/ (function(module, exports) {
-
-module.exports = "<section class=\"wrapper\">\n  <div tasktable=\"{label: 'Active', tasks: vm.orchestraTasks.activeTasks(), newTasks: true}\"></div>\n  <div tasktable=\"{label: 'Pending', tasks: vm.orchestraTasks.pendingTasks()}\"></div>\n  <div tasktable=\"{label: 'Completed', tasks: vm.orchestraTasks.completedTasks()}\"></div>\n</section>\n";
-
-/***/ }),
-/* 220 */
-/***/ (function(module, exports) {
-
-module.exports = "<section class=\"wrapper task-view\">\n\n\n<script type=\"text/ng-template\" id=\"submit_task_modal.html\">\n  <div class=\"modal-header\">\n    <h3 class=\"modal-title\">{{command | capitalize}} Confirmation</h3>\n  </div>\n  <div class=\"modal-body modal-confirm-body\">\n    <div class=\"modal-confirm-text\">\n      <div class=\"time-question\">\n        Approximately how much time did you spend on <strong>this iteration</strong> of the task?\n      </div>\n        <div class=\"time-summary\">\n          <span class=\"time-report form-inline input-group-sm\">\n            <span class=\"time-unit-group\">\n              <input type=\"text\"\n                     class=\"form-control\"\n                     id=\"current-time-hours\"\n                     ng-model=\"currentIterationHours\">\n                     <span class=\"time-unit\"> hours</span>\n            </span>\n            <span class=\"time-unit-group\">\n              <input type=\"text\"\n                     class=\"form-control\"\n                     id=\"current-time-minutes\"\n                     ng-model=\"currentIterationMinutes\">\n                     <span class=\"time-unit\"> mins</span>\n            </span>\n          </span>\n        </div>\n        <div class=\"time-error-message\" ng-bind=\"secondsErrorMessage\"></div>\n        <div class=\"time-summary\">\n          <span class=\"time-label\">Total time so far</span>\n          <span class=\"time-report\">\n            <span class=\"time-unit-group\">\n              <span class=\"time-value-float\">\n                <span class=\"time-value\" ng-bind=\"totalPreviousHoursMinutes()[0]\"></span>\n              </span>\n              <span class=\"time-unit\"> hours</span>\n            </span>\n            <span class=\"time-unit-group\">\n              <span class=\"time-value-float\">\n                <span class=\"time-value\" ng-bind=\"totalPreviousHoursMinutes()[1]\"></span>\n              </span>\n              <span class=\"time-unit\"> mins</span>\n            </span>\n          </span>\n        </div>\n        <hr />\n        <div class=\"time-summary\">\n          <span class=\"time-label\">Total time on task</span>\n          <span class=\"time-report\">\n            <span class=\"time-unit-group\">\n              <span class=\"time-value-float\">\n                <span class=\"time-value\" ng-bind=\"totalHoursMinutes()[0]\"></span>\n              </span>\n              <span class=\"time-unit\"> hours</span>\n            </span>\n            <span class=\"time-unit-group\">\n              <span class=\"time-value-float\">\n                <span class=\"time-value\" ng-bind=\"totalHoursMinutes()[1]\"></span>\n              </span>\n              <span class=\"time-unit\"> mins</span>\n            </span>\n          </span>\n        </div>\n    </div>\n    <div class=\"pull-center\">\n      <button class=\"btn btn-primary\" ng-disabled=\"secondsErrorMessage !== null\" ng-click=\"submit()\">{{command | capitalize}}</button>\n      <button class=\"btn btn-default\" ng-click=\"cancel()\">Cancel</button>\n    </div>\n  </div>\n</script>\n\n\n<nav class=\"topbar-overview\" ng-class=\"{'reviewer-topbar': vm.taskAssignment.is_reviewer}\">\n    <div class=\"topbar-leader\">\n      <div class=\"project-overview\">\n        <div class=\"workflow\">{{ vm.taskAssignment.workflow.name}}</div>\n        {{ vm.taskAssignment.project.details}}\n      </div>\n      <div class=\"arrow-wrapper\">\n        <div class=\"arrow-with-shadow\"></div>\n      </div>\n    </div>\n    <div class=\"topbar-follower\">\n      <div class=\"task-overview\">\n        {{ vm.taskAssignment.step.name}}\n        <span ng-if=\"vm.taskAssignment.is_reviewer\">\n              Review\n        </span>\n      </div>\n    </div>\n</nav>\n\n<div class=\"fixed-infobox-outer\" ng-if=\"vm.is_read_only\">\n  <div class=\"fixed-infobox bg-info\">\n    This task is in view-only mode. You cannot submit or review it.\n  </div>\n</div>\n\n<div class=\"fixed-infobox-outer\" ng-if=\"vm.autoSaver.saveError\">\n  <div class=\"fixed-infobox btn-danger\">\n    Error saving task. Trying again...\n  </div>\n</div>\n\n<div class=\"step-interface\">\n  <div dynamic-load=\"vm.angularDirective\"></div>\n</div>\n\n<section class=\"task-actions-wrapper\">\n  <div class=\"task-actions\">\n    <div class=\"container-fluid\">\n      <div class=\"row\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <button ng-if=\"!vm.taskAssignment.is_reviewer\"\n                  type=\"button\"\n                  class=\"btn btn-primary navbar-btn\"\n                  ng-click=\"vm.submitTask('submit')\"\n                  ng-disabled=\"vm.is_read_only || vm.autoSaver.saving || vm.submitting\">\n            Submit\n          </button>\n          <button ng-if=\"vm.taskAssignment.is_reviewer\"\n                  type=\"button\"\n                  class=\"btn btn-primary navbar-btn\"\n                  ng-click=\"vm.submitTask('accept')\"\n                  ng-disabled=\"vm.is_read_only || vm.autoSaver.saving || vm.submitting\">\n            Accept\n          </button>\n          <button ng-if=\"vm.taskAssignment.is_reviewer\"\n                  type=\"button\"\n                  class=\"btn btn-default navbar-btn\"\n                  ng-click=\"vm.submitTask('reject')\"\n                  ng-disabled=\"vm.is_read_only || vm.autoSaver.saving || vm.submitting\">\n            Reject\n          </button>\n          <button type=\"button\"\n                  class=\"btn btn-default navbar-btn\"\n                  ng-click=\"vm.autoSaver.save()\"\n                  ng-disabled=\"vm.is_read_only || vm.autoSaver.saving || vm.submitting\">\n            Save\n          </button>\n          <div class=\"save-message\">\n            <div ng-show=\"vm.autoSaver.saving\">Saving...</div>\n            <div ng-show=\"vm.autoSaver.lastSaved && !vm.autoSaver.saving\">\n              Saved at {{ vm.autoSaver.lastSaved | date:'mediumTime' }}\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n\n\n</section><!--/wrapper -->\n";
-
-/***/ }),
-/* 221 */
-/***/ (function(module, exports) {
-
-module.exports = "<div class=\"timecard-view\" ng-if=\"!vm.dataLoading\">\n  <div class=\"entries\">\n    <div class=\"container-fluid\">\n      <div class=\"row no-padding\">\n        <div class=\"col-xs-10 col-xs-offset-2\">\n          <div class=\"row\">\n            <div class=\"col-xs-12 col-md-10\">\n              <span class=\"edit-label\">\n                Date range\n              </span>\n              <date-picker date=\"vm.minDate\" max-date=\"vm.maxDate\"></date-picker>–\n              <date-picker date=\"vm.maxDate\" min-date=\"vm.minDate\"\n              max-date=\"vm.weekEnd\"></date-picker>\n            </div>\n            <div class=\"col-xs-12 col-md-2\">\n              <a href=\"//orchestra.readthedocs.org/en/stable/features.html#time-tracking\" target=\"_blank\"\n              class=\"pull-right help-icon\"><i class=\"fa fa-question-circle\"></i></a>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n    <div class=\"date-group\" ng-repeat=\"dateEntries in vm.timeEntries.entriesByDate | toArray | orderBy:vm.datetimeFromKey:'true'\">\n      <div class=\"container-fluid\">\n        <div class=\"row no-padding\">\n          <div class=\"col-xs-12 col-md-2\">\n            <span class=\"day-name\">{{ vm.dayName(dateEntries.$key) }}</span>\n          </div>\n          <div class=\"col-xs-12 col-md-10\">\n            <div class=\"date-entries\">\n              <h2>\n                <span class=\"date-label\">{{ vm.prettyDate(dateEntries.$key) }}</span>\n                <i ng-click=\"vm.addEntry(vm.datetimeFromKey(dateEntries))\" class=\"fa fa-plus btn-add-entry\"></i>\n                <span class=\"date-duration\" ng-show=\"vm.timeEntries.invalidEntriesForDate(dateEntries.$key).length\">\n                  <em class=\"incomplete\">Invalid Entries</em>\n                </span>\n                <span class=\"date-duration\" ng-hide=\"vm.timeEntries.invalidEntriesForDate(dateEntries.$key).length\">\n                  {{ vm.timeEntries.timeWorkedForDate(dateEntries.$key).humanizeUnits() }}\n                </span>\n              </h2>\n              <div class=\"entry-row\" ng-if=\"!dateEntries.length\">\n                <div class=\"row\">\n                  <div class=\"col-xs-12\">\n                    <em>No entries for this date</em>\n                  </div>\n                </div>\n              </div>\n              <div class=\"entry-row\" ng-class=\"{'gray-stripe': $index % 2}\" ng-repeat=\"entry in dateEntries | orderBy:'-id'\">\n                <form class=\"container-fluid form-inline\" novalidate name=\"entryForm\">\n                  <div class=\"row\">\n                    <div class=\"col-xs-2 edit-tools disable-select\">\n                      <i ng-click=\"vm.timeEntries.deleteEntry(entry)\" class=\"fa fa-times-circle\"></i>\n                      <i class=\"fa fa-pencil-square-o\" ng-class=\"{active: entry.editing}\" ng-click=\"vm.editEntry(entry)\"></i>\n                    </div>\n\n                    <!-- Readonly view for description and time worked -->\n                    <div class=\"col-xs-6 description\" ng-if=\"!entry.editing\">\n                      <span ng-show=\"entry.description\">\n                        {{ entry.description }}\n                      </span>\n                      <span class=\"incomplete\" ng-hide=\"entry.description\">\n                        <em>No description</em>\n                      </span>\n                    </div>\n                    <div class=\"col-xs-4 edit-time\" ng-if=\"!entry.editing\">\n                      {{ entry.time_worked.roundMinute().humanizeUnits() }}\n                    </div>\n                    <div class=\"col-xs-12\" ng-if=\"!entry.editing\">\n                      <em class=\"pull-right\" ng-show=\"vm.orchestraTasks.tasksByAssignmentId[entry.assignment]\">\n                        {{ vm.orchestraTasks.getDescription(vm.orchestraTasks.tasksByAssignmentId[entry.assignment]) }}\n                      </em>\n                      <em class=\"pull-right incomplete\" ng-hide=\"vm.orchestraTasks.tasksByAssignmentId[entry.assignment]\">\n                        Unassigned\n                      </em>\n                    </div>\n\n                    <!-- Editable view for description and time worked -->\n                    <div class=\"col-xs-6\" ng-if=\"entry.editing\">\n                      <input class=\"form-control\" type=\"text\" ng-model=\"entry.editData.description\" placeholder=\"What did you work on?\">\n                    </div>\n                    <div class=\"col-xs-4 edit-time\" ng-if=\"entry.editing\">\n                      <div class=\"time-component\">\n                        <input class=\"form-control\" type=\"number\" ng-model=\"entry.editData.timeWorked.h\"\n                        min=\"0\" max=\"23\" enforce-integers>\n                        <label>hours</label>\n                      </div>\n                      <div class=\"time-component\">\n                        <input class=\"form-control\" type=\"number\" ng-model=\"entry.editData.timeWorked.m\"\n                        min=\"0\" max=\"59\" enforce-integers>\n                        <label>minutes</label>\n                      </div>\n                    </div>\n                  </div>\n\n                  <div class=\"row\" ng-if=\"entry.editing\">\n                    <div class=\"col-xs-4\">\n                      <div class=\"edit-date\">\n                        <label class=\"edit-label\">Move to date</label>\n                        <date-picker date=\"entry.editData.date\" max-date=\"vm.weekEnd\"></date-picker>\n                      </div>\n                    </div>\n                    <div class=\"col-xs-8\">\n                      <div class=\"edit-task\">\n                        <task-select task=\"entry.editData.task\"></task-select>\n                      </div>\n                    </div>\n                  </div>\n                  <div class=\"row\" ng-if=\"entry.editing\">\n                    <div class=\"col-xs-12\">\n                      <div class=\"edit-options pull-right\">\n                        <div class=\"edit-cancel-handle\" ng-click=\"vm.cancelChanges(entry)\">\n                          Cancel\n                        </div>\n                        <div class=\"btn btn-primary btn-sm edit-save-handle\" ng-disabled=\"vm.entryUnchanged(entry)\"\n                        ng-click=\"vm.saveChanges(entry)\">\n                          Save changes\n                        </div>\n                      </div>\n                    </div>\n                  </div>\n                </form>\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n";
-
-/***/ }),
-/* 222 */
-/***/ (function(module, exports) {
-
-module.exports = "<div class=\"project-management\">\n  <div class=\"overlay\" ng-if=\"vis.dataService.loading\">\n    <div class=\"spinner\"></div>\n  </div>\n  <section class=\"section-panel\">\n    <div class=\"container-fluid\">\n      <div class=\"row padded\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <ui-select class=\"project-description\" ng-model=\"vis.dataService.currentProject\"\n              ng-change=\"vis.dataService.setSelectedProject()\"\n              ng-disabled=\"vis.dataService.loading\">\n            <ui-select-match>\n              <span ng-bind=\"projectDescription($select.selected)\"></span>\n            </ui-select-match>\n            <ui-select-choices repeat=\"item in (vis.dataService.allProjects | toArray | filter: $select.search) track by item.id\">\n              <span ng-bind=\"projectDescription(item)\"></span>\n            </ui-select-choices>\n          </ui-select>\n          <div class=\"project-actions\" ng-show=\"vis.dataService.currentProject.id\">\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.createSubsequentTasks()\" class=\"btn btn-default\">\n              Create subsequent tasks\n            </button>\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.showSlackActions()\" class=\"btn btn-default\">\n              Edit Slack users\n            </button>\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.showProjectData()\" class=\"btn btn-default\">\n              View project data\n            </button>\n            <a ng-href=\"{{vis.dataService.data.project.admin_url}}\" ng-disabled=\"vis.dataService.loading\" target=\"_blank\">\n              <button type=\"button\" class=\"btn btn-default\">View in admin</button>\n            </a>\n            <button ng-click=\"vis.endProject()\" class=\"btn btn-danger\">Abort project</button>\n          </div>\n        </div>\n      </div>\n      <div class=\"row\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <div class=\"vis-wrapper\" ng-show=\"vis.dataService.currentProject.id\">\n            <div class=\"freeze-pane-left\">\n              <div class=\"scale-buttons\">\n                <button ng-click=\"vis.axis.relativeTime = !vis.axis.relativeTime; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  Switch to {{vis.axis.relativeTime ? 'local' : 'relative'}} time\n                </button>\n                <button ng-click=\"vis.params.scaleWidth = vis.params.scaleWidth / 1.1; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  -\n                </button>\n                <button ng-click=\"vis.params.scaleWidth = vis.params.scaleWidth * 1.1; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  +\n                </button>\n              </div>\n              <div class=\"task-names\"></div>\n            </div>\n            <div class=\"svg-wrapper\"></div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n</div>\n";
-
-/***/ }),
-/* 223 */,
-/* 224 */,
-/* 225 */,
-/* 226 */,
-/* 227 */,
-/* 228 */,
-/* 229 */,
-/* 230 */,
-/* 231 */,
-/* 232 */,
-/* 233 */,
-/* 234 */,
-/* 235 */,
-/* 236 */,
-/* 237 */,
-/* 238 */,
-/* 239 */,
-/* 240 */,
-/* 241 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(242);
+__webpack_require__(217);
 module.exports = 'ui.tree';
 
 
 /***/ }),
-/* 242 */
+/* 217 */
 /***/ (function(module, exports) {
 
 /**
@@ -63731,10 +63514,239 @@ module.exports = 'ui.tree';
 })();
 
 /***/ }),
-/* 243 */
+/* 218 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _commonModuleEs = __webpack_require__(4);
+
+var _commonModuleEs2 = _interopRequireDefault(_commonModuleEs);
+
+var _teamInfoCardDirectiveEs = __webpack_require__(219);
+
+var _teamInfoCardDirectiveEs2 = _interopRequireDefault(_teamInfoCardDirectiveEs);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/* global angular */
+
+var name = 'orchestra.teamInfo';
+angular.module(name, ['ui.select', 'ngSanitize', _commonModuleEs2.default]).directive('teamInfoCard', _teamInfoCardDirectiveEs2.default);
+
+exports.default = name;
+
+/***/ }),
+/* 219 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = teamInfoCard;
+
+var _lodash = __webpack_require__(5);
+
+var _teamInfoCard = __webpack_require__(220);
+
+var _teamInfoCard2 = _interopRequireDefault(_teamInfoCard);
+
+var _momentTimezone = __webpack_require__(1);
+
+var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function teamInfoCard(orchestraApi) {
+  'ngAnnotate';
+
+  return {
+    template: _teamInfoCard2.default,
+    restrict: 'E',
+    scope: {
+      taskAssignment: '='
+    },
+    controllerAs: 'teamInfoCard',
+    bindToController: true,
+    controller: function controller($scope) {
+      var teamInfoCard = $scope.teamInfoCard;
+      teamInfoCard.projectId = teamInfoCard.taskAssignment.project.id;
+      teamInfoCard.step = teamInfoCard.taskAssignment.step;
+      teamInfoCard.isProjectAdmin = teamInfoCard.taskAssignment.is_project_admin;
+
+      teamInfoCard.loadTeamInfo = function () {
+        orchestraApi.projectInformation(teamInfoCard.projectId).then(function (response) {
+          var _response$data = response.data,
+              steps = _response$data.steps,
+              tasks = _response$data.tasks;
+
+          var humanSteps = new Set(steps.filter(function (step) {
+            return step.is_human;
+          }).map(function (step) {
+            return step.slug;
+          }));
+          teamInfoCard.steps = (0, _lodash.reduce)(Object.values(response.data.steps), function (result, step) {
+            result[step.slug] = step;
+            return result;
+          }, {});
+          teamInfoCard.assignments = [];
+          var _iteratorNormalCompletion = true;
+          var _didIteratorError = false;
+          var _iteratorError = undefined;
+
+          try {
+            var _loop = function _loop() {
+              var stepSlug = _step.value;
+
+              var task = tasks[stepSlug];
+              if (task) {
+                teamInfoCard.assignments = teamInfoCard.assignments.concat(task.assignments.map(function (a) {
+                  return {
+                    stepSlug: stepSlug,
+                    role: teamInfoCard.steps[stepSlug].name,
+                    worker: a.worker,
+                    recordedTime: _momentTimezone2.default.duration(a.recorded_work_time, 'seconds').roundMinute().humanizeUnits(),
+                    status: task.status,
+                    task_id: a.task
+                  };
+                }));
+              }
+            };
+
+            for (var _iterator = humanSteps.values()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              _loop();
+            }
+          } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion && _iterator.return) {
+                _iterator.return();
+              }
+            } finally {
+              if (_didIteratorError) {
+                throw _iteratorError;
+              }
+            }
+          }
+        });
+      };
+      teamInfoCard.submitTask = function (taskId) {
+        orchestraApi.completeAndSkipTask(taskId).then(function () {
+          teamInfoCard.loadTeamInfo();
+        }, function (response) {
+          var errorMessage = 'Error completing task.';
+          if (response.status === 400) {
+            errorMessage = response.data.message;
+          }
+          window.alert(errorMessage);
+        });
+      };
+
+      teamInfoCard.loadTeamInfo();
+    }
+  };
+}
+
+/***/ }),
+/* 220 */
 /***/ (function(module, exports) {
 
-// removed by extract-text-webpack-plugin
+module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Team info\n          <a class=\"btn\"\n             ng-if=\"teamInfoCard.isProjectAdmin\"\n             ng-href=\"project/{{teamInfoCard.projectId}}\"\n             target=\"_blank\">\n            Project Management\n          </a>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <table class=\"table table-striped\">\n          <thead>\n            <th>Role</th>\n            <th>Username</th>\n            <th>Name</th>\n            <th>Recorded time spent</th>\n            <th>Status</th>\n          </thead>\n          <tbody>\n            <tr ng-repeat=\"assignment in teamInfoCard.assignments\">\n              <td>{{assignment.role}}</td>\n              <td>{{assignment.worker.username}}</td>\n              <td>{{assignment.worker.first_name}} {{assignment.worker.last_name}}</td>\n              <td>{{assignment.recordedTime}}</td>\n              <td>\n                {{assignment.status}}\n                <button type=\"submit\"\n                        class=\"btn btn-default btn-sm\"\n                        ng-if=\"teamInfoCard.isProjectAdmin &&\n                               assignment.status == 'Processing' &&\n                               assignment.stepSlug != teamInfoCard.step.slug\"\n                        ng-click=\"teamInfoCard.submitTask(assignment.task_id)\">\n                  Submit\n                </button>\n              </td>\n            </tr>\n          </tbody>\n        </table>\n      </div>\n    </div>\n  </div>\n</section>\n";
+
+/***/ }),
+/* 221 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = config;
+
+var _dashboard = __webpack_require__(222);
+
+var _dashboard2 = _interopRequireDefault(_dashboard);
+
+var _task = __webpack_require__(223);
+
+var _task2 = _interopRequireDefault(_task);
+
+var _timecard = __webpack_require__(224);
+
+var _timecard2 = _interopRequireDefault(_timecard);
+
+var _projectManagement = __webpack_require__(225);
+
+var _projectManagement2 = _interopRequireDefault(_projectManagement);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * @name config
+ * @desc Define valid application routes
+ */
+function config($locationProvider, $routeProvider) {
+  $locationProvider.html5Mode(true);
+  $locationProvider.hashPrefix('!');
+
+  $routeProvider.when('/', {
+    title: 'Dashboard',
+    controller: 'DashboardController',
+    controllerAs: 'vm',
+    template: _dashboard2.default
+  }).when('/task/:taskId', {
+    title: 'Task',
+    controller: 'TaskController',
+    controllerAs: 'vm',
+    template: _task2.default
+  }).when('/project/:projectId?', {
+    title: 'Project',
+    controller: 'ProjectManagementController',
+    controllerAs: 'vm',
+    template: _projectManagement2.default
+  }).when('/timecard/:taskId?', {
+    title: 'Timecard',
+    controller: 'TimecardController',
+    controllerAs: 'vm',
+    template: _timecard2.default
+  }).otherwise('/');
+}
+
+/***/ }),
+/* 222 */
+/***/ (function(module, exports) {
+
+module.exports = "<section class=\"wrapper\">\n  <div tasktable=\"{label: 'Active', tasks: vm.orchestraTasks.activeTasks(), newTasks: true}\"></div>\n  <div tasktable=\"{label: 'Pending', tasks: vm.orchestraTasks.pendingTasks()}\"></div>\n  <div tasktable=\"{label: 'Completed', tasks: vm.orchestraTasks.completedTasks()}\"></div>\n</section>\n";
+
+/***/ }),
+/* 223 */
+/***/ (function(module, exports) {
+
+module.exports = "<section class=\"wrapper task-view\">\n\n\n<script type=\"text/ng-template\" id=\"submit_task_modal.html\">\n  <div class=\"modal-header\">\n    <h3 class=\"modal-title\">{{command | capitalize}} Confirmation</h3>\n  </div>\n  <div class=\"modal-body modal-confirm-body\">\n    <div class=\"modal-confirm-text\">\n      <div class=\"time-question\">\n        Approximately how much time did you spend on <strong>this iteration</strong> of the task?\n      </div>\n        <div class=\"time-summary\">\n          <span class=\"time-report form-inline input-group-sm\">\n            <span class=\"time-unit-group\">\n              <input type=\"text\"\n                     class=\"form-control\"\n                     id=\"current-time-hours\"\n                     ng-model=\"currentIterationHours\">\n                     <span class=\"time-unit\"> hours</span>\n            </span>\n            <span class=\"time-unit-group\">\n              <input type=\"text\"\n                     class=\"form-control\"\n                     id=\"current-time-minutes\"\n                     ng-model=\"currentIterationMinutes\">\n                     <span class=\"time-unit\"> mins</span>\n            </span>\n          </span>\n        </div>\n        <div class=\"time-error-message\" ng-bind=\"secondsErrorMessage\"></div>\n        <div class=\"time-summary\">\n          <span class=\"time-label\">Total time so far</span>\n          <span class=\"time-report\">\n            <span class=\"time-unit-group\">\n              <span class=\"time-value-float\">\n                <span class=\"time-value\" ng-bind=\"totalPreviousHoursMinutes()[0]\"></span>\n              </span>\n              <span class=\"time-unit\"> hours</span>\n            </span>\n            <span class=\"time-unit-group\">\n              <span class=\"time-value-float\">\n                <span class=\"time-value\" ng-bind=\"totalPreviousHoursMinutes()[1]\"></span>\n              </span>\n              <span class=\"time-unit\"> mins</span>\n            </span>\n          </span>\n        </div>\n        <hr />\n        <div class=\"time-summary\">\n          <span class=\"time-label\">Total time on task</span>\n          <span class=\"time-report\">\n            <span class=\"time-unit-group\">\n              <span class=\"time-value-float\">\n                <span class=\"time-value\" ng-bind=\"totalHoursMinutes()[0]\"></span>\n              </span>\n              <span class=\"time-unit\"> hours</span>\n            </span>\n            <span class=\"time-unit-group\">\n              <span class=\"time-value-float\">\n                <span class=\"time-value\" ng-bind=\"totalHoursMinutes()[1]\"></span>\n              </span>\n              <span class=\"time-unit\"> mins</span>\n            </span>\n          </span>\n        </div>\n    </div>\n    <div class=\"pull-center\">\n      <button class=\"btn btn-primary\" ng-disabled=\"secondsErrorMessage !== null\" ng-click=\"submit()\">{{command | capitalize}}</button>\n      <button class=\"btn btn-default\" ng-click=\"cancel()\">Cancel</button>\n    </div>\n  </div>\n</script>\n\n\n<nav class=\"topbar-overview\" ng-class=\"{'reviewer-topbar': vm.taskAssignment.is_reviewer}\">\n    <div class=\"topbar-leader\">\n      <div class=\"project-overview\">\n        <div class=\"workflow\">{{ vm.taskAssignment.workflow.name}}</div>\n        {{ vm.taskAssignment.project.details}}\n      </div>\n      <div class=\"arrow-wrapper\">\n        <div class=\"arrow-with-shadow\"></div>\n      </div>\n    </div>\n    <div class=\"topbar-follower\">\n      <div class=\"task-overview\">\n        {{ vm.taskAssignment.step.name}}\n        <span ng-if=\"vm.taskAssignment.is_reviewer\">\n              Review\n        </span>\n      </div>\n    </div>\n</nav>\n\n<div class=\"fixed-infobox-outer\" ng-if=\"vm.is_read_only\">\n  <div class=\"fixed-infobox bg-info\">\n    This task is in view-only mode. You cannot submit or review it.\n  </div>\n</div>\n\n<div class=\"fixed-infobox-outer\" ng-if=\"vm.autoSaver.saveError\">\n  <div class=\"fixed-infobox btn-danger\">\n    Error saving task. Trying again...\n  </div>\n</div>\n\n<div class=\"step-interface\">\n  <div dynamic-load=\"vm.angularDirective\"></div>\n</div>\n\n<section class=\"task-actions-wrapper\">\n  <div class=\"task-actions\">\n    <div class=\"container-fluid\">\n      <div class=\"row\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <button ng-if=\"!vm.taskAssignment.is_reviewer\"\n                  type=\"button\"\n                  class=\"btn btn-primary navbar-btn\"\n                  ng-click=\"vm.submitTask('submit')\"\n                  ng-disabled=\"vm.is_read_only || vm.autoSaver.saving || vm.submitting\">\n            Submit\n          </button>\n          <button ng-if=\"vm.taskAssignment.is_reviewer\"\n                  type=\"button\"\n                  class=\"btn btn-primary navbar-btn\"\n                  ng-click=\"vm.submitTask('accept')\"\n                  ng-disabled=\"vm.is_read_only || vm.autoSaver.saving || vm.submitting\">\n            Accept\n          </button>\n          <button ng-if=\"vm.taskAssignment.is_reviewer\"\n                  type=\"button\"\n                  class=\"btn btn-default navbar-btn\"\n                  ng-click=\"vm.submitTask('reject')\"\n                  ng-disabled=\"vm.is_read_only || vm.autoSaver.saving || vm.submitting\">\n            Reject\n          </button>\n          <button type=\"button\"\n                  class=\"btn btn-default navbar-btn\"\n                  ng-click=\"vm.autoSaver.save()\"\n                  ng-disabled=\"vm.is_read_only || vm.autoSaver.saving || vm.submitting\">\n            Save\n          </button>\n          <div class=\"save-message\">\n            <div ng-show=\"vm.autoSaver.saving\">Saving...</div>\n            <div ng-show=\"vm.autoSaver.lastSaved && !vm.autoSaver.saving\">\n              Saved at {{ vm.autoSaver.lastSaved | date:'mediumTime' }}\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n\n\n</section><!--/wrapper -->\n";
+
+/***/ }),
+/* 224 */
+/***/ (function(module, exports) {
+
+module.exports = "<div class=\"timecard-view\" ng-if=\"!vm.dataLoading\">\n  <div class=\"entries\">\n    <div class=\"container-fluid\">\n      <div class=\"row no-padding\">\n        <div class=\"col-xs-10 col-xs-offset-2\">\n          <div class=\"row\">\n            <div class=\"col-xs-12 col-md-10\">\n              <span class=\"edit-label\">\n                Date range\n              </span>\n              <date-picker date=\"vm.minDate\" max-date=\"vm.maxDate\"></date-picker>–\n              <date-picker date=\"vm.maxDate\" min-date=\"vm.minDate\"\n              max-date=\"vm.weekEnd\"></date-picker>\n            </div>\n            <div class=\"col-xs-12 col-md-2\">\n              <a href=\"//orchestra.readthedocs.org/en/stable/features.html#time-tracking\" target=\"_blank\"\n              class=\"pull-right help-icon\"><i class=\"fa fa-question-circle\"></i></a>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n    <div class=\"date-group\" ng-repeat=\"dateEntries in vm.timeEntries.entriesByDate | toArray | orderBy:vm.datetimeFromKey:'true'\">\n      <div class=\"container-fluid\">\n        <div class=\"row no-padding\">\n          <div class=\"col-xs-12 col-md-2\">\n            <span class=\"day-name\">{{ vm.dayName(dateEntries.$key) }}</span>\n          </div>\n          <div class=\"col-xs-12 col-md-10\">\n            <div class=\"date-entries\">\n              <h2>\n                <span class=\"date-label\">{{ vm.prettyDate(dateEntries.$key) }}</span>\n                <i ng-click=\"vm.addEntry(vm.datetimeFromKey(dateEntries))\" class=\"fa fa-plus btn-add-entry\"></i>\n                <span class=\"date-duration\" ng-show=\"vm.timeEntries.invalidEntriesForDate(dateEntries.$key).length\">\n                  <em class=\"incomplete\">Invalid Entries</em>\n                </span>\n                <span class=\"date-duration\" ng-hide=\"vm.timeEntries.invalidEntriesForDate(dateEntries.$key).length\">\n                  {{ vm.timeEntries.timeWorkedForDate(dateEntries.$key).humanizeUnits() }}\n                </span>\n              </h2>\n              <div class=\"entry-row\" ng-if=\"!dateEntries.length\">\n                <div class=\"row\">\n                  <div class=\"col-xs-12\">\n                    <em>No entries for this date</em>\n                  </div>\n                </div>\n              </div>\n              <div class=\"entry-row\" ng-class=\"{'gray-stripe': $index % 2}\" ng-repeat=\"entry in dateEntries | orderBy:'-id'\">\n                <form class=\"container-fluid form-inline\" novalidate name=\"entryForm\">\n                  <div class=\"row\">\n                    <div class=\"col-xs-2 edit-tools disable-select\">\n                      <i ng-click=\"vm.timeEntries.deleteEntry(entry)\" class=\"fa fa-times-circle\"></i>\n                      <i class=\"fa fa-pencil-square-o\" ng-class=\"{active: entry.editing}\" ng-click=\"vm.editEntry(entry)\"></i>\n                    </div>\n\n                    <!-- Readonly view for description and time worked -->\n                    <div class=\"col-xs-6 description\" ng-if=\"!entry.editing\">\n                      <span ng-show=\"entry.description\">\n                        {{ entry.description }}\n                      </span>\n                      <span class=\"incomplete\" ng-hide=\"entry.description\">\n                        <em>No description</em>\n                      </span>\n                    </div>\n                    <div class=\"col-xs-4 edit-time\" ng-if=\"!entry.editing\">\n                      {{ entry.time_worked.roundMinute().humanizeUnits() }}\n                    </div>\n                    <div class=\"col-xs-12\" ng-if=\"!entry.editing\">\n                      <em class=\"pull-right\" ng-show=\"vm.orchestraTasks.tasksByAssignmentId[entry.assignment]\">\n                        {{ vm.orchestraTasks.getDescription(vm.orchestraTasks.tasksByAssignmentId[entry.assignment]) }}\n                      </em>\n                      <em class=\"pull-right incomplete\" ng-hide=\"vm.orchestraTasks.tasksByAssignmentId[entry.assignment]\">\n                        Unassigned\n                      </em>\n                    </div>\n\n                    <!-- Editable view for description and time worked -->\n                    <div class=\"col-xs-6\" ng-if=\"entry.editing\">\n                      <input class=\"form-control\" type=\"text\" ng-model=\"entry.editData.description\" placeholder=\"What did you work on?\">\n                    </div>\n                    <div class=\"col-xs-4 edit-time\" ng-if=\"entry.editing\">\n                      <div class=\"time-component\">\n                        <input class=\"form-control\" type=\"number\" ng-model=\"entry.editData.timeWorked.h\"\n                        min=\"0\" max=\"23\" enforce-integers>\n                        <label>hours</label>\n                      </div>\n                      <div class=\"time-component\">\n                        <input class=\"form-control\" type=\"number\" ng-model=\"entry.editData.timeWorked.m\"\n                        min=\"0\" max=\"59\" enforce-integers>\n                        <label>minutes</label>\n                      </div>\n                    </div>\n                  </div>\n\n                  <div class=\"row\" ng-if=\"entry.editing\">\n                    <div class=\"col-xs-4\">\n                      <div class=\"edit-date\">\n                        <label class=\"edit-label\">Move to date</label>\n                        <date-picker date=\"entry.editData.date\" max-date=\"vm.weekEnd\"></date-picker>\n                      </div>\n                    </div>\n                    <div class=\"col-xs-8\">\n                      <div class=\"edit-task\">\n                        <task-select task=\"entry.editData.task\"></task-select>\n                      </div>\n                    </div>\n                  </div>\n                  <div class=\"row\" ng-if=\"entry.editing\">\n                    <div class=\"col-xs-12\">\n                      <div class=\"edit-options pull-right\">\n                        <div class=\"edit-cancel-handle\" ng-click=\"vm.cancelChanges(entry)\">\n                          Cancel\n                        </div>\n                        <div class=\"btn btn-primary btn-sm edit-save-handle\" ng-disabled=\"vm.entryUnchanged(entry)\"\n                        ng-click=\"vm.saveChanges(entry)\">\n                          Save changes\n                        </div>\n                      </div>\n                    </div>\n                  </div>\n                </form>\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n";
+
+/***/ }),
+/* 225 */
+/***/ (function(module, exports) {
+
+module.exports = "<div class=\"project-management\">\n  <div class=\"overlay\" ng-if=\"vis.dataService.loading\">\n    <div class=\"spinner\"></div>\n  </div>\n  <section class=\"section-panel\">\n    <div class=\"container-fluid\">\n      <div class=\"row padded\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <ui-select class=\"project-description\" ng-model=\"vis.dataService.currentProject\"\n              ng-change=\"vis.dataService.setSelectedProject()\"\n              ng-disabled=\"vis.dataService.loading\">\n            <ui-select-match>\n              <span ng-bind=\"projectDescription($select.selected)\"></span>\n            </ui-select-match>\n            <ui-select-choices repeat=\"item in (vis.dataService.allProjects | toArray | filter: $select.search) track by item.id\">\n              <span ng-bind=\"projectDescription(item)\"></span>\n            </ui-select-choices>\n          </ui-select>\n          <div class=\"project-actions\" ng-show=\"vis.dataService.currentProject.id\">\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.createSubsequentTasks()\" class=\"btn btn-default\">\n              Create subsequent tasks\n            </button>\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.showSlackActions()\" class=\"btn btn-default\">\n              Edit Slack users\n            </button>\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.showProjectData()\" class=\"btn btn-default\">\n              View project data\n            </button>\n            <a ng-href=\"{{vis.dataService.data.project.admin_url}}\" ng-disabled=\"vis.dataService.loading\" target=\"_blank\">\n              <button type=\"button\" class=\"btn btn-default\">View in admin</button>\n            </a>\n            <button ng-click=\"vis.endProject()\" class=\"btn btn-danger\">Abort project</button>\n          </div>\n        </div>\n      </div>\n      <div class=\"row\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <div class=\"vis-wrapper\" ng-show=\"vis.dataService.currentProject.id\">\n            <div class=\"freeze-pane-left\">\n              <div class=\"scale-buttons\">\n                <button ng-click=\"vis.axis.relativeTime = !vis.axis.relativeTime; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  Switch to {{vis.axis.relativeTime ? 'local' : 'relative'}} time\n                </button>\n                <button ng-click=\"vis.params.scaleWidth = vis.params.scaleWidth / 1.1; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  -\n                </button>\n                <button ng-click=\"vis.params.scaleWidth = vis.params.scaleWidth * 1.1; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  +\n                </button>\n              </div>\n              <div class=\"task-names\"></div>\n            </div>\n            <div class=\"svg-wrapper\"></div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n</div>\n";
 
 /***/ })
 /******/ ]);
