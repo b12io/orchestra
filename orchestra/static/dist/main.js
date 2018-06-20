@@ -61468,6 +61468,16 @@ function todoList(orchestraApi) {
         $scope.$apply();
       };
 
+      todoList.transformToTree = function (todos) {
+        var nodes = {};
+        return todos.filter(function (obj) {
+          nodes[obj.id] = (0, _lodash.defaults)(obj, nodes[obj.id], { items: [] });
+          obj.parent_todo && (nodes[obj.parent_todo] = nodes[obj.parent_todo] || { items: [] })['items'].push(obj);
+
+          return !obj.parent_todo;
+        });
+      };
+
       orchestraApi.projectInformation(todoList.projectId).then(function (response) {
         var humanSteps = new Set(response.data.steps.filter(function (step) {
           return step.is_human;
@@ -61488,7 +61498,7 @@ function todoList(orchestraApi) {
 
         // TODO(marcua): parallelize requests rather than chaining `then`s.
         todoApi.list(todoList.projectId).then(function (todos) {
-          todoList.todos = todos;
+          todoList.todos = todoList.transformToTree(todos);
           todoList.ready = true;
         });
       });

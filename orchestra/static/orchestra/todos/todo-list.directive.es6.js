@@ -1,4 +1,4 @@
-import { reduce } from 'lodash'
+import { reduce, defaults } from 'lodash'
 import template from './todo-list.html'
 import moment from 'moment-timezone'
 import './todo-list.scss'
@@ -101,6 +101,16 @@ export default function todoList (orchestraApi) {
         $scope.$apply()
       }
 
+      todoList.transformToTree = (todos) => {
+        var nodes = {}
+        return todos.filter(function (obj) {
+          nodes[obj.id] = defaults(obj, nodes[obj.id], { items: [] })
+          obj.parent_todo && (nodes[obj.parent_todo] = (nodes[obj.parent_todo] || { items: [] }))['items'].push(obj)
+
+          return !obj.parent_todo
+        })
+      }
+
       orchestraApi.projectInformation(todoList.projectId)
         .then((response) => {
           const humanSteps = new Set(response.data.steps.filter(step => step.is_human).map(step => step.slug))
@@ -118,7 +128,7 @@ export default function todoList (orchestraApi) {
 
           // TODO(marcua): parallelize requests rather than chaining `then`s.
           todoApi.list(todoList.projectId).then((todos) => {
-            todoList.todos = todos
+            todoList.todos = todoList.transformToTree(todos)
             todoList.ready = true
           })
         })

@@ -6,10 +6,7 @@ from orchestra.json_schemas.todos import TodoListSchema
 from orchestra.utils.mixins import JSONSchemaValidationMixin
 
 
-class TodoSerializer(serializers.ModelSerializer, JSONSchemaValidationMixin):
-    json_schemas = {
-        'items': TodoListSchema
-    }
+class TodoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Todo
@@ -18,6 +15,8 @@ class TodoSerializer(serializers.ModelSerializer, JSONSchemaValidationMixin):
             'created_at',
             'task',
             'description',
+            'parent_todo',
+            'template',
             'completed',
             'skipped_datetime',
             'start_by_datetime',
