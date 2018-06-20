@@ -2309,44 +2309,46 @@ a.logo {
     background-color: white;
     text-align: center; }
 
-.todo-list .new-todo {
-  float: left; }
-  .todo-list .new-todo__box {
-    display: inline-block; }
-    .todo-list .new-todo__box-details {
-      width: 550px; }
-  .todo-list .new-todo__description {
+.todo-list .new-todo__box {
+  display: inline-block; }
+  .todo-list .new-todo__box-details {
     width: 550px; }
-    .todo-list .new-todo__description__datetime {
-      display: inline-block;
-      padding-left: 10px; }
+
+.todo-list .new-todo__description {
+  width: 550px; }
+  .todo-list .new-todo__description__datetime {
+    display: inline-block;
+    padding-left: 10px; }
 .list-by-status {
-  padding-top: 20px;
-  margin-top: 70px; }
+  padding-top: 20px; }
   .list-by-status h4 {
     padding-bottom: 10px; }
-  .list-by-status .todo input[type=checkbox] {
-    transform: scale(1.1); }
-  .list-by-status .todo label {
-    align-items: end;
-    display: inline; }
-  .list-by-status .todo__role {
-    font-weight: 500;
-    padding-left: 5px; }
-  .list-by-status .todo__dates {
-    padding-left: 5px;
-    font-style: italic;
-    color: #999; }
-    .list-by-status .todo__dates-danger {
-      color: #a94442; }
-    .list-by-status .todo__dates-separator {
-      font-style: normal; }
+  .list-by-status .todo {
+    margin-left: 18px; }
+    .list-by-status .todo input[type=checkbox] {
+      transform: scale(1.1);
+      margin-left: -22px; }
+    .list-by-status .todo label {
+      align-items: end;
+      display: inline; }
+    .list-by-status .todo__role {
+      font-weight: 500;
+      padding-left: 5px; }
+    .list-by-status .todo__dates {
+      padding-left: 5px;
+      font-style: italic;
+      color: #999; }
+      .list-by-status .todo__dates-danger {
+        color: #a94442; }
+      .list-by-status .todo__dates-separator {
+        font-style: normal; }
   .list-by-status .angular-ui-tree-node {
     padding-top: 5px;
     padding-bottom: 0; }
   .list-by-status .fa-circle-o {
     font-size: xx-small;
-    vertical-align: middle; }
+    vertical-align: middle;
+    margin-left: -18px; }
   .list-by-status .angular-ui-tree-handle > label {
     cursor: pointer; }
 .angular-ui-tree-empty, .angular-ui-tree-dropzone {

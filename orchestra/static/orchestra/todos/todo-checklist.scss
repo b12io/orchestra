@@ -1,12 +1,13 @@
 .list-by-status {
   padding-top: 20px;
-  margin-top: 70px;
   h4 {
     padding-bottom: 10px;
   }
   .todo {
+    margin-left: 18px;
     input[type=checkbox] {
       transform: scale(1.1);
+      margin-left: -22px;
     }
     label {
       align-items: end;
@@ -37,6 +38,7 @@
   .fa-circle-o {
     font-size: xx-small;
     vertical-align: middle;
+    margin-left: -18px;
   }
 
   .angular-ui-tree-handle > label{
