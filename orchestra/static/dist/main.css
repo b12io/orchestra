@@ -2309,20 +2309,18 @@ a.logo {
     background-color: white;
     text-align: center; }
 
-.todo-list .new-todo {
-  float: left; }
-  .todo-list .new-todo__box {
-    display: inline-block; }
-    .todo-list .new-todo__box-details {
-      width: 550px; }
-  .todo-list .new-todo__description {
+.todo-list .new-todo__box {
+  display: inline-block; }
+  .todo-list .new-todo__box-details {
     width: 550px; }
-    .todo-list .new-todo__description__datetime {
-      display: inline-block;
-      padding-left: 10px; }
+
+.todo-list .new-todo__description {
+  width: 550px; }
+  .todo-list .new-todo__description__datetime {
+    display: inline-block;
+    padding-left: 10px; }
 .list-by-status {
-  padding-top: 20px;
-  margin-top: 70px; }
+  padding-top: 20px; }
   .list-by-status h4 {
     padding-bottom: 10px; }
   .list-by-status .todo {
