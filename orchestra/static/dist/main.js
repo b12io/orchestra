@@ -42421,11 +42421,11 @@ var _todosModuleEs = __webpack_require__(207);
 
 var _todosModuleEs2 = _interopRequireDefault(_todosModuleEs);
 
-var _teamInfoModuleEs = __webpack_require__(215);
+var _teamInfoModuleEs = __webpack_require__(218);
 
 var _teamInfoModuleEs2 = _interopRequireDefault(_teamInfoModuleEs);
 
-var _configEs = __webpack_require__(218);
+var _configEs = __webpack_require__(221);
 
 var _configEs2 = _interopRequireDefault(_configEs);
 
@@ -61334,16 +61334,17 @@ var _todoChecklistDirectiveEs = __webpack_require__(211);
 
 var _todoChecklistDirectiveEs2 = _interopRequireDefault(_todoChecklistDirectiveEs);
 
-var _todosServiceEs = __webpack_require__(214);
+var _todosServiceEs = __webpack_require__(215);
 
 var _todosServiceEs2 = _interopRequireDefault(_todosServiceEs);
 
+__webpack_require__(216);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/* global angular */
+var name = 'orchestra.todos'; /* global angular */
 
-var name = 'orchestra.todos';
-angular.module(name, ['ui.select', 'ngSanitize', _commonModuleEs2.default]).directive('todoList', _todoListDirectiveEs2.default).directive('todoChecklist', _todoChecklistDirectiveEs2.default).factory('todoApi', _todosServiceEs2.default);
+angular.module(name, ['ui.select', 'ngSanitize', 'ui.tree', _commonModuleEs2.default]).directive('todoList', _todoListDirectiveEs2.default).directive('todoChecklist', _todoChecklistDirectiveEs2.default).factory('todoApi', _todosServiceEs2.default);
 exports.default = name;
 
 /***/ }),
@@ -61446,12 +61447,19 @@ function todoList(orchestraApi) {
         todoApi.update(todo);
       };
 
-      todoList.toggleSkipTodo = function (todo) {
-        if (todo.skipped_datetime) {
-          todo.skipped_datetime = null;
-        } else {
-          var datetimeUtc = _momentTimezone2.default.tz((0, _momentTimezone2.default)(), _momentTimezone2.default.tz.guess()).utc();
-          todo.skipped_datetime = datetimeUtc.format('YYYY-MM-DD HH:mm');
+      todoList.skipTodo = function (todo) {
+        var datetimeUtc = _momentTimezone2.default.tz((0, _momentTimezone2.default)(), _momentTimezone2.default.tz.guess()).utc();
+        todo.skipped_datetime = datetimeUtc.format('YYYY-MM-DD HH:mm');
+        if (todo.items) {
+          todo.items.forEach(todoList.skipTodo);
+        }
+        todoApi.update(todo);
+      };
+
+      todoList.unskipTodo = function (todo) {
+        todo.skipped_datetime = null;
+        if (todo.items) {
+          todo.items.forEach(todoList.unskipTodo);
         }
         todoApi.update(todo);
       };
@@ -61492,7 +61500,7 @@ function todoList(orchestraApi) {
 /* 209 */
 /***/ (function(module, exports) {
 
-module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Todo List\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\" ng-if=\"todoList.ready\">\n      <div class=\"col-lg-6 col-md-6 col-sm-12\">\n        <div class=\"todolist-pane\">\n          <div class=\"new-todo__box todolist-pane__heading col-sm-3\">\n            <select name=\"todoList\" id=\"todoList\" ng-model=\"todoList.newTodoTaskId\">\n              <option value=\"\" selected>Select owner</option>\n              <option value=\"{{task.id}}\" ng-repeat=\"task in todoList.possibleTasks\">{{todoList.steps[task.step_slug].name}}</option>\n            </select>\n          </div>\n\n          <form class=\"new-todo\">\n            <div class=\"new-todo__box new-todo__box-details\">\n              <input class=\"new-todo__description\"\n                     type=\"text\"\n                     ng-model=\"todoList.newTodoDescription\"\n                     placeholder=\"Add a todo item\">\n              <div class=\"pull-right\">\n                <div class=\"new-todo__description__datetime\">\n                  <label>Start</label>\n                  <date-picker\n                    date=\"todoList.newTodoStartDate\"\n                    callback=\"todoList.setTimeOfDate\"></date-picker>\n                  <time-input\n                    datetime=\"todoList.newTodoStartDate\"\n                    default-hour=\"8\"\n                    ></time-input>\n                </div>\n                <div class=\"new-todo__description__datetime\">\n                  <label>Due</label>\n                  <date-picker\n                    date=\"todoList.newTodoDueDate\"\n                    callback=\"todoList.setTimeOfDate\"></date-picker>\n                  <time-input\n                    datetime=\"todoList.newTodoDueDate\"\n                    default-hour=\"18\"\n                    ></time-input>\n                </div>\n              </div>\n            </div>\n            <div class=\"new-todo__box\">\n              <button type=\"submit\"\n                 class=\"btn btn-primary btn-sm edit-save-handle\"\n                 ng-disabled=\"!todoList.canAddTodo()\"\n                 ng-click=\"todoList.addTodo()\">\n                Add\n              </button>\n            </div>\n          </form>\n\n          <todo-checklist\n              title=\"Todos\"\n              todos=\"todoList.todos\"\n              show-skipped=\"false\"\n              update-todo=\"todoList.updateTodo\"\n              toggle-skip-todo=\"todoList.toggleSkipTodo\"\n              steps=\"todoList.steps\"\n              task-slugs=\"todoList.taskSlugs\"\n          ></todo-checklist>\n        </div>\n      </div>\n      <div class=\"col-lg-6 col-md-6 col-sm-12\">\n        <div class=\"todolist-pane\">\n          <p class=\"todolist-pane__heading col-sm-4\">Skipped todo items</p>\n          <todo-checklist\n              title=\"Todos\"\n              todos=\"todoList.todos\"\n              show-skipped=\"true\"\n              update-todo=\"todoList.updateTodo\"\n              steps=\"todoList.steps\"\n              toggle-skip-todo=\"todoList.toggleSkipTodo\"\n              task-slugs=\"todoList.taskSlugs\"\n          ></todo-checklist>\n        </div>\n      </div>\n    </div>\n\n  </div>\n</section>\n";
+module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Todo List\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\" ng-if=\"todoList.ready\">\n      <div class=\"col-lg-6 col-md-6 col-sm-12\">\n        <div class=\"todolist-pane\">\n          <div class=\"new-todo__box todolist-pane__heading col-sm-3\">\n            <select name=\"todoList\" id=\"todoList\" ng-model=\"todoList.newTodoTaskId\">\n              <option value=\"\" selected>Select owner</option>\n              <option value=\"{{task.id}}\" ng-repeat=\"task in todoList.possibleTasks\">{{todoList.steps[task.step_slug].name}}</option>\n            </select>\n          </div>\n\n          <form class=\"new-todo\">\n            <div class=\"new-todo__box new-todo__box-details\">\n              <input class=\"new-todo__description\"\n                     type=\"text\"\n                     ng-model=\"todoList.newTodoDescription\"\n                     placeholder=\"Add a todo item\">\n              <div class=\"pull-right\">\n                <div class=\"new-todo__description__datetime\">\n                  <label>Start</label>\n                  <date-picker\n                    date=\"todoList.newTodoStartDate\"\n                    callback=\"todoList.setTimeOfDate\"></date-picker>\n                  <time-input\n                    datetime=\"todoList.newTodoStartDate\"\n                    default-hour=\"8\"\n                    ></time-input>\n                </div>\n                <div class=\"new-todo__description__datetime\">\n                  <label>Due</label>\n                  <date-picker\n                    date=\"todoList.newTodoDueDate\"\n                    callback=\"todoList.setTimeOfDate\"></date-picker>\n                  <time-input\n                    datetime=\"todoList.newTodoDueDate\"\n                    default-hour=\"18\"\n                    ></time-input>\n                </div>\n              </div>\n            </div>\n            <div class=\"new-todo__box\">\n              <button type=\"submit\"\n                 class=\"btn btn-primary btn-sm edit-save-handle\"\n                 ng-disabled=\"!todoList.canAddTodo()\"\n                 ng-click=\"todoList.addTodo()\">\n                Add\n              </button>\n            </div>\n          </form>\n\n          <todo-checklist\n              title=\"Todos\"\n              todos=\"todoList.todos\"\n              show-skipped=\"false\"\n              update-todo=\"todoList.updateTodo\"\n              skip-todo=\"todoList.skipTodo\"\n              unskip-todo=\"todoList.unskipTodo\"\n              steps=\"todoList.steps\"\n              task-slugs=\"todoList.taskSlugs\"\n          ></todo-checklist>\n        </div>\n      </div>\n      <div class=\"col-lg-6 col-md-6 col-sm-12\">\n        <div class=\"todolist-pane\">\n          <p class=\"todolist-pane__heading col-sm-4\">Skipped todo items</p>\n          <todo-checklist\n              title=\"Todos\"\n              todos=\"todoList.todos\"\n              show-skipped=\"true\"\n              update-todo=\"todoList.updateTodo\"\n              steps=\"todoList.steps\"\n              skip-todo=\"todoList.skipTodo\"\n              unskip-todo=\"todoList.unskipTodo\"\n              task-slugs=\"todoList.taskSlugs\"\n          ></todo-checklist>\n        </div>\n      </div>\n    </div>\n\n  </div>\n</section>\n";
 
 /***/ }),
 /* 210 */
@@ -61512,11 +61520,15 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = todoChecklist;
 
+var _lodash = __webpack_require__(5);
+
 var _todoChecklist = __webpack_require__(212);
 
 var _todoChecklist2 = _interopRequireDefault(_todoChecklist);
 
 __webpack_require__(213);
+
+__webpack_require__(214);
 
 var _momentTimezone = __webpack_require__(1);
 
@@ -61534,7 +61546,8 @@ function todoChecklist() {
       showChecked: '=',
       showSkipped: '=',
       updateTodo: '=',
-      toggleSkipTodo: '=',
+      skipTodo: '=',
+      unskipTodo: '=',
       steps: '<',
       taskSlugs: '<'
     },
@@ -61546,6 +61559,26 @@ function todoChecklist() {
       scope.isInDanger = function (todo) {
         return !todo.completed && _momentTimezone2.default.isBeforeNowBy(todo.due_datetime, 1, 'days');
       };
+
+      scope.isSkipped = function (todo) {
+        var items = [];
+        if (todo.items) {
+          items = (0, _lodash.filter)(todo.items, scope.isSkipped);
+        }
+        return todo.skipped_datetime != null && (!todo.items || todo.items.length === 0) || items.length > 0;
+      };
+
+      scope.isNotSkipped = function (todo) {
+        var items = [];
+        if (todo.items) {
+          items = (0, _lodash.filter)(todo.items, scope.isNotSkipped);
+        }
+        return todo.skipped_datetime == null && (!todo.items || todo.items.length === 0) || items.length > 0;
+      };
+
+      scope.filterTodoList = function (todos, showSkipped) {
+        return (0, _lodash.filter)(todos, showSkipped ? scope.isSkipped : scope.isNotSkipped);
+      };
     }
 
   };
@@ -61555,7 +61588,7 @@ function todoChecklist() {
 /* 212 */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"list-by-status\" ng-if=\"(todos | filter: {skipped_datetime: showSkipped?'!!':'!'}).length > 0\">\n  <!-- <h4>{{title}}</h4> -->\n  <div class=\"todo\"\n       ng-repeat=\"todo in todos | filter: {skipped_datetime: showSkipped?'!!':'!'}\">\n    <label ng-class=\"{'text-danger': isInDanger(todo)}\">\n      <input type=\"checkbox\"\n             ng-hide=\"showSkipped\"\n             ng-model=\"todo.completed\"\n             ng-change=\"updateTodo(todo)\">\n      <span class=\"todo__role\">{{steps[taskSlugs[todo.task]].name}}:&nbsp;</span>\n      <span class=\"todo__description\">{{todo.description}}</span>\n      <span ng-class=\"{'todo__dates': true, 'todo__dates-danger': isInDanger(todo)}\">\n        <span ng-if=\"isNonEmptyString(todo.start_by_datetime)\">\n          Start <datetime-display datetime=\"todo.start_by_datetime\" show-time=\"true\"/>\n        </span>\n        <span ng-if=\"isNonEmptyString(todo.start_by_datetime) && isNonEmptyString(todo.due_datetime)\" class=\"todo__dates-separator\">|</span>\n        <span ng-if=\"isNonEmptyString(todo.due_datetime)\">\n          Due <datetime-display datetime=\"todo.due_datetime\" show-time=\"true\"/></span>\n      </span>\n      <span>\n        &nbsp;&nbsp;<a href=\"#\" ng-click=\"toggleSkipTodo(todo)\">[{{showSkipped?\"add\":\"skip\"}}]</a>\n      </span>\n    </label>\n  </div>\n</div>\n";
+module.exports = "<script type=\"text/ng-template\" id=\"todoItemTemplate\">\n  <div ui-tree-handle class=\"tree-node tree-node-content\">\n    <input type=\"checkbox\"\n           ng-hide=\"showSkipped\"\n           ng-model=\"todo.completed\"\n           ng-change=\"updateTodo(todo)\">\n    <label ng-class=\"{'text-danger': isInDanger(todo)}\">\n      <span ng-click=\"toggle(this)\">\n        <i aria-hidden=\"true\" ng-if=\"todo.items && todo.items.length > 0\" data-nodrag\n          class=\"fa\"\n          ng-class=\"{\n            'fa-caret-right': collapsed,\n            'fa-caret-down': !collapsed\n          }\"></i>\n        <i class=\"fa fa-circle-o\" aria-hidden=\"true\" ng-if=\"(!todo.items || todo.items.length === 0) && showSkipped\" data-nodrag></i>\n        <span ng-hide=\"!todo.items || todo.items.length < 1 || showSkipped\">[{{ ( todo.items | filter: { completed: true, skipped_datetime: '!' } ).length }}/{{ ( todo.items | filter: { skipped_datetime: '!' } ).length }}] </span>\n        <span class=\"todo__role\">{{steps[taskSlugs[todo.task]].name}}:&nbsp;</span>\n        <span class=\"todo__description\">{{todo.description}}</span>\n        <span ng-class=\"{'todo__dates': true, 'todo__dates-danger': isInDanger(todo)}\">\n          <span ng-if=\"isNonEmptyString(todo.start_by_datetime)\">\n            Start <datetime-display datetime=\"todo.start_by_datetime\" show-time=\"true\"/>\n          </span>\n          <span ng-if=\"isNonEmptyString(todo.start_by_datetime) && isNonEmptyString(todo.due_datetime)\" class=\"todo__dates-separator\">|</span>\n          <span ng-if=\"isNonEmptyString(todo.due_datetime)\">\n            Due <datetime-display datetime=\"todo.due_datetime\" show-time=\"true\"/></span>\n        </span>\n      </span>\n      <span>\n        &nbsp;&nbsp;\n        <a href=\"#\" ng-hide=\"!showSkipped\" ng-click=\"unskipTodo(todo)\">[add]</a>\n        <a href=\"#\" ng-hide=\"showSkipped\" ng-click=\"skipTodo(todo)\">[skip]</a>\n      </span>\n    </label>\n  </div>\n  <ol ui-tree-nodes ng-model=\"todo.items\" ng-class=\"{hidden: collapsed}\">\n    <li ng-repeat=\"todo in filterTodoList(todo.items, showSkipped)\" ui-tree-node data-collapsed=\"true\" ng-include=\"'todoItemTemplate'\"></li>\n  </ol>\n</script>\n\n\n<div class=\"list-by-status\" ng-if=\"todos.length > 0\">\n  <div class=\"todo\">\n    <div ui-tree data-drag-enabled=\"false\" id=\"tree-root\">\n      <ol ui-tree-nodes ng-model=\"todos\">\n        <li ng-repeat=\"todo in filterTodoList(todos, showSkipped)\" ui-tree-node data-collapsed=\"true\" ng-include=\"'todoItemTemplate'\"></li>\n      </ol>\n    </div>\n  </div>\n</div>\n";
 
 /***/ }),
 /* 213 */
@@ -61565,6 +61598,12 @@ module.exports = "<div class=\"list-by-status\" ng-if=\"(todos | filter: {skippe
 
 /***/ }),
 /* 214 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 215 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61606,7 +61645,1876 @@ function todoApi($http) {
 };
 
 /***/ }),
-/* 215 */
+/* 216 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(217);
+module.exports = 'ui.tree';
+
+
+/***/ }),
+/* 217 */
+/***/ (function(module, exports) {
+
+/**
+ * @license Angular UI Tree v2.22.6
+ * (c) 2010-2017. https://github.com/angular-ui-tree/angular-ui-tree
+ * License: MIT
+ */
+(function () {
+  'use strict';
+
+  angular.module('ui.tree', [])
+    .constant('treeConfig', {
+      treeClass: 'angular-ui-tree',
+      emptyTreeClass: 'angular-ui-tree-empty',
+      dropzoneClass: 'angular-ui-tree-dropzone',
+      hiddenClass: 'angular-ui-tree-hidden',
+      nodesClass: 'angular-ui-tree-nodes',
+      nodeClass: 'angular-ui-tree-node',
+      handleClass: 'angular-ui-tree-handle',
+      placeholderClass: 'angular-ui-tree-placeholder',
+      dragClass: 'angular-ui-tree-drag',
+      dragThreshold: 3,
+      defaultCollapsed: false,
+      appendChildOnHover: true
+    });
+
+})();
+
+(function () {
+  'use strict';
+
+  angular.module('ui.tree')
+
+    .controller('TreeHandleController', ['$scope', '$element',
+      function ($scope, $element) {
+        this.scope = $scope;
+
+        $scope.$element = $element;
+        $scope.$nodeScope = null;
+        $scope.$type = 'uiTreeHandle';
+
+      }
+    ]);
+})();
+
+(function () {
+  'use strict';
+
+  angular.module('ui.tree')
+    .controller('TreeNodeController', ['$scope', '$element',
+      function ($scope, $element) {
+        this.scope = $scope;
+
+        $scope.$element = $element;
+        $scope.$modelValue = null; // Model value for node;
+        $scope.$parentNodeScope = null; // uiTreeNode Scope of parent node;
+        $scope.$childNodesScope = null; // uiTreeNodes Scope of child nodes.
+        $scope.$parentNodesScope = null; // uiTreeNodes Scope of parent nodes.
+        $scope.$treeScope = null; // uiTree scope
+        $scope.$handleScope = null; // it's handle scope
+        $scope.$type = 'uiTreeNode';
+        $scope.$$allowNodeDrop = false;
+        $scope.collapsed = false;
+        $scope.expandOnHover = false;
+
+        //Called by uiTreeNode Directive on load.
+        $scope.init = function (controllersArr) {
+          var treeNodesCtrl = controllersArr[0];
+          $scope.$treeScope = controllersArr[1] ? controllersArr[1].scope : null;
+
+          //Find the scope of it's parent node.
+          $scope.$parentNodeScope = treeNodesCtrl.scope.$nodeScope;
+
+          //modelValue for current node.
+          $scope.$modelValue = treeNodesCtrl.scope.$modelValue[$scope.$index];
+          $scope.$parentNodesScope = treeNodesCtrl.scope;
+
+          //Init sub nodes.
+          treeNodesCtrl.scope.initSubNode($scope);
+
+          $element.on('$destroy', function () {
+
+            //Destroy sub nodes.
+            treeNodesCtrl.scope.destroySubNode($scope);
+          });
+        };
+
+        //Return the index of child node in parent node (nodesScope).
+        $scope.index = function () {
+          return $scope.$parentNodesScope.$modelValue.indexOf($scope.$modelValue);
+        };
+
+        $scope.dragEnabled = function () {
+          return !($scope.$treeScope && !$scope.$treeScope.dragEnabled);
+        };
+
+        $scope.isSibling = function (targetNode) {
+          return $scope.$parentNodesScope == targetNode.$parentNodesScope;
+        };
+
+        $scope.isChild = function (targetNode) {
+          var nodes = $scope.childNodes();
+          return nodes && nodes.indexOf(targetNode) > -1;
+        };
+
+        //TODO(jcarter): This method is on uiTreeHelper already.
+        $scope.prev = function () {
+          var index = $scope.index();
+          if (index > 0) {
+            return $scope.siblings()[index - 1];
+          }
+          return null;
+        };
+
+        //Calls childNodes on parent.
+        $scope.siblings = function () {
+          return $scope.$parentNodesScope.childNodes();
+        };
+
+        $scope.childNodesCount = function () {
+          return $scope.childNodes() ? $scope.childNodes().length : 0;
+        };
+
+        $scope.hasChild = function () {
+          return $scope.childNodesCount() > 0;
+        };
+
+        $scope.childNodes = function () {
+          return $scope.$childNodesScope && $scope.$childNodesScope.$modelValue ?
+            $scope.$childNodesScope.childNodes() :
+            null;
+        };
+
+        $scope.accept = function (sourceNode, destIndex) {
+          return $scope.$childNodesScope &&
+            $scope.$childNodesScope.$modelValue &&
+            $scope.$childNodesScope.accept(sourceNode, destIndex);
+        };
+
+        $scope.remove = function () {
+          return $scope.$parentNodesScope.removeNode($scope);
+        };
+
+        $scope.toggle = function () {
+          $scope.collapsed = !$scope.collapsed;
+          $scope.$treeScope.$callbacks.toggle($scope.collapsed, $scope);
+        };
+
+        $scope.collapse = function () {
+          $scope.collapsed = true;
+        };
+
+        $scope.expand = function () {
+          $scope.collapsed = false;
+        };
+
+        $scope.depth = function () {
+          var parentNode = $scope.$parentNodeScope;
+          if (parentNode) {
+            return parentNode.depth() + 1;
+          }
+          return 1;
+        };
+
+        /**
+        * Returns the depth of the deepest subtree under this node
+        * @param scope a TreeNodesController scope object
+        * @returns Depth of all nodes *beneath* this node. If scope belongs to a leaf node, the
+        *   result is 0 (it has no subtree).
+        */
+        function countSubTreeDepth(scope) {
+          if (!scope) {
+            return 0;
+          }
+          var thisLevelDepth = 0,
+              childNodes = scope.childNodes(),
+              childNode,
+              childDepth,
+              i;
+          if (!childNodes || childNodes.length === 0) {
+            return 0;
+          }
+          for (i = childNodes.length - 1; i >= 0 ; i--) {
+            childNode = childNodes[i],
+            childDepth = 1 + countSubTreeDepth(childNode);
+            thisLevelDepth = Math.max(thisLevelDepth, childDepth);
+          }
+          return thisLevelDepth;
+        }
+
+        $scope.maxSubDepth = function () {
+          return $scope.$childNodesScope ? countSubTreeDepth($scope.$childNodesScope) : 0;
+        };
+      }
+    ]);
+})();
+
+(function () {
+  'use strict';
+
+  angular.module('ui.tree')
+
+    .controller('TreeNodesController', ['$scope', '$element', '$timeout',
+      function ($scope, $element, $timeout) {
+        this.scope = $scope;
+
+        $scope.$element = $element;
+        $scope.$modelValue = null;
+        $scope.$nodeScope = null; // the scope of node which the nodes belongs to
+        $scope.$treeScope = null;
+        $scope.$type = 'uiTreeNodes';
+        $scope.$nodesMap = {};
+
+        $scope.nodropEnabled = false;
+        $scope.maxDepth = 0;
+        $scope.cloneEnabled = false;
+
+        $scope.initSubNode = function (subNode) {
+          if (!subNode.$modelValue) {
+            return null;
+          }
+          $scope.$nodesMap[subNode.$modelValue.$$hashKey] = subNode;
+        };
+
+        $scope.destroySubNode = function (subNode) {
+          if (!subNode.$modelValue) {
+            return null;
+          }
+          $scope.$nodesMap[subNode.$modelValue.$$hashKey] = null;
+        };
+
+        $scope.accept = function (sourceNode, destIndex) {
+          return $scope.$treeScope.$callbacks.accept(sourceNode, $scope, destIndex);
+        };
+
+        $scope.beforeDrag = function (sourceNode) {
+          return $scope.$treeScope.$callbacks.beforeDrag(sourceNode);
+        };
+
+        $scope.isParent = function (node) {
+          return node.$parentNodesScope == $scope;
+        };
+
+        $scope.hasChild = function () {
+          return $scope.$modelValue.length > 0;
+        };
+
+        //Called in apply method of UiTreeHelper.dragInfo.
+        $scope.removeNode = function (node) {
+          var index = $scope.$modelValue.indexOf(node.$modelValue);
+          if (index > -1) {
+            $timeout(function () {
+              $scope.$modelValue.splice(index, 1)[0];
+            });
+            return $scope.$treeScope.$callbacks.removed(node);
+          }
+          return null;
+        };
+
+        //Called in apply method of UiTreeHelper.dragInfo.
+        $scope.insertNode = function (index, nodeData) {
+          $timeout(function () {
+            $scope.$modelValue.splice(index, 0, nodeData);
+          });
+        };
+
+        $scope.childNodes = function () {
+          var i, nodes = [];
+          if ($scope.$modelValue) {
+            for (i = 0; i < $scope.$modelValue.length; i++) {
+              nodes.push($scope.$nodesMap[$scope.$modelValue[i].$$hashKey]);
+            }
+          }
+          return nodes;
+        };
+
+        $scope.depth = function () {
+          if ($scope.$nodeScope) {
+            return $scope.$nodeScope.depth();
+          }
+          return 0; // if it has no $nodeScope, it's root
+        };
+
+        // check if depth limit has reached
+        $scope.outOfDepth = function (sourceNode) {
+          var maxDepth = $scope.maxDepth || $scope.$treeScope.maxDepth;
+          if (maxDepth > 0) {
+            return $scope.depth() + sourceNode.maxSubDepth() + 1 > maxDepth;
+          }
+          return false;
+        };
+
+      }
+    ]);
+})();
+
+(function () {
+  'use strict';
+
+  angular.module('ui.tree')
+
+    .controller('TreeController', ['$scope', '$element',
+      function ($scope, $element) {
+        this.scope = $scope;
+
+        $scope.$element = $element;
+        $scope.$nodesScope = null; // root nodes
+        $scope.$type = 'uiTree';
+        $scope.$emptyElm = null;
+        $scope.$dropzoneElm = null;
+        $scope.$callbacks = null;
+
+        $scope.dragEnabled = true;
+        $scope.emptyPlaceholderEnabled = true;
+        $scope.maxDepth = 0;
+        $scope.dragDelay = 0;
+        $scope.cloneEnabled = false;
+        $scope.nodropEnabled = false;
+        $scope.dropzoneEnabled = false;
+
+        // Check if it's a empty tree
+        $scope.isEmpty = function () {
+          return ($scope.$nodesScope && $scope.$nodesScope.$modelValue
+          && $scope.$nodesScope.$modelValue.length === 0);
+        };
+
+        // add placeholder to empty tree
+        $scope.place = function (placeElm) {
+          $scope.$nodesScope.$element.append(placeElm);
+          $scope.$emptyElm.remove();
+        };
+
+        this.resetEmptyElement = function () {
+          if ((!$scope.$nodesScope.$modelValue || $scope.$nodesScope.$modelValue.length === 0) &&
+            $scope.emptyPlaceholderEnabled) {
+            $element.append($scope.$emptyElm);
+          } else {
+            $scope.$emptyElm.remove();
+          }
+        };
+
+        this.resetDropzoneElement = function () {
+          if ((!$scope.$nodesScope.$modelValue || $scope.$nodesScope.$modelValue.length !== 0) &&
+            $scope.dropzoneEnabled) {
+            $element.append($scope.$dropzoneElm);
+          } else {
+            $scope.$dropzoneElm.remove();
+          }
+        };
+
+        $scope.resetEmptyElement = this.resetEmptyElement;
+        $scope.resetDropzoneElement = this.resetDropzoneElement;
+      }
+    ]);
+})();
+
+(function () {
+  'use strict';
+
+  angular.module('ui.tree')
+    .directive('uiTree', ['treeConfig', '$window',
+      function (treeConfig, $window) {
+        return {
+          restrict: 'A',
+          scope: true,
+          controller: 'TreeController',
+          link: function (scope, element, attrs, ctrl) {
+            var callbacks = {
+              accept: null,
+              beforeDrag: null
+            },
+            config = {},
+            tdElm,
+            $trElm,
+            emptyElmColspan;
+
+            //Adding configured class to uiTree.
+            angular.extend(config, treeConfig);
+
+            if (config.treeClass) {
+              element.addClass(config.treeClass);
+            }
+
+            //Determining if uiTree is on a table.
+            if (element.prop('tagName').toLowerCase() === 'table') {
+              scope.$emptyElm = angular.element($window.document.createElement('tr'));
+              $trElm = element.find('tr');
+              
+              //If we can find a tr, then we can use its td children as the empty element colspan.
+              if ($trElm.length > 0) {
+                emptyElmColspan = angular.element($trElm).children().length;
+              } else {
+                
+                //If not, by setting a huge colspan we make sure it takes full width.
+                //TODO(jcarter): Check for negative side effects.
+                emptyElmColspan = 1000000;
+              }
+              tdElm = angular.element($window.document.createElement('td'))
+                .attr('colspan', emptyElmColspan);
+              scope.$emptyElm.append(tdElm);
+            } else {
+              scope.$emptyElm = angular.element($window.document.createElement('div'));
+              scope.$dropzoneElm = angular.element($window.document.createElement('div'));
+            }
+
+            if (config.emptyTreeClass) {
+              scope.$emptyElm.addClass(config.emptyTreeClass);
+            }
+            if (config.dropzoneClass) {
+              scope.$dropzoneElm.addClass(config.dropzoneClass);
+            }
+
+            scope.$watch('$nodesScope.$modelValue.length', function (val) {
+              if (!angular.isNumber(val)) {
+                return;
+              }
+
+              ctrl.resetEmptyElement();
+              ctrl.resetDropzoneElement();
+            }, true);
+
+            scope.$watch(attrs.dragEnabled, function (val) {
+              if ((typeof val) == 'boolean') {
+                scope.dragEnabled = val;
+              }
+            });
+
+            scope.$watch(attrs.emptyPlaceholderEnabled, function (val) {
+              if ((typeof val) == 'boolean') {
+                scope.emptyPlaceholderEnabled = val;
+                ctrl.resetEmptyElement();
+              }
+            });
+
+            scope.$watch(attrs.nodropEnabled, function (val) {
+              if ((typeof val) == 'boolean') {
+                scope.nodropEnabled = val;
+              }
+            });
+
+            scope.$watch(attrs.dropzoneEnabled, function (val) {
+              if ((typeof val) == 'boolean') {
+                scope.dropzoneEnabled = val;
+                ctrl.resetDropzoneElement();
+              }
+            });
+
+            scope.$watch(attrs.cloneEnabled, function (val) {
+              if ((typeof val) == 'boolean') {
+                scope.cloneEnabled = val;
+              }
+            });
+
+            scope.$watch(attrs.maxDepth, function (val) {
+              if ((typeof val) == 'number') {
+                scope.maxDepth = val;
+              }
+            });
+
+            scope.$watch(attrs.dragDelay, function (val) {
+              if ((typeof val) == 'number') {
+                scope.dragDelay = val;
+              }
+            });
+
+            /**
+             * Callback checks if the destination node can accept the dragged node.
+             * By default, ui-tree will check that 'data-nodrop-enabled' is not set for the
+             * destination ui-tree-nodes, and that the 'max-depth' attribute will not be exceeded
+             * if it is set on the ui-tree or ui-tree-nodes.
+             * This callback can be overridden, but callers must manually enforce nodrop and max-depth
+             * themselves if they need those to be enforced.
+             * @param sourceNodeScope Scope of the ui-tree-node being dragged
+             * @param destNodesScope Scope of the ui-tree-nodes where the node is hovering
+             * @param destIndex Index in the destination nodes array where the source node will drop
+             * @returns {boolean} True if the node is permitted to be dropped here
+             */
+            callbacks.accept = function (sourceNodeScope, destNodesScope, destIndex) {
+              return !(destNodesScope.nodropEnabled || destNodesScope.$treeScope.nodropEnabled || destNodesScope.outOfDepth(sourceNodeScope));
+            };
+
+            callbacks.beforeDrag = function (sourceNodeScope) {
+              return true;
+            };
+
+            callbacks.expandTimeoutStart = function()
+            {
+
+            };
+
+            callbacks.expandTimeoutCancel = function()
+            {
+
+            };
+
+            callbacks.expandTimeoutEnd = function()
+            {
+
+            };
+
+            callbacks.removed = function (node) {
+
+            };
+
+            /**
+             * Callback is fired when a node is successfully dropped in a new location
+             * @param event
+             */
+            callbacks.dropped = function (event) {
+
+            };
+
+            /**
+             * Callback is fired each time the user starts dragging a node
+             * @param event
+             */
+            callbacks.dragStart = function (event) {
+
+            };
+
+            /**
+             * Callback is fired each time a dragged node is moved with the mouse/touch.
+             * @param event
+             */
+            callbacks.dragMove = function (event) {
+
+            };
+
+            /**
+             * Callback is fired when the tree exits drag mode. If the user dropped a node, the drop may have been
+             * accepted or reverted.
+             * @param event
+             */
+            callbacks.dragStop = function (event) {
+
+            };
+
+            /**
+             * Callback is fired when a user drops a node (but prior to processing the drop action)
+             * beforeDrop can return a Promise, truthy, or falsy (returning nothing is falsy).
+             * If it returns falsy, or a resolve Promise, the node move is accepted
+             * If it returns truthy, or a rejected Promise, the node move is reverted
+             * @param event
+             * @returns {Boolean|Promise} Truthy (or rejected Promise) to cancel node move; falsy (or resolved promise)
+             */
+            callbacks.beforeDrop = function (event) {
+
+            };
+
+            /**
+             * Callback is fired when a user toggles node (but after processing the toggle action)
+             * @param sourceNodeScope
+             * @param collapsed
+             */
+            callbacks.toggle = function (collapsed, sourceNodeScope) {
+
+            };
+
+            scope.$watch(attrs.uiTree, function (newVal, oldVal) {
+              angular.forEach(newVal, function (value, key) {
+                if (callbacks[key]) {
+                  if (typeof value === 'function') {
+                    callbacks[key] = value;
+                  }
+                }
+              });
+
+              scope.$callbacks = callbacks;
+            }, true);
+
+
+          }
+        };
+      }
+    ]);
+})();
+
+(function () {
+  'use strict';
+
+  angular.module('ui.tree')
+    .directive('uiTreeHandle', ['treeConfig',
+      function (treeConfig) {
+        return {
+          require: '^uiTreeNode',
+          restrict: 'A',
+          scope: true,
+          controller: 'TreeHandleController',
+          link: function (scope, element, attrs, treeNodeCtrl) {
+            var config = {};
+            angular.extend(config, treeConfig);
+            if (config.handleClass) {
+              element.addClass(config.handleClass);
+            }
+            // connect with the tree node.
+            if (scope != treeNodeCtrl.scope) {
+              scope.$nodeScope = treeNodeCtrl.scope;
+              treeNodeCtrl.scope.$handleScope = scope;
+            }
+          }
+        };
+      }
+    ]);
+})();
+
+(function () {
+  'use strict';
+
+  angular.module('ui.tree')
+
+    .directive('uiTreeNode', ['treeConfig', 'UiTreeHelper', '$window', '$document', '$timeout', '$q',
+      function (treeConfig, UiTreeHelper, $window, $document, $timeout, $q) {
+        return {
+          require: ['^uiTreeNodes', '^uiTree'],
+          restrict: 'A',
+          controller: 'TreeNodeController',
+          link: function (scope, element, attrs, controllersArr) {
+            var config = {},
+              hasTouch = 'ontouchstart' in window,
+              firstMoving,
+              dragInfo,
+              pos,
+              placeElm,
+              hiddenPlaceElm,
+              dragElm,
+              scrollContainerElm,
+              unhover,
+              treeScope = null,
+              elements, // As a parameter for callbacks
+              dragDelaying = true,
+              dragStarted = false,
+              dragTimer = null,
+              body = document.body,
+              html = document.documentElement,
+              document_height,
+              document_width,
+              dragStart,
+              tagName,
+              dragMove,
+              dragEnd,
+              dragStartEvent,
+              dragMoveEvent,
+              dragEndEvent,
+              dragCancelEvent,
+              dragDelay,
+              bindDragStartEvents,
+              bindDragMoveEvents,
+              unbindDragMoveEvents,
+              keydownHandler,
+              isHandleChild,
+              el,
+              isUiTreeRoot,
+              treeOfOrigin;
+
+            //Adding configured class to ui-tree-node.
+            angular.extend(config, treeConfig);
+
+            if (config.nodeClass) {
+              element.addClass(config.nodeClass);
+            }
+
+            //Call init function in nodeCtrl, sets parent node and sets up sub nodes.
+            scope.init(controllersArr);
+
+            scope.collapsed = !!UiTreeHelper.getNodeAttribute(scope, 'collapsed') || treeConfig.defaultCollapsed;
+            scope.expandOnHover = !!UiTreeHelper.getNodeAttribute(scope, 'expandOnHover');
+            scope.scrollContainer = UiTreeHelper.getNodeAttribute(scope, 'scrollContainer') || attrs.scrollContainer || null;
+            scope.sourceOnly = scope.nodropEnabled || scope.$treeScope.nodropEnabled;
+
+            scope.$watch(attrs.collapsed, function (val) {
+              if ((typeof val) == 'boolean') {
+                scope.collapsed = val;
+              }
+            });
+
+            //Watches to trigger behavior based on actions and settings.
+            scope.$watch('collapsed', function (val) {
+              UiTreeHelper.setNodeAttribute(scope, 'collapsed', val);
+              attrs.$set('collapsed', val);
+            });
+
+            scope.$watch(attrs.expandOnHover, function(val) {
+              if ((typeof val) === 'boolean' || (typeof val) === 'number') {
+                scope.expandOnHover = val;
+              }
+            });
+
+            scope.$watch('expandOnHover', function (val) {
+              UiTreeHelper.setNodeAttribute(scope, 'expandOnHover', val);
+              attrs.$set('expandOnHover', val);
+            });
+
+            attrs.$observe('scrollContainer', function(val) {
+              if ((typeof val) === 'string') {
+                scope.scrollContainer = val;
+              }
+            });
+
+            scope.$watch('scrollContainer', function(val) {
+              UiTreeHelper.setNodeAttribute(scope, 'scrollContainer', val);
+              attrs.$set('scrollContainer', val);
+              scrollContainerElm = document.querySelector(val);
+            });
+
+            scope.$on('angular-ui-tree:collapse-all', function () {
+              scope.collapsed = true;
+            });
+
+            scope.$on('angular-ui-tree:expand-all', function () {
+              scope.collapsed = false;
+            });
+
+            /**
+             * Called when the user has grabbed a node and started dragging it.
+             *
+             * @param {MouseEvent} e event that is triggered by DOM.
+             * @return undefined?
+             */
+            dragStart = function (e) {
+
+              //Disable right click.
+              if (!hasTouch && (e.button === 2 || e.which === 3)) {
+                return;
+              }
+
+              //Event has already fired in other scope.
+              if (e.uiTreeDragging || (e.originalEvent && e.originalEvent.uiTreeDragging)) {
+                return;
+              }
+
+              //The node being dragged.
+              var eventElm = angular.element(e.target),
+                isHandleChild,
+                cloneElm,
+                eventElmTagName,
+                tagName,
+                eventObj,
+                tdElm,
+                hStyle,
+                isTreeNode,
+                isTreeNodeHandle;
+
+              //If the target element is a child element of a ui-tree-handle,
+              // use the containing handle element as target element.
+              isHandleChild = UiTreeHelper.treeNodeHandlerContainerOfElement(eventElm);
+              if (isHandleChild) {
+                eventElm = angular.element(isHandleChild);
+              }
+
+              cloneElm = element.clone();
+              isTreeNode = UiTreeHelper.elementIsTreeNode(eventElm);
+              isTreeNodeHandle = UiTreeHelper.elementIsTreeNodeHandle(eventElm);
+
+              //If we are not triggering mousedown on our uiTree or any of it's parts, return.
+              if (!isTreeNode && !isTreeNodeHandle) {
+                return;
+              }
+
+              //If we are not triggering mousedown on our uiTree or any of it's parts, return.
+              if (isTreeNode && UiTreeHelper.elementContainsTreeNodeHandler(eventElm)) {
+                return;
+              }
+
+              //Dragging not allowed on inputs or buttons.
+              eventElmTagName = eventElm.prop('tagName').toLowerCase();
+              if (eventElmTagName == 'input' ||
+                  eventElmTagName == 'textarea' ||
+                  eventElmTagName == 'button' ||
+                  eventElmTagName == 'select') {
+                return;
+              }
+
+              //Check if it or it's parents has a 'data-nodrag' attribute
+              el = angular.element(e.target);
+              isUiTreeRoot = el[0].attributes['ui-tree'];
+              while (el && el[0] && el[0] !== element && !isUiTreeRoot) {
+
+                //Checking that I can access attributes.
+                if (el[0].attributes) {
+                  isUiTreeRoot = el[0].attributes['ui-tree'];
+                }
+
+                //If the node mark as `nodrag`, DONOT drag it.
+                if (UiTreeHelper.nodrag(el)) {
+                  return;
+                }
+                el = el.parent();
+              }
+
+              //If users beforeDrag calback returns falsey, do not initiate.
+              if (!scope.beforeDrag(scope)) {
+                return;
+              }
+
+              //Set property checked at start of function to prevent running logic again.
+              e.uiTreeDragging = true;
+              if (e.originalEvent) {
+                e.originalEvent.uiTreeDragging = true;
+              }
+              e.preventDefault();
+
+              //Get original event if TouchEvent.
+              eventObj = UiTreeHelper.eventObj(e);
+
+              //Set boolean used to specify beginning of move.
+              firstMoving = true;
+
+              //Setting drag info properties and methods in scope of node being moved.
+              dragInfo = UiTreeHelper.dragInfo(scope);
+
+              //Setting original tree to adjust horizontal behavior in drag move.
+              treeOfOrigin = dragInfo.source.$treeScope.$id;
+
+              //Determine tage name of element ui-tree-node is on.
+              tagName = element.prop('tagName');
+
+              if (tagName.toLowerCase() === 'tr') {
+
+                //Create a new table column as placeholder.
+                placeElm = angular.element($window.document.createElement(tagName));
+
+                //Create a column placeholder and set colspan to whole row length.
+                tdElm = angular.element($window.document.createElement('td'))
+                    .addClass(config.placeholderClass)
+                    .attr('colspan', element[0].children.length);
+                placeElm.append(tdElm);
+              } else {
+
+                //If not a table just duplicate element and add placeholder class.
+                placeElm = angular.element($window.document.createElement(tagName))
+                    .addClass(config.placeholderClass);
+              }
+
+              //Create a hidden placeholder and add class from config.
+              hiddenPlaceElm = angular.element($window.document.createElement(tagName));
+              if (config.hiddenClass) {
+                hiddenPlaceElm.addClass(config.hiddenClass);
+              }
+
+              //Getting starting position of element being moved.
+              pos = UiTreeHelper.positionStarted(eventObj, element);
+              placeElm.css('height', element.prop('offsetHeight') + 'px');
+
+              //Creating drag element to represent node.
+              dragElm = angular.element($window.document.createElement(scope.$parentNodesScope.$element.prop('tagName')))
+                  .addClass(scope.$parentNodesScope.$element.attr('class')).addClass(config.dragClass);
+              dragElm.css('width', UiTreeHelper.width(element) + 'px');
+              dragElm.css('z-index', 9999);
+
+              //Prevents cursor to change rapidly in Opera 12.16 and IE when dragging an element.
+              hStyle = (element[0].querySelector('.angular-ui-tree-handle') || element[0]).currentStyle;
+              if (hStyle) {
+                document.body.setAttribute('ui-tree-cursor', $document.find('body').css('cursor') || '');
+                $document.find('body').css({'cursor': hStyle.cursor + '!important'});
+              }
+
+              //If tree is sourceOnly (noDragDrop) don't show placeholder when moving about it.
+              if (scope.sourceOnly) {
+                placeElm.css('display', 'none');
+              }
+
+              //Insert placeholder.
+              element.after(placeElm);
+              element.after(hiddenPlaceElm);
+              if (dragInfo.isClone() && scope.sourceOnly) {
+                dragElm.append(cloneElm);
+              } else {
+                dragElm.append(element);
+              }
+
+              //Create drag element.
+              $document.find('body').append(dragElm);
+
+              //Set drag elements position on screen.
+              dragElm.css({
+                'left': eventObj.pageX - pos.offsetX + 'px',
+                'top': eventObj.pageY - pos.offsetY + 'px'
+              });
+              elements = {
+                placeholder: placeElm,
+                dragging: dragElm
+              };
+
+              //Create all drag/move bindings.
+              bindDragMoveEvents();
+
+              //Fire dragStart callback.
+              scope.$apply(function () {
+                scope.$treeScope.$callbacks.dragStart(dragInfo.eventArgs(elements, pos));
+              });
+
+              //Get bounds of document.
+              document_height = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+              document_width = Math.max(body.scrollWidth, body.offsetWidth, html.clientWidth, html.scrollWidth, html.offsetWidth);
+            };
+
+            dragMove = function (e) {
+              var eventObj = UiTreeHelper.eventObj(e),
+                prev,
+                next,
+                leftElmPos,
+                topElmPos,
+                top_scroll,
+                bottom_scroll,
+                scrollContainerElmRect,
+                target,
+                targetX,
+                targetY,
+                displayElm,
+                targetNode,
+                targetElm,
+                isEmpty,
+                scrollDownBy,
+                scrollUpBy,
+                targetOffset,
+                targetBefore,
+                moveWithinTree,
+                targetBeforeBuffer,
+                targetHeight,
+                targetChildElm,
+                targetChildHeight,
+                isDropzone;
+
+              //If check ensures that drag element was created.
+              if (dragElm) {
+                e.preventDefault();
+
+                //Deselect anything (text, etc.) that was selected when move began.
+                if ($window.getSelection) {
+                  $window.getSelection().removeAllRanges();
+                } else if ($window.document.selection) {
+                  $window.document.selection.empty();
+                }
+
+                //Get top left positioning of element being moved.
+                leftElmPos = eventObj.pageX - pos.offsetX;
+                topElmPos = eventObj.pageY - pos.offsetY;
+
+                //dragElm can't leave the screen on the left.
+                if (leftElmPos < 0) {
+                  leftElmPos = 0;
+                }
+
+                //dragElm can't leave the screen on the top.
+                if (topElmPos < 0) {
+                  topElmPos = 0;
+                }
+
+                //dragElm can't leave the screen on the bottom.
+                if ((topElmPos + 10) > document_height) {
+                  topElmPos = document_height - 10;
+                }
+
+                //dragElm can't leave the screen on the right.
+                if ((leftElmPos + 10) > document_width) {
+                  leftElmPos = document_width - 10;
+                }
+
+                //Updating element being moved css.
+                dragElm.css({
+                  'left': leftElmPos + 'px',
+                  'top': topElmPos + 'px'
+                });
+
+                if (scrollContainerElm) {
+                  //Getting position to top and bottom of container element.
+                  scrollContainerElmRect = scrollContainerElm.getBoundingClientRect();
+                  top_scroll = scrollContainerElm.scrollTop;
+                  bottom_scroll = top_scroll + scrollContainerElm.clientHeight;
+
+                  //To scroll down if cursor y-position is greater than the bottom position of the container vertical scroll
+                  if (scrollContainerElmRect.bottom < eventObj.clientY && bottom_scroll < scrollContainerElm.scrollHeight) {
+                    scrollDownBy = Math.min(scrollContainerElm.scrollHeight - bottom_scroll, 10);
+                    scrollContainerElm.scrollTop += scrollDownBy;
+                  }
+
+                  //To scroll top if cursor y-position is less than the top position of the container vertical scroll
+                  if (scrollContainerElmRect.top > eventObj.clientY && top_scroll > 0) {
+                    scrollUpBy = Math.min(top_scroll, 10);
+                    scrollContainerElm.scrollTop -= scrollUpBy;
+                  }
+                } else {
+                  //Getting position to top and bottom of page.
+                  top_scroll = window.pageYOffset || $window.document.documentElement.scrollTop;
+                  bottom_scroll = top_scroll + (window.innerHeight || $window.document.clientHeight || $window.document.clientHeight);
+
+                  //To scroll down if cursor y-position is greater than the bottom position of the window vertical scroll
+                  if (bottom_scroll < eventObj.pageY && bottom_scroll < document_height) {
+                    scrollDownBy = Math.min(document_height - bottom_scroll, 10);
+                    window.scrollBy(0, scrollDownBy);
+                  }
+
+                  //To scroll top if cursor y-position is less than the top position of the window vertical scroll
+                  if (top_scroll > eventObj.pageY) {
+                    scrollUpBy = Math.min(top_scroll, 10);
+                    window.scrollBy(0, -scrollUpBy);
+                  }
+                }
+
+                //Calling service to update position coordinates based on move.
+                UiTreeHelper.positionMoved(e, pos, firstMoving);
+                if (firstMoving) {
+                  firstMoving = false;
+                  return;
+                }
+
+                //Setting X point for elementFromPoint.
+                targetX = eventObj.pageX - ($window.pageXOffset ||
+                    $window.document.body.scrollLeft ||
+                    $window.document.documentElement.scrollLeft) -
+                    ($window.document.documentElement.clientLeft || 0);
+
+                targetY = eventObj.pageY - ($window.pageYOffset ||
+                    $window.document.body.scrollTop ||
+                    $window.document.documentElement.scrollTop) -
+                    ($window.document.documentElement.clientTop || 0);
+
+                //Select the drag target. Because IE does not support CSS 'pointer-events: none', it will always
+                // pick the drag element itself as the target. To prevent this, we hide the drag element while
+                // selecting the target.
+                if (angular.isFunction(dragElm.hide)) {
+                  dragElm.hide();
+                } else {
+                  displayElm = dragElm[0].style.display;
+                  dragElm[0].style.display = 'none';
+                }
+
+                //When using elementFromPoint() inside an iframe, you have to call
+                // elementFromPoint() twice to make sure IE8 returns the correct value
+                //MDN: The elementFromPoint() method of the Document interface returns the topmost element at the specified coordinates.
+                $window.document.elementFromPoint(targetX, targetY);
+
+                //Set target element (element in specified x/y coordinates).
+                targetElm = angular.element($window.document.elementFromPoint(targetX, targetY));
+
+                //If the target element is a child element of a ui-tree-handle,
+                // use the containing handle element as target element
+                isHandleChild = UiTreeHelper.treeNodeHandlerContainerOfElement(targetElm);
+                if (isHandleChild) {
+                  targetElm = angular.element(isHandleChild);
+                }
+
+                if (angular.isFunction(dragElm.show)) {
+                  dragElm.show();
+                } else {
+                  dragElm[0].style.display = displayElm;
+                }
+
+                //Assigning scope to target you are moving draggable over.
+                if (UiTreeHelper.elementIsTree(targetElm)) {
+                  targetNode = targetElm.controller('uiTree').scope;
+                } else if (UiTreeHelper.elementIsTreeNodeHandle(targetElm)) {
+                  targetNode = targetElm.controller('uiTreeHandle').scope;
+                } else if (UiTreeHelper.elementIsTreeNode(targetElm)) {
+                  targetNode = targetElm.controller('uiTreeNode').scope;
+                } else if (UiTreeHelper.elementIsTreeNodes(targetElm)) {
+                  targetNode = targetElm.controller('uiTreeNodes').scope;
+                } else if (UiTreeHelper.elementIsPlaceholder(targetElm)) {
+                  targetNode = targetElm.controller('uiTreeNodes').scope;
+                } else if (UiTreeHelper.elementIsDropzone(targetElm)) {
+                  targetNode = targetElm.controller('uiTree').scope;
+                  isDropzone = true;
+                } else if (targetElm.controller('uiTreeNode')) {
+                  //Is a child element of a node.
+                  targetNode = targetElm.controller('uiTreeNode').scope;
+                }
+
+                moveWithinTree =  (targetNode && targetNode.$treeScope && targetNode.$treeScope.$id && targetNode.$treeScope.$id === treeOfOrigin);
+
+                /* (jcarter) Notes to developers:
+                 *  pos.dirAx is either 0 or 1
+                 *  1 means horizontal movement is happening
+                 *  0 means vertical movement is happening
+                 */
+
+                // Move nodes up and down in nesting level.
+                if (moveWithinTree && pos.dirAx) {
+
+                  // increase horizontal level if previous sibling exists and is not collapsed
+                  // example 1.1.1 becomes 1.2
+                  if (pos.distX > 0) {
+                    prev = dragInfo.prev();
+                    if (prev && !prev.collapsed
+                      && prev.accept(scope, prev.childNodesCount())) {
+                      prev.$childNodesScope.$element.append(placeElm);
+                      dragInfo.moveTo(prev.$childNodesScope, prev.childNodes(), prev.childNodesCount());
+                    }
+                  }
+
+                  // decrease horizontal level
+                  // example 1.2 become 1.1.1
+                  if (pos.distX < 0) {
+                    // we can't decrease a level if an item preceeds the current one
+                    next = dragInfo.next();
+                    if (!next) {
+                      target = dragInfo.parentNode(); // As a sibling of it's parent node
+                      if (target
+                        && target.$parentNodesScope.accept(scope, target.index() + 1)) {
+                        target.$element.after(placeElm);
+                        dragInfo.moveTo(target.$parentNodesScope, target.siblings(), target.index() + 1);
+                      }
+                    }
+                  }
+                } else { //Either in origin tree and moving horizontally OR you are moving within a new tree.
+
+                  //Check it's new position.
+                  isEmpty = false;
+
+                  //Exit if target is not a uiTree or child of one.
+                  if (!targetNode) {
+                    return;
+                  }
+
+                  //Show the placeholder if it was hidden for nodrop-enabled and this is a new tree
+                  if (targetNode.$treeScope && !targetNode.$parent.nodropEnabled && !targetNode.$treeScope.nodropEnabled) {
+                    placeElm.css('display', '');
+                  }
+
+                  //Set whether target tree is empty or not.
+                  if (targetNode.$type === 'uiTree' && targetNode.dragEnabled) {
+                    isEmpty = targetNode.isEmpty();
+                  }
+
+                  //If target is a handle set new target to handle's node.
+                  if (targetNode.$type === 'uiTreeHandle') {
+                    targetNode = targetNode.$nodeScope;
+                  }
+
+                  //Check if it is a uiTreeNode or it's an empty tree or it's a dropzone.
+                  if (targetNode.$type !== 'uiTreeNode' && !isEmpty && !isDropzone) {
+
+                    // Allow node to return to its original position if no longer hovering over target
+                    if (config.appendChildOnHover) {
+                      next = dragInfo.next();
+                      if (!next && unhover) {
+                        target = dragInfo.parentNode();
+                        target.$element.after(placeElm);
+                        dragInfo.moveTo(target.$parentNodesScope, target.siblings(), target.index() + 1);
+                        unhover = false;
+                      }
+                    }
+                    return;
+                  }
+
+                  //If placeholder move from empty tree, reset it.
+                  if (treeScope && placeElm.parent()[0] != treeScope.$element[0]) {
+                    treeScope.resetEmptyElement();
+                    treeScope.resetDropzoneElement();
+                    treeScope = null;
+                  }
+
+                  //It's an empty tree
+                  if (isEmpty) {
+                    treeScope = targetNode;
+                    if (targetNode.$nodesScope.accept(scope, 0)) {
+                      dragInfo.moveTo(targetNode.$nodesScope, targetNode.$nodesScope.childNodes(), 0);
+                    }
+                  //It's a dropzone
+                  } else if (isDropzone) {
+                    treeScope = targetNode;
+                    if (targetNode.$nodesScope.accept(scope, targetNode.$nodesScope.childNodes().length)) {
+                      dragInfo.moveTo(targetNode.$nodesScope, targetNode.$nodesScope.childNodes(), targetNode.$nodesScope.childNodes().length);
+                    }
+                  //Not empty and drag enabled.
+                  } else if (targetNode.dragEnabled()) {
+
+                      //Setting/Resetting data for exanding on hover.
+                      if (angular.isDefined(scope.expandTimeoutOn) && scope.expandTimeoutOn !== targetNode.id) {
+                        $timeout.cancel(scope.expandTimeout);
+                        delete scope.expandTimeout;
+                        delete scope.expandTimeoutOn;
+
+                        scope.$callbacks.expandTimeoutCancel();
+                      }
+
+                      //Determining if expansion is needed.
+                      if (targetNode.collapsed) {
+                        if (scope.expandOnHover === true || (angular.isNumber(scope.expandOnHover) && scope.expandOnHover === 0)) {
+                          targetNode.collapsed = false;
+                          targetNode.$treeScope.$callbacks.toggle(false, targetNode);
+                        } else if (scope.expandOnHover !== false && angular.isNumber(scope.expandOnHover) && scope.expandOnHover > 0) {
+
+                          //Triggering expansion.
+                          if (angular.isUndefined(scope.expandTimeoutOn)) {
+                            scope.expandTimeoutOn = targetNode.$id;
+
+                            scope.$callbacks.expandTimeoutStart();
+                            scope.expandTimeout = $timeout(function()
+                            {
+                              scope.$callbacks.expandTimeoutEnd();
+                              targetNode.collapsed = false;
+                              targetNode.$treeScope.$callbacks.toggle(false, targetNode);
+                            }, scope.expandOnHover);
+                          }
+                        }
+                      }
+
+                    //Get the element of ui-tree-node
+                    targetElm = targetNode.$element;
+                    targetOffset = UiTreeHelper.offset(targetElm);
+                    targetHeight = UiTreeHelper.height(targetElm);
+                    targetChildElm = targetNode.$childNodesScope ? targetNode.$childNodesScope.$element : null;
+                    targetChildHeight = targetChildElm ? UiTreeHelper.height(targetChildElm) : 0;
+                    targetHeight -= targetChildHeight;
+                    targetBeforeBuffer = config.appendChildOnHover ? targetHeight * 0.25 : UiTreeHelper.height(targetElm) / 2;
+                    targetBefore = eventObj.pageY < (targetOffset.top + targetBeforeBuffer);
+
+                    if (targetNode.$parentNodesScope.accept(scope, targetNode.index())) {
+                      if (targetBefore) {
+                        targetElm[0].parentNode.insertBefore(placeElm[0], targetElm[0]);
+                        dragInfo.moveTo(targetNode.$parentNodesScope, targetNode.siblings(), targetNode.index());
+                      } else {
+                        // Try to append as a child if dragged upwards onto targetNode
+                        if (config.appendChildOnHover && targetNode.accept(scope, targetNode.childNodesCount())) {
+                          targetNode.$childNodesScope.$element.prepend(placeElm);
+                          dragInfo.moveTo(targetNode.$childNodesScope, targetNode.childNodes(), 0);
+                          unhover = true;
+                        } else {
+                          targetElm.after(placeElm);
+                          dragInfo.moveTo(targetNode.$parentNodesScope, targetNode.siblings(), targetNode.index() + 1);
+                        }
+                      }
+
+                    //We have to check if it can add the dragging node as a child.
+                    } else if (!targetBefore && targetNode.accept(scope, targetNode.childNodesCount())) {
+                      targetNode.$childNodesScope.$element.append(placeElm);
+                      dragInfo.moveTo(targetNode.$childNodesScope, targetNode.childNodes(), targetNode.childNodesCount());
+                    }
+                  }
+                }
+
+                //Triggering dragMove callback.
+                scope.$apply(function () {
+                  scope.$treeScope.$callbacks.dragMove(dragInfo.eventArgs(elements, pos));
+                });
+              }
+            };
+
+            dragEnd = function (e) {
+
+              var dragEventArgs = dragInfo.eventArgs(elements, pos);
+
+              e.preventDefault();
+
+              //TODO(jcarter): Is dragStart need to be unbound?
+              unbindDragMoveEvents();
+
+              //This cancel the collapse/expand login running.
+              $timeout.cancel(scope.expandTimeout);
+
+              scope.$treeScope.$apply(function () {
+                $q.when(scope.$treeScope.$callbacks.beforeDrop(dragEventArgs))
+
+                     //Promise resolved (or callback didn't return false)
+                    .then(function (allowDrop) {
+                      if (allowDrop !== false && scope.$$allowNodeDrop) {
+                        //Node drop accepted.
+                        dragInfo.apply();
+
+                        //Fire the dropped callback only if the move was successful.
+                        scope.$treeScope.$callbacks.dropped(dragEventArgs);
+                      } else {
+                        //Drop canceled - revert the node to its original position.
+                        bindDragStartEvents();
+                      }
+                    })
+
+                    //Promise rejected - revert the node to its original position.
+                    .catch(function () {
+                      bindDragStartEvents();
+                    })
+                    .finally(function () {
+
+                      //Replace placeholder with newly dropped element.
+                      hiddenPlaceElm.replaceWith(scope.$element);
+                      placeElm.remove();
+
+                      //Remove drag element if still in DOM.
+                      if (dragElm) {
+                        dragElm.remove();
+                        dragElm = null;
+                      }
+
+                      //Fire dragStope callback.
+                      scope.$treeScope.$callbacks.dragStop(dragEventArgs);
+                      scope.$$allowNodeDrop = false;
+                      dragInfo = null;
+
+                      //Restore cursor in Opera 12.16 and IE
+                      var oldCur = document.body.getAttribute('ui-tree-cursor');
+                      if (oldCur !== null) {
+                        $document.find('body').css({'cursor': oldCur});
+                        document.body.removeAttribute('ui-tree-cursor');
+                      }
+                    });
+              });
+            };
+
+            dragStartEvent = function (e) {
+              if (scope.dragEnabled()) {
+                dragStart(e);
+              }
+            };
+
+            dragMoveEvent = function (e) {
+              dragMove(e);
+            };
+
+            dragEndEvent = function (e) {
+              scope.$$allowNodeDrop = true;
+              dragEnd(e);
+            };
+
+            dragCancelEvent = function (e) {
+              dragEnd(e);
+            };
+
+            dragDelay = (function () {
+              var to;
+
+              return {
+                exec: function (fn, ms) {
+                  if (!ms) {
+                    ms = 0;
+                  }
+                  this.cancel();
+                  to = $timeout(fn, ms);
+                },
+                cancel: function () {
+                  $timeout.cancel(to);
+                }
+              };
+            })();
+
+            keydownHandler = function (e) {
+              if (e.keyCode === 27) {
+                dragEndEvent(e);
+              }
+            };
+
+            /**
+             * Binds the mouse/touch events to enable drag start for this node.
+             */
+            //This is outside of bindDragMoveEvents because of the potential for a delay setting.
+            bindDragStartEvents = function () {
+              element.bind('touchstart mousedown', function (e) {
+                //Don't call drag delay if no delay was specified.
+                if (scope.dragDelay > 0) {
+                  dragDelay.exec(function () {
+                    dragStartEvent(e);
+                  }, scope.dragDelay);
+                } else {
+                  dragStartEvent(e);
+                }
+              });
+              element.bind('touchend touchcancel mouseup', function () {
+                if (scope.dragDelay > 0) {
+                  dragDelay.cancel();
+                }
+              });
+            };
+            bindDragStartEvents();
+
+            /**
+             * Binds mouse/touch events that handle moving/dropping this dragged node
+             */
+            bindDragMoveEvents = function () {
+              angular.element($document).bind('touchend', dragEndEvent);
+              angular.element($document).bind('touchcancel', dragEndEvent);
+              angular.element($document).bind('touchmove', dragMoveEvent);
+              angular.element($document).bind('mouseup', dragEndEvent);
+              angular.element($document).bind('mousemove', dragMoveEvent);
+              angular.element($document).bind('mouseleave', dragCancelEvent);
+              angular.element($document).bind('keydown', keydownHandler);
+            };
+
+            /**
+             * Unbinds mouse/touch events that handle moving/dropping this dragged node.
+             */
+            unbindDragMoveEvents = function () {
+              angular.element($document).unbind('touchend', dragEndEvent);
+              angular.element($document).unbind('touchcancel', dragEndEvent);
+              angular.element($document).unbind('touchmove', dragMoveEvent);
+              angular.element($document).unbind('mouseup', dragEndEvent);
+              angular.element($document).unbind('mousemove', dragMoveEvent);
+              angular.element($document).unbind('mouseleave', dragCancelEvent);
+              angular.element($document).unbind('keydown', keydownHandler);
+            };
+          }
+        };
+      }
+    ]);
+})();
+
+(function () {
+  'use strict';
+
+  angular.module('ui.tree')
+    .directive('uiTreeNodes', ['treeConfig', '$window',
+      function (treeConfig) {
+        return {
+          require: ['ngModel', '?^uiTreeNode', '^uiTree'],
+          restrict: 'A',
+          scope: true,
+          controller: 'TreeNodesController',
+          link: function (scope, element, attrs, controllersArr) {
+
+            var config = {},
+                ngModel = controllersArr[0],
+                treeNodeCtrl = controllersArr[1],
+                treeCtrl = controllersArr[2];
+
+            angular.extend(config, treeConfig);
+            if (config.nodesClass) {
+              element.addClass(config.nodesClass);
+            }
+
+            if (treeNodeCtrl) {
+              treeNodeCtrl.scope.$childNodesScope = scope;
+              scope.$nodeScope = treeNodeCtrl.scope;
+            } else {
+              // find the root nodes if there is no parent node and have a parent ui-tree
+              treeCtrl.scope.$nodesScope = scope;
+            }
+            scope.$treeScope = treeCtrl.scope;
+
+            if (ngModel) {
+              ngModel.$render = function () {
+                scope.$modelValue = ngModel.$modelValue;
+              };
+            }
+
+            scope.$watch(function () {
+              return attrs.maxDepth;
+            }, function (val) {
+              if ((typeof val) == 'number') {
+                scope.maxDepth = val;
+              }
+            });
+
+            scope.$watch(function () {
+              return attrs.nodropEnabled;
+            }, function (newVal) {
+              if ((typeof newVal) != 'undefined') {
+                scope.nodropEnabled = true;
+              }
+            }, true);
+
+          }
+        };
+      }
+    ]);
+})();
+
+(function () {
+  'use strict';
+
+  angular.module('ui.tree')
+
+  /**
+   * @ngdoc service
+   * @name ui.tree.service:UiTreeHelper
+   * @requires ng.$document
+   * @requires ng.$window
+   *
+   * @description
+   * angular-ui-tree.
+   */
+    .factory('UiTreeHelper', ['$document', '$window', 'treeConfig',
+      function ($document, $window, treeConfig) {
+        return {
+
+          /**
+           * A hashtable used to storage data of nodes
+           * @type {Object}
+           */
+          nodesData: {},
+
+          setNodeAttribute: function (scope, attrName, val) {
+            if (!scope.$modelValue) {
+              return null;
+            }
+            var data = this.nodesData[scope.$modelValue.$$hashKey];
+            if (!data) {
+              data = {};
+              this.nodesData[scope.$modelValue.$$hashKey] = data;
+            }
+            data[attrName] = val;
+          },
+
+          getNodeAttribute: function (scope, attrName) {
+            if (!scope.$modelValue) {
+              return null;
+            }
+            var data = this.nodesData[scope.$modelValue.$$hashKey];
+            if (data) {
+              return data[attrName];
+            }
+            return null;
+          },
+
+          /**
+           * @ngdoc method
+           * @methodOf ui.tree.service:$nodrag
+           * @param  {Object} targetElm angular element
+           * @return {Bool} check if the node can be dragged.
+           */
+          nodrag: function (targetElm) {
+            if (typeof targetElm.attr('data-nodrag') != 'undefined') {
+              return targetElm.attr('data-nodrag') !== 'false';
+            }
+            return false;
+          },
+
+          /**
+           * Get the event object for touches.
+           * 
+           * @param  {MouseEvent|TouchEvent} e MouseEvent or TouchEvent that kicked off dragX method.
+           * @return {MouseEvent|TouchEvent} Object returned as original event object.
+           */
+          eventObj: function (e) {
+            var obj = e;
+            if (e.targetTouches !== undefined) {
+              //Set obj equal to the first Touch object in the TouchList.
+              obj = e.targetTouches.item(0);
+            //Logic to set obj to original TouchEvent.
+            } else if (e.originalEvent !== undefined && e.originalEvent.targetTouches !== undefined) {
+              obj = e.originalEvent.targetTouches.item(0);
+            }
+            return obj;
+          },
+
+          /**
+           * Generate object used to store data about node being moved.
+           * 
+           * {angular.$scope} node Scope of the node that is being moved.
+           */
+          dragInfo: function (node) {
+            return {
+              source: node,
+              sourceInfo: {
+                cloneModel: node.$treeScope.cloneEnabled === true ? angular.copy(node.$modelValue) : undefined,
+                nodeScope: node,
+                index: node.index(),
+                nodesScope: node.$parentNodesScope
+              },
+              index: node.index(),
+
+              //Slice(0) just duplicates an array.
+              siblings: node.siblings().slice(0),
+              parent: node.$parentNodesScope,
+
+              //Reset parent to source parent.
+              resetParent: function() {
+                this.parent = node.$parentNodesScope;
+              },
+
+              //Move the node to a new position, determining where the node will be inserted to when dropped happens here.
+              moveTo: function (parent, siblings, index) {
+                this.parent = parent;
+
+                //Duplicate siblings array.
+                this.siblings = siblings.slice(0);
+
+                //If source node is in the target nodes
+                var i = this.siblings.indexOf(this.source);
+                if (i > -1) {
+                  this.siblings.splice(i, 1);
+                  if (this.source.index() < index) {
+                    index--;
+                  }
+                }
+
+                this.siblings.splice(index, 0, this.source);
+                this.index = index;
+              },
+
+              //Get parent nodes nodeScope.
+              parentNode: function () {
+                return this.parent.$nodeScope;
+              },
+
+              //Get previous sibling node.
+              prev: function () {
+                if (this.index > 0) {
+                  return this.siblings[this.index - 1];
+                }
+
+                return null;
+              },
+
+              //Get next sibling node.
+              next: function () {
+                if (this.index < this.siblings.length - 1) {
+                  return this.siblings[this.index + 1];
+                }
+
+                return null;
+              },
+
+              //Return what cloneEnabled is set to on uiTree.
+              isClone: function () {
+                return this.source.$treeScope.cloneEnabled === true;
+              },
+
+              //Returns a copy of node passed in.
+              clonedNode: function (node) {
+                return angular.copy(node);
+              },
+
+              //Returns true if parent or index have changed (move happened within any uiTree).
+              isDirty: function () {
+                return this.source.$parentNodesScope != this.parent ||
+                  this.source.index() != this.index;
+              },
+
+              //Return whether node has a new parent (set on moveTo method).
+              isForeign: function () {
+                return this.source.$treeScope !== this.parent.$treeScope;
+              },
+
+              //Sets arguments passed to user callbacks.
+              eventArgs: function (elements, pos) {
+                return {
+                  source: this.sourceInfo,
+                  dest: {
+                    index: this.index,
+                    nodesScope: this.parent
+                  },
+                  elements: elements,
+                  pos: pos
+                };
+              },
+
+              //Method that actually manipulates the node being moved.
+              apply: function () {
+
+                var nodeData = this.source.$modelValue;
+
+                //Nodrop enabled on tree or parent
+                if (this.parent.nodropEnabled || this.parent.$treeScope.nodropEnabled) {
+                  return;
+                }
+
+                //Node was dropped in the same place - do nothing.
+                if (!this.isDirty()) {
+                  return;
+                }
+
+                //CloneEnabled and cross-tree so copy and do not remove from source.
+                if (this.isClone() && this.isForeign()) {
+                  this.parent.insertNode(this.index, this.sourceInfo.cloneModel);
+                //Any other case, remove and reinsert.
+                } else {
+                  this.source.remove();
+                  this.parent.insertNode(this.index, nodeData);
+                }
+              }
+            };
+          },
+
+          /**
+           * @ngdoc method
+           * @name ui.tree#height
+           * @methodOf ui.tree.service:UiTreeHelper
+           *
+           * @description
+           * Get the height of an element.
+           *
+           * @param {Object} element Angular element.
+           * @returns {String} Height
+           */
+          height: function (element) {
+            return element.prop('scrollHeight');
+          },
+
+          /**
+           * @ngdoc method
+           * @name ui.tree#width
+           * @methodOf ui.tree.service:UiTreeHelper
+           *
+           * @description
+           * Get the width of an element.
+           *
+           * @param {Object} element Angular element.
+           * @returns {String} Width
+           */
+          width: function (element) {
+            return element.prop('scrollWidth');
+          },
+
+          /**
+           * @ngdoc method
+           * @name ui.tree#offset
+           * @methodOf ui.nestedSortable.service:UiTreeHelper
+           *
+           * @description
+           * Get the offset values of an element.
+           *
+           * @param {Object} element Angular element.
+           * @returns {Object} Object with properties width, height, top and left
+           */
+          offset: function (element) {
+            var boundingClientRect = element[0].getBoundingClientRect();
+
+            return {
+              width: element.prop('offsetWidth'),
+              height: element.prop('offsetHeight'),
+              top: boundingClientRect.top + ($window.pageYOffset || $document[0].body.scrollTop || $document[0].documentElement.scrollTop),
+              left: boundingClientRect.left + ($window.pageXOffset || $document[0].body.scrollLeft || $document[0].documentElement.scrollLeft)
+            };
+          },
+
+          /**
+           * @ngdoc method
+           * @name ui.tree#positionStarted
+           * @methodOf ui.tree.service:UiTreeHelper
+           *
+           * @description
+           * Get the start position of the target element according to the provided event properties.
+           *
+           * @param {Object} e Event
+           * @param {Object} target Target element
+           * @returns {Object} Object with properties offsetX, offsetY, startX, startY, nowX and dirX.
+           */
+          positionStarted: function (e, target) {
+            var pos = {},
+            pageX = e.pageX,
+            pageY = e.pageY;
+
+            //Check to set correct data for TouchEvents
+            if (e.originalEvent && e.originalEvent.touches && (e.originalEvent.touches.length > 0)) {
+              pageX = e.originalEvent.touches[0].pageX;
+              pageY = e.originalEvent.touches[0].pageY;
+            }
+            pos.offsetX = pageX - this.offset(target).left;
+            pos.offsetY = pageY - this.offset(target).top;
+            pos.startX = pos.lastX = pageX;
+            pos.startY = pos.lastY = pageY;
+            pos.nowX = pos.nowY = pos.distX = pos.distY = pos.dirAx = 0;
+            pos.dirX = pos.dirY = pos.lastDirX = pos.lastDirY = pos.distAxX = pos.distAxY = 0;
+            return pos;
+          },
+
+          positionMoved: function (e, pos, firstMoving) {
+
+            var pageX = e.pageX,
+            pageY = e.pageY,
+            newAx;
+
+            //If there are multiple touch points, choose one to use as X and Y.
+            if (e.originalEvent && e.originalEvent.touches && (e.originalEvent.touches.length > 0)) {
+              pageX = e.originalEvent.touches[0].pageX;
+              pageY = e.originalEvent.touches[0].pageY;
+            }
+
+            //Mouse position last event.
+            pos.lastX = pos.nowX;
+            pos.lastY = pos.nowY;
+
+            //Mouse position this event.
+            pos.nowX = pageX;
+            pos.nowY = pageY;
+
+            //Distance mouse moved between events.          
+            pos.distX = pos.nowX - pos.lastX;
+            pos.distY = pos.nowY - pos.lastY;
+
+            //Direction mouse was moving.           
+            pos.lastDirX = pos.dirX;
+            pos.lastDirY = pos.dirY;
+
+            //Direction mouse is now moving (on both axis).          
+            pos.dirX = pos.distX === 0 ? 0 : pos.distX > 0 ? 1 : -1;
+            pos.dirY = pos.distY === 0 ? 0 : pos.distY > 0 ? 1 : -1;
+
+            //Axis mouse is now moving on.         
+            newAx = Math.abs(pos.distX) > Math.abs(pos.distY) ? 1 : 0;
+
+            //Do nothing on first move.
+            if (firstMoving) {
+              pos.dirAx = newAx;
+              pos.moving = true;
+              return;
+            }
+
+            //Calc distance moved on this axis (and direction).          
+            if (pos.dirAx !== newAx) {
+              pos.distAxX = 0;
+              pos.distAxY = 0;
+            } else {
+              pos.distAxX += Math.abs(pos.distX);
+              if (pos.dirX !== 0 && pos.dirX !== pos.lastDirX) {
+                pos.distAxX = 0;
+              }
+              pos.distAxY += Math.abs(pos.distY);
+              if (pos.dirY !== 0 && pos.dirY !== pos.lastDirY) {
+                pos.distAxY = 0;
+              }
+            }
+            pos.dirAx = newAx;
+          },
+
+          elementIsTreeNode: function (element) {
+            return typeof element.attr('ui-tree-node') !== 'undefined';
+          },
+
+          elementIsTreeNodeHandle: function (element) {
+            return typeof element.attr('ui-tree-handle') !== 'undefined';
+          },
+          elementIsTree: function (element) {
+            return typeof element.attr('ui-tree') !== 'undefined';
+          },
+          elementIsTreeNodes: function (element) {
+            return typeof element.attr('ui-tree-nodes') !== 'undefined';
+          },
+          elementIsPlaceholder: function (element) {
+            return element.hasClass(treeConfig.placeholderClass);
+          },
+          elementIsDropzone: function (element) {
+            return element.hasClass(treeConfig.dropzoneClass);
+          },
+          elementContainsTreeNodeHandler: function (element) {
+            return element[0].querySelectorAll('[ui-tree-handle]').length >= 1;
+          },
+          treeNodeHandlerContainerOfElement: function (element) {
+            return findFirstParentElementWithAttribute('ui-tree-handle', element[0]);
+          }
+        };
+      }
+    ]);
+
+  // TODO: optimize this loop
+  //(Jcarter): Suggest adding a parent element property on uiTree, then all these bubble
+  // to <html> can trigger to stop when they reach the parent.
+  function findFirstParentElementWithAttribute(attributeName, childObj) {
+    //Undefined if the mouse leaves the browser window
+    if (childObj === undefined) {
+      return null;
+    }
+    var testObj = childObj.parentNode,
+    count = 1,
+    //Check for setAttribute due to exception thrown by Firefox when a node is dragged outside the browser window
+    res = (typeof testObj.setAttribute === 'function' && testObj.hasAttribute(attributeName)) ? testObj : null;
+    while (testObj && typeof testObj.setAttribute === 'function' && !testObj.hasAttribute(attributeName)) {
+      testObj = testObj.parentNode;
+      res = testObj;
+      //Stop once we reach top of page.
+      if (testObj === document.documentElement) {
+        res = null;
+        break;
+      }
+      count++;
+    }
+    return res;
+  }
+
+})();
+
+/***/ }),
+/* 218 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61620,7 +63528,7 @@ var _commonModuleEs = __webpack_require__(4);
 
 var _commonModuleEs2 = _interopRequireDefault(_commonModuleEs);
 
-var _teamInfoCardDirectiveEs = __webpack_require__(216);
+var _teamInfoCardDirectiveEs = __webpack_require__(219);
 
 var _teamInfoCardDirectiveEs2 = _interopRequireDefault(_teamInfoCardDirectiveEs);
 
@@ -61634,7 +63542,7 @@ angular.module(name, ['ui.select', 'ngSanitize', _commonModuleEs2.default]).dire
 exports.default = name;
 
 /***/ }),
-/* 216 */
+/* 219 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61647,7 +63555,7 @@ exports.default = teamInfoCard;
 
 var _lodash = __webpack_require__(5);
 
-var _teamInfoCard = __webpack_require__(217);
+var _teamInfoCard = __webpack_require__(220);
 
 var _teamInfoCard2 = _interopRequireDefault(_teamInfoCard);
 
@@ -61750,13 +63658,13 @@ function teamInfoCard(orchestraApi) {
 }
 
 /***/ }),
-/* 217 */
+/* 220 */
 /***/ (function(module, exports) {
 
 module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Team info\n          <a class=\"btn\"\n             ng-if=\"teamInfoCard.isProjectAdmin\"\n             ng-href=\"project/{{teamInfoCard.projectId}}\"\n             target=\"_blank\">\n            Project Management\n          </a>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <table class=\"table table-striped\">\n          <thead>\n            <th>Role</th>\n            <th>Username</th>\n            <th>Name</th>\n            <th>Recorded time spent</th>\n            <th>Status</th>\n          </thead>\n          <tbody>\n            <tr ng-repeat=\"assignment in teamInfoCard.assignments\">\n              <td>{{assignment.role}}</td>\n              <td>{{assignment.worker.username}}</td>\n              <td>{{assignment.worker.first_name}} {{assignment.worker.last_name}}</td>\n              <td>{{assignment.recordedTime}}</td>\n              <td>\n                {{assignment.status}}\n                <button type=\"submit\"\n                        class=\"btn btn-default btn-sm\"\n                        ng-if=\"teamInfoCard.isProjectAdmin &&\n                               assignment.status == 'Processing' &&\n                               assignment.stepSlug != teamInfoCard.step.slug\"\n                        ng-click=\"teamInfoCard.submitTask(assignment.task_id)\">\n                  Submit\n                </button>\n              </td>\n            </tr>\n          </tbody>\n        </table>\n      </div>\n    </div>\n  </div>\n</section>\n";
 
 /***/ }),
-/* 218 */
+/* 221 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61767,19 +63675,19 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = config;
 
-var _dashboard = __webpack_require__(219);
+var _dashboard = __webpack_require__(222);
 
 var _dashboard2 = _interopRequireDefault(_dashboard);
 
-var _task = __webpack_require__(220);
+var _task = __webpack_require__(223);
 
 var _task2 = _interopRequireDefault(_task);
 
-var _timecard = __webpack_require__(221);
+var _timecard = __webpack_require__(224);
 
 var _timecard2 = _interopRequireDefault(_timecard);
 
-var _projectManagement = __webpack_require__(222);
+var _projectManagement = __webpack_require__(225);
 
 var _projectManagement2 = _interopRequireDefault(_projectManagement);
 
@@ -61817,25 +63725,25 @@ function config($locationProvider, $routeProvider) {
 }
 
 /***/ }),
-/* 219 */
+/* 222 */
 /***/ (function(module, exports) {
 
 module.exports = "<section class=\"wrapper\">\n  <div tasktable=\"{label: 'Active', tasks: vm.orchestraTasks.activeTasks(), newTasks: true}\"></div>\n  <div tasktable=\"{label: 'Pending', tasks: vm.orchestraTasks.pendingTasks()}\"></div>\n  <div tasktable=\"{label: 'Completed', tasks: vm.orchestraTasks.completedTasks()}\"></div>\n</section>\n";
 
 /***/ }),
-/* 220 */
+/* 223 */
 /***/ (function(module, exports) {
 
 module.exports = "<section class=\"wrapper task-view\">\n\n\n<script type=\"text/ng-template\" id=\"submit_task_modal.html\">\n  <div class=\"modal-header\">\n    <h3 class=\"modal-title\">{{command | capitalize}} Confirmation</h3>\n  </div>\n  <div class=\"modal-body modal-confirm-body\">\n    <div class=\"modal-confirm-text\">\n      <div class=\"time-question\">\n        Approximately how much time did you spend on <strong>this iteration</strong> of the task?\n      </div>\n        <div class=\"time-summary\">\n          <span class=\"time-report form-inline input-group-sm\">\n            <span class=\"time-unit-group\">\n              <input type=\"text\"\n                     class=\"form-control\"\n                     id=\"current-time-hours\"\n                     ng-model=\"currentIterationHours\">\n                     <span class=\"time-unit\"> hours</span>\n            </span>\n            <span class=\"time-unit-group\">\n              <input type=\"text\"\n                     class=\"form-control\"\n                     id=\"current-time-minutes\"\n                     ng-model=\"currentIterationMinutes\">\n                     <span class=\"time-unit\"> mins</span>\n            </span>\n          </span>\n        </div>\n        <div class=\"time-error-message\" ng-bind=\"secondsErrorMessage\"></div>\n        <div class=\"time-summary\">\n          <span class=\"time-label\">Total time so far</span>\n          <span class=\"time-report\">\n            <span class=\"time-unit-group\">\n              <span class=\"time-value-float\">\n                <span class=\"time-value\" ng-bind=\"totalPreviousHoursMinutes()[0]\"></span>\n              </span>\n              <span class=\"time-unit\"> hours</span>\n            </span>\n            <span class=\"time-unit-group\">\n              <span class=\"time-value-float\">\n                <span class=\"time-value\" ng-bind=\"totalPreviousHoursMinutes()[1]\"></span>\n              </span>\n              <span class=\"time-unit\"> mins</span>\n            </span>\n          </span>\n        </div>\n        <hr />\n        <div class=\"time-summary\">\n          <span class=\"time-label\">Total time on task</span>\n          <span class=\"time-report\">\n            <span class=\"time-unit-group\">\n              <span class=\"time-value-float\">\n                <span class=\"time-value\" ng-bind=\"totalHoursMinutes()[0]\"></span>\n              </span>\n              <span class=\"time-unit\"> hours</span>\n            </span>\n            <span class=\"time-unit-group\">\n              <span class=\"time-value-float\">\n                <span class=\"time-value\" ng-bind=\"totalHoursMinutes()[1]\"></span>\n              </span>\n              <span class=\"time-unit\"> mins</span>\n            </span>\n          </span>\n        </div>\n    </div>\n    <div class=\"pull-center\">\n      <button class=\"btn btn-primary\" ng-disabled=\"secondsErrorMessage !== null\" ng-click=\"submit()\">{{command | capitalize}}</button>\n      <button class=\"btn btn-default\" ng-click=\"cancel()\">Cancel</button>\n    </div>\n  </div>\n</script>\n\n\n<nav class=\"topbar-overview\" ng-class=\"{'reviewer-topbar': vm.taskAssignment.is_reviewer}\">\n    <div class=\"topbar-leader\">\n      <div class=\"project-overview\">\n        <div class=\"workflow\">{{ vm.taskAssignment.workflow.name}}</div>\n        {{ vm.taskAssignment.project.details}}\n      </div>\n      <div class=\"arrow-wrapper\">\n        <div class=\"arrow-with-shadow\"></div>\n      </div>\n    </div>\n    <div class=\"topbar-follower\">\n      <div class=\"task-overview\">\n        {{ vm.taskAssignment.step.name}}\n        <span ng-if=\"vm.taskAssignment.is_reviewer\">\n              Review\n        </span>\n      </div>\n    </div>\n</nav>\n\n<div class=\"fixed-infobox-outer\" ng-if=\"vm.is_read_only\">\n  <div class=\"fixed-infobox bg-info\">\n    This task is in view-only mode. You cannot submit or review it.\n  </div>\n</div>\n\n<div class=\"fixed-infobox-outer\" ng-if=\"vm.autoSaver.saveError\">\n  <div class=\"fixed-infobox btn-danger\">\n    Error saving task. Trying again...\n  </div>\n</div>\n\n<div class=\"step-interface\">\n  <div dynamic-load=\"vm.angularDirective\"></div>\n</div>\n\n<section class=\"task-actions-wrapper\">\n  <div class=\"task-actions\">\n    <div class=\"container-fluid\">\n      <div class=\"row\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <button ng-if=\"!vm.taskAssignment.is_reviewer\"\n                  type=\"button\"\n                  class=\"btn btn-primary navbar-btn\"\n                  ng-click=\"vm.submitTask('submit')\"\n                  ng-disabled=\"vm.is_read_only || vm.autoSaver.saving || vm.submitting\">\n            Submit\n          </button>\n          <button ng-if=\"vm.taskAssignment.is_reviewer\"\n                  type=\"button\"\n                  class=\"btn btn-primary navbar-btn\"\n                  ng-click=\"vm.submitTask('accept')\"\n                  ng-disabled=\"vm.is_read_only || vm.autoSaver.saving || vm.submitting\">\n            Accept\n          </button>\n          <button ng-if=\"vm.taskAssignment.is_reviewer\"\n                  type=\"button\"\n                  class=\"btn btn-default navbar-btn\"\n                  ng-click=\"vm.submitTask('reject')\"\n                  ng-disabled=\"vm.is_read_only || vm.autoSaver.saving || vm.submitting\">\n            Reject\n          </button>\n          <button type=\"button\"\n                  class=\"btn btn-default navbar-btn\"\n                  ng-click=\"vm.autoSaver.save()\"\n                  ng-disabled=\"vm.is_read_only || vm.autoSaver.saving || vm.submitting\">\n            Save\n          </button>\n          <div class=\"save-message\">\n            <div ng-show=\"vm.autoSaver.saving\">Saving...</div>\n            <div ng-show=\"vm.autoSaver.lastSaved && !vm.autoSaver.saving\">\n              Saved at {{ vm.autoSaver.lastSaved | date:'mediumTime' }}\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n\n\n</section><!--/wrapper -->\n";
 
 /***/ }),
-/* 221 */
+/* 224 */
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"timecard-view\" ng-if=\"!vm.dataLoading\">\n  <div class=\"entries\">\n    <div class=\"container-fluid\">\n      <div class=\"row no-padding\">\n        <div class=\"col-xs-10 col-xs-offset-2\">\n          <div class=\"row\">\n            <div class=\"col-xs-12 col-md-10\">\n              <span class=\"edit-label\">\n                Date range\n              </span>\n              <date-picker date=\"vm.minDate\" max-date=\"vm.maxDate\"></date-picker>–\n              <date-picker date=\"vm.maxDate\" min-date=\"vm.minDate\"\n              max-date=\"vm.weekEnd\"></date-picker>\n            </div>\n            <div class=\"col-xs-12 col-md-2\">\n              <a href=\"//orchestra.readthedocs.org/en/stable/features.html#time-tracking\" target=\"_blank\"\n              class=\"pull-right help-icon\"><i class=\"fa fa-question-circle\"></i></a>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n    <div class=\"date-group\" ng-repeat=\"dateEntries in vm.timeEntries.entriesByDate | toArray | orderBy:vm.datetimeFromKey:'true'\">\n      <div class=\"container-fluid\">\n        <div class=\"row no-padding\">\n          <div class=\"col-xs-12 col-md-2\">\n            <span class=\"day-name\">{{ vm.dayName(dateEntries.$key) }}</span>\n          </div>\n          <div class=\"col-xs-12 col-md-10\">\n            <div class=\"date-entries\">\n              <h2>\n                <span class=\"date-label\">{{ vm.prettyDate(dateEntries.$key) }}</span>\n                <i ng-click=\"vm.addEntry(vm.datetimeFromKey(dateEntries))\" class=\"fa fa-plus btn-add-entry\"></i>\n                <span class=\"date-duration\" ng-show=\"vm.timeEntries.invalidEntriesForDate(dateEntries.$key).length\">\n                  <em class=\"incomplete\">Invalid Entries</em>\n                </span>\n                <span class=\"date-duration\" ng-hide=\"vm.timeEntries.invalidEntriesForDate(dateEntries.$key).length\">\n                  {{ vm.timeEntries.timeWorkedForDate(dateEntries.$key).humanizeUnits() }}\n                </span>\n              </h2>\n              <div class=\"entry-row\" ng-if=\"!dateEntries.length\">\n                <div class=\"row\">\n                  <div class=\"col-xs-12\">\n                    <em>No entries for this date</em>\n                  </div>\n                </div>\n              </div>\n              <div class=\"entry-row\" ng-class=\"{'gray-stripe': $index % 2}\" ng-repeat=\"entry in dateEntries | orderBy:'-id'\">\n                <form class=\"container-fluid form-inline\" novalidate name=\"entryForm\">\n                  <div class=\"row\">\n                    <div class=\"col-xs-2 edit-tools disable-select\">\n                      <i ng-click=\"vm.timeEntries.deleteEntry(entry)\" class=\"fa fa-times-circle\"></i>\n                      <i class=\"fa fa-pencil-square-o\" ng-class=\"{active: entry.editing}\" ng-click=\"vm.editEntry(entry)\"></i>\n                    </div>\n\n                    <!-- Readonly view for description and time worked -->\n                    <div class=\"col-xs-6 description\" ng-if=\"!entry.editing\">\n                      <span ng-show=\"entry.description\">\n                        {{ entry.description }}\n                      </span>\n                      <span class=\"incomplete\" ng-hide=\"entry.description\">\n                        <em>No description</em>\n                      </span>\n                    </div>\n                    <div class=\"col-xs-4 edit-time\" ng-if=\"!entry.editing\">\n                      {{ entry.time_worked.roundMinute().humanizeUnits() }}\n                    </div>\n                    <div class=\"col-xs-12\" ng-if=\"!entry.editing\">\n                      <em class=\"pull-right\" ng-show=\"vm.orchestraTasks.tasksByAssignmentId[entry.assignment]\">\n                        {{ vm.orchestraTasks.getDescription(vm.orchestraTasks.tasksByAssignmentId[entry.assignment]) }}\n                      </em>\n                      <em class=\"pull-right incomplete\" ng-hide=\"vm.orchestraTasks.tasksByAssignmentId[entry.assignment]\">\n                        Unassigned\n                      </em>\n                    </div>\n\n                    <!-- Editable view for description and time worked -->\n                    <div class=\"col-xs-6\" ng-if=\"entry.editing\">\n                      <input class=\"form-control\" type=\"text\" ng-model=\"entry.editData.description\" placeholder=\"What did you work on?\">\n                    </div>\n                    <div class=\"col-xs-4 edit-time\" ng-if=\"entry.editing\">\n                      <div class=\"time-component\">\n                        <input class=\"form-control\" type=\"number\" ng-model=\"entry.editData.timeWorked.h\"\n                        min=\"0\" max=\"23\" enforce-integers>\n                        <label>hours</label>\n                      </div>\n                      <div class=\"time-component\">\n                        <input class=\"form-control\" type=\"number\" ng-model=\"entry.editData.timeWorked.m\"\n                        min=\"0\" max=\"59\" enforce-integers>\n                        <label>minutes</label>\n                      </div>\n                    </div>\n                  </div>\n\n                  <div class=\"row\" ng-if=\"entry.editing\">\n                    <div class=\"col-xs-4\">\n                      <div class=\"edit-date\">\n                        <label class=\"edit-label\">Move to date</label>\n                        <date-picker date=\"entry.editData.date\" max-date=\"vm.weekEnd\"></date-picker>\n                      </div>\n                    </div>\n                    <div class=\"col-xs-8\">\n                      <div class=\"edit-task\">\n                        <task-select task=\"entry.editData.task\"></task-select>\n                      </div>\n                    </div>\n                  </div>\n                  <div class=\"row\" ng-if=\"entry.editing\">\n                    <div class=\"col-xs-12\">\n                      <div class=\"edit-options pull-right\">\n                        <div class=\"edit-cancel-handle\" ng-click=\"vm.cancelChanges(entry)\">\n                          Cancel\n                        </div>\n                        <div class=\"btn btn-primary btn-sm edit-save-handle\" ng-disabled=\"vm.entryUnchanged(entry)\"\n                        ng-click=\"vm.saveChanges(entry)\">\n                          Save changes\n                        </div>\n                      </div>\n                    </div>\n                  </div>\n                </form>\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n";
 
 /***/ }),
-/* 222 */
+/* 225 */
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"project-management\">\n  <div class=\"overlay\" ng-if=\"vis.dataService.loading\">\n    <div class=\"spinner\"></div>\n  </div>\n  <section class=\"section-panel\">\n    <div class=\"container-fluid\">\n      <div class=\"row padded\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <ui-select class=\"project-description\" ng-model=\"vis.dataService.currentProject\"\n              ng-change=\"vis.dataService.setSelectedProject()\"\n              ng-disabled=\"vis.dataService.loading\">\n            <ui-select-match>\n              <span ng-bind=\"projectDescription($select.selected)\"></span>\n            </ui-select-match>\n            <ui-select-choices repeat=\"item in (vis.dataService.allProjects | toArray | filter: $select.search) track by item.id\">\n              <span ng-bind=\"projectDescription(item)\"></span>\n            </ui-select-choices>\n          </ui-select>\n          <div class=\"project-actions\" ng-show=\"vis.dataService.currentProject.id\">\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.createSubsequentTasks()\" class=\"btn btn-default\">\n              Create subsequent tasks\n            </button>\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.showSlackActions()\" class=\"btn btn-default\">\n              Edit Slack users\n            </button>\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.showProjectData()\" class=\"btn btn-default\">\n              View project data\n            </button>\n            <a ng-href=\"{{vis.dataService.data.project.admin_url}}\" ng-disabled=\"vis.dataService.loading\" target=\"_blank\">\n              <button type=\"button\" class=\"btn btn-default\">View in admin</button>\n            </a>\n            <button ng-click=\"vis.endProject()\" class=\"btn btn-danger\">Abort project</button>\n          </div>\n        </div>\n      </div>\n      <div class=\"row\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <div class=\"vis-wrapper\" ng-show=\"vis.dataService.currentProject.id\">\n            <div class=\"freeze-pane-left\">\n              <div class=\"scale-buttons\">\n                <button ng-click=\"vis.axis.relativeTime = !vis.axis.relativeTime; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  Switch to {{vis.axis.relativeTime ? 'local' : 'relative'}} time\n                </button>\n                <button ng-click=\"vis.params.scaleWidth = vis.params.scaleWidth / 1.1; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  -\n                </button>\n                <button ng-click=\"vis.params.scaleWidth = vis.params.scaleWidth * 1.1; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  +\n                </button>\n              </div>\n              <div class=\"task-names\"></div>\n            </div>\n            <div class=\"svg-wrapper\"></div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n</div>\n";

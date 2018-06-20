@@ -5,6 +5,7 @@
   "main": "gulpfile.js",
   "dependencies": {},
   "devDependencies": {
+    "angular-ui-tree": "2.22.6",
     "babel-core": "^6.14.0",
     "babel-loader": "7.1.1",
     "babel-plugin-angularjs-annotate": "0.8.0",

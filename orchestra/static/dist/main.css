@@ -2309,36 +2309,100 @@ a.logo {
     background-color: white;
     text-align: center; }
 
-.todo-list .new-todo {
-  float: left; }
-  .todo-list .new-todo__box {
-    display: inline-block; }
-    .todo-list .new-todo__box-details {
-      width: 550px; }
-  .todo-list .new-todo__description {
+.todo-list .new-todo__box {
+  display: inline-block; }
+  .todo-list .new-todo__box-details {
     width: 550px; }
-    .todo-list .new-todo__description__datetime {
-      display: inline-block;
-      padding-left: 10px; }
-.existing-todos {
-  padding-top: 5px; }
-  .existing-todos .list-by-status {
-    padding-top: 20px; }
-    .existing-todos .list-by-status h4 {
-      padding-bottom: 10px; }
-    .existing-todos .list-by-status .todo input[type=checkbox] {
-      transform: scale(1.1); }
-    .existing-todos .list-by-status .todo label {
+
+.todo-list .new-todo__description {
+  width: 550px; }
+  .todo-list .new-todo__description__datetime {
+    display: inline-block;
+    padding-left: 10px; }
+.list-by-status {
+  padding-top: 20px; }
+  .list-by-status h4 {
+    padding-bottom: 10px; }
+  .list-by-status .todo {
+    margin-left: 18px; }
+    .list-by-status .todo input[type=checkbox] {
+      transform: scale(1.1);
+      margin-left: -22px; }
+    .list-by-status .todo label {
       align-items: end;
-      display: flex; }
-    .existing-todos .list-by-status .todo__role {
+      display: inline; }
+    .list-by-status .todo__role {
       font-weight: 500;
       padding-left: 5px; }
-    .existing-todos .list-by-status .todo__dates {
+    .list-by-status .todo__dates {
       padding-left: 5px;
       font-style: italic;
       color: #999; }
-      .existing-todos .list-by-status .todo__dates-danger {
+      .list-by-status .todo__dates-danger {
         color: #a94442; }
-      .existing-todos .list-by-status .todo__dates-separator {
+      .list-by-status .todo__dates-separator {
         font-style: normal; }
+  .list-by-status .angular-ui-tree-node {
+    padding-top: 5px;
+    padding-bottom: 0; }
+  .list-by-status .fa-circle-o {
+    font-size: xx-small;
+    vertical-align: middle;
+    margin-left: -18px; }
+  .list-by-status .angular-ui-tree-handle > label {
+    cursor: pointer; }
+.angular-ui-tree-empty, .angular-ui-tree-dropzone {
+  border: 1px dashed #bbb;
+  min-height: 100px;
+  background-color: #e5e5e5;
+  background-image: -webkit-linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%, #fff), -webkit-linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%, #fff);
+  background-image: -moz-linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%, #fff), -moz-linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%, #fff);
+  background-image: linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%, #fff), linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%, #fff);
+  background-size: 60px 60px;
+  background-position: 0 0, 30px 30px; }
+
+.angular-ui-tree-empty {
+  pointer-events: none; }
+
+.angular-ui-tree-nodes {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none; }
+
+.angular-ui-tree-nodes .angular-ui-tree-nodes {
+  padding-left: 20px; }
+
+.angular-ui-tree-node, .angular-ui-tree-placeholder {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  min-height: 20px;
+  line-height: 20px; }
+
+.angular-ui-tree-hidden {
+  display: none; }
+
+.angular-ui-tree-placeholder {
+  margin: 10px;
+  padding: 0;
+  min-height: 30px; }
+
+.angular-ui-tree-handle {
+  cursor: move;
+  text-decoration: none;
+  font-weight: bold;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  min-height: 20px;
+  line-height: 20px; }
+
+.angular-ui-tree-drag {
+  position: absolute;
+  pointer-events: none;
+  z-index: 999;
+  opacity: .8; }
+
+.angular-ui-tree-drag .tree-node-content {
+  margin-top: 0; }
