@@ -96,8 +96,7 @@ class TodoDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class TodoListTemplateDetail(generics.RetrieveUpdateAPIView):
-    permission_classes = (permissions.IsAuthenticated,
-                          IsAssociatedWithProject)
+    permission_classes = (permissions.IsAuthenticated,)
 
     serializer_class = TodoListTemplateSerializer
     queryset = TodoListTemplate.objects.all()

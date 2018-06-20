@@ -169,6 +169,20 @@ class TodoFactory(factory.django.DjangoModelFactory):
         model = 'orchestra.Todo'
 
 
+class TodoListTemplateFactory(factory.django.DjangoModelFactory):
+    slug = factory.Sequence(
+        lambda n: 'todolist_template_{}'.format(n))
+    name = factory.Sequence(
+        lambda n: 'TodoList template {}'.format(n))
+    description = factory.Sequence(
+        lambda n: 'Description {}'.format(n))
+    creator = None
+    todos = "{'items': []}"
+
+    class Meta:
+        model = 'orchestra.TodoListTemplate'
+
+
 class CommunicationPreferenceFactory(factory.django.DjangoModelFactory):
 
     worker = factory.SubFactory(WorkerFactory)

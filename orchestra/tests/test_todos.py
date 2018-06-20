@@ -5,13 +5,16 @@ from django.core.urlresolvers import reverse
 
 from orchestra.models import Task
 from orchestra.models import Todo
+from orchestra.models import TodoListTemplate
 from orchestra.models import Worker
 from orchestra.project_api.serializers import TimeEntrySerializer
 from orchestra.tests.helpers import EndpointTestCase
 from orchestra.tests.helpers.fixtures import TaskFactory
 from orchestra.tests.helpers.fixtures import TodoFactory
+from orchestra.tests.helpers.fixtures import TodoListTemplateFactory
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.todos.serializers import TodoSerializer
+from orchestra.todos.serializers import TodoListTemplateSerializer
 from orchestra.utils.load_json import load_encoded_json
 
 
@@ -169,3 +172,98 @@ class TimeEntriesEndpointTests(EndpointTestCase):
                 None,
                 self.deadline.strftime('%Y-%m-%dT%H:%M:%SZ')),
         ], True)
+
+
+class TodoTemplateEndpointTests(EndpointTestCase):
+    def setUp(self):
+        super().setUp()
+        setup_models(self)
+        self.worker = Worker.objects.get(user__username='test_user_6')
+        self.request_client.login(username=self.worker.user.username,
+                                  password='defaultpassword')
+        self.todolist_template_list_url = reverse(
+            'orchestra:todos:todolist_templates')
+        self.todolist_template_detail_url_name = \
+            'orchestra:todos:todolist_template'
+        self.todolist_template_slug = 'test_todolist_template_slug'
+        self.todolist_template_name = 'test_todolist_template_name'
+        self.todolist_template_description = \
+            'test_todolist_template_description'
+
+    def _todolist_template_data(
+            self, slug, name, description, creator=None,
+            todos="{'items': []}"):
+        return {
+            'slug': slug,
+            'name': name,
+            'description': description,
+            'creator': creator,
+            'todos': todos
+        }
+
+    def _verify_todolist_template_content(self, todolist_template,
+                                          expected_todolist_template):
+        todolist_template = dict(todolist_template)
+        created_at = todolist_template.pop('created_at')
+        todolist_template_id = todolist_template.pop('id')
+        self.assertEqual(todolist_template, expected_todolist_template)
+        self.assertGreater(len(created_at), 0)
+        self.assertGreaterEqual(todolist_template_id, 0)
+
+    def _verify_todolist_template_list(self, expected_todolist_templates):
+        resp = self.request_client.get(self.todolist_template_list_url)
+        self.assertEqual(resp.status_code, 200)
+        data = load_encoded_json(resp.content)
+        for todolist_template, expected_todolist_template in \
+                zip(data, expected_todolist_templates):
+            self._verify_todolist_template_content(
+                todolist_template, expected_todolist_template)
+
+    def _verify_todolist_template_creation(self):
+        num_todolist_templates = TodoListTemplate.objects.all().count()
+        resp = self.request_client.post(self.todolist_template_list_url, {
+            'slug': self.todolist_template_slug,
+            'name': self.todolist_template_name,
+            'description': self.todolist_template_description})
+
+        self.assertEqual(resp.status_code, 201)
+        self.assertEqual(TodoListTemplate.objects.all().count(),
+                         num_todolist_templates + 1)
+        todolist_template = load_encoded_json(resp.content)
+        self._verify_todolist_template_content(
+            todolist_template, self._todolist_template_data(
+                self.todolist_template_slug,
+                self.todolist_template_name,
+                self.todolist_template_description))
+
+    def test_todolist_template_update(self):
+        todolist_template = TodoListTemplateFactory()
+        updated_description = 'updated description'
+        todolist_template_detail_url = reverse(
+            self.todolist_template_detail_url_name,
+            kwargs={'pk': todolist_template.id})
+        resp = self.request_client.put(
+            todolist_template_detail_url,
+            json.dumps(self._todolist_template_data(
+                todolist_template.slug,
+                todolist_template.name,
+                updated_description)),
+            content_type='application/json')
+        updated_todolist_template = TodoListTemplateSerializer(
+            TodoListTemplate.objects.get(id=todolist_template.id)).data
+
+        self.assertEqual(resp.status_code, 200)
+        self._verify_todolist_template_content(
+            updated_todolist_template, self._todolist_template_data(
+                todolist_template.slug,
+                todolist_template.name,
+                updated_description))
+
+    def test_todolist_template_list_create(self):
+        self._verify_todolist_template_list([])
+        self._verify_todolist_template_creation()
+        self._verify_todolist_template_list(
+            [self._todolist_template_data(
+                self.todolist_template_slug,
+                self.todolist_template_name,
+                self.todolist_template_description)])
