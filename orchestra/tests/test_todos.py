@@ -311,9 +311,11 @@ class TodoTemplateEndpointTests(EndpointTestCase):
         todos = load_encoded_json(resp.content)
         expected_todos = [
             _todo_data(self.task, 'todo child', False,
-                       template=todolist_template.id, parent_todo=todos[1].id),
+                       template=todolist_template.id,
+                       parent_todo=todos[1]['id']),
             _todo_data(self.task, 'todo parent', False,
-                       template=todolist_template.id, parent_todo=todos[2].id),
+                       template=todolist_template.id,
+                       parent_todo=todos[2]['id']),
             _todo_data(self.task, self.todolist_template_name,
                        False, template=todolist_template.id),
         ]
