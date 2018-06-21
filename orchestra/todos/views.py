@@ -12,48 +12,14 @@ from orchestra.utils.notifications import message_experts_slack_group
 from orchestra.todos.api import add_todolist_template
 from orchestra.todos.decorators import api_endpoint
 from orchestra.utils.load_json import load_encoded_json
-
-
-class IsAssociatedWithTodosProject(permissions.BasePermission):
-    """
-    Ensures that a user's worker is accoiated with the todo's project.
-    """
-
-    def has_object_permission(self, request, view, todo):
-        worker = Worker.objects.get(user=request.user)
-        project = todo.task.project
-        return (
-            worker.is_project_admin() or
-            worker.assignments.filter(task__project=project).exists())
-
-
-class IsAssociatedWithProject(permissions.BasePermission):
-    """
-    Ensures that a user's worker is associated with the request's
-    `project`.
-
-    """
-
-    def has_permission(self, request, view):
-        worker = Worker.objects.get(user=request.user)
-        if worker.is_project_admin():
-            return True
-        if request.method == 'GET':
-            # List calls have a project ID
-            project_id = request.query_params.get('project')
-            return worker.assignments.filter(task__project=project_id).exists()
-        elif request.method == 'POST':
-            # Create calls have a task ID
-            task_id = request.data.get('task')
-            project = Task.objects.get(id=task_id).project
-            return worker.assignments.filter(task__project=project).exists()
-        return False
+from orchestra.todos.auth import IsAssociatedWithTodosProject
+from orchestra.todos.auth import IsAssociatedWithProject
 
 
 @api_endpoint(['POST'])
 def add_todos_from_todolist_template(request):
-    todolist_template_id = request.data.get('todolist_template_id')
-    task_id = request.data.get('task_id')
+    todolist_template_id = request.data.get('todolist_template')
+    task_id = request.data.get('task')
     add_todolist_template(todolist_template_id, task_id)
     project = Task.objects.get(id=task_id).project
     todos = Todo.objects.filter(

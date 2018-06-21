@@ -301,8 +301,8 @@ class TodoTemplateEndpointTests(EndpointTestCase):
         resp = self.request_client.post(
             add_todos_from_todolist_template_url,
             {
-                'todolist_template_id': todolist_template.id,
-                'task_id': self.task.id,
+                'todolist_template': todolist_template.id,
+                'task': self.task.id,
             })
 
         self.assertEqual(resp.status_code, 200)
