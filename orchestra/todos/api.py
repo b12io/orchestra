@@ -2,7 +2,6 @@ import logging
 from orchestra.models import TodoListTemplate
 from orchestra.models import Todo
 from orchestra.models import Task
-from orchestra.utils.load_json import load_encoded_json
 
 logger = logging.getLogger(__name__)
 

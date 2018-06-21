@@ -19,11 +19,14 @@ from orchestra.utils.load_json import load_encoded_json
 
 
 def _todo_data(task, description, completed,
-               skipped_datetime=None, start_by=None, due=None):
+               skipped_datetime=None, start_by=None,
+               due=None, parent_todo=None, template=None,):
     return {
         'task': task.id,
         'completed': completed,
         'description': description,
+        'template': template,
+        'parent_todo': parent_todo,
         'start_by_datetime': start_by,
         'due_datetime': due,
         'skipped_datetime': skipped_datetime
@@ -274,8 +277,6 @@ class TodoTemplateEndpointTests(EndpointTestCase):
         todo = dict(todo)
         created_at = todo.pop('created_at')
         todo_id = todo.pop('id')
-        parent_todo = todo.pop('parent_todo')
-        parent_todo = todo.pop('template')
         self.assertEqual(todo, expected_todo)
         self.assertGreater(len(created_at), 0)
         self.assertGreaterEqual(todo_id, 0)
@@ -309,9 +310,12 @@ class TodoTemplateEndpointTests(EndpointTestCase):
         self.assertEqual(Todo.objects.all().count(), num_todos + 3)
         todos = load_encoded_json(resp.content)
         expected_todos = [
-            _todo_data(self.task, 'todo child', False),
-            _todo_data(self.task, 'todo parent', False),
-            _todo_data(self.task, self.todolist_template_name, False),
+            _todo_data(self.task, 'todo child', False,
+                       template=todolist_template.id, parent_todo=todos[1].id),
+            _todo_data(self.task, 'todo parent', False,
+                       template=todolist_template.id, parent_todo=todos[2].id),
+            _todo_data(self.task, self.todolist_template_name,
+                       False, template=todolist_template.id),
         ]
         for todo, expected_todo in zip(todos, expected_todos):
             self._verify_todo_content(todo, expected_todo)

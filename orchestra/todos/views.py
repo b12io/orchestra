@@ -11,7 +11,6 @@ from orchestra.todos.serializers import TodoListTemplateSerializer
 from orchestra.utils.notifications import message_experts_slack_group
 from orchestra.todos.api import add_todolist_template
 from orchestra.todos.decorators import api_endpoint
-from orchestra.utils.load_json import load_encoded_json
 from orchestra.todos.auth import IsAssociatedWithTodosProject
 from orchestra.todos.auth import IsAssociatedWithProject
 
