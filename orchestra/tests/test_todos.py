@@ -280,7 +280,7 @@ class TodoTemplateEndpointTests(EndpointTestCase):
         self.assertGreater(len(created_at), 0)
         self.assertGreaterEqual(todo_id, 0)
 
-    def test_add_todos_from_todolist_template(self):
+    def test_add_todos_from_todolist_template_success(self):
         num_todos = Todo.objects.all().count()
         add_todos_from_todolist_template_url = \
             reverse('orchestra:todos:add_todos_from_todolist_template')
@@ -315,3 +315,20 @@ class TodoTemplateEndpointTests(EndpointTestCase):
         ]
         for todo, expected_todo in zip(todos, expected_todos):
             self._verify_todo_content(todo, expected_todo)
+
+    def test_add_todos_from_todolist_template_forbidden(self):
+        add_todos_from_todolist_template_url = \
+            reverse('orchestra:todos:add_todos_from_todolist_template')
+        todolist_template = TodoListTemplateFactory(
+            slug=self.todolist_template_slug,
+            name=self.todolist_template_name,
+            description=self.todolist_template_description,
+            todos={'items': []},
+        )
+        resp = self.request_client.post(
+            add_todos_from_todolist_template_url,
+            {
+                'todolist_template': todolist_template.id
+            })
+
+        self.assertEqual(resp.status_code, 403)
