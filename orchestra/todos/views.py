@@ -1,5 +1,6 @@
 from rest_framework import generics
 from rest_framework import permissions
+from rest_framework.response import Response
 
 from orchestra.models import Task
 from orchestra.models import Todo
@@ -8,6 +9,9 @@ from orchestra.models import Worker
 from orchestra.todos.serializers import TodoSerializer
 from orchestra.todos.serializers import TodoListTemplateSerializer
 from orchestra.utils.notifications import message_experts_slack_group
+from orchestra.todos.api import add_todolist_template
+from orchestra.todos.decorators import api_endpoint
+from orchestra.utils.load_json import load_encoded_json
 
 
 class IsAssociatedWithTodosProject(permissions.BasePermission):
@@ -44,6 +48,18 @@ class IsAssociatedWithProject(permissions.BasePermission):
             project = Task.objects.get(id=task_id).project
             return worker.assignments.filter(task__project=project).exists()
         return False
+
+
+@api_endpoint(['POST'])
+def add_todos_from_todolist_template(request):
+    todolist_template_id = request.data.get('todolist_template_id')
+    task_id = request.data.get('task_id')
+    add_todolist_template(todolist_template_id, task_id)
+    project = Task.objects.get(id=task_id).project
+    todos = Todo.objects.filter(
+        task__project__id=int(project.id)).order_by('-created_at')
+    serializer = TodoSerializer(todos, many=True)
+    return Response(serializer.data)
 
 
 class TodoList(generics.ListCreateAPIView):

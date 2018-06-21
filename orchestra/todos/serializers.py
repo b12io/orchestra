@@ -24,7 +24,8 @@ class TodoSerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)
 
 
-class TodoListTemplateSerializer(serializers.ModelSerializer):
+class TodoListTemplateSerializer(serializers.ModelSerializer,
+                                 JSONSchemaValidationMixin):
     json_schemas = {
         'todos': TodoListSchema
     }

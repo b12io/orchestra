@@ -18,6 +18,18 @@ from orchestra.todos.serializers import TodoListTemplateSerializer
 from orchestra.utils.load_json import load_encoded_json
 
 
+def _todo_data(task, description, completed,
+               skipped_datetime=None, start_by=None, due=None):
+    return {
+        'task': task.id,
+        'completed': completed,
+        'description': description,
+        'start_by_datetime': start_by,
+        'due_datetime': due,
+        'skipped_datetime': skipped_datetime
+    }
+
+
 class TimeEntriesEndpointTests(EndpointTestCase):
 
     def setUp(self):
@@ -51,18 +63,6 @@ class TimeEntriesEndpointTests(EndpointTestCase):
             serializer = TimeEntrySerializer(data=time_entry)
             self.assertTrue(serializer.is_valid())
 
-    def _todo_data(
-            self, task, description, completed,
-            skipped_datetime=None, start_by=None, due=None):
-        return {
-            'task': task.id,
-            'completed': completed,
-            'description': description,
-            'start_by_datetime': start_by,
-            'due_datetime': due,
-            'skipped_datetime': skipped_datetime
-        }
-
     def _verify_todo_content(self, todo, expected_todo):
         todo = dict(todo)
         created_at = todo.pop('created_at')
@@ -92,7 +92,7 @@ class TimeEntriesEndpointTests(EndpointTestCase):
             self.assertEqual(Todo.objects.all().count(), num_todos + 1)
             todo = load_encoded_json(resp.content)
             self._verify_todo_content(
-                todo, self._todo_data(task, self.todo_description, False))
+                todo, _todo_data(task, self.todo_description, False))
         else:
             self.assertEqual(resp.status_code, 403)
             self.assertEqual(Todo.objects.all().count(), num_todos)
@@ -104,13 +104,13 @@ class TimeEntriesEndpointTests(EndpointTestCase):
             kwargs={'pk': todo.id})
         resp = self.request_client.put(
             list_details_url,
-            json.dumps(self._todo_data(todo.task, description, True)),
+            json.dumps(_todo_data(todo.task, description, True)),
             content_type='application/json')
         updated_todo = TodoSerializer(Todo.objects.get(id=todo.id)).data
         if success:
             self.assertEqual(resp.status_code, 200)
             self._verify_todo_content(
-                updated_todo, self._todo_data(todo.task, description, True))
+                updated_todo, _todo_data(todo.task, description, True))
         else:
             self.assertEqual(resp.status_code, 403)
             self.assertNotEqual(updated_todo['description'], description)
@@ -119,7 +119,7 @@ class TimeEntriesEndpointTests(EndpointTestCase):
         self._verify_todos_list(self.task.project.id, [], True)
         self._verify_todo_creation(self.task, True)
         self._verify_todos_list(self.task.project.id,
-                                [self._todo_data(
+                                [_todo_data(
                                     self.task, self.todo_description, False)],
                                 True)
 
@@ -146,7 +146,7 @@ class TimeEntriesEndpointTests(EndpointTestCase):
             description=START_DESCRIPTION)
 
         self._verify_todos_list(self.task.project.id, [
-            self._todo_data(
+            _todo_data(
                 start_by_todo.task,
                 START_DESCRIPTION,
                 False,
@@ -164,7 +164,7 @@ class TimeEntriesEndpointTests(EndpointTestCase):
             description=DUE_DESCRIPTION)
 
         self._verify_todos_list(self.task.project.id, [
-            self._todo_data(
+            _todo_data(
                 due_todo.task,
                 DUE_DESCRIPTION,
                 False,
@@ -189,6 +189,8 @@ class TodoTemplateEndpointTests(EndpointTestCase):
         self.todolist_template_name = 'test_todolist_template_name'
         self.todolist_template_description = \
             'test_todolist_template_description'
+        self.tasks = Task.objects.filter(assignments__worker=self.worker)
+        self.task = self.tasks[0]
 
     def _todolist_template_data(
             self, slug, name, description, creator=None,
@@ -267,3 +269,49 @@ class TodoTemplateEndpointTests(EndpointTestCase):
                 self.todolist_template_slug,
                 self.todolist_template_name,
                 self.todolist_template_description)])
+
+    def _verify_todo_content(self, todo, expected_todo):
+        todo = dict(todo)
+        created_at = todo.pop('created_at')
+        todo_id = todo.pop('id')
+        parent_todo = todo.pop('parent_todo')
+        parent_todo = todo.pop('template')
+        self.assertEqual(todo, expected_todo)
+        self.assertGreater(len(created_at), 0)
+        self.assertGreaterEqual(todo_id, 0)
+
+    def test_add_todos_from_todolist_template(self):
+        num_todos = Todo.objects.all().count()
+        add_todos_from_todolist_template_url = \
+            reverse('orchestra:todos:add_todos_from_todolist_template')
+        todolist_template = TodoListTemplateFactory(
+            slug=self.todolist_template_slug,
+            name=self.todolist_template_name,
+            description=self.todolist_template_description,
+            todos={'items': [{
+                'id': 1,
+                'description': 'todo parent',
+                'items': [{
+                    'id': 2,
+                    'description': 'todo child',
+                    'items': []
+                }]
+            }]},
+        )
+        resp = self.request_client.post(
+            add_todos_from_todolist_template_url,
+            {
+                'todolist_template_id': todolist_template.id,
+                'task_id': self.task.id,
+            })
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(Todo.objects.all().count(), num_todos + 3)
+        todos = load_encoded_json(resp.content)
+        expected_todos = [
+            _todo_data(self.task, 'todo child', False),
+            _todo_data(self.task, 'todo parent', False),
+            _todo_data(self.task, self.todolist_template_name, False),
+        ]
+        for todo, expected_todo in zip(todos, expected_todos):
+            self._verify_todo_content(todo, expected_todo)
