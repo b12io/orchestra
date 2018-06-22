@@ -19,6 +19,23 @@
 
           <form class="new-todo">
             <div class="new-todo__box new-todo__box-details">
+              <select name="todoListTemplate" id="todoListTemplate" ng-model="todoList.newTodoListTemplateSlug" style="width: 100%;">
+                <option value="" selected>Select todolist template</option>
+                <option value="{{template.slug}}" ng-repeat="template in todoList.templates">{{template.name}}</option>
+              </select>
+            </div>
+            <div class="new-todo__box">
+              <button type="submit"
+                 class="btn btn-primary btn-sm edit-save-handle"
+                 ng-disabled="!todoList.canAddTodoListTemplate()"
+                 ng-click="todoList.addTodoListTemplate()">
+                Add
+              </button>
+            </div>
+          </form>
+          <br>
+          <form class="new-todo">
+            <div class="new-todo__box new-todo__box-details">
               <input class="new-todo__description"
                      type="text"
                      ng-model="todoList.newTodoDescription"

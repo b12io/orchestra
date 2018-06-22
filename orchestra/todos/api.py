@@ -10,7 +10,7 @@ def add_todolist_template(todolist_template_slug, task_id):
     todolist_template = TodoListTemplate.objects.get(
         slug=todolist_template_slug)
     task = Task.objects.get(id=task_id)
-    template_todos = todolist_template.todos['items']
+    template_todos = todolist_template.todos.get('items', [])
     root_todo = Todo(
         task=task,
         description=todolist_template.name,
@@ -29,5 +29,5 @@ def _add_template_todo(template_todo, todolist_template, parent_todo, task):
         parent_todo=parent_todo
     )
     todo.save()
-    for template_todo_item in template_todo['items']:
+    for template_todo_item in template_todo.get('items', []):
         _add_template_todo(template_todo_item, todolist_template, todo, task)
