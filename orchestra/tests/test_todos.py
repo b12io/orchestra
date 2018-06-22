@@ -302,7 +302,7 @@ class TodoTemplateEndpointTests(EndpointTestCase):
         resp = self.request_client.post(
             add_todos_from_todolist_template_url,
             {
-                'todolist_template': todolist_template.id,
+                'todolist_template': todolist_template.slug,
                 'task': self.task.id,
             })
 
@@ -322,7 +322,7 @@ class TodoTemplateEndpointTests(EndpointTestCase):
         for todo, expected_todo in zip(todos, expected_todos):
             self._verify_todo_content(todo, expected_todo)
 
-    def test_add_todos_from_todolist_template_forbidden(self):
+    def test_add_todos_from_todolist_template_missing_task_id(self):
         add_todos_from_todolist_template_url = \
             reverse('orchestra:todos:add_todos_from_todolist_template')
         todolist_template = TodoListTemplateFactory(
@@ -334,7 +334,37 @@ class TodoTemplateEndpointTests(EndpointTestCase):
         resp = self.request_client.post(
             add_todos_from_todolist_template_url,
             {
-                'todolist_template': todolist_template.id
+                'todolist_template': todolist_template.slug
             })
 
         self.assertEqual(resp.status_code, 403)
+
+    def test_add_todos_from_todolist_template_invalid_task(self):
+        add_todos_from_todolist_template_url = \
+            reverse('orchestra:todos:add_todos_from_todolist_template')
+        todolist_template = TodoListTemplateFactory(
+            slug=self.todolist_template_slug,
+            name=self.todolist_template_name,
+            description=self.todolist_template_description,
+            todos={'items': []},
+        )
+        resp = self.request_client.post(
+            add_todos_from_todolist_template_url,
+            {
+                'todolist_template': todolist_template.slug,
+                'task': 999999999999999,
+            })
+
+        self.assertEqual(resp.status_code, 403)
+
+    def test_add_todos_from_todolist_template_invalid_todolist_template(self):
+        add_todos_from_todolist_template_url = \
+            reverse('orchestra:todos:add_todos_from_todolist_template')
+        resp = self.request_client.post(
+            add_todos_from_todolist_template_url,
+            {
+                'todolist_template': 'invalid-slug',
+                'task': self.task.id,
+            })
+
+        self.assertEqual(resp.status_code, 400)

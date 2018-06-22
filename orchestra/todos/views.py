@@ -3,6 +3,7 @@ import logging
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework.response import Response
+from jsonview.exceptions import BadRequest
 
 from orchestra.models import Task
 from orchestra.models import Todo
@@ -25,14 +26,17 @@ logger = logging.getLogger(__name__)
               logger=logger)
 @login_required
 def add_todos_from_todolist_template(request):
-    todolist_template_id = request.data.get('todolist_template')
+    todolist_template_slug = request.data.get('todolist_template')
     task_id = request.data.get('task')
-    add_todolist_template(todolist_template_id, task_id)
-    project = Task.objects.get(id=task_id).project
-    todos = Todo.objects.filter(
-        task__project__id=int(project.id)).order_by('-created_at')
-    serializer = TodoSerializer(todos, many=True)
-    return Response(serializer.data)
+    try:
+        add_todolist_template(todolist_template_slug, task_id)
+        project = Task.objects.get(id=task_id).project
+        todos = Todo.objects.filter(
+            task__project__id=int(project.id)).order_by('-created_at')
+        serializer = TodoSerializer(todos, many=True)
+        return Response(serializer.data)
+    except TodoListTemplate.DoesNotExist:
+        raise BadRequest('TodoList Template not found for the given slug.')
 
 
 class TodoList(generics.ListCreateAPIView):

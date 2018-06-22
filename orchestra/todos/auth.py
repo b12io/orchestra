@@ -35,7 +35,11 @@ class IsAssociatedWithProject(permissions.BasePermission):
         elif request.method == 'POST':
             # Create calls have a task ID
             task_id = request.data.get('task')
-            task = Task.objects.get(id=task_id) if task_id else None
-            return task and \
-                worker.assignments.filter(task__project=task.project).exists()
+            try:
+                task = Task.objects.get(id=task_id) if task_id else None
+                return task and \
+                    worker.assignments.filter(
+                        task__project=task.project).exists()
+            except Task.DoesNotExist:
+                return False
         return False
