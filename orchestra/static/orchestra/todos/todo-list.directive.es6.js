@@ -14,7 +14,7 @@ export default function todoList (orchestraApi) {
     },
     controllerAs: 'todoList',
     bindToController: true,
-    controller: function (todoApi, $scope) {
+    controller: function (todoApi, todoListTemplateApi, $scope) {
       var todoList = this
       todoList.possibleTasks = []
       todoList.newTodoTaskId = null
@@ -36,8 +36,19 @@ export default function todoList (orchestraApi) {
         return taskData
       })
 
+      const addTodosFromTodoListTemplate = (taskId, todoListTemplateSlug) => todoListTemplateApi.addTodoListTemplate({
+        task: taskId,
+        todolist_template: todoListTemplateSlug
+      }).then((updatedTodos) => {
+        return updatedTodos
+      })
+
       todoList.canAddTodo = () => {
         return todoList.newTodoTaskId && todoList.newTodoDescription
+      }
+
+      todoList.canAddTodoListTemplate = () => {
+        return todoList.newTodoTaskId && todoList.newTodoListTemplateSlug
       }
 
       todoList.canSendToPending = () => {
@@ -73,6 +84,16 @@ export default function todoList (orchestraApi) {
           todoList.newTodoDescription = null
           todoList.newTodoStartDate = null
           todoList.newTodoDueDate = null
+        })
+      }
+
+      todoList.addTodoListTemplate = () => {
+        addTodosFromTodoListTemplate(
+          todoList.newTodoTaskId,
+          todoList.newTodoListTemplateSlug
+        ).then((updatedTodos) => {
+          todoList.newTodoListTemplateSlug = null
+          todoList.todos = todoList.transformToTree(updatedTodos)
         })
       }
 
@@ -128,8 +149,11 @@ export default function todoList (orchestraApi) {
 
           // TODO(marcua): parallelize requests rather than chaining `then`s.
           todoApi.list(todoList.projectId).then((todos) => {
-            todoList.todos = todoList.transformToTree(todos)
-            todoList.ready = true
+            todoListTemplateApi.list().then((templates) => {
+              todoList.templates = templates
+              todoList.todos = todoList.transformToTree(todos)
+              todoList.ready = true
+            })
           })
         })
     }
