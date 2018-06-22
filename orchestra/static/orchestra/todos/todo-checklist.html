@@ -9,6 +9,7 @@
         <i aria-hidden="true" ng-if="todo.items && todo.items.length > 0" data-nodrag
           class="fa"
           ng-class="{
+            'skipped-todos': showSkipped,
             'fa-caret-right': collapsed,
             'fa-caret-down': !collapsed
           }"></i>
