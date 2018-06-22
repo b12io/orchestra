@@ -1,4 +1,54 @@
 from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
+
+from functools import wraps
+from jsonview.decorators import json_view
+from rest_framework.decorators import api_view
+from rest_framework.decorators import permission_classes
+
+
+def decorator_with_arguments(f):
+    """
+        A decorator decorator, allowing the decorator to be used as:
+        @decorator(with, arguments, and=kwargs)
+        or
+        @decorator
+        http://stackoverflow.com/questions/653368/how-to-create-a-python-decorator-that-can-be-used-either-with-or-without-paramet
+    """
+    @wraps(f)
+    def new_dec(*args, **kwargs):
+        if len(args) == 1 and len(kwargs) == 0 and callable(args[0]):
+            # actual decorated function
+            return f(args[0])
+        else:
+            # decorator arguments
+            return lambda realf: f(realf, *args, **kwargs)
+
+    return new_dec
+
+
+@decorator_with_arguments
+def api_exception_logger(func, logger):
+    def func_wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.exception('An API exception occurred')
+            raise e
+    return func_wrapper
+
+
+def api_endpoint(methods, permissions, logger):
+    def api_endpoint_decorator(func):
+        @csrf_exempt
+        @api_view(methods)
+        @permission_classes(permissions)
+        @json_view
+        @api_exception_logger(logger)
+        def func_wrapper(*args, **kwargs):
+            return func(*args, **kwargs)
+        return func_wrapper
+    return api_endpoint_decorator
 
 
 def run_if(*args):

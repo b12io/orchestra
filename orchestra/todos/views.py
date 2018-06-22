@@ -1,3 +1,5 @@
+import logging
+
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework.response import Response
@@ -10,12 +12,18 @@ from orchestra.todos.serializers import TodoSerializer
 from orchestra.todos.serializers import TodoListTemplateSerializer
 from orchestra.utils.notifications import message_experts_slack_group
 from orchestra.todos.api import add_todolist_template
-from orchestra.todos.decorators import api_endpoint
+from orchestra.utils.decorators import api_endpoint
 from orchestra.todos.auth import IsAssociatedWithTodosProject
 from orchestra.todos.auth import IsAssociatedWithProject
+from django.contrib.auth.decorators import login_required
+
+logger = logging.getLogger(__name__)
 
 
-@api_endpoint(['POST'])
+@api_endpoint(methods=['POST'],
+              permissions=(IsAssociatedWithProject,),
+              logger=logger)
+@login_required
 def add_todos_from_todolist_template(request):
     todolist_template_id = request.data.get('todolist_template')
     task_id = request.data.get('task')
