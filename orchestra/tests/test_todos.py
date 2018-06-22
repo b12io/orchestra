@@ -33,7 +33,7 @@ def _todo_data(task, description, completed,
     }
 
 
-class TimeEntriesEndpointTests(EndpointTestCase):
+class TodosEndpointTests(EndpointTestCase):
 
     def setUp(self):
         super().setUp()
