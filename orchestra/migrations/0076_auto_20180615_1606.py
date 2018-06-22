@@ -58,4 +58,3 @@ class Migration(migrations.Migration):
                                     related_name='template', to='orchestra.TodoListTemplate'),
         ),
     ]
-
