@@ -2345,6 +2345,8 @@ a.logo {
   .list-by-status .angular-ui-tree-node {
     padding-top: 5px;
     padding-bottom: 0; }
+  .list-by-status .skipped-todos {
+    margin-left: -18px; }
   .list-by-status .fa-circle-o {
     font-size: xx-small;
     vertical-align: middle;

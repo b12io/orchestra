@@ -36,7 +36,7 @@ export default function todoList (orchestraApi) {
         return taskData
       })
 
-      const createTodoListTemplate = (taskId, todoListTemplateSlug) => todoListTemplateApi.addTodoListTemplate({
+      const addTodosFromTodoListTemplate = (taskId, todoListTemplateSlug) => todoListTemplateApi.addTodoListTemplate({
         task: taskId,
         todolist_template: todoListTemplateSlug
       }).then((updatedTodos) => {
@@ -88,7 +88,7 @@ export default function todoList (orchestraApi) {
       }
 
       todoList.addTodoListTemplate = () => {
-        createTodoListTemplate(
+        addTodosFromTodoListTemplate(
           todoList.newTodoTaskId,
           todoList.newTodoListTemplateSlug
         ).then((updatedTodos) => {
@@ -153,7 +153,6 @@ export default function todoList (orchestraApi) {
               todoList.templates = templates
               todoList.todos = todoList.transformToTree(todos)
               todoList.ready = true
-              console.log(todoList)
             })
           })
         })
