@@ -1,47 +1,40 @@
+import logging
+
 from rest_framework import generics
 from rest_framework import permissions
+from rest_framework.response import Response
+from jsonview.exceptions import BadRequest
 
 from orchestra.models import Task
 from orchestra.models import Todo
+from orchestra.models import TodoListTemplate
 from orchestra.models import Worker
 from orchestra.todos.serializers import TodoSerializer
+from orchestra.todos.serializers import TodoListTemplateSerializer
 from orchestra.utils.notifications import message_experts_slack_group
+from orchestra.todos.api import add_todolist_template
+from orchestra.utils.decorators import api_endpoint
+from orchestra.todos.auth import IsAssociatedWithTodosProject
+from orchestra.todos.auth import IsAssociatedWithProject
+
+logger = logging.getLogger(__name__)
 
 
-class IsAssociatedWithTodosProject(permissions.BasePermission):
-    """
-    Ensures that a user's worker is accoiated with the todo's project.
-    """
-
-    def has_object_permission(self, request, view, todo):
-        worker = Worker.objects.get(user=request.user)
-        project = todo.task.project
-        return (
-            worker.is_project_admin() or
-            worker.assignments.filter(task__project=project).exists())
-
-
-class IsAssociatedWithProject(permissions.BasePermission):
-    """
-    Ensures that a user's worker is associated with the request's
-    `project`.
-
-    """
-
-    def has_permission(self, request, view):
-        worker = Worker.objects.get(user=request.user)
-        if worker.is_project_admin():
-            return True
-        if request.method == 'GET':
-            # List calls have a project ID
-            project_id = request.query_params.get('project')
-            return worker.assignments.filter(task__project=project_id).exists()
-        elif request.method == 'POST':
-            # Create calls have a task ID
-            task_id = request.data.get('task')
-            project = Task.objects.get(id=task_id).project
-            return worker.assignments.filter(task__project=project).exists()
-        return False
+@api_endpoint(methods=['POST'],
+              permissions=(IsAssociatedWithProject,),
+              logger=logger)
+def add_todos_from_todolist_template(request):
+    todolist_template_slug = request.data.get('todolist_template')
+    task_id = request.data.get('task')
+    try:
+        add_todolist_template(todolist_template_slug, task_id)
+        project = Task.objects.get(id=task_id).project
+        todos = Todo.objects.filter(
+            task__project__id=int(project.id)).order_by('-created_at')
+        serializer = TodoSerializer(todos, many=True)
+        return Response(serializer.data)
+    except TodoListTemplate.DoesNotExist:
+        raise BadRequest('TodoList Template not found for the given slug.')
 
 
 class TodoList(generics.ListCreateAPIView):
@@ -91,3 +84,17 @@ class TodoDetail(generics.RetrieveUpdateDestroyAPIView):
             'complete' if todo.completed else 'incomplete')
         message_experts_slack_group(
             todo.task.project.slack_group_id, message)
+
+
+class TodoListTemplateDetail(generics.RetrieveUpdateAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    serializer_class = TodoListTemplateSerializer
+    queryset = TodoListTemplate.objects.all()
+
+
+class TodoListTemplateList(generics.ListCreateAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    serializer_class = TodoListTemplateSerializer
+    queryset = TodoListTemplate.objects.all()

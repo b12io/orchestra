@@ -12,14 +12,19 @@ from orchestra.models import WorkerCertification
 from orchestra.models import Workflow
 from orchestra.project import create_project_with_tasks
 from orchestra.project_api.api import get_project_information
-from orchestra.project_api.decorators import api_endpoint
+from orchestra.utils.decorators import api_endpoint
 from orchestra.utils.load_json import load_encoded_json
 from orchestra.utils.task_lifecycle import assign_task
+from orchestra.project_api.auth import OrchestraProjectAPIAuthentication
+from orchestra.project_api.auth import IsSignedUser
 
 logger = logging.getLogger(__name__)
 
 
-@api_endpoint(['POST'])
+@api_endpoint(methods=['POST'],
+              permissions=(IsSignedUser,),
+              logger=logger,
+              auths=(OrchestraProjectAPIAuthentication,))
 def project_information(request):
     try:
         data = load_encoded_json(request.body)
@@ -31,7 +36,10 @@ def project_information(request):
         raise BadRequest('No project for given id')
 
 
-@api_endpoint(['POST'])
+@api_endpoint(methods=['POST'],
+              permissions=(IsSignedUser,),
+              logger=logger,
+              auths=(OrchestraProjectAPIAuthentication,))
 def create_project(request):
     project_details = load_encoded_json(request.body)
     try:
@@ -54,7 +62,10 @@ def create_project(request):
     return {'project_id': project.id}
 
 
-@api_endpoint(['POST'])
+@api_endpoint(methods=['POST'],
+              permissions=(IsSignedUser,),
+              logger=logger,
+              auths=(OrchestraProjectAPIAuthentication,))
 def project_details_url(request):
     project_details = load_encoded_json(request.body)
     project_id = project_details.get('project_id')
@@ -72,7 +83,10 @@ def project_details_url(request):
     return {'project_details_url': url}
 
 
-@api_endpoint(['GET'])
+@api_endpoint(methods=['GET'],
+              permissions=(IsSignedUser,),
+              logger=logger,
+              auths=(OrchestraProjectAPIAuthentication,))
 def workflow_types(request):
     workflows = {
         w.slug: {
@@ -90,7 +104,10 @@ def workflow_types(request):
     return {'workflows': workflows}
 
 
-@api_endpoint(['POST'])
+@api_endpoint(methods=['POST'],
+              permissions=(IsSignedUser,),
+              logger=logger,
+              auths=(OrchestraProjectAPIAuthentication,))
 def assign_worker_to_task(request):
     data = load_encoded_json(request.body)
     errors = {}

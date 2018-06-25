@@ -25,6 +25,7 @@ from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import TimeEntry
 from orchestra.models import Todo
+from orchestra.models import TodoListTemplate
 from orchestra.models import Worker
 from orchestra.models import WorkerCertification
 from orchestra.models import Workflow
@@ -183,6 +184,19 @@ class TodoAdmin(AjaxSelectAdmin):
         'task__project__short_description', 'task__step__name',
         'description')
     list_filter = ('task__project__workflow_version',)
+
+
+@admin.register(TodoListTemplate)
+class TodoListTemplateAdmin(AjaxSelectAdmin):
+    form = make_ajax_form(TodoListTemplate, {
+        'creator': 'workers',
+    })
+    list_display = ('id', 'created_at', 'slug', 'name')
+    ordering = ('-created_at',)
+    search_fields = (
+        'slug', 'name', 'todos',
+        'description')
+    list_filter = ('creator__user__username',)
 
 
 @admin.register(Worker)
