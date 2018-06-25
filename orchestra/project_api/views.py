@@ -1,7 +1,6 @@
 import logging
 from urllib.parse import urlparse
 from urllib.parse import urlunsplit
-from rest_framework.decorators import authentication_classes
 
 from django.core.urlresolvers import reverse
 from jsonview.exceptions import BadRequest
@@ -24,8 +23,8 @@ logger = logging.getLogger(__name__)
 
 @api_endpoint(methods=['POST'],
               permissions=(IsSignedUser,),
-              logger=logger)
-@authentication_classes((OrchestraProjectAPIAuthentication,))
+              logger=logger,
+              auths=(OrchestraProjectAPIAuthentication,))
 def project_information(request):
     try:
         data = load_encoded_json(request.body)
@@ -39,8 +38,8 @@ def project_information(request):
 
 @api_endpoint(methods=['POST'],
               permissions=(IsSignedUser,),
-              logger=logger)
-@authentication_classes((OrchestraProjectAPIAuthentication,))
+              logger=logger,
+              auths=(OrchestraProjectAPIAuthentication,))
 def create_project(request):
     project_details = load_encoded_json(request.body)
     try:
@@ -65,8 +64,8 @@ def create_project(request):
 
 @api_endpoint(methods=['POST'],
               permissions=(IsSignedUser,),
-              logger=logger)
-@authentication_classes((OrchestraProjectAPIAuthentication,))
+              logger=logger,
+              auths=(OrchestraProjectAPIAuthentication,))
 def project_details_url(request):
     project_details = load_encoded_json(request.body)
     project_id = project_details.get('project_id')
@@ -86,8 +85,8 @@ def project_details_url(request):
 
 @api_endpoint(methods=['GET'],
               permissions=(IsSignedUser,),
-              logger=logger)
-@authentication_classes((OrchestraProjectAPIAuthentication,))
+              logger=logger,
+              auths=(OrchestraProjectAPIAuthentication,))
 def workflow_types(request):
     workflows = {
         w.slug: {
@@ -107,8 +106,8 @@ def workflow_types(request):
 
 @api_endpoint(methods=['POST'],
               permissions=(IsSignedUser,),
-              logger=logger)
-@authentication_classes((OrchestraProjectAPIAuthentication,))
+              logger=logger,
+              auths=(OrchestraProjectAPIAuthentication,))
 def assign_worker_to_task(request):
     data = load_encoded_json(request.body)
     errors = {}

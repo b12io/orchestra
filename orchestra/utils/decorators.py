@@ -1,9 +1,11 @@
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 
 from functools import wraps
 from jsonview.decorators import json_view
 from rest_framework.decorators import api_view
+from rest_framework.decorators import authentication_classes
 from rest_framework.decorators import permission_classes
 
 
@@ -38,17 +40,33 @@ def api_exception_logger(func, logger):
     return func_wrapper
 
 
-def api_endpoint(methods, permissions, logger):
-    def api_endpoint_decorator(func):
+def api_endpoint(methods, permissions, logger, auths=()):
+    def programmatic_api_endpoint_decorator(func):
         @csrf_exempt
         @api_view(methods)
+        @authentication_classes(auths)
         @permission_classes(permissions)
         @json_view
         @api_exception_logger(logger)
         def func_wrapper(*args, **kwargs):
             return func(*args, **kwargs)
         return func_wrapper
-    return api_endpoint_decorator
+
+    def api_endpoint_decorator(func):
+        @csrf_exempt
+        @api_view(methods)
+        @login_required
+        @permission_classes(permissions)
+        @json_view
+        @api_exception_logger(logger)
+        def func_wrapper(*args, **kwargs):
+            return func(*args, **kwargs)
+        return func_wrapper
+
+    if len(auths) > 0:
+        return programmatic_api_endpoint_decorator
+    else:
+        return api_endpoint_decorator
 
 
 def run_if(*args):
