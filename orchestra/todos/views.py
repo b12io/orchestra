@@ -16,7 +16,6 @@ from orchestra.todos.api import add_todolist_template
 from orchestra.utils.decorators import api_endpoint
 from orchestra.todos.auth import IsAssociatedWithTodosProject
 from orchestra.todos.auth import IsAssociatedWithProject
-from django.contrib.auth.decorators import login_required
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +23,6 @@ logger = logging.getLogger(__name__)
 @api_endpoint(methods=['POST'],
               permissions=(IsAssociatedWithProject,),
               logger=logger)
-@login_required
 def add_todos_from_todolist_template(request):
     todolist_template_slug = request.data.get('todolist_template')
     task_id = request.data.get('task')

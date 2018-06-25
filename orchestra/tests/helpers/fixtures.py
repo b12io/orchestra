@@ -177,7 +177,7 @@ class TodoListTemplateFactory(factory.django.DjangoModelFactory):
     description = factory.Sequence(
         lambda n: 'Description {}'.format(n))
     creator = None
-    todos = "{'items': []}"
+    todos = {'items': []}
 
     class Meta:
         model = 'orchestra.TodoListTemplate'
