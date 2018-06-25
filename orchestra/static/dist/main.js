@@ -61414,15 +61414,6 @@ function todoList(orchestraApi) {
         });
       };
 
-      var addTodosFromTodoListTemplate = function addTodosFromTodoListTemplate(taskId, todoListTemplateSlug) {
-        return todoListTemplateApi.addTodoListTemplate({
-          task: taskId,
-          todolist_template: todoListTemplateSlug
-        }).then(function (updatedTodos) {
-          return updatedTodos;
-        });
-      };
-
       todoList.canAddTodo = function () {
         return todoList.newTodoTaskId && todoList.newTodoDescription;
       };
@@ -61462,7 +61453,10 @@ function todoList(orchestraApi) {
       };
 
       todoList.addTodoListTemplate = function () {
-        addTodosFromTodoListTemplate(todoList.newTodoTaskId, todoList.newTodoListTemplateSlug).then(function (updatedTodos) {
+        todoListTemplateApi.addTodoListTemplate({
+          task: todoList.newTodoTaskId,
+          todolist_template: todoList.newTodoListTemplateSlug
+        }).then(function (updatedTodos) {
           todoList.newTodoListTemplateSlug = null;
           todoList.todos = todoList.transformToTree(updatedTodos);
         });
