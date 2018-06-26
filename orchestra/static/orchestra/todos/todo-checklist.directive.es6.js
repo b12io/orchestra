@@ -15,6 +15,7 @@ export default function todoChecklist () {
       showChecked: '=',
       showSkipped: '=',
       updateTodo: '=',
+      removeTodo: '=',
       skipTodo: '=',
       unskipTodo: '=',
       steps: '<',

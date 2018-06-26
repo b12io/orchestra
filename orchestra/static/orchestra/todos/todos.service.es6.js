@@ -15,6 +15,7 @@ export default function todoApi ($http) {
       .then(response => response.data),
     list: (projectId) => $http.get(listCreate(projectId))
       .then(response => response.data),
-    update: (todo) => $http.put(details(todo.id), todo)
+    update: (todo) => $http.put(details(todo.id), todo),
+    delete: (todo) => $http.delete(details(todo.id))
   }
 };

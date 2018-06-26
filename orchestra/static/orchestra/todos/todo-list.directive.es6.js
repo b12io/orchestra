@@ -90,6 +90,12 @@ export default function todoList (orchestraApi) {
         todoApi.update(todo)
       }
 
+      todoList.removeTodo = (todo) => {
+        var index = todoList.todos.indexOf(todo);
+        todoList.todos.splice(index, 1);
+        todoApi.delete(todo)
+      }
+
       todoList.skipTodo = (todo) => {
         const datetimeUtc = moment.tz(moment(), moment.tz.guess()).utc()
         todo.skipped_datetime = datetimeUtc.format('YYYY-MM-DD HH:mm')
