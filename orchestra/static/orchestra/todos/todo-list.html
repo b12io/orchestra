@@ -51,7 +51,7 @@
                 Add todo
         </button>
       </div>
-      <div class="col-lg-2">
+      <div class="col-lg-2" ng-if="todoList.templates.length > 0">
         <div class="btn-group">
           <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
                   ng-disabled="!todoList.newTodoTaskId">
@@ -83,7 +83,7 @@
         </div>
       </div>
       <div class="col-lg-6 col-md-6 col-sm-12">
-        <div class="todolist-pane">
+        <div class="todolist-pane" ng-if="todoList.templates.length > 0">
           <p class="todolist-pane__heading col-sm-4">Skipped todo items</p>
           <todo-checklist
               title="Todos"
