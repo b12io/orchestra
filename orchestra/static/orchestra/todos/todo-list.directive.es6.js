@@ -40,10 +40,6 @@ export default function todoList (orchestraApi) {
         return todoList.newTodoTaskId && todoList.newTodoDescription
       }
 
-      todoList.canAddTodoListTemplate = () => {
-        return todoList.newTodoTaskId && todoList.newTodoListTemplateSlug
-      }
-
       todoList.canSendToPending = () => {
         const numTodosOnThisTask = reduce(
           todoList.todos, (result, todo) => {
@@ -80,10 +76,10 @@ export default function todoList (orchestraApi) {
         })
       }
 
-      todoList.addTodoListTemplate = () => {
+      todoList.addTodoListTemplate = (newTodoListTemplateSlug) => {
         todoListTemplateApi.addTodoListTemplate({
           task: todoList.newTodoTaskId,
-          todolist_template: todoList.newTodoListTemplateSlug
+          todolist_template: newTodoListTemplateSlug
         }).then((updatedTodos) => {
           todoList.newTodoListTemplateSlug = null
           todoList.todos = todoList.transformToTree(updatedTodos)
@@ -127,6 +123,7 @@ export default function todoList (orchestraApi) {
 
       orchestraApi.projectInformation(todoList.projectId)
         .then((response) => {
+          console.log(response)
           const humanSteps = new Set(response.data.steps.filter(step => step.is_human).map(step => step.slug))
           todoList.steps = reduce(
             Object.values(response.data.steps), (result, step) => {
