@@ -76,8 +76,8 @@ export default function todoList (orchestraApi) {
         })
       }
 
-      todoList.addTodoListTemplate = (newTodoListTemplateSlug) => {
-        todoListTemplateApi.addTodoListTemplate({
+      todoList.updateTodoListFromTemplate = (newTodoListTemplateSlug) => {
+        todoListTemplateApi.updateTodoListFromTemplate({
           task: todoList.newTodoTaskId,
           todolist_template: newTodoListTemplateSlug
         }).then((updatedTodos) => {
@@ -123,7 +123,6 @@ export default function todoList (orchestraApi) {
 
       orchestraApi.projectInformation(todoList.projectId)
         .then((response) => {
-          console.log(response)
           const humanSteps = new Set(response.data.steps.filter(step => step.is_human).map(step => step.slug))
           todoList.steps = reduce(
             Object.values(response.data.steps), (result, step) => {

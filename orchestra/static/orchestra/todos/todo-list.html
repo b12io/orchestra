@@ -58,7 +58,7 @@
             Add todos from a template <span class="caret"></span>
           </button>
           <ul class="dropdown-menu">
-            <li ng-repeat="template in todoList.templates" ng-click="todoList.addTodoListTemplate(template.slug)">
+            <li ng-repeat="template in todoList.templates" ng-click="todoList.updateTodoListFromTemplate(template.slug)">
               <a href="">{{template.name}}</a>
             </li>
           </ul>

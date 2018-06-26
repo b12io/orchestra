@@ -5,12 +5,12 @@ export default function todoListTemplateApi ($http) {
     return `${apiBase}todolist_templates/`
   }
 
-  const addTodoListTemplate = () => {
+  const updateTodoListFromTemplate = () => {
     return `${apiBase}add_todos_from_todolist_template/`
   }
 
   return {
-    addTodoListTemplate: (data) => $http.post(addTodoListTemplate(), data)
+    updateTodoListFromTemplate: (data) => $http.post(updateTodoListFromTemplate(), data)
       .then(response => response.data),
     list: (projectId) => $http.get(list())
       .then(response => response.data)
