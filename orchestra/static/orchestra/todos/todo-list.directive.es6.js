@@ -91,8 +91,8 @@ export default function todoList (orchestraApi) {
       }
 
       todoList.removeTodo = (todo) => {
-        var index = todoList.todos.indexOf(todo);
-        todoList.todos.splice(index, 1);
+        var index = todoList.todos.indexOf(todo)
+        todoList.todos.splice(index, 1)
         todoApi.delete(todo)
       }
 
