@@ -12,17 +12,6 @@ logger = logging.getLogger(__name__)
 def add_todolist_template(todolist_template_slug, task_id):
     todolist_template = TodoListTemplate.objects.get(
         slug=todolist_template_slug)
-    cond_props = {}
-    path = todolist_template.conditional_property_function.get(
-        'path', None)
-    if path:
-        try:
-            get_cond_props = locate(path)
-            kwargs = todolist_template.conditional_property_function.get(
-                'kwargs', {})
-            cond_props = get_cond_props(**kwargs)
-        except Exception:
-            logger.exception('Invalid condition function path.')
 
     task = Task.objects.get(id=task_id)
     template_todos = todolist_template.todos.get('items', [])
@@ -32,6 +21,16 @@ def add_todolist_template(todolist_template_slug, task_id):
         template=todolist_template
     )
     root_todo.save()
+
+    cond_props = {}
+    path = todolist_template.conditional_property_function.get(
+        'path', None)
+    if path:
+        try:
+            get_cond_props = locate(path)
+            cond_props = get_cond_props(task.project)
+        except Exception:
+            logger.exception('Invalid condition function path.')
     for template_todo in template_todos:
         _add_template_todo(
             template_todo, todolist_template, root_todo, task, cond_props)
