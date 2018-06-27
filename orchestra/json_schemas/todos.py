@@ -1,7 +1,7 @@
 import jsl
 
 
-class Predicate(jsl.Document):
+class PredicateSchema(jsl.Document):
     operator = jsl.StringField(required=True, pattern='!?=')
     value = jsl.AnyOfField([
         jsl.NumberField(),
@@ -15,9 +15,11 @@ class TodoSchema(jsl.Document):
     description = jsl.StringField(required=True)
     items = jsl.ArrayField(jsl.DocumentField('TodoSchema'))
     skip_if = jsl.ArrayField(
-        jsl.DictField(jsl.DocumentField(Predicate)))
+        jsl.DictField(
+            pattern_properties={'.*': jsl.DocumentField('PredicateSchema')}))
     remove_if = jsl.ArrayField(
-        jsl.DictField(jsl.DocumentField(Predicate)))
+        jsl.DictField(
+            pattern_properties={'.*': jsl.DocumentField('PredicateSchema')}))
 
 
 class TodoListSchema(jsl.Document):
