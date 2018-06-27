@@ -6,7 +6,7 @@ export default function todoListTemplateApi ($http) {
   }
 
   const updateTodoListFromTemplate = () => {
-    return `${apiBase}add_todos_from_todolist_template/`
+    return `${apiBase}update_todos_from_todolist_template/`
   }
 
   return {

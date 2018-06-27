@@ -15,7 +15,7 @@ urlpatterns = [
         TodoListTemplateList.as_view(), name='todolist_templates'),
     url(r'^todolist_template/(?P<pk>[0-9]+)/$',
         TodoListTemplateDetail.as_view(), name='todolist_template'),
-    url(r'^add_todos_from_todolist_template/$',
-        views.add_todos_from_todolist_template,
-        name='add_todos_from_todolist_template'),
+    url(r'^update_todos_from_todolist_template/$',
+        views.update_todos_from_todolist_template,
+        name='update_todos_from_todolist_template'),
 ]
