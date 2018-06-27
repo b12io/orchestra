@@ -1,3 +1,4 @@
+from datetime import datetime
 import logging
 from pydoc import locate
 
@@ -36,7 +37,7 @@ def add_todolist_template(todolist_template_slug, task_id):
             template_todo, todolist_template, root_todo, task, cond_props)
 
 
-def _to_exclude(props, conditions):
+def _to_exclude(props, conditions=[]):
     for condition in conditions:
         for prop, predicate in condition:
             current_value = props.get(prop)
@@ -51,17 +52,19 @@ def _to_exclude(props, conditions):
 def _add_template_todo(
         template_todo, todolist_template,
         parent_todo, task, conditional_props):
-    remove = _to_exclude(conditional_props, template_todo['remove_if'])
+    remove = _to_exclude(conditional_props, template_todo.get('remove_if', []))
     if not remove:
+        skipped_datetime = datetime.now() if _to_exclude(
+                conditional_props, template_todo.get('skip_if', [])) else None
         todo = Todo(
             task=task,
             description=template_todo['description'],
             template=todolist_template,
             parent_todo=parent_todo,
-            skipped_datetime=_to_exclude(
-                conditional_props, template_todo['skip_if'])
+            skipped_datetime=skipped_datetime
         )
         todo.save()
         for template_todo_item in template_todo.get('items', []):
             _add_template_todo(
-                template_todo_item, todolist_template, todo, task)
+                template_todo_item, todolist_template, todo,
+                task, conditional_props)
