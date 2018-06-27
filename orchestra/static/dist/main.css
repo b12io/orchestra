@@ -2309,16 +2309,20 @@ a.logo {
     background-color: white;
     text-align: center; }
 
-.todo-list .new-todo__box {
-  display: inline-block; }
-  .todo-list .new-todo__box-details {
-    width: 550px; }
+.todo-list .new-todo__datetime {
+  display: inline-block;
+  padding-left: 10px; }
 
-.todo-list .new-todo__description {
-  width: 550px; }
-  .todo-list .new-todo__description__datetime {
-    display: inline-block;
-    padding-left: 10px; }
+.todo-list .new-todo select.form-control {
+  border: 0;
+  outline: 1px solid #cecece;
+  outline-offset: -1px;
+  box-shadow: none; }
+
+.todo-list .new-todo .form-control, .todo-list .new-todo .button {
+  border-radius: 0;
+  -webkit-border-radius: 0;
+  -moz-border-radius: none; }
 .list-by-status {
   padding-top: 20px; }
   .list-by-status h4 {
@@ -2345,6 +2349,8 @@ a.logo {
   .list-by-status .angular-ui-tree-node {
     padding-top: 5px;
     padding-bottom: 0; }
+  .list-by-status .skipped-todos {
+    margin-left: -18px; }
   .list-by-status .fa-circle-o {
     font-size: xx-small;
     vertical-align: middle;

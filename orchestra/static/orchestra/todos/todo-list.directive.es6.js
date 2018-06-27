@@ -14,7 +14,7 @@ export default function todoList (orchestraApi) {
     },
     controllerAs: 'todoList',
     bindToController: true,
-    controller: function (todoApi, $scope) {
+    controller: function (todoApi, todoListTemplateApi, $scope) {
       var todoList = this
       todoList.possibleTasks = []
       todoList.newTodoTaskId = null
@@ -76,6 +76,16 @@ export default function todoList (orchestraApi) {
         })
       }
 
+      todoList.updateTodoListFromTemplate = (newTodoListTemplateSlug) => {
+        todoListTemplateApi.updateTodoListFromTemplate({
+          task: todoList.newTodoTaskId,
+          todolist_template: newTodoListTemplateSlug
+        }).then((updatedTodos) => {
+          todoList.newTodoListTemplateSlug = null
+          todoList.todos = todoList.transformToTree(updatedTodos)
+        })
+      }
+
       todoList.updateTodo = (todo) => {
         todoApi.update(todo)
       }
@@ -128,8 +138,11 @@ export default function todoList (orchestraApi) {
 
           // TODO(marcua): parallelize requests rather than chaining `then`s.
           todoApi.list(todoList.projectId).then((todos) => {
-            todoList.todos = todoList.transformToTree(todos)
-            todoList.ready = true
+            todoListTemplateApi.list().then((templates) => {
+              todoList.templates = templates
+              todoList.todos = todoList.transformToTree(todos)
+              todoList.ready = true
+            })
           })
         })
     }

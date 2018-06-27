@@ -15,18 +15,20 @@
   }
 
   .new-todo {
-    &__box {
+    &__datetime {
       display: inline-block;
-      &-details {
-        width: 550px
-      }
+      padding-left:10px;
     }
-    &__description {
-      width: 550px;
-      &__datetime {
-        display: inline-block;
-        padding-left:10px;
-      }
+    select.form-control {
+      border: 0;
+      outline: 1px solid #cecece;
+      outline-offset: -1px;
+      box-shadow: none;
+    }
+    .form-control, .button {
+      border-radius: 0;
+      -webkit-border-radius: 0;
+      -moz-border-radius: none;
     }
   }
 }

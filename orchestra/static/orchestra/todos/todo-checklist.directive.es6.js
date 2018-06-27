@@ -12,6 +12,7 @@ export default function todoChecklist () {
     scope: {
       title: '@',
       todos: '<',
+      templates: '<',
       showChecked: '=',
       showSkipped: '=',
       updateTodo: '=',

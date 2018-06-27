@@ -7,58 +7,73 @@
         </h3>
       </div>
     </div>
+
+    <div class="row section-body new-todo">
+      <div class="col-lg-2">
+        <select class="form-control input-sm" name="todoList" id="todoList" ng-model="todoList.newTodoTaskId">
+          <option value="" selected>Select owner</option>
+          <option value="{{task.id}}" ng-repeat="task in todoList.possibleTasks">{{todoList.steps[task.step_slug].name}}</option>
+        </select>
+      </div>
+      <div class="col-lg-5">
+        <input class="form-control input-sm"
+               type="text"
+               ng-model="todoList.newTodoDescription"
+               placeholder="Add a todo item">
+        <div class="pull-right">
+          <div class="new-todo__datetime">
+            <label>Start</label>
+            <date-picker
+              date="todoList.newTodoStartDate"
+              callback="todoList.setTimeOfDate"></date-picker>
+            <time-input
+              datetime="todoList.newTodoStartDate"
+              default-hour="8"
+              ></time-input>
+          </div>
+          <div class="new-todo__datetime">
+            <label>Due</label>
+            <date-picker
+              date="todoList.newTodoDueDate"
+              callback="todoList.setTimeOfDate"></date-picker>
+            <time-input
+              datetime="todoList.newTodoDueDate"
+              default-hour="18"
+              ></time-input>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-1">
+        <button type="submit"
+                 class="btn btn-primary btn-sm btn-block edit-save-handle"
+                 ng-disabled="!todoList.canAddTodo()"
+                 ng-click="todoList.addTodo()">
+                Add todo
+        </button>
+      </div>
+      <div class="col-lg-2" ng-if="todoList.templates.length > 0">
+        <div class="btn-group">
+          <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                  ng-disabled="!todoList.newTodoTaskId">
+            Add todos from a template <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu">
+            <li ng-repeat="template in todoList.templates" ng-click="todoList.updateTodoListFromTemplate(template.slug)">
+              <a href="">{{template.name}}</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
     <div class="row section-body" ng-if="todoList.ready">
       <div class="col-lg-6 col-md-6 col-sm-12">
         <div class="todolist-pane">
-          <div class="new-todo__box todolist-pane__heading col-sm-3">
-            <select name="todoList" id="todoList" ng-model="todoList.newTodoTaskId">
-              <option value="" selected>Select owner</option>
-              <option value="{{task.id}}" ng-repeat="task in todoList.possibleTasks">{{todoList.steps[task.step_slug].name}}</option>
-            </select>
-          </div>
-
-          <form class="new-todo">
-            <div class="new-todo__box new-todo__box-details">
-              <input class="new-todo__description"
-                     type="text"
-                     ng-model="todoList.newTodoDescription"
-                     placeholder="Add a todo item">
-              <div class="pull-right">
-                <div class="new-todo__description__datetime">
-                  <label>Start</label>
-                  <date-picker
-                    date="todoList.newTodoStartDate"
-                    callback="todoList.setTimeOfDate"></date-picker>
-                  <time-input
-                    datetime="todoList.newTodoStartDate"
-                    default-hour="8"
-                    ></time-input>
-                </div>
-                <div class="new-todo__description__datetime">
-                  <label>Due</label>
-                  <date-picker
-                    date="todoList.newTodoDueDate"
-                    callback="todoList.setTimeOfDate"></date-picker>
-                  <time-input
-                    datetime="todoList.newTodoDueDate"
-                    default-hour="18"
-                    ></time-input>
-                </div>
-              </div>
-            </div>
-            <div class="new-todo__box">
-              <button type="submit"
-                 class="btn btn-primary btn-sm edit-save-handle"
-                 ng-disabled="!todoList.canAddTodo()"
-                 ng-click="todoList.addTodo()">
-                Add
-              </button>
-            </div>
-          </form>
-
+          <p class="todolist-pane__heading col-sm-3">Todo items</p>
           <todo-checklist
               title="Todos"
               todos="todoList.todos"
+              templates="todoList.templates"
               show-skipped="false"
               update-todo="todoList.updateTodo"
               skip-todo="todoList.skipTodo"
@@ -69,11 +84,12 @@
         </div>
       </div>
       <div class="col-lg-6 col-md-6 col-sm-12">
-        <div class="todolist-pane">
+        <div class="todolist-pane" ng-if="todoList.templates.length > 0">
           <p class="todolist-pane__heading col-sm-4">Skipped todo items</p>
           <todo-checklist
               title="Todos"
               todos="todoList.todos"
+              templates="todoList.templates"
               show-skipped="true"
               update-todo="todoList.updateTodo"
               steps="todoList.steps"
