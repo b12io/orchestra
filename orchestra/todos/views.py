@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 @api_endpoint(methods=['POST'],
               permissions=(IsAssociatedWithProject,),
               logger=logger)
-def add_todos_from_todolist_template(request):
+def update_todos_from_todolist_template(request):
     todolist_template_slug = request.data.get('todolist_template')
     task_id = request.data.get('task')
     try:
@@ -100,7 +100,10 @@ class TodoListTemplateList(generics.ListCreateAPIView):
     queryset = TodoListTemplate.objects.all()
 
     def get_queryset(self):
-        if self.request.user.groups.filter(name='todolist_feature').exists():
+        # Only enable todolist template feature functionality for users
+        # in the `todolist_template_feature` group to facilitate A/B testing.
+        if self.request.user.groups.filter(
+                name='todolist_template_feature').exists():
             queryset = TodoListTemplate.objects.all()
             queryset = queryset.order_by('-created_at')
         else:

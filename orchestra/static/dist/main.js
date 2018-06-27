@@ -61692,7 +61692,7 @@ function todoListTemplateApi($http) {
   };
 
   var _updateTodoListFromTemplate = function _updateTodoListFromTemplate() {
-    return apiBase + 'add_todos_from_todolist_template/';
+    return apiBase + 'update_todos_from_todolist_template/';
   };
 
   return {
