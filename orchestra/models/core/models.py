@@ -594,7 +594,7 @@ class TodoListTemplate (TodoListTemplateMixin, BaseModel):
             A JSON blob that describe the todos in the todo list template.
         conditional_property_function (str)
             A JSON blob containing the path to and name of a python method
-            that will return the preconditions to prune the created todos
+            that will return the preconditions to prune the created todos.
     """
     class Meta:
         app_label = 'orchestra'
