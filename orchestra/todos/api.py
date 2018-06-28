@@ -30,7 +30,7 @@ def add_todolist_template(todolist_template_slug, task_id):
             get_cond_props = locate(path)
             cond_props = get_cond_props(task.project)
         except Exception:
-            logger.exception('Invalid condition function path.')
+            logger.exception('Invalid conditional function path.')
     for template_todo in template_todos:
         _add_template_todo(
             template_todo, todolist_template, root_todo, task, cond_props)
