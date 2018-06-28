@@ -1,4 +1,4 @@
-from datetime import datetime
+from django.utils import timezone
 import logging
 from pydoc import locate
 
@@ -38,7 +38,7 @@ def add_todolist_template(todolist_template_slug, task_id):
 
 def _to_exclude(props, conditions=[]):
     for condition in conditions:
-        for prop, predicate in condition:
+        for prop, predicate in condition.items():
             current_value = props.get(prop)
             compared_to_value = predicate['value']
             if predicate['operator'] == '=':
@@ -53,8 +53,9 @@ def _add_template_todo(
         parent_todo, task, conditional_props):
     remove = _to_exclude(conditional_props, template_todo.get('remove_if', []))
     if not remove:
-        skipped_datetime = datetime.now() if _to_exclude(
-                conditional_props, template_todo.get('skip_if', [])) else None
+        to_skip = _to_exclude(
+                conditional_props, template_todo.get('skip_if', []))
+        skipped_datetime = timezone.now() if to_skip else None
         todo = Todo(
             task=task,
             description=template_todo['description'],
