@@ -47,14 +47,21 @@ def add_todolist_template(todolist_template_slug, task_id):
             template_todo, todolist_template, root_todo, task, cond_props)
 
 
-def _to_exclude(props, conditions=[]):
+def _to_exclude(props, conditions):
+    any_condition_true = False
+
     for condition in conditions:
+        all_props_true = True
         for prop, predicate in condition.items():
             current_value = props.get(prop)
             compared_to_value = predicate['value']
             compare = OPERATORS[predicate['operator']]
-            return compare(current_value, compared_to_value)
-    return False
+            all_props_true = (
+                all_props_true and
+                compare(current_value, compared_to_value))
+        any_condition_true = any_condition_true or all_props_true
+
+    return any_condition_true
 
 
 def _add_template_todo(
