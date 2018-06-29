@@ -48,6 +48,10 @@ def add_todolist_template(todolist_template_slug, task_id):
 
 
 def _to_exclude(props, conditions):
+    """
+    The conditions is it a list of conditions that get ORed together,
+    with properties in each dictionary getting ANDed.
+    """
     any_condition_true = False
 
     for condition in conditions:
