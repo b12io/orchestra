@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.utils import timezone
 import logging
 import operator
@@ -25,25 +26,26 @@ def add_todolist_template(todolist_template_slug, task_id):
 
     task = Task.objects.get(id=task_id)
     template_todos = todolist_template.todos.get('items', [])
-    root_todo = Todo(
-        task=task,
-        description=todolist_template.name,
-        template=todolist_template
-    )
-    root_todo.save()
+    with transaction.atomic():
+        root_todo = Todo(
+            task=task,
+            description=todolist_template.name,
+            template=todolist_template
+        )
+        root_todo.save()
 
-    cond_props = {}
-    path = todolist_template.conditional_property_function.get(
-        'path', None)
-    if path:
-        try:
-            get_cond_props = locate(path)
-            cond_props = get_cond_props(task.project)
-        except Exception:
-            logger.exception('Invalid conditional function path.')
-    for template_todo in template_todos:
-        _add_template_todo(
-            template_todo, todolist_template, root_todo, task, cond_props)
+        cond_props = {}
+        path = todolist_template.conditional_property_function.get(
+            'path', None)
+        if path:
+            try:
+                get_cond_props = locate(path)
+                cond_props = get_cond_props(task.project)
+            except Exception:
+                logger.exception('Invalid conditional function path.')
+        for template_todo in template_todos:
+            _add_template_todo(
+                template_todo, todolist_template, root_todo, task, cond_props)
 
 
 def _to_exclude(props, conditions):
