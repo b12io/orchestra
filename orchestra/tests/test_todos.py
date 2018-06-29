@@ -405,7 +405,7 @@ class TodoTemplateEndpointTests(EndpointTestCase):
                     }],
                     'remove_if': [{
                         'prop1': {
-                            'operator': '=',
+                            'operator': '==',
                             'value': True
                         }
                     }]
