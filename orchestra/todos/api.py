@@ -19,7 +19,6 @@ OPERATORS = {
 }
 
 
-
 def add_todolist_template(todolist_template_slug, task_id):
     todolist_template = TodoListTemplate.objects.get(
         slug=todolist_template_slug)
