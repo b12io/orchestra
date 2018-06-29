@@ -383,8 +383,8 @@ class TodoTemplateEndpointTests(EndpointTestCase):
         self.assertEqual(resp.status_code, 400)
 
     def test_conditional_skip_remove_todos_from_template(self):
-        add_todos_from_todolist_template_url = \
-            reverse('orchestra:todos:add_todos_from_todolist_template')
+        update_todos_from_todolist_template_url = \
+            reverse('orchestra:todos:update_todos_from_todolist_template')
 
         todolist_template = TodoListTemplateFactory(
             slug=self.todolist_template_slug,
@@ -426,7 +426,7 @@ class TodoTemplateEndpointTests(EndpointTestCase):
                 }]},
         )
         resp = self.request_client.post(
-            add_todos_from_todolist_template_url,
+            update_todos_from_todolist_template_url,
             {
                 'todolist_template': todolist_template.slug,
                 'task': self.task.id,
