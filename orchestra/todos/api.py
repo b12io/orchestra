@@ -1,5 +1,6 @@
 from django.utils import timezone
 import logging
+import operator
 from pydoc import locate
 
 from orchestra.models import TodoListTemplate
@@ -7,6 +8,16 @@ from orchestra.models import Todo
 from orchestra.models import Task
 
 logger = logging.getLogger(__name__)
+
+OPERATORS = {
+    '<': operator.lt,
+    '<=': operator.le,
+    '==': operator.eq,
+    '!=': operator.ne,
+    '>=': operator.ge,
+    '>': operator.gt
+}
+
 
 
 def add_todolist_template(todolist_template_slug, task_id):
@@ -41,10 +52,8 @@ def _to_exclude(props, conditions=[]):
         for prop, predicate in condition.items():
             current_value = props.get(prop)
             compared_to_value = predicate['value']
-            if predicate['operator'] == '=':
-                return current_value == compared_to_value
-            elif predicate['operator'] == '!=':
-                return current_value != compared_to_value
+            compare = OPERATORS[predicate['operator']]
+            return compare(current_value, compared_to_value)
     return False
 
 
