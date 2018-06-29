@@ -54,7 +54,7 @@ def _to_exclude(props, conditions):
     any_condition_true = False
 
     for condition in conditions:
-        all_props_true = True
+        all_props_true = len(condition) > 0
         for prop, predicate in condition.items():
             current_value = props.get(prop)
             compared_to_value = predicate['value']
