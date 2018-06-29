@@ -2,7 +2,7 @@ import jsl
 
 
 class PredicateSchema(jsl.Document):
-    operator = jsl.StringField(required=True, pattern='[!=]?=')
+    operator = jsl.StringField(required=True, pattern='[!=><]=|[><]')
     value = jsl.AnyOfField([
         jsl.NumberField(),
         jsl.BooleanField(),
