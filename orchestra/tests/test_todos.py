@@ -1,5 +1,6 @@
 import json
 
+from django.utils import timezone
 from dateutil.parser import parse
 from django.core.urlresolvers import reverse
 
@@ -30,6 +31,13 @@ def _todo_data(task, description, completed,
         'start_by_datetime': start_by,
         'due_datetime': due,
         'skipped_datetime': skipped_datetime
+    }
+
+
+def _get_test_conditional_props(project):
+    return {
+        'prop1': True,
+        'prop2': False
     }
 
 
@@ -277,6 +285,10 @@ class TodoTemplateEndpointTests(EndpointTestCase):
         todo = dict(todo)
         created_at = todo.pop('created_at')
         todo_id = todo.pop('id')
+        todo_skipped = bool(todo.pop('skipped_datetime', None))
+        expected_skipped = bool(expected_todo.pop('skipped_datetime', None))
+
+        self.assertEqual(todo_skipped, expected_skipped)
         self.assertEqual(todo, expected_todo)
         self.assertGreater(len(created_at), 0)
         self.assertGreaterEqual(todo_id, 0)
@@ -369,3 +381,69 @@ class TodoTemplateEndpointTests(EndpointTestCase):
             })
 
         self.assertEqual(resp.status_code, 400)
+
+    def test_conditional_skip_remove_todos_from_template(self):
+        update_todos_from_todolist_template_url = \
+            reverse('orchestra:todos:update_todos_from_todolist_template')
+
+        todolist_template = TodoListTemplateFactory(
+            slug=self.todolist_template_slug,
+            name=self.todolist_template_name,
+            description=self.todolist_template_description,
+            conditional_property_function={
+                'path': 'orchestra.tests.test_todos'
+                        '._get_test_conditional_props'
+            },
+            todos={'items': [
+                {
+                    'id': 1,
+                    'description': 'todo parent 1',
+                    'items': [{
+                        'id': 2,
+                        'description': 'todo child 1',
+                        'items': []
+                    }],
+                    'remove_if': [{
+                        'prop1': {
+                            'operator': '==',
+                            'value': True
+                        }
+                    }]
+                }, {
+                    'id': 3,
+                    'description': 'todo parent 2',
+                    'items': [{
+                        'id': 4,
+                        'description': 'todo child 2',
+                        'items': [],
+                        'skip_if': [{
+                            'prop2': {
+                                'operator': '!=',
+                                'value': True
+                            }
+                        }]
+                    }]
+                }]},
+        )
+        resp = self.request_client.post(
+            update_todos_from_todolist_template_url,
+            {
+                'todolist_template': todolist_template.slug,
+                'task': self.task.id,
+            })
+        self.assertEqual(resp.status_code, 200)
+        todos = load_encoded_json(resp.content)
+
+        expected_todos = [
+            _todo_data(self.task, 'todo child 2', False,
+                       template=todolist_template.id,
+                       parent_todo=todos[1]['id'],
+                       skipped_datetime=timezone.now()),
+            _todo_data(self.task, 'todo parent 2', False,
+                       template=todolist_template.id,
+                       parent_todo=todos[2]['id']),
+            _todo_data(self.task, self.todolist_template_name,
+                       False, template=todolist_template.id),
+        ]
+        for todo, expected_todo in zip(todos, expected_todos):
+            self._verify_todo_content(todo, expected_todo)
