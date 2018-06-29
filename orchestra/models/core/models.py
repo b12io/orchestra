@@ -646,7 +646,7 @@ class Todo(TodoMixin, BaseModel):
 
     task = models.ForeignKey(
         Task, related_name='todos', on_delete=models.CASCADE)
-    description = models.CharField(max_length=200)
+    description = models.TextField()
     completed = models.BooleanField(default=False)
     start_by_datetime = models.DateTimeField(null=True, blank=True)
     due_datetime = models.DateTimeField(null=True, blank=True)
