@@ -53,9 +53,13 @@ def _add_template_todo(
         parent_todo, task, conditional_props):
     remove = _to_exclude(conditional_props, template_todo.get('remove_if', []))
     if not remove:
-        to_skip = _to_exclude(
-                conditional_props, template_todo.get('skip_if', []))
-        skipped_datetime = timezone.now() if to_skip else None
+        if parent_todo.skipped_datetime:
+            skipped_datetime = parent_todo.skipped_datetime
+        else:
+            to_skip = _to_exclude(
+                    conditional_props, template_todo.get('skip_if', []))
+            skipped_datetime = timezone.now() if to_skip else None
+
         todo = Todo(
             task=task,
             description=template_todo['description'],
