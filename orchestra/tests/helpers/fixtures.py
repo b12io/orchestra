@@ -169,6 +169,16 @@ class TodoFactory(factory.django.DjangoModelFactory):
         model = 'orchestra.Todo'
 
 
+class TodoQAFactory(factory.django.DjangoModelFactory):
+    todo = factory.SubFactory(TodoFactory)
+    approved = True
+    approval_reason = factory.Sequence(
+        lambda n: 'Reason {}'.format(n))
+
+    class Meta:
+        model = 'orchestra.TodoQA'
+
+
 class TodoListTemplateFactory(factory.django.DjangoModelFactory):
     slug = factory.Sequence(
         lambda n: 'todolist_template_{}'.format(n))

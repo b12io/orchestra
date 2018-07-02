@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from orchestra.models import Todo
+from orchestra.models import TodoQA
 from orchestra.models import TodoListTemplate
 from orchestra.json_schemas.todos import TodoListSchema
 from orchestra.utils.mixins import JSONSchemaValidationMixin
@@ -21,6 +22,19 @@ class TodoSerializer(serializers.ModelSerializer):
             'skipped_datetime',
             'start_by_datetime',
             'due_datetime')
+        read_only_fields = ('id',)
+
+
+class TodoQASerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = TodoQA
+        fields = (
+            'id',
+            'created_at',
+            'todo',
+            'approved',
+            'approval_reason')
         read_only_fields = ('id',)
 
 

@@ -40,6 +40,7 @@ __all__ = [
     'TimeEntry',
     'TaskTimer',
     'Todo',
+    'TodoQA',
     'TodoListTemplate',
     'PayRate',
 ]

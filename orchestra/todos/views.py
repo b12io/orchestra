@@ -7,9 +7,11 @@ from jsonview.exceptions import BadRequest
 
 from orchestra.models import Task
 from orchestra.models import Todo
+from orchestra.models import TodoQA
 from orchestra.models import TodoListTemplate
 from orchestra.models import Worker
 from orchestra.todos.serializers import TodoSerializer
+from orchestra.todos.serializers import TodoQASerializer
 from orchestra.todos.serializers import TodoListTemplateSerializer
 from orchestra.utils.notifications import message_experts_slack_group
 from orchestra.todos.api import add_todolist_template
@@ -84,6 +86,30 @@ class TodoDetail(generics.RetrieveUpdateDestroyAPIView):
             'complete' if todo.completed else 'incomplete')
         message_experts_slack_group(
             todo.task.project.slack_group_id, message)
+
+
+class TodoQADetail(generics.RetrieveUpdateAPIView):
+    permission_classes = (permissions.IsAuthenticated,
+                          IsAssociatedWithTodosProject)
+
+    serializer_class = TodoQASerializer
+    queryset = TodoQA.objects.all()
+
+
+class TodoQAList(generics.ListCreateAPIView):
+    permission_classes = (permissions.IsAuthenticated,
+                          IsAssociatedWithProject)
+
+    serializer_class = TodoQASerializer
+    queryset = TodoQA.objects.all()
+
+    def get_queryset(self):
+        queryset = TodoQA.objects.all()
+        project_id = self.request.query_params.get('project', None)
+        if project_id is not None:
+            queryset = queryset.filter(todo__task__project__id=int(project_id))
+        queryset = queryset.order_by('-created_at')
+        return queryset
 
 
 class TodoListTemplateDetail(generics.RetrieveUpdateAPIView):
