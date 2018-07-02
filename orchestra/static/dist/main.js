@@ -61563,7 +61563,6 @@ function todoList(orchestraApi) {
             todoList.templates = templates;
             todoList.todos = todoList.transformToTree(todos);
             todoList.ready = true;
-            console.log(todoList);
           });
         });
       });
