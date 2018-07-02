@@ -2,8 +2,7 @@
   <div ui-tree-handle class="tree-node tree-node-content">
     <label ng-class="{
       'todo-disapproved': isDisapproved(todo),
-      'todo-approved': isApproved(todo),
-      'todo-skipped': isSkipped(todo)
+      'todo-approved': isApproved(todo)
       }">
       <span ng-click="toggle(this)">
         <i aria-hidden="true" ng-if="todo.items && todo.items.length > 0" data-nodrag
@@ -13,7 +12,8 @@
             'fa-caret-down': !collapsed
           }"></i>
         <i class="fa fa-circle-o" aria-hidden="true" ng-if="(!todo.items || todo.items.length === 0)" data-nodrag></i>
-        <span class="todo__description" ng-bind-html="todo.description"></span>
+        <span ng-class="{'todo-skipped': todo.skipped_datetime}" ng-if="todo.skipped_datetime">(Skipped)&nbsp;</span>
+        <span ng-class="{'todo-skipped': todo.skipped_datetime}" class="todo__description" ng-bind-html="todo.description"></span>
       </span>
       <span>
         &nbsp;&nbsp;

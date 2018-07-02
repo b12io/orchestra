@@ -2324,7 +2324,7 @@ a.logo {
   -webkit-border-radius: 0;
   -moz-border-radius: none; }
 .todo-skipped {
-  color: #9e9e9e; }
+  opacity: 0.5; }
 
 .todo-disapproved {
   color: #ff0000; }
