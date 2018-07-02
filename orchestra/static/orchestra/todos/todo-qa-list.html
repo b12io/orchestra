@@ -1,0 +1,45 @@
+<script type="text/ng-template" id="todoQAItemTemplate">
+  <div ui-tree-handle class="tree-node tree-node-content">
+    <label ng-class="{
+      'todo-disapproved': isDisapproved(todo),
+      'todo-approved': isApproved(todo),
+      'todo-skipped': isSkipped(todo)
+      }">
+      <span ng-click="toggle(this)">
+        <i aria-hidden="true" ng-if="todo.items && todo.items.length > 0" data-nodrag
+          class="fa skipped-todos"
+          ng-class="{
+            'fa-caret-right': collapsed,
+            'fa-caret-down': !collapsed
+          }"></i>
+        <i class="fa fa-circle-o" aria-hidden="true" ng-if="(!todo.items || todo.items.length === 0)" data-nodrag></i>
+        <span class="todo__description" ng-bind-html="todo.description"></span>
+      </span>
+      <span>
+        &nbsp;&nbsp;
+        <a href="#" ng-if="isApprovalPending(todo) || isDisapproved(todo)" ng-click="approveTodo(todo)">[approve]</a>
+        <a href="#" ng-if="isApprovalPending(todo) || isApproved(todo)" ng-click="disapproveTodo(todo)">[disapprove]</a>
+        <a href="#" ng-if="!isApprovalPending(todo) && !isApprovalReasonProvided(todo)" ng-click="addReason(todo)">[add reason]</a>
+      </span>
+    </label>
+    <form class="form-inline" ng-if="isApprovalReasonProvided(todo)" >
+      <textarea class="form-control input-sm" rows="1" cols="50" ng-change="reasonChanged(todo)" ng-model="todo.qa.approval_reason" ng-trim="true"></textarea>
+      <button ng-if="changedReasons[todo.id]" ng-click="submitReason(todo)" class="btn btn-primary btn-sm">Submit</button>
+    </form>
+
+  </div>
+  <ol ui-tree-nodes ng-model="todo.items" ng-class="{hidden: collapsed}">
+    <li ng-repeat="todo in filterDesignTodos(todo.items)" ui-tree-node data-collapsed="true" ng-include="'todoQAItemTemplate'"></li>
+  </ol>
+</script>
+
+
+<div class="list-by-status" ng-if="todos.length > 0">
+  <div class="todo">
+    <div ui-tree data-drag-enabled="false" id="tree-root">
+      <ol ui-tree-nodes ng-model="todos">
+        <li ng-repeat="todo in filterDesignTodos(todos)" ui-tree-node data-collapsed="true" ng-include="'todoQAItemTemplate'"></li>
+      </ol>
+    </div>
+  </div>
+</div>

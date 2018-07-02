@@ -14,7 +14,7 @@ export default function todoList (orchestraApi) {
     },
     controllerAs: 'todoList',
     bindToController: true,
-    controller: function (todoApi, todoListTemplateApi, $scope) {
+    controller: function (todoApi, todoListTemplateApi, todoQAApi, $scope) {
       var todoList = this
       todoList.possibleTasks = []
       todoList.newTodoTaskId = null
@@ -113,6 +113,38 @@ export default function todoList (orchestraApi) {
         todoApi.update(todo)
       }
 
+      todoList.updateTodoApprovalReason = (todo) => {
+        todoQAApi.update(todo.qa)
+      }
+
+      todoList.approveTodo = (todo) => {
+        if (todo.qa) {
+          todo.qa.approved = true
+          todoQAApi.update(todo.qa)
+        } else {
+          todoQAApi.create({
+            'todo': todo.id,
+            'approved': true
+          }).then((qa) => {
+            todo.qa = qa
+          })
+        }
+      }
+
+      todoList.disapproveTodo = (todo) => {
+        if (todo.qa) {
+          todo.qa.approved = false
+          todoQAApi.update(todo.qa)
+        } else {
+          todoQAApi.create({
+            'todo': todo.id,
+            'approved': false
+          }).then((qa) => {
+            todo.qa = qa
+          })
+        }
+      }
+
       todoList.setTimeOfDate = (datetime) => {
         $scope.$apply()
       }
@@ -148,6 +180,7 @@ export default function todoList (orchestraApi) {
               todoList.templates = templates
               todoList.todos = todoList.transformToTree(todos)
               todoList.ready = true
+              console.log(todoList)
             })
           })
         })

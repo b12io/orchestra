@@ -679,11 +679,10 @@ class TodoQA(TodoQAMixin, BaseModel):
     class Meta:
         app_label = 'orchestra'
 
-    todo = models.ForeignKey(
-        Todo, related_name='qa', unique=True,
-        blank=True, on_delete=models.CASCADE)
-    approval_reason = models.TextField()
-    approved = models.BooleanField(default=False)
+    todo = models.OneToOneField(
+        Todo, related_name='qa', on_delete=models.CASCADE)
+    approval_reason = models.TextField(null=True, blank=True)
+    approved = models.NullBooleanField(blank=True)
 
 
 class SanityCheck(SanityCheckMixin, BaseModel):

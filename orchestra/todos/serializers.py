@@ -7,24 +7,6 @@ from orchestra.json_schemas.todos import TodoListSchema
 from orchestra.utils.mixins import JSONSchemaValidationMixin
 
 
-class TodoSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Todo
-        fields = (
-            'id',
-            'created_at',
-            'task',
-            'description',
-            'parent_todo',
-            'template',
-            'completed',
-            'skipped_datetime',
-            'start_by_datetime',
-            'due_datetime')
-        read_only_fields = ('id',)
-
-
 class TodoQASerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -35,6 +17,26 @@ class TodoQASerializer(serializers.ModelSerializer):
             'todo',
             'approved',
             'approval_reason')
+        read_only_fields = ('id',)
+
+
+class TodoSerializer(serializers.ModelSerializer):
+    qa = TodoQASerializer(read_only=True)
+
+    class Meta:
+        model = Todo
+        fields = (
+            'id',
+            'created_at',
+            'task',
+            'description',
+            'parent_todo',
+            'template',
+            'qa',
+            'completed',
+            'skipped_datetime',
+            'start_by_datetime',
+            'due_datetime')
         read_only_fields = ('id',)
 
 

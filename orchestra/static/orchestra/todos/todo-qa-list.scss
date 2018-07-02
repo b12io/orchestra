@@ -1,0 +1,16 @@
+.todo {
+  &-skipped {
+    color: #9e9e9e;
+  }
+  &-disapproved {
+    color: #ff0000;
+  }
+  &-approved {
+    color: #00981c;
+  }
+  &-qa-approval-reason {
+    display: block;
+    font-size: xx-small;
+    padding: 0px;
+  }
+}
