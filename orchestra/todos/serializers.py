@@ -21,6 +21,10 @@ class TodoQASerializer(serializers.ModelSerializer):
 
 
 class TodoSerializer(serializers.ModelSerializer):
+    qa = serializers.SerializerMethodField()
+
+    def get_qa(self, obj):
+        return None
 
     class Meta:
         model = Todo
@@ -31,6 +35,7 @@ class TodoSerializer(serializers.ModelSerializer):
             'description',
             'parent_todo',
             'template',
+            'qa',
             'completed',
             'skipped_datetime',
             'start_by_datetime',
