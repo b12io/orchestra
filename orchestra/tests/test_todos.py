@@ -24,7 +24,7 @@ from orchestra.utils.load_json import load_encoded_json
 
 def _todo_data(task, description, completed,
                skipped_datetime=None, start_by=None,
-               due=None, parent_todo=None, template=None,):
+               due=None, parent_todo=None, template=None, qa=None):
     return {
         'task': task.id,
         'completed': completed,
@@ -33,7 +33,8 @@ def _todo_data(task, description, completed,
         'parent_todo': parent_todo,
         'start_by_datetime': start_by,
         'due_datetime': due,
-        'skipped_datetime': skipped_datetime
+        'skipped_datetime': skipped_datetime,
+        'qa': qa
     }
 
 
