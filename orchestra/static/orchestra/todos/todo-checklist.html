@@ -15,6 +15,7 @@
           }"></i>
         <i class="fa fa-circle-o" aria-hidden="true" ng-if="(!todo.items || todo.items.length === 0) && showSkipped" data-nodrag></i>
         <span ng-hide="!todo.items || todo.items.length < 1 || showSkipped">[{{ ( todo.items | filter: { completed: true, skipped_datetime: '!' } ).length }}/{{ ( todo.items | filter: { skipped_datetime: '!' } ).length }}] </span>
+        <!-- <span class="todo__role" ng-if="recommendations[todo.description]">**</span> -->
         <span class="todo__role">{{steps[taskSlugs[todo.task]].name}}:&nbsp;</span>
         <span class="todo__description" ng-bind-html="todo.description"></span>
         <span ng-class="{'todo__dates': true, 'todo__dates-danger': isInDanger(todo)}">
@@ -33,6 +34,9 @@
         <a href="#" ng-hide="todo.parent_todo" ng-click="removeTodo(todo)">[remove]</a>
       </span>
     </label>
+    <form class="form-inline" ng-if="recommendations[todo.description] && recommendations[todo.description].approval_reason" >
+      <textarea class="form-control input-sm" rows="1" cols="50" ng-trim="true" disabled>{{recommendations[todo.description].approval_reason}}</textarea>
+    </form>
   </div>
   <ol ui-tree-nodes ng-model="todo.items" ng-class="{hidden: collapsed}">
     <li ng-repeat="todo in filterTodoList(todo.items, showSkipped)" ui-tree-node data-collapsed="true" ng-include="'todoItemTemplate'"></li>

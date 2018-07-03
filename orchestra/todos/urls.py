@@ -24,4 +24,7 @@ urlpatterns = [
     url(r'^update_todos_from_todolist_template/$',
         views.update_todos_from_todolist_template,
         name='update_todos_from_todolist_template'),
+    url(r'^recommendations/$',
+        views.recommendations,
+        name='recommendations'),
 ]

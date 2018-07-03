@@ -24,6 +24,8 @@ export default function todoList (orchestraApi) {
       todoList.ready = false
       todoList.taskSlugs = {}
       todoList.todos = []
+      todoList.templates = []
+      todoList.recommendations = []
 
       const createTodo = (taskId, description, completed, startDate, dueDate) => todoApi.create({
         task: taskId,
@@ -177,9 +179,12 @@ export default function todoList (orchestraApi) {
           // TODO(marcua): parallelize requests rather than chaining `then`s.
           todoApi.list(todoList.projectId).then((todos) => {
             todoListTemplateApi.list().then((templates) => {
-              todoList.templates = templates
-              todoList.todos = todoList.transformToTree(todos)
-              todoList.ready = true
+              todoQAApi.recommendations(todoList.projectId).then((recommendations) => {
+                todoList.recommendations = recommendations
+                todoList.templates = templates
+                todoList.todos = todoList.transformToTree(todos)
+                todoList.ready = true
+              })
             })
           })
         })

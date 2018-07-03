@@ -13,6 +13,7 @@ export default function todoChecklist () {
       title: '@',
       todos: '<',
       templates: '<',
+      recommendations: '<',
       showChecked: '=',
       showSkipped: '=',
       updateTodo: '=',
@@ -28,7 +29,7 @@ export default function todoChecklist () {
       }
 
       scope.isInDanger = (todo) => {
-        return !todo.completed && moment.isBeforeNowBy(todo.due_datetime, 1, 'days')
+        return (!todo.completed && moment.isBeforeNowBy(todo.due_datetime, 1, 'days')) || scope.recommendations[todo.description]
       }
 
       scope.isSkipped = (todo) => {

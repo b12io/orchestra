@@ -39,6 +39,21 @@ def update_todos_from_todolist_template(request):
         raise BadRequest('TodoList Template not found for the given slug.')
 
 
+@api_endpoint(methods=['GET'],
+              permissions=(permissions.IsAuthenticated,
+                           IsAssociatedWithProject),
+              logger=logger)
+def recommendations(request):
+    try:
+        todoQAs = TodoQA.objects.filter(
+            todo__task__assignments__worker__user=request.user, approved=False)
+        recommendation_list = {todoQA.todo.description: TodoQASerializer(
+            todoQA).data for todoQA in todoQAs}
+    except TodoQA.DoesNotExist:
+        recommendation_list = {}
+    return Response(recommendation_list)
+
+
 class TodoList(generics.ListCreateAPIView):
     permission_classes = (permissions.IsAuthenticated,
                           IsAssociatedWithProject)
