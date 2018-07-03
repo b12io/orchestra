@@ -21,6 +21,24 @@ class TodoQASerializer(serializers.ModelSerializer):
 
 
 class TodoSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Todo
+        fields = (
+            'id',
+            'created_at',
+            'task',
+            'description',
+            'parent_todo',
+            'template',
+            'completed',
+            'skipped_datetime',
+            'start_by_datetime',
+            'due_datetime')
+        read_only_fields = ('id',)
+
+
+class TodoWithQASerializer(serializers.ModelSerializer):
     qa = TodoQASerializer(read_only=True)
 
     class Meta:

@@ -11,6 +11,7 @@ from orchestra.models import TodoQA
 from orchestra.models import TodoListTemplate
 from orchestra.models import Worker
 from orchestra.todos.serializers import TodoSerializer
+from orchestra.todos.serializers import TodoWithQASerializer
 from orchestra.todos.serializers import TodoQASerializer
 from orchestra.todos.serializers import TodoListTemplateSerializer
 from orchestra.utils.notifications import message_experts_slack_group
@@ -58,8 +59,14 @@ class TodoList(generics.ListCreateAPIView):
     permission_classes = (permissions.IsAuthenticated,
                           IsAssociatedWithProject)
 
-    serializer_class = TodoSerializer
     queryset = Todo.objects.all()
+
+    def get_serializer_class(self):
+        if self.request.user.groups.filter(
+                name='todolist_qa_feature').exists():
+            return TodoWithQASerializer
+        else:
+            return TodoSerializer
 
     def get_queryset(self):
         queryset = Todo.objects.all()

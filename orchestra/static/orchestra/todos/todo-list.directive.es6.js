@@ -26,6 +26,7 @@ export default function todoList (orchestraApi) {
       todoList.todos = []
       todoList.templates = []
       todoList.recommendations = []
+      todoList.qaList = []
 
       const createTodo = (taskId, description, completed, startDate, dueDate) => todoApi.create({
         task: taskId,
@@ -183,6 +184,7 @@ export default function todoList (orchestraApi) {
                 todoList.recommendations = recommendations
                 todoList.templates = templates
                 todoList.todos = todoList.transformToTree(todos)
+                todoList.qaList = Object.values(todos).filter(todo => todo.qa)
                 todoList.ready = true
               })
             })
