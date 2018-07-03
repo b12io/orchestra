@@ -2327,10 +2327,10 @@ a.logo {
   opacity: 0.5; }
 
 .todo-disapproved {
-  color: #ff0000; }
+  color: #a94442; }
 
 .todo-approved {
-  color: #00981c; }
+  color: #3ab73a; }
 
 .todo-qa-approval-reason {
   display: block;
