@@ -12,7 +12,7 @@
             'fa-caret-down': !collapsed
           }">&nbsp;</i>
         <i class="fa fa-circle-o" aria-hidden="true" ng-if="(!todo.items || todo.items.length === 0)" data-nodrag>&nbsp;</i>
-        <span ng-class="{'todo-skipped': todo.skipped_datetime}" ng-if="todo.skipped_datetime">(Skipped)&nbsp;</span>
+        <span ng-class="{'todo-skipped': todo.skipped_datetime}" ng-if="todo.skipped_datetime">(Not relevant)&nbsp;</span>
         <span ng-class="{'todo-skipped': todo.skipped_datetime}" class="todo__description" ng-bind-html="todo.description"></span>
       </span>
       <span>
