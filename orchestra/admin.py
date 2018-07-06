@@ -191,7 +191,7 @@ class TodoAdmin(AjaxSelectAdmin):
 class TodoQAAdmin(AjaxSelectAdmin):
     list_display = ('id', 'created_at', 'todo', 'approval_reason', 'approved')
     ordering = ('-created_at',)
-    search_fields = ('todo_description',)
+    search_fields = ('todo__description', 'approval_reason',)
 
 
 @admin.register(TodoListTemplate)
