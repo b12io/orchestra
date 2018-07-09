@@ -46,12 +46,12 @@ export default function todoQa () {
         todo.qa.approval_reason = ' '
       }
 
-      scope.isDesignTodo = (todo) => {
-        return scope.taskSlugs[todo.task] === 'design' && todo.template
+      scope.isTemplateTodo = (todo) => {
+        return todo.template
       }
 
-      scope.filterDesignTodos = (todos) => {
-        return filter(todos, scope.isDesignTodo)
+      scope.filterTemplateTodos = (todos) => {
+        return filter(todos, scope.isTemplateTodo)
       }
     }
   }
