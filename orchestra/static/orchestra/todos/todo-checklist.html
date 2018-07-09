@@ -15,7 +15,6 @@
           }"></i>
         <i class="fa fa-circle-o" aria-hidden="true" ng-if="(!todo.items || todo.items.length === 0) && showSkipped" data-nodrag></i>
         <span ng-hide="!todo.items || todo.items.length < 1 || showSkipped">[{{ ( todo.items | filter: { completed: true, skipped_datetime: '!' } ).length }}/{{ ( todo.items | filter: { skipped_datetime: '!' } ).length }}] </span>
-        <!-- <span class="todo__role" ng-if="recommendations[todo.description]">**</span> -->
         <span class="todo__role">{{steps[taskSlugs[todo.task]].name}}:&nbsp;</span>
         <span class="todo__description" ng-bind-html="todo.description"></span>
         <span ng-class="{'todo__dates': true, 'todo__dates-danger': isInDanger(todo)}">
