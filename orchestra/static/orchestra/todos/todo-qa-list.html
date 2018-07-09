@@ -1,4 +1,4 @@
-<script type="text/ng-template" id="todoQAItemTemplate">
+<script type="text/ng-template" id="todoQaItemTemplate">
   <div ui-tree-handle class="tree-node tree-node-content">
     <label ng-class="{
       'todo-disapproved': isDisapproved(todo),
@@ -29,7 +29,7 @@
 
   </div>
   <ol ui-tree-nodes ng-model="todo.items" ng-class="{hidden: collapsed}">
-    <li ng-repeat="todo in filterTemplateTodos(todo.items)" ui-tree-node data-collapsed="true" ng-include="'todoQAItemTemplate'"></li>
+    <li ng-repeat="todo in filterTemplateTodos(todo.items)" ui-tree-node data-collapsed="true" ng-include="'todoQaItemTemplate'"></li>
   </ol>
 </script>
 
@@ -38,7 +38,7 @@
   <div class="todo">
     <div ui-tree data-drag-enabled="false" id="tree-root">
       <ol ui-tree-nodes ng-model="todos">
-        <li ng-repeat="todo in filterTemplateTodos(todos)" ui-tree-node data-collapsed="true" ng-include="'todoQAItemTemplate'"></li>
+        <li ng-repeat="todo in filterTemplateTodos(todos)" ui-tree-node data-collapsed="true" ng-include="'todoQaItemTemplate'"></li>
       </ol>
     </div>
   </div>
