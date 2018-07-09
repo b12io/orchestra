@@ -21,8 +21,8 @@ class IsAssociatedWithTodosProject(permissions.BasePermission):
             project = None
         return (
             project and
-            worker.is_project_admin() or
-            worker.assignments.filter(task__project=project).exists())
+            (worker.is_project_admin() or
+             worker.assignments.filter(task__project=project).exists()))
 
 
 class IsAssociatedWithProject(permissions.BasePermission):

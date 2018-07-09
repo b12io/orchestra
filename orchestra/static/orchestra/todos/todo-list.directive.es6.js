@@ -14,7 +14,7 @@ export default function todoList (orchestraApi) {
     },
     controllerAs: 'todoList',
     bindToController: true,
-    controller: function (todoApi, todoListTemplateApi, todoQAApi, $scope) {
+    controller: function (todoApi, todoListTemplateApi, todoQaApi, $scope) {
       var todoList = this
       todoList.possibleTasks = []
       todoList.newTodoTaskId = null
@@ -117,15 +117,15 @@ export default function todoList (orchestraApi) {
       }
 
       todoList.updateTodoApprovalReason = (todo) => {
-        todoQAApi.update(todo.qa)
+        todoQaApi.update(todo.qa)
       }
 
       todoList.approveTodo = (todo) => {
         if (todo.qa) {
           todo.qa.approved = true
-          todoQAApi.update(todo.qa)
+          todoQaApi.update(todo.qa)
         } else {
-          todoQAApi.create({
+          todoQaApi.create({
             'todo': todo.id,
             'approved': true
           }).then((qa) => {
@@ -137,9 +137,9 @@ export default function todoList (orchestraApi) {
       todoList.disapproveTodo = (todo) => {
         if (todo.qa) {
           todo.qa.approved = false
-          todoQAApi.update(todo.qa)
+          todoQaApi.update(todo.qa)
         } else {
-          todoQAApi.create({
+          todoQaApi.create({
             'todo': todo.id,
             'approved': false
           }).then((qa) => {
@@ -180,7 +180,7 @@ export default function todoList (orchestraApi) {
           // TODO(marcua): parallelize requests rather than chaining `then`s.
           todoApi.list(todoList.projectId).then((todos) => {
             todoListTemplateApi.list().then((templates) => {
-              todoQAApi.recommendations(todoList.projectId).then((recommendations) => {
+              todoQaApi.recommendations(todoList.projectId).then((recommendations) => {
                 todoList.recommendations = recommendations
                 todoList.templates = templates
                 todoList.todos = todoList.transformToTree(todos)

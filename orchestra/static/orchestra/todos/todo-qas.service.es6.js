@@ -1,4 +1,4 @@
-export default function todoQAApi ($http) {
+export default function todoQaApi ($http) {
   const apiBase = '/orchestra/todos/todo_qa/'
 
   const listCreate = (projectId) => {
@@ -8,16 +8,16 @@ export default function todoQAApi ($http) {
     return `${apiBase}?project=${projectId}`
   }
 
-  const details = (todoQAId) => `${apiBase}${todoQAId}/`
+  const details = (todoQaId) => `${apiBase}${todoQaId}/`
   const recommendations = (projectId) => `/orchestra/todos/recommendations/?project=${projectId}`
 
   return {
-    create: (todoQA) => $http.post(listCreate(), todoQA)
+    create: (todoQa) => $http.post(listCreate(), todoQa)
       .then(response => response.data),
     list: (projectId) => $http.get(listCreate(projectId))
       .then(response => response.data),
-    update: (todoQA) => $http.put(details(todoQA.id), todoQA),
-    delete: (todoQA) => $http.delete(details(todoQA.id)),
+    update: (todoQa) => $http.put(details(todoQa.id), todoQa),
+    delete: (todoQa) => $http.delete(details(todoQa.id)),
     recommendations: (projectId) => $http.get(recommendations(projectId))
       .then(response => response.data)
   }
