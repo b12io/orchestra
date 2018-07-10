@@ -19,12 +19,12 @@
         &nbsp;&nbsp;
         <a href="#" ng-if="isApprovalPending(todo) || isDisapproved(todo)" ng-click="approveTodo(todo)">[approve]</a>
         <a href="#" ng-if="isApprovalPending(todo) || isApproved(todo)" ng-click="disapproveTodo(todo)">[disapprove]</a>
-        <a href="#" ng-if="!isApprovalPending(todo) && !isApprovalReasonProvided(todo)" ng-click="addReason(todo)">[add reason]</a>
+        <a href="#" ng-if="!isApprovalPending(todo) && !hasComment(todo)" ng-click="addNewComment(todo)">[add reason]</a>
       </span>
     </label>
-    <form class="form-inline" ng-if="isApprovalReasonProvided(todo)" >
-      <textarea class="form-control input-sm" rows="1" cols="50" ng-change="reasonChanged(todo)" ng-model="todo.qa.approval_reason" ng-trim="true"></textarea>
-      <button ng-if="changedReasons[todo.id]" ng-click="submitReason(todo)" class="btn btn-primary btn-sm">Submit</button>
+    <form class="form-inline" ng-if="hasComment(todo)" >
+      <textarea class="form-control input-sm" rows="1" cols="50" ng-change="onCommentChange(todo)" ng-model="todo.qa.comment" ng-trim="true"></textarea>
+      <button ng-if="updatedComments[todo.id]" ng-click="submitComment(todo)" class="btn btn-primary btn-sm">Submit</button>
     </form>
 
   </div>

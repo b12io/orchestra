@@ -669,7 +669,7 @@ class TodoQA(TodoQAMixin, BaseModel):
             The given todo for which QA is done.
         approved (boolean):
             Whether the todo has been approved or not.
-        approval_reason (str):
+        comment (str):
             A text description explaining why a todo was
             approved or disapproved.
 
@@ -681,7 +681,7 @@ class TodoQA(TodoQAMixin, BaseModel):
 
     todo = models.OneToOneField(
         Todo, related_name='qa', on_delete=models.CASCADE)
-    approval_reason = models.TextField(null=True, blank=True)
+    comment = models.TextField(null=True, blank=True)
     approved = models.NullBooleanField(blank=True)
 
 

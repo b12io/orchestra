@@ -16,7 +16,7 @@ class TodoQASerializer(serializers.ModelSerializer):
             'created_at',
             'todo',
             'approved',
-            'approval_reason')
+            'comment')
         read_only_fields = ('id',)
 
 

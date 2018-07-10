@@ -193,7 +193,7 @@ class TodoQAMixin(object):
     def __str__(self):
         return '{} - {} ({})'.format(
             self.todo,
-            self.approval_reason,
+            self.comment,
             self.approved)
 
 

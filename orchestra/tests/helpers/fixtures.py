@@ -172,8 +172,8 @@ class TodoFactory(factory.django.DjangoModelFactory):
 class TodoQAFactory(factory.django.DjangoModelFactory):
     todo = factory.SubFactory(TodoFactory)
     approved = True
-    approval_reason = factory.Sequence(
-        lambda n: 'Reason {}'.format(n))
+    comment = factory.Sequence(
+        lambda n: 'Comment {}'.format(n))
 
     class Meta:
         model = 'orchestra.TodoQA'

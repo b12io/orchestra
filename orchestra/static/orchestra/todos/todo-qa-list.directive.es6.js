@@ -10,13 +10,13 @@ export default function todoQa () {
       todos: '<',
       approveTodo: '=',
       disapproveTodo: '=',
-      updateTodoApprovalReason: '='
+      updateComment: '='
     },
     link: (scope, elem, attrs) => {
-      scope.changedReasons = {}
-      scope.reasonChanged = (todo) => {
-        todo.qa.approval_reason = todo.qa.approval_reason.trim()
-        scope.changedReasons[todo.id] = true
+      scope.updatedComments = {}
+      scope.onCommentChange = (todo) => {
+        todo.qa.comment = todo.qa.comment.trim()
+        scope.updatedComments[todo.id] = true
       }
 
       scope.isDisapproved = (todo) => {
@@ -31,17 +31,17 @@ export default function todoQa () {
         return !todo.qa
       }
 
-      scope.isApprovalReasonProvided = (todo) => {
-        return todo.qa && todo.qa.approval_reason
+      scope.hasComment = (todo) => {
+        return todo.qa && todo.qa.comment
       }
 
-      scope.submitReason = (todo) => {
-        scope.updateTodoApprovalReason(todo)
-        scope.changedReasons[todo.id] = false
+      scope.submitComment = (todo) => {
+        scope.updateComment(todo)
+        scope.updatedComments[todo.id] = false
       }
 
-      scope.addReason = (todo) => {
-        todo.qa.approval_reason = ' '
+      scope.addNewComment = (todo) => {
+        todo.qa.comment = ' '
       }
 
       scope.isTemplateTodo = (todo) => {

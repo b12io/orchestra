@@ -203,14 +203,14 @@ class TodoQAEndpointTests(EndpointTestCase):
         self.tasks = Task.objects.filter(assignments__worker=self.worker)
         self.task = self.tasks[0]
         self.todo = TodoFactory(task=self.task)
-        self.approval_reason = 'Test approval reason'
+        self.comment = 'Test comment'
 
     def _todo_qa_data(
-            self, todo, approved, approval_reason):
+            self, todo, approved, comment):
         return {
             'todo': todo.id,
             'approved': approved,
-            'approval_reason': approval_reason
+            'comment': comment
         }
 
     def _verify_todo_qa_content(self, todo_qa,
@@ -227,37 +227,37 @@ class TodoQAEndpointTests(EndpointTestCase):
         resp = self.request_client.post(self.list_create_url, {
             'todo': todo.id,
             'approved': True,
-            'approval_reason': self.approval_reason})
+            'comment': self.comment})
         if success:
             self.assertEqual(resp.status_code, 201)
             self.assertEqual(TodoQA.objects.all().count(), num_todo_qas + 1)
             todo_qa = load_encoded_json(resp.content)
             self._verify_todo_qa_content(todo_qa, self._todo_qa_data(
-                todo, True, self.approval_reason))
+                todo, True, self.comment))
         else:
             self.assertEqual(resp.status_code, 403)
             self.assertEqual(TodoQA.objects.all().count(), num_todo_qas)
 
     def _verify_todo_qa_update(self, todo_qa, success):
-        approval_reason = 'new approval reason'
+        comment = 'new comment'
         list_details_url = reverse(
             self.list_details_url_name,
             kwargs={'pk': todo_qa.id})
         resp = self.request_client.put(
             list_details_url,
             json.dumps(self._todo_qa_data(
-                todo_qa.todo, True, approval_reason)),
+                todo_qa.todo, True, comment)),
             content_type='application/json')
         updated_todo_qa = TodoQASerializer(
             TodoQA.objects.get(id=todo_qa.id)).data
         if success:
             self.assertEqual(resp.status_code, 200)
             self._verify_todo_qa_content(updated_todo_qa, self._todo_qa_data(
-                todo_qa.todo, True, approval_reason))
+                todo_qa.todo, True, comment))
         else:
             self.assertEqual(resp.status_code, 403)
             self.assertNotEqual(
-                updated_todo_qa['approval_reason'], approval_reason)
+                updated_todo_qa['comment'], comment)
 
     def test_todo_qas_list_create(self):
         self._verify_todo_qa_creation(self.todo, True)
