@@ -2412,13 +2412,13 @@ a.logo {
 
 .angular-ui-tree-drag .tree-node-content {
   margin-top: 0; }
-.todo-skipped {
+.todo--skipped {
   opacity: 0.5; }
 
-.todo-disapproved {
+.todo--disapproved {
   color: #a94442; }
 
-.todo-approved {
+.todo--approved {
   color: #3ab73a; }
 
 .todo-qa-approval-reason {

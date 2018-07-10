@@ -1,11 +1,11 @@
 .todo {
-  &-skipped {
+  &--skipped {
     opacity: 0.5;
   }
-  &-disapproved {
+  &--disapproved {
     color: #a94442;
   }
-  &-approved {
+  &--approved {
     color: #3ab73a;
   }
   &-qa-approval-reason {
