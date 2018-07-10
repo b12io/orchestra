@@ -16,7 +16,7 @@ export default function qa () {
       qa.todos = []
       qa.ready = false
 
-      qa.updateTodoApprovalReason = (todo) => {
+      qa.updateTodoQAComment = (todo) => {
         todoQaApi.update(todo.qa)
       }
 

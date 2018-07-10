@@ -63722,7 +63722,7 @@ function qa() {
       qa.todos = [];
       qa.ready = false;
 
-      qa.updateTodoApprovalReason = function (todo) {
+      qa.updateTodoQAComment = function (todo) {
         todoQaApi.update(todo.qa);
       };
 
@@ -63776,7 +63776,7 @@ function qa() {
 /* 222 */
 /***/ (function(module, exports) {
 
-module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          QA\n        </h3>\n      </div>\n    </div>\n\n    <div class=\"row section-body\" ng-if=\"qa.ready\">\n      <div class=\"col-sm-12\">\n        <todo-qa-list\n        todos=\"qa.todos\"\n        approve-todo=\"qa.approveTodo\"\n        disapprove-todo=\"qa.disapproveTodo\"\n        update-todo-approval-reason=\"qa.updateTodoApprovalReason\"\n        ></todo-qa-list>\n      </div>\n    </div>\n\n  </div>\n</section>\n";
+module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          QA\n        </h3>\n      </div>\n    </div>\n\n    <div class=\"row section-body\" ng-if=\"qa.ready\">\n      <div class=\"col-sm-12\">\n        <todo-qa-list\n        todos=\"qa.todos\"\n        approve-todo=\"qa.approveTodo\"\n        disapprove-todo=\"qa.disapproveTodo\"\n        update-todo-qa-comment=\"qa.updateTodoQAComment\"\n        ></todo-qa-list>\n      </div>\n    </div>\n\n  </div>\n</section>\n";
 
 /***/ }),
 /* 223 */

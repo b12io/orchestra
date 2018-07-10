@@ -2421,7 +2421,7 @@ a.logo {
 .todo--approved {
   color: #3ab73a; }
 
-.todo-qa-approval-reason {
+.todo-qa-comment {
   display: block;
   font-size: xx-small;
   padding: 0px; }
