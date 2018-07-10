@@ -62,8 +62,9 @@ class TodoList(generics.ListCreateAPIView):
     queryset = Todo.objects.all()
 
     def get_serializer_class(self):
+        # Only include todo QA data for users in the `project_admins` group.
         if self.request.user.groups.filter(
-                name='todolist_qa_feature').exists():
+                name='project_admins').exists():
             return TodoWithQASerializer
         else:
             return TodoSerializer
