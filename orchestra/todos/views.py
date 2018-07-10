@@ -48,11 +48,11 @@ def recommendations(request):
     try:
         todoQAs = TodoQA.objects.filter(
             todo__task__assignments__worker__user=request.user, approved=False)
-        recommendation_list = {todoQA.todo.description: TodoQASerializer(
+        todos_recommendation = {todoQA.todo.description: TodoQASerializer(
             todoQA).data for todoQA in todoQAs}
     except TodoQA.DoesNotExist:
-        recommendation_list = {}
-    return Response(recommendation_list)
+        todos_recommendation = {}
+    return Response(todos_recommendation)
 
 
 class TodoList(generics.ListCreateAPIView):
@@ -111,7 +111,7 @@ class TodoDetail(generics.RetrieveUpdateDestroyAPIView):
             todo.task.project.slack_group_id, message)
 
 
-class TodoQADetail(generics.RetrieveUpdateAPIView):
+class TodoQADetail(generics.UpdateAPIView):
     permission_classes = (permissions.IsAuthenticated,
                           IsAssociatedWithTodosProject)
 
@@ -119,20 +119,12 @@ class TodoQADetail(generics.RetrieveUpdateAPIView):
     queryset = TodoQA.objects.all()
 
 
-class TodoQAList(generics.ListCreateAPIView):
+class TodoQAList(generics.CreateAPIView):
     permission_classes = (permissions.IsAuthenticated,
                           IsAssociatedWithProject)
 
     serializer_class = TodoQASerializer
     queryset = TodoQA.objects.all()
-
-    def get_queryset(self):
-        queryset = TodoQA.objects.all()
-        project_id = self.request.query_params.get('project', None)
-        if project_id is not None:
-            queryset = queryset.filter(todo__task__project__id=int(project_id))
-        queryset = queryset.order_by('-created_at')
-        return queryset
 
 
 class TodoListTemplateDetail(generics.RetrieveUpdateAPIView):

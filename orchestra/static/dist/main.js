@@ -61399,14 +61399,17 @@ var _todolistTemplateServiceEs = __webpack_require__(217);
 
 var _todolistTemplateServiceEs2 = _interopRequireDefault(_todolistTemplateServiceEs);
 
+var _todoQasServiceEs = __webpack_require__(222);
+
+var _todoQasServiceEs2 = _interopRequireDefault(_todoQasServiceEs);
+
 __webpack_require__(124);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/* global angular */
+var name = 'orchestra.todos'; /* global angular */
 
-var name = 'orchestra.todos';
-angular.module(name, ['ui.select', 'ngSanitize', 'ui.tree', _commonModuleEs2.default]).directive('todoList', _todoListDirectiveEs2.default).directive('todoChecklist', _todoChecklistDirectiveEs2.default).factory('todoApi', _todosServiceEs2.default).factory('todoListTemplateApi', _todolistTemplateServiceEs2.default);
+angular.module(name, ['ui.select', 'ngSanitize', 'ui.tree', _commonModuleEs2.default]).directive('todoList', _todoListDirectiveEs2.default).directive('todoChecklist', _todoChecklistDirectiveEs2.default).factory('todoApi', _todosServiceEs2.default).factory('todoListTemplateApi', _todolistTemplateServiceEs2.default).factory('todoQaApi', _todoQasServiceEs2.default);
 exports.default = name;
 
 /***/ }),
@@ -61459,7 +61462,6 @@ function todoList(orchestraApi) {
       todoList.todos = [];
       todoList.templates = [];
       todoList.recommendations = [];
-      todoList.qaList = [];
 
       var createTodo = function createTodo(taskId, description, completed, startDate, dueDate) {
         return todoApi.create({
@@ -61584,9 +61586,6 @@ function todoList(orchestraApi) {
               todoList.recommendations = recommendations;
               todoList.templates = templates;
               todoList.todos = todoList.transformToTree(todos);
-              todoList.qaList = Object.values(todos).filter(function (todo) {
-                return todo.qa;
-              });
               todoList.ready = true;
             });
           });
