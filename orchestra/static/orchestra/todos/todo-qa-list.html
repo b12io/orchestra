@@ -19,7 +19,7 @@
         &nbsp;&nbsp;
         <a href="#" ng-if="isApprovalPending(todo) || isDisapproved(todo)" ng-click="approveTodo(todo)">[approve]</a>
         <a href="#" ng-if="isApprovalPending(todo) || isApproved(todo)" ng-click="disapproveTodo(todo)">[disapprove]</a>
-        <a href="#" ng-if="!isApprovalPending(todo) && !hasComment(todo)" ng-click="addNewComment(todo)">[add reason]</a>
+        <a href="#" ng-if="!isApprovalPending(todo) && !hasComment(todo)" ng-click="addNewComment(todo)">[add comment]</a>
       </span>
     </label>
     <form class="form-inline" ng-if="hasComment(todo)" >
