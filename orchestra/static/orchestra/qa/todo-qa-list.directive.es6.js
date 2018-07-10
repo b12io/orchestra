@@ -7,9 +7,7 @@ export default function todoQa () {
     template,
     restrict: 'E',
     scope: {
-      title: '@',
       todos: '<',
-      taskSlugs: '<',
       approveTodo: '=',
       disapproveTodo: '=',
       updateTodoApprovalReason: '='

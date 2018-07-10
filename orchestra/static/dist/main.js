@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 123);
+/******/ 	return __webpack_require__(__webpack_require__.s = 125);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -1896,7 +1896,7 @@ function loadLocale(name) {
             module && module.exports) {
         try {
             oldLocale = globalLocale._abbr;
-            __webpack_require__(163)("./" + name);
+            __webpack_require__(165)("./" + name);
             // because defineLocale currently also sets the global locale, we
             // want to undo that for lazy loaded locales
             getSetGlobalLocale(oldLocale);
@@ -4537,8 +4537,8 @@ return hooks;
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var moment = module.exports = __webpack_require__(162);
-moment.tz.load(__webpack_require__(164));
+var moment = module.exports = __webpack_require__(164);
+moment.tz.load(__webpack_require__(166));
 
 
 /***/ }),
@@ -14133,6 +14133,57 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;!function() {
 
 /***/ }),
 /* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _orchestra_apiEs = __webpack_require__(126);
+
+var _orchestra_apiEs2 = _interopRequireDefault(_orchestra_apiEs);
+
+var _orchestraServicesEs = __webpack_require__(127);
+
+var _orchestraFiltersEs = __webpack_require__(128);
+
+var _checklistDirectiveEs = __webpack_require__(129);
+
+var _checklistDirectiveEs2 = _interopRequireDefault(_checklistDirectiveEs);
+
+var _checklistItemDirectiveEs = __webpack_require__(145);
+
+var _checklistItemDirectiveEs2 = _interopRequireDefault(_checklistItemDirectiveEs);
+
+var _quillDirectiveEs = __webpack_require__(147);
+
+var _quillDirectiveEs2 = _interopRequireDefault(_quillDirectiveEs);
+
+var _teamMessagesDirectiveEs = __webpack_require__(154);
+
+var _teamMessagesDirectiveEs2 = _interopRequireDefault(_teamMessagesDirectiveEs);
+
+var _projectFolderDirectiveEs = __webpack_require__(156);
+
+var _projectFolderDirectiveEs2 = _interopRequireDefault(_projectFolderDirectiveEs);
+
+var _websiteIframeDirectiveEs = __webpack_require__(158);
+
+var _websiteIframeDirectiveEs2 = _interopRequireDefault(_websiteIframeDirectiveEs);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var name = 'orchestra.common'; /* global angular */
+
+angular.module('orchestra.common', []).factory('orchestraService', _orchestraServicesEs.orchestraService).factory('orchestraTasks', _orchestraServicesEs.orchestraTasks).factory('orchestraApi', _orchestra_apiEs2.default).filter('capitalize', _orchestraFiltersEs.capitalize).filter('toArray', _orchestraFiltersEs.toArray).directive('orchestraChecklist', _checklistDirectiveEs2.default).directive('orchestraChecklistItem', _checklistItemDirectiveEs2.default).directive('orchestraQuill', _quillDirectiveEs2.default).directive('orchestraTeamMessages', _teamMessagesDirectiveEs2.default).directive('projectFolder', _projectFolderDirectiveEs2.default).directive('websiteIframe', _websiteIframeDirectiveEs2.default);
+
+exports.default = name;
+
+/***/ }),
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, module) {var __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -31224,57 +31275,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;!function() {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(6)(module)))
 
 /***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _orchestra_apiEs = __webpack_require__(124);
-
-var _orchestra_apiEs2 = _interopRequireDefault(_orchestra_apiEs);
-
-var _orchestraServicesEs = __webpack_require__(125);
-
-var _orchestraFiltersEs = __webpack_require__(126);
-
-var _checklistDirectiveEs = __webpack_require__(127);
-
-var _checklistDirectiveEs2 = _interopRequireDefault(_checklistDirectiveEs);
-
-var _checklistItemDirectiveEs = __webpack_require__(143);
-
-var _checklistItemDirectiveEs2 = _interopRequireDefault(_checklistItemDirectiveEs);
-
-var _quillDirectiveEs = __webpack_require__(145);
-
-var _quillDirectiveEs2 = _interopRequireDefault(_quillDirectiveEs);
-
-var _teamMessagesDirectiveEs = __webpack_require__(152);
-
-var _teamMessagesDirectiveEs2 = _interopRequireDefault(_teamMessagesDirectiveEs);
-
-var _projectFolderDirectiveEs = __webpack_require__(154);
-
-var _projectFolderDirectiveEs2 = _interopRequireDefault(_projectFolderDirectiveEs);
-
-var _websiteIframeDirectiveEs = __webpack_require__(156);
-
-var _websiteIframeDirectiveEs2 = _interopRequireDefault(_websiteIframeDirectiveEs);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var name = 'orchestra.common'; /* global angular */
-
-angular.module('orchestra.common', []).factory('orchestraService', _orchestraServicesEs.orchestraService).factory('orchestraTasks', _orchestraServicesEs.orchestraTasks).factory('orchestraApi', _orchestra_apiEs2.default).filter('capitalize', _orchestraFiltersEs.capitalize).filter('toArray', _orchestraFiltersEs.toArray).directive('orchestraChecklist', _checklistDirectiveEs2.default).directive('orchestraChecklistItem', _checklistItemDirectiveEs2.default).directive('orchestraQuill', _quillDirectiveEs2.default).directive('orchestraTeamMessages', _teamMessagesDirectiveEs2.default).directive('projectFolder', _projectFolderDirectiveEs2.default).directive('websiteIframe', _websiteIframeDirectiveEs2.default);
-
-exports.default = name;
-
-/***/ }),
 /* 6 */
 /***/ (function(module, exports) {
 
@@ -42395,31 +42395,88 @@ module.exports = "<div class=\"data-modal\">\n  <div class=\"modal-inner\">\n   
 "use strict";
 
 
-var _lodash = __webpack_require__(4);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = todoApi;
+function todoApi($http) {
+  var apiBase = '/orchestra/todos/todo/';
 
-var _commonModuleEs = __webpack_require__(5);
+  var listCreate = function listCreate(projectId) {
+    if (projectId === undefined) {
+      return apiBase;
+    }
+    return apiBase + '?project=' + projectId;
+  };
+
+  var details = function details(todoId) {
+    return '' + apiBase + todoId + '/';
+  };
+
+  return {
+    create: function create(todo) {
+      return $http.post(listCreate(), todo).then(function (response) {
+        return response.data;
+      });
+    },
+    list: function list(projectId) {
+      return $http.get(listCreate(projectId)).then(function (response) {
+        return response.data;
+      });
+    },
+    update: function update(todo) {
+      return $http.put(details(todo.id), todo);
+    },
+    delete: function _delete(todo) {
+      return $http.delete(details(todo.id));
+    }
+  };
+};
+
+/***/ }),
+/* 124 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(218);
+module.exports = 'ui.tree';
+
+
+/***/ }),
+/* 125 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _lodash = __webpack_require__(5);
+
+var _commonModuleEs = __webpack_require__(4);
 
 var _commonModuleEs2 = _interopRequireDefault(_commonModuleEs);
 
-var _dashboardModuleEs = __webpack_require__(159);
+var _dashboardModuleEs = __webpack_require__(161);
 
 var _dashboardModuleEs2 = _interopRequireDefault(_dashboardModuleEs);
 
-var _projectManagementModuleEs = __webpack_require__(167);
+var _projectManagementModuleEs = __webpack_require__(169);
 
 var _projectManagementModuleEs2 = _interopRequireDefault(_projectManagementModuleEs);
 
-var _taskModuleEs = __webpack_require__(180);
+var _taskModuleEs = __webpack_require__(182);
 
 var _taskModuleEs2 = _interopRequireDefault(_taskModuleEs);
 
-var _timingModuleEs = __webpack_require__(187);
+var _timingModuleEs = __webpack_require__(189);
 
 var _timingModuleEs2 = _interopRequireDefault(_timingModuleEs);
 
-var _todosModuleEs = __webpack_require__(207);
+var _todosModuleEs = __webpack_require__(209);
 
 var _todosModuleEs2 = _interopRequireDefault(_todosModuleEs);
+
+var _qaModuleEs = __webpack_require__(219);
+
+var _qaModuleEs2 = _interopRequireDefault(_qaModuleEs);
 
 var _teamInfoModuleEs = __webpack_require__(223);
 
@@ -42431,17 +42488,17 @@ var _configEs2 = _interopRequireDefault(_configEs);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/* global angular */
+
 angular.module('orchestra.analytics', []);
 
 // Include any custom workflow modules as dependencies
-/* global angular */
-
 window.orchestra.angular_modules.forEach(function (module) {
   return angular.module(module, []);
 });
 angular.module('orchestra.workflows', window.orchestra.angular_modules);
 
-angular.module('orchestra', ['ngRoute', _commonModuleEs2.default, _timingModuleEs2.default, _dashboardModuleEs2.default, _taskModuleEs2.default, _todosModuleEs2.default, _teamInfoModuleEs2.default, _projectManagementModuleEs2.default, 'orchestra.analytics', 'orchestra.workflows']).config(_configEs2.default).run(['$http', '$location', '$rootScope', '$window', function ($http, $location, $rootScope, $window) {
+angular.module('orchestra', ['ngRoute', _commonModuleEs2.default, _timingModuleEs2.default, _dashboardModuleEs2.default, _taskModuleEs2.default, _todosModuleEs2.default, _qaModuleEs2.default, _teamInfoModuleEs2.default, _projectManagementModuleEs2.default, 'orchestra.analytics', 'orchestra.workflows']).config(_configEs2.default).run(['$http', '$location', '$rootScope', '$window', function ($http, $location, $rootScope, $window) {
   'ngAnnotate';
 
   // Update xsrf $http headers to align with Django's defaults
@@ -42468,7 +42525,7 @@ angular.module('orchestra', ['ngRoute', _commonModuleEs2.default, _timingModuleE
 }]);
 
 /***/ }),
-/* 124 */
+/* 126 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42548,7 +42605,7 @@ function orchestraApi($http) {
 };
 
 /***/ }),
-/* 125 */
+/* 127 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42711,7 +42768,7 @@ function orchestraTasks($http) {
 }
 
 /***/ }),
-/* 126 */
+/* 128 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42752,7 +42809,7 @@ function toArray() {
 }
 
 /***/ }),
-/* 127 */
+/* 129 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42763,17 +42820,17 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = orchestraChecklist;
 
-var _dragula = __webpack_require__(128);
+var _dragula = __webpack_require__(130);
 
 var _dragula2 = _interopRequireDefault(_dragula);
 
-__webpack_require__(140);
+__webpack_require__(142);
 
-var _checklist = __webpack_require__(141);
+var _checklist = __webpack_require__(143);
 
 var _checklist2 = _interopRequireDefault(_checklist);
 
-__webpack_require__(142);
+__webpack_require__(144);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -42953,15 +43010,15 @@ function orchestraChecklist($http, $timeout, $compile, orchestraService) {
 }
 
 /***/ }),
-/* 128 */
+/* 130 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(global) {
 
-var emitter = __webpack_require__(129);
-var crossvent = __webpack_require__(136);
-var classes = __webpack_require__(139);
+var emitter = __webpack_require__(131);
+var crossvent = __webpack_require__(138);
+var classes = __webpack_require__(141);
 var doc = document;
 var documentElement = doc.documentElement;
 
@@ -43569,14 +43626,14 @@ module.exports = dragula;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 129 */
+/* 131 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var atoa = __webpack_require__(130);
-var debounce = __webpack_require__(131);
+var atoa = __webpack_require__(132);
+var debounce = __webpack_require__(133);
 
 module.exports = function emitter (thing, options) {
   var opts = options || {};
@@ -43630,20 +43687,20 @@ module.exports = function emitter (thing, options) {
 
 
 /***/ }),
-/* 130 */
+/* 132 */
 /***/ (function(module, exports) {
 
 module.exports = function atoa (a, n) { return Array.prototype.slice.call(a, n); }
 
 
 /***/ }),
-/* 131 */
+/* 133 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var ticky = __webpack_require__(132);
+var ticky = __webpack_require__(134);
 
 module.exports = function debounce (fn, args, ctx) {
   if (!fn) { return; }
@@ -43654,7 +43711,7 @@ module.exports = function debounce (fn, args, ctx) {
 
 
 /***/ }),
-/* 132 */
+/* 134 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(setImmediate) {var si = typeof setImmediate === 'function', tick;
@@ -43665,10 +43722,10 @@ if (si) {
 }
 
 module.exports = tick;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(133).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(135).setImmediate))
 
 /***/ }),
-/* 133 */
+/* 135 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var apply = Function.prototype.apply;
@@ -43721,13 +43778,13 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(134);
+__webpack_require__(136);
 exports.setImmediate = setImmediate;
 exports.clearImmediate = clearImmediate;
 
 
 /***/ }),
-/* 134 */
+/* 136 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -43917,10 +43974,10 @@ exports.clearImmediate = clearImmediate;
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(135)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(137)))
 
 /***/ }),
-/* 135 */
+/* 137 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -44110,14 +44167,14 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 136 */
+/* 138 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(global) {
 
-var customEvent = __webpack_require__(137);
-var eventmap = __webpack_require__(138);
+var customEvent = __webpack_require__(139);
+var eventmap = __webpack_require__(140);
 var doc = global.document;
 var addEvent = addEventEasy;
 var removeEvent = removeEventEasy;
@@ -44219,7 +44276,7 @@ function find (el, type, fn) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 137 */
+/* 139 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {
@@ -44274,7 +44331,7 @@ function CustomEvent (type, params) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 138 */
+/* 140 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -44295,7 +44352,7 @@ module.exports = eventmap;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 139 */
+/* 141 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -44335,18 +44392,6 @@ module.exports = {
 
 
 /***/ }),
-/* 140 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 141 */
-/***/ (function(module, exports) {
-
-module.exports = "<div class=\"checklist-wrapper\">\n  <div ng-if=\"data.items.length\" class=\"toggle-completed\" ng-click=\"data.hideCompleted = !data.hideCompleted\">\n    <span ng-if=\"data.hideCompleted\">Show</span>\n    <span ng-if=\"!data.hideCompleted\">Hide</span>\n    <span> completed items</span>\n  </div>\n  <ul class=\"checklist\">\n    <div ng-repeat=\"item in data.items|orderBy:'order'\">\n      <orchestra-checklist-item></orchestra-checklist-item>\n    </div>\n  </ul>\n  <div ng-click=\"addItem()\" class=\"new-item\">\n    <div class=\"line-item\">\n      <div class=\"new-item-button\">\n        <i class=\"fa fa-plus-square\"></i>\n      </div>\n      <div class=\"new-item-text item-title\">Add new checklist item\n        <div>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n";
-
-/***/ }),
 /* 142 */
 /***/ (function(module, exports) {
 
@@ -44354,6 +44399,18 @@ module.exports = "<div class=\"checklist-wrapper\">\n  <div ng-if=\"data.items.l
 
 /***/ }),
 /* 143 */
+/***/ (function(module, exports) {
+
+module.exports = "<div class=\"checklist-wrapper\">\n  <div ng-if=\"data.items.length\" class=\"toggle-completed\" ng-click=\"data.hideCompleted = !data.hideCompleted\">\n    <span ng-if=\"data.hideCompleted\">Show</span>\n    <span ng-if=\"!data.hideCompleted\">Hide</span>\n    <span> completed items</span>\n  </div>\n  <ul class=\"checklist\">\n    <div ng-repeat=\"item in data.items|orderBy:'order'\">\n      <orchestra-checklist-item></orchestra-checklist-item>\n    </div>\n  </ul>\n  <div ng-click=\"addItem()\" class=\"new-item\">\n    <div class=\"line-item\">\n      <div class=\"new-item-button\">\n        <i class=\"fa fa-plus-square\"></i>\n      </div>\n      <div class=\"new-item-text item-title\">Add new checklist item\n        <div>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n";
+
+/***/ }),
+/* 144 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 145 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -44364,7 +44421,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = orchestraChecklistItem;
 
-var _checklistItem = __webpack_require__(144);
+var _checklistItem = __webpack_require__(146);
 
 var _checklistItem2 = _interopRequireDefault(_checklistItem);
 
@@ -44443,13 +44500,13 @@ function orchestraChecklistItem($http, $timeout, $compile, orchestraService) {
 }
 
 /***/ }),
-/* 144 */
+/* 146 */
 /***/ (function(module, exports) {
 
 module.exports = "<li ng-class=\"{'item-expanded': item.expanded,\n               'item-hidden': data.hideCompleted && item.checked}\"\n    data-key=\"{{item.$$hashKey}}\"\n    class=\"checklist-item item-{{item.$$hashKey}}\">\n    <div ng-mouseenter=\"item.hover = true\"\n         ng-mouseleave=\"item.hover = false\"\n         class=\"line-item\">\n        <input type=\"checkbox\"\n               name=\"item-{{item.$$hashKey}}-checkbox\"\n               id=\"item-{{item.$$hashKey}}-checkbox\">\n        <label ng-class=\"{'checked': item.checked}\"\n               ng-click=\"item.checked = !item.checked\"\n               for=\"item-{{item.$$hashKey}}-checkbox\">\n            <i class=\"fa fa-check\"></i>\n        </label>\n        <div ng-click=\"expandItem(item)\"\n             class=\"item-title\">\n            <input ng-model=\"item.title\"\n                   ng-readonly=\"item.readonly\"\n                   ng-class=\"{'readonly': item.readonly}\"\n                   ng-click=\"$event.stopPropagation(); item.readonly && editItem(item, $event);\"\n                   ng-blur=\"item.readonly = true\"\n                   ng-keydown=\"$event.keyCode == 13 && editItem(item)\"\n                   class=\"item-title-input\"\n                   type=\"text\"\n                   placeholder=\"Item title here\">\n        </div>\n        <div ng-hide=\"!item.hover && !item.expanded && item.readonly\"\n             class=\"item-tools\">\n            <div ng-click=\"expandItem(item)\" class=\"expand-toggle\" ng-class=\"{'selected': item.expanded}\">\n                <i class=\"fa fa-comment-o\"></i>\n            </div>\n            <div ng-click=\"editItem(item)\" class=\"edit-toggle\" ng-class=\"{'selected': !item.readonly}\">\n                <i class=\"fa fa-edit\"></i>\n            </div>\n            <div ng-click=\"removeItem(item, 'true')\" class=\"item-remove\">\n                <i class=\"fa fa-times\"></i>\n            </div>\n        </div>\n    </div>\n    <div ng-class=\"{'expanded': item.expanded}\" class=\"item-description\">\n        <div ng-repeat=\"comment in item.comments track by $index\"\n             class=\"comment\">\n            <div class=\"comment-meta\">\n              <div ng-if=\"!$last\" class=\"comment-author\">{{comment.author}}</div>\n              <div ng-if=\"!$last\" class=\"comment-timestamp\">{{getCommentTimestamp(comment)}}</div>\n            </div>\n            <div class=\"add-comment\" ng-if=\"$last\">Add a comment:</div>\n            <orchestra-quill readonly=\"!$last\"\n                             data=\"comment.text\"\n                             image-prefix=\"imagePrefix\">\n            </orchestra-quill>\n        </div>\n    </div>\n</li>\n";
 
 /***/ }),
-/* 145 */
+/* 147 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -44460,19 +44517,19 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = orchestraQuill;
 
-var _quill = __webpack_require__(146);
+var _quill = __webpack_require__(148);
 
 var _quill2 = _interopRequireDefault(_quill);
 
-var _quill3 = __webpack_require__(147);
+var _quill3 = __webpack_require__(149);
 
 var _quill4 = _interopRequireDefault(_quill3);
 
-__webpack_require__(149);
-
-__webpack_require__(150);
-
 __webpack_require__(151);
+
+__webpack_require__(152);
+
+__webpack_require__(153);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -44711,20 +44768,20 @@ function orchestraQuill($http, $timeout) {
 }
 
 /***/ }),
-/* 146 */
+/* 148 */
 /***/ (function(module, exports) {
 
 module.exports = "<div ng-class=\"{'readonly': readonly}\" class=\"orchestra-quill-wrapper\">\n  <div class=\"orchestra-quill-toolbar\">\n    <span class=\"ql-format-group\">\n      <select title=\"Font\" class=\"ql-font\">\n        <option value=\"sans-serif\" selected=\"\">Sans Serif</option>\n        <option value=\"serif\">Serif</option>\n        <option value=\"monospace\">Monospace</option>\n      </select>\n      <select title=\"Size\" class=\"ql-size\">\n        <option value=\"10px\">Small</option>\n        <option value=\"13px\" selected=\"\">Normal</option>\n        <option value=\"18px\">Large</option>\n        <option value=\"32px\">Huge</option>\n      </select>\n    </span>\n    <span class=\"ql-format-group\">\n      <span title=\"Bold\" class=\"ql-format-button ql-bold\"></span>\n      <span class=\"ql-format-separator\"></span>\n      <span title=\"Italic\" class=\"ql-format-button ql-italic\"></span>\n      <span class=\"ql-format-separator\"></span>\n      <span title=\"Underline\" class=\"ql-format-button ql-underline\"></span>\n      <span class=\"ql-format-separator\"></span>\n      <span title=\"Strikethrough\" class=\"ql-format-button ql-strike\"></span>\n    </span>\n    <span class=\"ql-format-group\">\n      <select title=\"Text Color\" class=\"ql-color\">\n        <option value=\"rgb(0, 0, 0)\" label=\"rgb(0, 0, 0)\" selected=\"\"></option>\n        <option value=\"rgb(230, 0, 0)\" label=\"rgb(230, 0, 0)\"></option>\n        <option value=\"rgb(255, 153, 0)\" label=\"rgb(255, 153, 0)\"></option>\n        <option value=\"rgb(255, 255, 0)\" label=\"rgb(255, 255, 0)\"></option>\n        <option value=\"rgb(0, 138, 0)\" label=\"rgb(0, 138, 0)\"></option>\n        <option value=\"rgb(0, 102, 204)\" label=\"rgb(0, 102, 204)\"></option>\n        <option value=\"rgb(153, 51, 255)\" label=\"rgb(153, 51, 255)\"></option>\n        <option value=\"rgb(255, 255, 255)\" label=\"rgb(255, 255, 255)\"></option>\n        <option value=\"rgb(250, 204, 204)\" label=\"rgb(250, 204, 204)\"></option>\n        <option value=\"rgb(255, 235, 204)\" label=\"rgb(255, 235, 204)\"></option>\n        <option value=\"rgb(255, 255, 204)\" label=\"rgb(255, 255, 204)\"></option>\n        <option value=\"rgb(204, 232, 204)\" label=\"rgb(204, 232, 204)\"></option>\n        <option value=\"rgb(204, 224, 245)\" label=\"rgb(204, 224, 245)\"></option>\n        <option value=\"rgb(235, 214, 255)\" label=\"rgb(235, 214, 255)\"></option>\n        <option value=\"rgb(187, 187, 187)\" label=\"rgb(187, 187, 187)\"></option>\n        <option value=\"rgb(240, 102, 102)\" label=\"rgb(240, 102, 102)\"></option>\n        <option value=\"rgb(255, 194, 102)\" label=\"rgb(255, 194, 102)\"></option>\n        <option value=\"rgb(255, 255, 102)\" label=\"rgb(255, 255, 102)\"></option>\n        <option value=\"rgb(102, 185, 102)\" label=\"rgb(102, 185, 102)\"></option>\n        <option value=\"rgb(102, 163, 224)\" label=\"rgb(102, 163, 224)\"></option>\n        <option value=\"rgb(194, 133, 255)\" label=\"rgb(194, 133, 255)\"></option>\n        <option value=\"rgb(136, 136, 136)\" label=\"rgb(136, 136, 136)\"></option>\n        <option value=\"rgb(161, 0, 0)\" label=\"rgb(161, 0, 0)\"></option>\n        <option value=\"rgb(178, 107, 0)\" label=\"rgb(178, 107, 0)\"></option>\n        <option value=\"rgb(178, 178, 0)\" label=\"rgb(178, 178, 0)\"></option>\n        <option value=\"rgb(0, 97, 0)\" label=\"rgb(0, 97, 0)\"></option>\n        <option value=\"rgb(0, 71, 178)\" label=\"rgb(0, 71, 178)\"></option>\n        <option value=\"rgb(107, 36, 178)\" label=\"rgb(107, 36, 178)\"></option>\n        <option value=\"rgb(68, 68, 68)\" label=\"rgb(68, 68, 68)\"></option>\n        <option value=\"rgb(92, 0, 0)\" label=\"rgb(92, 0, 0)\"></option>\n        <option value=\"rgb(102, 61, 0)\" label=\"rgb(102, 61, 0)\"></option>\n        <option value=\"rgb(102, 102, 0)\" label=\"rgb(102, 102, 0)\"></option>\n        <option value=\"rgb(0, 55, 0)\" label=\"rgb(0, 55, 0)\"></option>\n        <option value=\"rgb(0, 41, 102)\" label=\"rgb(0, 41, 102)\"></option>\n        <option value=\"rgb(61, 20, 102)\" label=\"rgb(61, 20, 102)\"></option>\n      </select>\n      <span class=\"ql-format-separator\"></span>\n      <select title=\"Background Color\" class=\"ql-background\">\n        <option value=\"rgb(0, 0, 0)\" label=\"rgb(0, 0, 0)\"></option>\n        <option value=\"rgb(230, 0, 0)\" label=\"rgb(230, 0, 0)\"></option>\n        <option value=\"rgb(255, 153, 0)\" label=\"rgb(255, 153, 0)\"></option>\n        <option value=\"rgb(255, 255, 0)\" label=\"rgb(255, 255, 0)\"></option>\n        <option value=\"rgb(0, 138, 0)\" label=\"rgb(0, 138, 0)\"></option>\n        <option value=\"rgb(0, 102, 204)\" label=\"rgb(0, 102, 204)\"></option>\n        <option value=\"rgb(153, 51, 255)\" label=\"rgb(153, 51, 255)\"></option>\n        <option value=\"rgb(255, 255, 255)\" label=\"rgb(255, 255, 255)\" selected=\"\"></option>\n        <option value=\"rgb(250, 204, 204)\" label=\"rgb(250, 204, 204)\"></option>\n        <option value=\"rgb(255, 235, 204)\" label=\"rgb(255, 235, 204)\"></option>\n        <option value=\"rgb(255, 255, 204)\" label=\"rgb(255, 255, 204)\"></option>\n        <option value=\"rgb(204, 232, 204)\" label=\"rgb(204, 232, 204)\"></option>\n        <option value=\"rgb(204, 224, 245)\" label=\"rgb(204, 224, 245)\"></option>\n        <option value=\"rgb(235, 214, 255)\" label=\"rgb(235, 214, 255)\"></option>\n        <option value=\"rgb(187, 187, 187)\" label=\"rgb(187, 187, 187)\"></option>\n        <option value=\"rgb(240, 102, 102)\" label=\"rgb(240, 102, 102)\"></option>\n        <option value=\"rgb(255, 194, 102)\" label=\"rgb(255, 194, 102)\"></option>\n        <option value=\"rgb(255, 255, 102)\" label=\"rgb(255, 255, 102)\"></option>\n        <option value=\"rgb(102, 185, 102)\" label=\"rgb(102, 185, 102)\"></option>\n        <option value=\"rgb(102, 163, 224)\" label=\"rgb(102, 163, 224)\"></option>\n        <option value=\"rgb(194, 133, 255)\" label=\"rgb(194, 133, 255)\"></option>\n        <option value=\"rgb(136, 136, 136)\" label=\"rgb(136, 136, 136)\"></option>\n        <option value=\"rgb(161, 0, 0)\" label=\"rgb(161, 0, 0)\"></option>\n        <option value=\"rgb(178, 107, 0)\" label=\"rgb(178, 107, 0)\"></option>\n        <option value=\"rgb(178, 178, 0)\" label=\"rgb(178, 178, 0)\"></option>\n        <option value=\"rgb(0, 97, 0)\" label=\"rgb(0, 97, 0)\"></option>\n        <option value=\"rgb(0, 71, 178)\" label=\"rgb(0, 71, 178)\"></option>\n        <option value=\"rgb(107, 36, 178)\" label=\"rgb(107, 36, 178)\"></option>\n        <option value=\"rgb(68, 68, 68)\" label=\"rgb(68, 68, 68)\"></option>\n        <option value=\"rgb(92, 0, 0)\" label=\"rgb(92, 0, 0)\"></option>\n        <option value=\"rgb(102, 61, 0)\" label=\"rgb(102, 61, 0)\"></option>\n        <option value=\"rgb(102, 102, 0)\" label=\"rgb(102, 102, 0)\"></option>\n        <option value=\"rgb(0, 55, 0)\" label=\"rgb(0, 55, 0)\"></option>\n        <option value=\"rgb(0, 41, 102)\" label=\"rgb(0, 41, 102)\"></option>\n        <option value=\"rgb(61, 20, 102)\" label=\"rgb(61, 20, 102)\"></option>\n      </select>\n    </span>\n    <span class=\"ql-format-group\">\n      <span title=\"List\" class=\"ql-format-button ql-list\"></span>\n      <span class=\"ql-format-separator\"></span>\n      <span title=\"Bullet\" class=\"ql-format-button ql-bullet\"></span>\n      <span class=\"ql-format-separator\"></span>\n      <select title=\"Text Alignment\" class=\"ql-align\">\n        <option value=\"left\" label=\"Left\" selected=\"\"></option>\n        <option value=\"center\" label=\"Center\"></option>\n        <option value=\"right\" label=\"Right\"></option>\n        <option value=\"justify\" label=\"Justify\"></option>\n      </select>\n    </span>\n    <span class=\"ql-format-group\">\n      <span title=\"Link\" class=\"ql-format-button ql-link\"></span>\n      <span class=\"ql-format-separator\"></span>\n      <span title=\"Image\" class=\"ql-format-button ql-image\"></span>\n    </span>\n  </div>\n\n  <div class=\"orchestra-quill-editor\">\n  </div>\n</div>\n";
 
 /***/ }),
-/* 147 */
+/* 149 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(148);
+module.exports = __webpack_require__(150);
 
 
 /***/ }),
-/* 148 */
+/* 150 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var require;var require;/*! Quill Editor v0.20.1
@@ -55479,18 +55536,6 @@ module.exports = SnowTheme;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 149 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 150 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
 /* 151 */
 /***/ (function(module, exports) {
 
@@ -55498,6 +55543,18 @@ module.exports = SnowTheme;
 
 /***/ }),
 /* 152 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 153 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 154 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -55508,7 +55565,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = orchestraTeamMessages;
 
-var _teamMessages = __webpack_require__(153);
+var _teamMessages = __webpack_require__(155);
 
 var _teamMessages2 = _interopRequireDefault(_teamMessages);
 
@@ -55527,13 +55584,13 @@ function orchestraTeamMessages() {
 }
 
 /***/ }),
-/* 153 */
+/* 155 */
 /***/ (function(module, exports) {
 
 module.exports = "<website-iframe title=\"Team Messages\"\n\t\tid=\"team-messages\" \n\t\tng-if=\"vm.taskAssignment.project.team_messages_url\"\n\t\tiframe-url=\"{{vm.taskAssignment.project.team_messages_url}}\">\n</website-iframe>\n";
 
 /***/ }),
-/* 154 */
+/* 156 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -55544,7 +55601,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = orchestraProjectFolder;
 
-var _projectFolder = __webpack_require__(155);
+var _projectFolder = __webpack_require__(157);
 
 var _projectFolder2 = _interopRequireDefault(_projectFolder);
 
@@ -55569,13 +55626,13 @@ function orchestraProjectFolder() {
 }
 
 /***/ }),
-/* 155 */
+/* 157 */
 /***/ (function(module, exports) {
 
 module.exports = "<div ng-if=\"vm.projectFolderId\" class=\"project-drive-folder\">\n  <website-iframe title=\"Project Drive Folder\"\n                  id=\"project-drive-folder\"\n-                 description=\"Resources for the project should be stored here. Open the folder in a new window and add it to your drive if you need to upload anything new!\"\n                  iframe-url=\"{{vm.projectFolderEmbedUrl}}\"\n                  external-url=\"{{vm.projectFolderExternalUrl}}\">\n  </website-iframe>\n</div>\n";
 
 /***/ }),
-/* 156 */
+/* 158 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -55586,11 +55643,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = websiteIframe;
 
-var _websiteIframe = __webpack_require__(157);
+var _websiteIframe = __webpack_require__(159);
 
 var _websiteIframe2 = _interopRequireDefault(_websiteIframe);
 
-__webpack_require__(158);
+__webpack_require__(160);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -55647,19 +55704,19 @@ function websiteIframe($compile, $sce, $timeout) {
 }
 
 /***/ }),
-/* 157 */
+/* 159 */
 /***/ (function(module, exports) {
 
 module.exports = "<!--htmlhint id-unique:false -->\n\n<div ng-if=\"bare\" class=\"iframe-wrapper\">\n  <div id=\"iframe-wrapper-{{id}}\">\n  </div>\n</div>\n\n<section ng-if=\"!bare\" class=\"section-panel\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          {{ title }}\n          <a href=\"{{externalUrl || iframeUrl}}\" target=\"_blank\" class=\"btn\">\n            Open in a new window\n          </a>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row padded\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        {{description}}\n        <div class=\"iframe-wrapper\">\n          <div id=\"iframe-wrapper-{{id}}\">\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n";
 
 /***/ }),
-/* 158 */
+/* 160 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 159 */
+/* 161 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -55669,11 +55726,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _tasktableDirectiveEs = __webpack_require__(160);
+var _tasktableDirectiveEs = __webpack_require__(162);
 
 var _tasktableDirectiveEs2 = _interopRequireDefault(_tasktableDirectiveEs);
 
-var _dashboardControllerEs = __webpack_require__(165);
+var _dashboardControllerEs = __webpack_require__(167);
 
 var _dashboardControllerEs2 = _interopRequireDefault(_dashboardControllerEs);
 
@@ -55687,7 +55744,7 @@ angular.module(name, ['orchestra.timing']).directive('tasktable', _tasktableDire
 exports.default = name;
 
 /***/ }),
-/* 160 */
+/* 162 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -55698,7 +55755,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = tasktable;
 
-var _tasktable = __webpack_require__(161);
+var _tasktable = __webpack_require__(163);
 
 var _tasktable2 = _interopRequireDefault(_tasktable);
 
@@ -55765,13 +55822,13 @@ function tasktable() {
 }
 
 /***/ }),
-/* 161 */
+/* 163 */
 /***/ (function(module, exports) {
 
 module.exports = "<section class=\"section-panel tasks-section\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12\">\n        <h3>\n          {{vm.tasktable.label}} ({{ vm.tasktable.tasks.length || 0 }})\n          <button type=\"button\"\n                    ng-if=\"vm.enableNewTaskButtons\"\n                    ng-click=\"vm.newTask('entry_level')\"\n                    ng-class=\"{'disabled': vm.orchestraTasks.preventNew ||\n                                           vm.noTaskTimer}\"\n                    class=\"btn btn-primary btn-new-entry-task\">\n              New delivery task\n            </button>\n            <button type=\"button\"\n                    ng-if=\"vm.orchestraTasks.reviewerStatus &&\n                           vm.enableNewTaskButtons\"\n                    ng-click=\"vm.newTask('reviewer')\"\n                    ng-class=\"{'disabled': vm.orchestraTasks.preventNew ||\n                                           vm.noTaskTimer}\"\n                    class=\"btn btn-primary btn-new-review-task\">\n              New review task\n            </button>\n            <span class=\"warning-message\"\n                  ng-show=\"vm.newTaskError && !vm.orchestraTasks.preventNew\">\n              No tasks available at the moment\n            </span>\n            <i class=\"fa fa-spinner fa-spin\" ng-show=\"vm.waiting\"></i>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row\">\n          <table ng-if=\"vm.tasktable.tasks.length > 0\"\n                 st-table=\"vm.tasktable.tasks\"\n                 class=\"table table-striped\">\n            <thead>\n              <tr>\n                <th>Priority</th>\n                <th>Project</th>\n                <th>Task</th>\n                <th>Details</th>\n                <th>Next steps</th>\n                <th>Start by</th>\n                <th>Due on</th>\n              </tr>\n            </thead>\n            <tbody>\n              <tr\n                 ng-class=\"{'task-row':true, 'danger': vm.isInDanger(task)}\"\n                 ng-repeat=\"task in vm.tasktable.tasks\"\n                 ng-click=\"vm.openTask(task)\">\n                <td>{{task.priority}}</td>\n                <td>{{task.project}}</td>\n                <td>{{task.step}}</td>\n                <td>{{task.detail|limitTo:50}}{{task.detail.length > 50 ? '...' : ''}}</td>\n                <td>{{task.next_todo_dict.description|limitTo:50}}{{task.next_todo_dict.description.length > 50 ? '...' : ''}}</td>\n                <td><datetime-display datetime=\"task.next_todo_dict.start_by_datetime\" show-time=\"false\" /></td>\n                <td><datetime-display datetime=\"task.next_todo_dict.due_datetime\" show-time=\"false\" /></td>\n              </tr>\n            </tbody>\n          </table>\n    </div>\n  </div>\n</section>\n";
 
 /***/ }),
-/* 162 */
+/* 164 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//! moment-timezone.js
@@ -56381,7 +56438,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
 /***/ }),
-/* 163 */
+/* 165 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
@@ -56630,10 +56687,10 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 163;
+webpackContext.id = 165;
 
 /***/ }),
-/* 164 */
+/* 166 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -57238,7 +57295,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 165 */
+/* 167 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -57249,7 +57306,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = DashboardController;
 
-__webpack_require__(166);
+__webpack_require__(168);
 
 function DashboardController(orchestraTasks) {
       'ngAnnotate';
@@ -57261,13 +57318,13 @@ function DashboardController(orchestraTasks) {
 }
 
 /***/ }),
-/* 166 */
+/* 168 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 167 */
+/* 169 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -57277,47 +57334,47 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _commonModuleEs = __webpack_require__(5);
+var _commonModuleEs = __webpack_require__(4);
 
 var _commonModuleEs2 = _interopRequireDefault(_commonModuleEs);
 
-var _assignmentsVisEs = __webpack_require__(168);
+var _assignmentsVisEs = __webpack_require__(170);
 
 var _assignmentsVisEs2 = _interopRequireDefault(_assignmentsVisEs);
 
-var _axisEs = __webpack_require__(169);
+var _axisEs = __webpack_require__(171);
 
 var _axisEs2 = _interopRequireDefault(_axisEs);
 
-var _crosshairEs = __webpack_require__(170);
+var _crosshairEs = __webpack_require__(172);
 
 var _crosshairEs2 = _interopRequireDefault(_crosshairEs);
 
-var _dataServiceEs = __webpack_require__(171);
+var _dataServiceEs = __webpack_require__(173);
 
 var _dataServiceEs2 = _interopRequireDefault(_dataServiceEs);
 
-var _iterationsVisEs = __webpack_require__(172);
+var _iterationsVisEs = __webpack_require__(174);
 
 var _iterationsVisEs2 = _interopRequireDefault(_iterationsVisEs);
 
-var _projectVisEs = __webpack_require__(173);
+var _projectVisEs = __webpack_require__(175);
 
 var _projectVisEs2 = _interopRequireDefault(_projectVisEs);
 
-var _tasksVisEs = __webpack_require__(175);
+var _tasksVisEs = __webpack_require__(177);
 
 var _tasksVisEs2 = _interopRequireDefault(_tasksVisEs);
 
-var _visUtilsEs = __webpack_require__(177);
+var _visUtilsEs = __webpack_require__(179);
 
 var _visUtilsEs2 = _interopRequireDefault(_visUtilsEs);
 
-var _projectManagementControllerEs = __webpack_require__(178);
+var _projectManagementControllerEs = __webpack_require__(180);
 
 var _projectManagementControllerEs2 = _interopRequireDefault(_projectManagementControllerEs);
 
-__webpack_require__(179);
+__webpack_require__(181);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -57328,7 +57385,7 @@ angular.module(name, ['ui.bootstrap', 'ui.select', _commonModuleEs2.default]).co
 exports.default = name;
 
 /***/ }),
-/* 168 */
+/* 170 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -57491,7 +57548,7 @@ function assignmentsVis(dataService, orchestraApi, iterationsVis, visUtils) {
 }
 
 /***/ }),
-/* 169 */
+/* 171 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -57589,7 +57646,7 @@ function axis(dataService, visUtils) {
 }
 
 /***/ }),
-/* 170 */
+/* 172 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -57664,7 +57721,7 @@ function crosshair(visUtils, axis) {
 }
 
 /***/ }),
-/* 171 */
+/* 173 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -57893,7 +57950,7 @@ function dataService($location, $rootScope, $route, orchestraApi) {
 }
 
 /***/ }),
-/* 172 */
+/* 174 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -57976,7 +58033,7 @@ function iterationsVis($uibModal, dataService, visUtils, axis) {
 }
 
 /***/ }),
-/* 173 */
+/* 175 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -57991,7 +58048,7 @@ var _dataModal = __webpack_require__(122);
 
 var _dataModal2 = _interopRequireDefault(_dataModal);
 
-var _slackModal = __webpack_require__(174);
+var _slackModal = __webpack_require__(176);
 
 var _slackModal2 = _interopRequireDefault(_slackModal);
 
@@ -58130,13 +58187,13 @@ function projectVis($uibModal, $location, dataService, orchestraApi, crosshair, 
 }
 
 /***/ }),
-/* 174 */
+/* 176 */
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"slack-modal\">\n    <h1>Edit Slack group membership</h1>\n    <input ng-model=\"slackUsername\" placeholder=\"Slack username to add/remove\">\n    <i ng-click=\"editSlackMembership('add', slackUsername)\"\n       title=\"Add user\" class=\"fa fa-plus add-user\"></i>\n    <i ng-click=\"editSlackMembership('remove', slackUsername)\"\n       title=\"Remove user\" class=\"fa fa-minus remove-user\"></i>\n</div>\n";
 
 /***/ }),
-/* 175 */
+/* 177 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -58147,7 +58204,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = tasksVis;
 
-var _revertModal = __webpack_require__(176);
+var _revertModal = __webpack_require__(178);
 
 var _revertModal2 = _interopRequireDefault(_revertModal);
 
@@ -58531,13 +58588,13 @@ function tasksVis($uibModal, dataService, orchestraApi, visUtils, assignmentsVis
 }
 
 /***/ }),
-/* 176 */
+/* 178 */
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"revert-modal\">\n  <div class=\"header-wrapper\">\n    Are you sure you want to revert the task to this point? The following changes cannot be undone:\n  </div>\n  <pre class=\"json-view\">{{audit | json}}</pre>\n  <button ng-click=\"cancel()\" class=\"btn btn-default\">Cancel</button>\n  <button ng-click=\"confirmRevert()\" class=\"btn btn-danger\">Confirm revert</button>\n</div>\n";
 
 /***/ }),
-/* 177 */
+/* 179 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -58605,7 +58662,7 @@ function visUtils(dataService) {
 }
 
 /***/ }),
-/* 178 */
+/* 180 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -58642,13 +58699,13 @@ function ProjectManagementController($route, $routeParams, $scope, projectVis, d
 } /* global angular */
 
 /***/ }),
-/* 179 */
+/* 181 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 180 */
+/* 182 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -58658,27 +58715,27 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _autosaveServiceEs = __webpack_require__(181);
+var _autosaveServiceEs = __webpack_require__(183);
 
 var _autosaveServiceEs2 = _interopRequireDefault(_autosaveServiceEs);
 
-var _dynamicLoadDirectiveEs = __webpack_require__(182);
+var _dynamicLoadDirectiveEs = __webpack_require__(184);
 
 var _dynamicLoadDirectiveEs2 = _interopRequireDefault(_dynamicLoadDirectiveEs);
 
-var _requiredFieldDirectiveEs = __webpack_require__(183);
+var _requiredFieldDirectiveEs = __webpack_require__(185);
 
 var _requiredFieldDirectiveEs2 = _interopRequireDefault(_requiredFieldDirectiveEs);
 
-var _requiredFieldsServiceEs = __webpack_require__(184);
+var _requiredFieldsServiceEs = __webpack_require__(186);
 
 var _requiredFieldsServiceEs2 = _interopRequireDefault(_requiredFieldsServiceEs);
 
-var _taskControllerEs = __webpack_require__(185);
+var _taskControllerEs = __webpack_require__(187);
 
 var _taskControllerEs2 = _interopRequireDefault(_taskControllerEs);
 
-__webpack_require__(186);
+__webpack_require__(188);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -58690,7 +58747,7 @@ angular.module(name, ['orchestra.timing']).controller('TaskController', _taskCon
 exports.default = name;
 
 /***/ }),
-/* 181 */
+/* 183 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -58786,7 +58843,7 @@ function autoSaveTask($rootScope, $timeout, $http, orchestraService) {
 }
 
 /***/ }),
-/* 182 */
+/* 184 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -58812,7 +58869,7 @@ function dynamicLoad($compile) {
 }
 
 /***/ }),
-/* 183 */
+/* 185 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -58860,7 +58917,7 @@ function orchestraRequiredField($compile, requiredFields) {
 }
 
 /***/ }),
-/* 184 */
+/* 186 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -58960,7 +59017,7 @@ function requiredFields($rootScope, orchestraService) {
 }
 
 /***/ }),
-/* 185 */
+/* 187 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -59060,13 +59117,13 @@ function TaskController($location, $scope, $routeParams, $http, $rootScope, auto
 }
 
 /***/ }),
-/* 186 */
+/* 188 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 187 */
+/* 189 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -59076,43 +59133,43 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _commonModuleEs = __webpack_require__(5);
+var _commonModuleEs = __webpack_require__(4);
 
 var _commonModuleEs2 = _interopRequireDefault(_commonModuleEs);
 
-var _datePickerDirectiveEs = __webpack_require__(188);
+var _datePickerDirectiveEs = __webpack_require__(190);
 
 var _datePickerDirectiveEs2 = _interopRequireDefault(_datePickerDirectiveEs);
 
-var _taskSelectDirectiveEs = __webpack_require__(192);
+var _taskSelectDirectiveEs = __webpack_require__(194);
 
 var _taskSelectDirectiveEs2 = _interopRequireDefault(_taskSelectDirectiveEs);
 
-var _enforceIntegersDirectiveEs = __webpack_require__(194);
+var _enforceIntegersDirectiveEs = __webpack_require__(196);
 
 var _enforceIntegersDirectiveEs2 = _interopRequireDefault(_enforceIntegersDirectiveEs);
 
-var _timecardControllerEs = __webpack_require__(195);
+var _timecardControllerEs = __webpack_require__(197);
 
 var _timecardControllerEs2 = _interopRequireDefault(_timecardControllerEs);
 
-var _timerDirectiveEs = __webpack_require__(197);
+var _timerDirectiveEs = __webpack_require__(199);
 
 var _timerDirectiveEs2 = _interopRequireDefault(_timerDirectiveEs);
 
-var _timeEntriesServiceEs = __webpack_require__(200);
+var _timeEntriesServiceEs = __webpack_require__(202);
 
 var _timeEntriesServiceEs2 = _interopRequireDefault(_timeEntriesServiceEs);
 
-var _timeEntryServiceEs = __webpack_require__(201);
+var _timeEntryServiceEs = __webpack_require__(203);
 
 var _timeEntryServiceEs2 = _interopRequireDefault(_timeEntryServiceEs);
 
-var _timeInputDirectiveEs = __webpack_require__(202);
+var _timeInputDirectiveEs = __webpack_require__(204);
 
 var _timeInputDirectiveEs2 = _interopRequireDefault(_timeInputDirectiveEs);
 
-var _datetimeDisplayDirectiveEs = __webpack_require__(205);
+var _datetimeDisplayDirectiveEs = __webpack_require__(207);
 
 var _datetimeDisplayDirectiveEs2 = _interopRequireDefault(_datetimeDisplayDirectiveEs);
 
@@ -59125,7 +59182,7 @@ angular.module(name, ['ui.select', 'ngSanitize', _commonModuleEs2.default]).dire
 exports.default = name;
 
 /***/ }),
-/* 188 */
+/* 190 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -59136,13 +59193,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = datePicker;
 
-var _pikaday = __webpack_require__(189);
+var _pikaday = __webpack_require__(191);
 
 var _pikaday2 = _interopRequireDefault(_pikaday);
 
-__webpack_require__(190);
+__webpack_require__(192);
 
-var _datePicker = __webpack_require__(191);
+var _datePicker = __webpack_require__(193);
 
 var _datePicker2 = _interopRequireDefault(_datePicker);
 
@@ -59198,7 +59255,7 @@ function datePicker(timeEntries) {
 }
 
 /***/ }),
-/* 189 */
+/* 191 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*!
@@ -60397,19 +60454,19 @@ function datePicker(timeEntries) {
 
 
 /***/ }),
-/* 190 */
+/* 192 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 191 */
+/* 193 */
 /***/ (function(module, exports) {
 
 module.exports = "<span class=\"date-picker\">\n  <i class=\"fa fa-calendar-o\"></i>{{ date.format(' ddd, MMM D') }}\n</span>\n";
 
 /***/ }),
-/* 192 */
+/* 194 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -60420,7 +60477,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = taskSelect;
 
-var _taskSelect = __webpack_require__(193);
+var _taskSelect = __webpack_require__(195);
 
 var _taskSelect2 = _interopRequireDefault(_taskSelect);
 
@@ -60445,13 +60502,13 @@ function taskSelect(orchestraTasks) {
 }
 
 /***/ }),
-/* 193 */
+/* 195 */
 /***/ (function(module, exports) {
 
 module.exports = "<label class=\"edit-label\">Select task</label>\n<ui-select ng-model=\"taskSelect.task\">\n  <ui-select-match>\n    <span ng-bind=\"taskSelect.orchestraTasks.getDescription($select.selected)\"></span>\n  </ui-select-match>\n  <ui-select-choices repeat=\"item in (taskSelect.orchestraTasks.activeAndRecentTasks(5) | filter: $select.search) track by item.id\">\n    <span ng-bind=\"taskSelect.orchestraTasks.getDescription(item)\"></span>\n  </ui-select-choices>\n</ui-select>\n";
 
 /***/ }),
-/* 194 */
+/* 196 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -60508,7 +60565,7 @@ function enforceIntegers() {
 }
 
 /***/ }),
-/* 195 */
+/* 197 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -60523,7 +60580,7 @@ var _momentTimezone = __webpack_require__(1);
 
 var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
 
-__webpack_require__(196);
+__webpack_require__(198);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -60684,13 +60741,13 @@ function TimecardController($routeParams, $scope, orchestraTasks, timeEntries) {
 }
 
 /***/ }),
-/* 196 */
+/* 198 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 197 */
+/* 199 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -60705,11 +60762,11 @@ var _momentTimezone = __webpack_require__(1);
 
 var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
 
-var _timer = __webpack_require__(198);
+var _timer = __webpack_require__(200);
 
 var _timer2 = _interopRequireDefault(_timer);
 
-__webpack_require__(199);
+__webpack_require__(201);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -60832,19 +60889,19 @@ function workTimer($rootScope) {
 } /* global $static */
 
 /***/ }),
-/* 198 */
+/* 200 */
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"timer\" ng-if=\"!vm.dataLoading\">\n  <div class=\"popover-toggle\"\n       uib-popover-template=\"workTimer.popoverTemplate\"\n       popover-placement=\"bottom-right\">\n    <i class=\"fa fa-clock-o\"></i>\n    <span ng-if=\"workTimer.timerRunning\">\n      <span ng-if=\"workTimer.timeElapsed.get('hours') === 0\">\n        {{ workTimer.timeElapsed.roundMinute().humanizeUnits(['m']) }}\n      </span>\n      <span ng-if=\"workTimer.timeElapsed.get('hours')\">\n        {{ workTimer.timeElapsed.roundMinute().humanizeUnits() }}\n      </span>\n    </span>\n  </div>\n</div>\n";
 
 /***/ }),
-/* 199 */
+/* 201 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 200 */
+/* 202 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61016,7 +61073,7 @@ function timeEntries($http, TimeEntry) {
 }
 
 /***/ }),
-/* 201 */
+/* 203 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61188,7 +61245,7 @@ function TimeEntry($http) {
 }
 
 /***/ }),
-/* 202 */
+/* 204 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61199,11 +61256,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = timeInput;
 
-var _timeInput = __webpack_require__(203);
+var _timeInput = __webpack_require__(205);
 
 var _timeInput2 = _interopRequireDefault(_timeInput);
 
-__webpack_require__(204);
+__webpack_require__(206);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -61242,19 +61299,19 @@ function timeInput() {
 }
 
 /***/ }),
-/* 203 */
+/* 205 */
 /***/ (function(module, exports) {
 
 module.exports = "<span class=\"time-input\">\n  <input type=\"time\"\n    ng-model=\"timeDisplay\"\n    ng-change=\"onChange()\"\n    ng-disabled=\"datetime === null\"\n    />\n</span>\n";
 
 /***/ }),
-/* 204 */
+/* 206 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 205 */
+/* 207 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61265,7 +61322,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = datetimeDisplay;
 
-var _datetimeDisplay = __webpack_require__(206);
+var _datetimeDisplay = __webpack_require__(208);
 
 var _datetimeDisplay2 = _interopRequireDefault(_datetimeDisplay);
 
@@ -61306,13 +61363,13 @@ function datetimeDisplay() {
 }
 
 /***/ }),
-/* 206 */
+/* 208 */
 /***/ (function(module, exports) {
 
 module.exports = "<span>{{getDatetimeDisplay(datetime)}}</span>\n";
 
 /***/ }),
-/* 207 */
+/* 209 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61322,46 +61379,38 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _commonModuleEs = __webpack_require__(5);
+var _commonModuleEs = __webpack_require__(4);
 
 var _commonModuleEs2 = _interopRequireDefault(_commonModuleEs);
 
-var _todoListDirectiveEs = __webpack_require__(208);
+var _todoListDirectiveEs = __webpack_require__(210);
 
 var _todoListDirectiveEs2 = _interopRequireDefault(_todoListDirectiveEs);
 
-var _todoQaListDirectiveEs = __webpack_require__(211);
-
-var _todoQaListDirectiveEs2 = _interopRequireDefault(_todoQaListDirectiveEs);
-
-var _todoChecklistDirectiveEs = __webpack_require__(214);
+var _todoChecklistDirectiveEs = __webpack_require__(213);
 
 var _todoChecklistDirectiveEs2 = _interopRequireDefault(_todoChecklistDirectiveEs);
 
-var _todosServiceEs = __webpack_require__(218);
+var _todosServiceEs = __webpack_require__(123);
 
 var _todosServiceEs2 = _interopRequireDefault(_todosServiceEs);
 
-var _todoQasServiceEs = __webpack_require__(219);
-
-var _todoQasServiceEs2 = _interopRequireDefault(_todoQasServiceEs);
-
-var _todolistTemplateServiceEs = __webpack_require__(220);
+var _todolistTemplateServiceEs = __webpack_require__(217);
 
 var _todolistTemplateServiceEs2 = _interopRequireDefault(_todolistTemplateServiceEs);
 
-__webpack_require__(221);
+__webpack_require__(124);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /* global angular */
 
 var name = 'orchestra.todos';
-angular.module(name, ['ui.select', 'ngSanitize', 'ui.tree', _commonModuleEs2.default]).directive('todoList', _todoListDirectiveEs2.default).directive('todoChecklist', _todoChecklistDirectiveEs2.default).directive('todoQaList', _todoQaListDirectiveEs2.default).factory('todoApi', _todosServiceEs2.default).factory('todoListTemplateApi', _todolistTemplateServiceEs2.default).factory('todoQaApi', _todoQasServiceEs2.default);
+angular.module(name, ['ui.select', 'ngSanitize', 'ui.tree', _commonModuleEs2.default]).directive('todoList', _todoListDirectiveEs2.default).directive('todoChecklist', _todoChecklistDirectiveEs2.default).factory('todoApi', _todosServiceEs2.default).factory('todoListTemplateApi', _todolistTemplateServiceEs2.default);
 exports.default = name;
 
 /***/ }),
-/* 208 */
+/* 210 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61372,9 +61421,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = todoList;
 
-var _lodash = __webpack_require__(4);
+var _lodash = __webpack_require__(5);
 
-var _todoList = __webpack_require__(209);
+var _todoList = __webpack_require__(211);
 
 var _todoList2 = _interopRequireDefault(_todoList);
 
@@ -61382,7 +61431,7 @@ var _momentTimezone = __webpack_require__(1);
 
 var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
 
-__webpack_require__(210);
+__webpack_require__(212);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -61496,38 +61545,6 @@ function todoList(orchestraApi) {
         todoApi.update(todo);
       };
 
-      todoList.updateTodoApprovalReason = function (todo) {
-        todoQaApi.update(todo.qa);
-      };
-
-      todoList.approveTodo = function (todo) {
-        if (todo.qa) {
-          todo.qa.approved = true;
-          todoQaApi.update(todo.qa);
-        } else {
-          todoQaApi.create({
-            'todo': todo.id,
-            'approved': true
-          }).then(function (qa) {
-            todo.qa = qa;
-          });
-        }
-      };
-
-      todoList.disapproveTodo = function (todo) {
-        if (todo.qa) {
-          todo.qa.approved = false;
-          todoQaApi.update(todo.qa);
-        } else {
-          todoQaApi.create({
-            'todo': todo.id,
-            'approved': false
-          }).then(function (qa) {
-            todo.qa = qa;
-          });
-        }
-      };
-
       todoList.setTimeOfDate = function (datetime) {
         $scope.$apply();
       };
@@ -61580,108 +61597,19 @@ function todoList(orchestraApi) {
 }
 
 /***/ }),
-/* 209 */
-/***/ (function(module, exports) {
-
-module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Todo List\n        </h3>\n      </div>\n    </div>\n\n    <div class=\"row section-body new-todo\">\n      <div class=\"col-lg-2\">\n        <select class=\"form-control input-sm\" name=\"todoList\" id=\"todoList\" ng-model=\"todoList.newTodoTaskId\">\n          <option value=\"\" selected>Select owner</option>\n          <option value=\"{{task.id}}\" ng-repeat=\"task in todoList.possibleTasks\">{{todoList.steps[task.step_slug].name}}</option>\n        </select>\n      </div>\n      <div class=\"col-lg-5\">\n        <input class=\"form-control input-sm\"\n               type=\"text\"\n               ng-model=\"todoList.newTodoDescription\"\n               placeholder=\"Add a todo item\">\n        <div class=\"pull-right\">\n          <div class=\"new-todo__datetime\">\n            <label>Start</label>\n            <date-picker\n              date=\"todoList.newTodoStartDate\"\n              callback=\"todoList.setTimeOfDate\"></date-picker>\n            <time-input\n              datetime=\"todoList.newTodoStartDate\"\n              default-hour=\"8\"\n              ></time-input>\n          </div>\n          <div class=\"new-todo__datetime\">\n            <label>Due</label>\n            <date-picker\n              date=\"todoList.newTodoDueDate\"\n              callback=\"todoList.setTimeOfDate\"></date-picker>\n            <time-input\n              datetime=\"todoList.newTodoDueDate\"\n              default-hour=\"18\"\n              ></time-input>\n          </div>\n        </div>\n      </div>\n      <div class=\"col-lg-1\">\n        <button type=\"submit\"\n                 class=\"btn btn-primary btn-sm btn-block edit-save-handle\"\n                 ng-disabled=\"!todoList.canAddTodo()\"\n                 ng-click=\"todoList.addTodo()\">\n                Add todo\n        </button>\n      </div>\n      <div class=\"col-lg-2\" ng-if=\"todoList.templates.length > 0\">\n        <div class=\"btn-group\">\n          <button type=\"button\" class=\"btn btn-primary btn-sm dropdown-toggle\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"\n                  ng-disabled=\"!todoList.newTodoTaskId\">\n            Add todos from a template <span class=\"caret\"></span>\n          </button>\n          <ul class=\"dropdown-menu\">\n            <li ng-repeat=\"template in todoList.templates\" ng-click=\"todoList.updateTodoListFromTemplate(template.slug)\">\n              <a href=\"\">{{template.name}}</a>\n            </li>\n          </ul>\n        </div>\n      </div>\n    </div>\n\n    <div class=\"row section-body\" ng-if=\"todoList.ready\">\n      <div class=\"col-lg-6 col-md-6 col-sm-12\">\n        <div class=\"todolist-pane\">\n          <p class=\"todolist-pane__heading col-sm-3\">Todo items</p>\n          <todo-checklist\n              title=\"Todos\"\n              todos=\"todoList.todos\"\n              recommendations=\"todoList.recommendations\"\n              templates=\"todoList.templates\"\n              show-skipped=\"false\"\n              update-todo=\"todoList.updateTodo\"\n              remove-todo=\"todoList.removeTodo\"\n              skip-todo=\"todoList.skipTodo\"\n              unskip-todo=\"todoList.unskipTodo\"\n              steps=\"todoList.steps\"\n              task-slugs=\"todoList.taskSlugs\"\n          ></todo-checklist>\n        </div>\n      </div>\n      <div class=\"col-lg-6 col-md-6 col-sm-12\">\n        <div class=\"todolist-pane\" ng-if=\"todoList.templates.length > 0\">\n          <p class=\"todolist-pane__heading col-sm-4\">Skipped todo items</p>\n          <todo-checklist\n              title=\"Todos\"\n              todos=\"todoList.todos\"\n              recommendations=\"todoList.recommendations\"\n              templates=\"todoList.templates\"\n              show-skipped=\"true\"\n              update-todo=\"todoList.updateTodo\"\n              remove-todo=\"todoList.removeTodo\"\n              steps=\"todoList.steps\"\n              skip-todo=\"todoList.skipTodo\"\n              unskip-todo=\"todoList.unskipTodo\"\n              task-slugs=\"todoList.taskSlugs\"\n          ></todo-checklist>\n        </div>\n      </div>\n    </div>\n\n  </div>\n</section>\n\n<section class=\"section-panel todo-list\" ng-if=\"todoList.qaList.length >= 0\">\n  <div class=\"container-fluid\">\n\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Todo QA\n        </h3>\n      </div>\n    </div>\n\n    <div class=\"row section-body\">\n      <div class=\"col-sm-12\">\n        <todo-qa-list\n        title=\"Pending Approval\"\n        todos=\"todoList.todos\"\n        task-slugs=\"todoList.taskSlugs\"\n        approve-todo=\"todoList.approveTodo\"\n        disapprove-todo=\"todoList.disapproveTodo\"\n        update-todo-approval-reason=\"todoList.updateTodoApprovalReason\"\n        ></todo-qa-list>\n      </div>\n    </div>\n\n  </div>\n</section>\n";
-
-/***/ }),
-/* 210 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
 /* 211 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = todoQa;
-
-var _lodash = __webpack_require__(4);
-
-var _todoQaList = __webpack_require__(212);
-
-var _todoQaList2 = _interopRequireDefault(_todoQaList);
-
-__webpack_require__(213);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function todoQa() {
-  return {
-    template: _todoQaList2.default,
-    restrict: 'E',
-    scope: {
-      title: '@',
-      todos: '<',
-      taskSlugs: '<',
-      approveTodo: '=',
-      disapproveTodo: '=',
-      updateTodoApprovalReason: '='
-    },
-    link: function link(scope, elem, attrs) {
-      scope.changedReasons = {};
-      scope.reasonChanged = function (todo) {
-        todo.qa.approval_reason = todo.qa.approval_reason.trim();
-        scope.changedReasons[todo.id] = true;
-      };
-
-      scope.isDisapproved = function (todo) {
-        return todo.qa && !todo.qa.approved;
-      };
-
-      scope.isApproved = function (todo) {
-        return todo.qa && todo.qa.approved;
-      };
-
-      scope.isApprovalPending = function (todo) {
-        return !todo.qa;
-      };
-
-      scope.isApprovalReasonProvided = function (todo) {
-        return todo.qa && todo.qa.approval_reason;
-      };
-
-      scope.submitReason = function (todo) {
-        scope.updateTodoApprovalReason(todo);
-        scope.changedReasons[todo.id] = false;
-      };
-
-      scope.addReason = function (todo) {
-        todo.qa.approval_reason = ' ';
-      };
-
-      scope.isTemplateTodo = function (todo) {
-        return todo.template;
-      };
-
-      scope.filterTemplateTodos = function (todos) {
-        return (0, _lodash.filter)(todos, scope.isTemplateTodo);
-      };
-    }
-  };
-}
+module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Todo List\n        </h3>\n      </div>\n    </div>\n\n    <div class=\"row section-body new-todo\">\n      <div class=\"col-lg-2\">\n        <select class=\"form-control input-sm\" name=\"todoList\" id=\"todoList\" ng-model=\"todoList.newTodoTaskId\">\n          <option value=\"\" selected>Select owner</option>\n          <option value=\"{{task.id}}\" ng-repeat=\"task in todoList.possibleTasks\">{{todoList.steps[task.step_slug].name}}</option>\n        </select>\n      </div>\n      <div class=\"col-lg-5\">\n        <input class=\"form-control input-sm\"\n               type=\"text\"\n               ng-model=\"todoList.newTodoDescription\"\n               placeholder=\"Add a todo item\">\n        <div class=\"pull-right\">\n          <div class=\"new-todo__datetime\">\n            <label>Start</label>\n            <date-picker\n              date=\"todoList.newTodoStartDate\"\n              callback=\"todoList.setTimeOfDate\"></date-picker>\n            <time-input\n              datetime=\"todoList.newTodoStartDate\"\n              default-hour=\"8\"\n              ></time-input>\n          </div>\n          <div class=\"new-todo__datetime\">\n            <label>Due</label>\n            <date-picker\n              date=\"todoList.newTodoDueDate\"\n              callback=\"todoList.setTimeOfDate\"></date-picker>\n            <time-input\n              datetime=\"todoList.newTodoDueDate\"\n              default-hour=\"18\"\n              ></time-input>\n          </div>\n        </div>\n      </div>\n      <div class=\"col-lg-1\">\n        <button type=\"submit\"\n                 class=\"btn btn-primary btn-sm btn-block edit-save-handle\"\n                 ng-disabled=\"!todoList.canAddTodo()\"\n                 ng-click=\"todoList.addTodo()\">\n                Add todo\n        </button>\n      </div>\n      <div class=\"col-lg-2\" ng-if=\"todoList.templates.length > 0\">\n        <div class=\"btn-group\">\n          <button type=\"button\" class=\"btn btn-primary btn-sm dropdown-toggle\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"\n                  ng-disabled=\"!todoList.newTodoTaskId\">\n            Add todos from a template <span class=\"caret\"></span>\n          </button>\n          <ul class=\"dropdown-menu\">\n            <li ng-repeat=\"template in todoList.templates\" ng-click=\"todoList.updateTodoListFromTemplate(template.slug)\">\n              <a href=\"\">{{template.name}}</a>\n            </li>\n          </ul>\n        </div>\n      </div>\n    </div>\n\n    <div class=\"row section-body\" ng-if=\"todoList.ready\">\n      <div class=\"col-lg-6 col-md-6 col-sm-12\">\n        <div class=\"todolist-pane\">\n          <p class=\"todolist-pane__heading col-sm-3\">Todo items</p>\n          <todo-checklist\n              title=\"Todos\"\n              todos=\"todoList.todos\"\n              recommendations=\"todoList.recommendations\"\n              templates=\"todoList.templates\"\n              show-skipped=\"false\"\n              update-todo=\"todoList.updateTodo\"\n              remove-todo=\"todoList.removeTodo\"\n              skip-todo=\"todoList.skipTodo\"\n              unskip-todo=\"todoList.unskipTodo\"\n              steps=\"todoList.steps\"\n              task-slugs=\"todoList.taskSlugs\"\n          ></todo-checklist>\n        </div>\n      </div>\n      <div class=\"col-lg-6 col-md-6 col-sm-12\">\n        <div class=\"todolist-pane\" ng-if=\"todoList.templates.length > 0\">\n          <p class=\"todolist-pane__heading col-sm-4\">Skipped todo items</p>\n          <todo-checklist\n              title=\"Todos\"\n              todos=\"todoList.todos\"\n              recommendations=\"todoList.recommendations\"\n              templates=\"todoList.templates\"\n              show-skipped=\"true\"\n              update-todo=\"todoList.updateTodo\"\n              remove-todo=\"todoList.removeTodo\"\n              steps=\"todoList.steps\"\n              skip-todo=\"todoList.skipTodo\"\n              unskip-todo=\"todoList.unskipTodo\"\n              task-slugs=\"todoList.taskSlugs\"\n          ></todo-checklist>\n        </div>\n      </div>\n    </div>\n\n  </div>\n</section>\n";
 
 /***/ }),
 /* 212 */
 /***/ (function(module, exports) {
 
-module.exports = "<script type=\"text/ng-template\" id=\"todoQaItemTemplate\">\n  <div ui-tree-handle class=\"tree-node tree-node-content\">\n    <label ng-class=\"{\n      'todo-disapproved': isDisapproved(todo),\n      'todo-approved': isApproved(todo)\n      }\">\n      <span ng-click=\"toggle(this)\">\n        <i aria-hidden=\"true\" ng-if=\"todo.items && todo.items.length > 0\" data-nodrag\n          class=\"fa skipped-todos\"\n          ng-class=\"{\n            'fa-caret-right': collapsed,\n            'fa-caret-down': !collapsed\n          }\">&nbsp;</i>\n        <i class=\"fa fa-circle-o\" aria-hidden=\"true\" ng-if=\"(!todo.items || todo.items.length === 0)\" data-nodrag>&nbsp;</i>\n        <span ng-class=\"{'todo-skipped': todo.skipped_datetime}\" ng-if=\"todo.skipped_datetime\">(Not relevant)&nbsp;</span>\n        <span ng-class=\"{'todo-skipped': todo.skipped_datetime}\" class=\"todo__description\" ng-bind-html=\"todo.description\"></span>\n      </span>\n      <span>\n        &nbsp;&nbsp;\n        <a href=\"#\" ng-if=\"isApprovalPending(todo) || isDisapproved(todo)\" ng-click=\"approveTodo(todo)\">[approve]</a>\n        <a href=\"#\" ng-if=\"isApprovalPending(todo) || isApproved(todo)\" ng-click=\"disapproveTodo(todo)\">[disapprove]</a>\n        <a href=\"#\" ng-if=\"!isApprovalPending(todo) && !isApprovalReasonProvided(todo)\" ng-click=\"addReason(todo)\">[add reason]</a>\n      </span>\n    </label>\n    <form class=\"form-inline\" ng-if=\"isApprovalReasonProvided(todo)\" >\n      <textarea class=\"form-control input-sm\" rows=\"1\" cols=\"50\" ng-change=\"reasonChanged(todo)\" ng-model=\"todo.qa.approval_reason\" ng-trim=\"true\"></textarea>\n      <button ng-if=\"changedReasons[todo.id]\" ng-click=\"submitReason(todo)\" class=\"btn btn-primary btn-sm\">Submit</button>\n    </form>\n\n  </div>\n  <ol ui-tree-nodes ng-model=\"todo.items\" ng-class=\"{hidden: collapsed}\">\n    <li ng-repeat=\"todo in filterTemplateTodos(todo.items)\" ui-tree-node data-collapsed=\"true\" ng-include=\"'todoQaItemTemplate'\"></li>\n  </ol>\n</script>\n\n\n<div class=\"list-by-status\" ng-if=\"todos.length > 0\">\n  <div class=\"todo\">\n    <div ui-tree data-drag-enabled=\"false\" id=\"tree-root\">\n      <ol ui-tree-nodes ng-model=\"todos\">\n        <li ng-repeat=\"todo in filterTemplateTodos(todos)\" ui-tree-node data-collapsed=\"true\" ng-include=\"'todoQaItemTemplate'\"></li>\n      </ol>\n    </div>\n  </div>\n</div>\n";
-
-/***/ }),
-/* 213 */
-/***/ (function(module, exports) {
-
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 214 */
+/* 213 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61692,15 +61620,15 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = todoChecklist;
 
-var _lodash = __webpack_require__(4);
+var _lodash = __webpack_require__(5);
 
-var _todoChecklist = __webpack_require__(215);
+var _todoChecklist = __webpack_require__(214);
 
 var _todoChecklist2 = _interopRequireDefault(_todoChecklist);
 
-__webpack_require__(216);
+__webpack_require__(215);
 
-__webpack_require__(217);
+__webpack_require__(216);
 
 var _momentTimezone = __webpack_require__(1);
 
@@ -61760,10 +61688,16 @@ function todoChecklist() {
 }
 
 /***/ }),
-/* 215 */
+/* 214 */
 /***/ (function(module, exports) {
 
 module.exports = "<script type=\"text/ng-template\" id=\"todoItemTemplate\">\n  <div ui-tree-handle class=\"tree-node tree-node-content\">\n    <input type=\"checkbox\"\n           ng-hide=\"showSkipped\"\n           ng-model=\"todo.completed\"\n           ng-change=\"updateTodo(todo)\">\n    <label ng-class=\"{'text-danger': isInDanger(todo)}\">\n      <span ng-click=\"toggle(this)\">\n        <i aria-hidden=\"true\" ng-if=\"todo.items && todo.items.length > 0\" data-nodrag\n          class=\"fa\"\n          ng-class=\"{\n            'skipped-todos': showSkipped,\n            'fa-caret-right': collapsed,\n            'fa-caret-down': !collapsed\n          }\"></i>\n        <i class=\"fa fa-circle-o\" aria-hidden=\"true\" ng-if=\"(!todo.items || todo.items.length === 0) && showSkipped\" data-nodrag></i>\n        <span ng-hide=\"!todo.items || todo.items.length < 1 || showSkipped\">[{{ ( todo.items | filter: { completed: true, skipped_datetime: '!' } ).length }}/{{ ( todo.items | filter: { skipped_datetime: '!' } ).length }}] </span>\n        <span class=\"todo__role\">{{steps[taskSlugs[todo.task]].name}}:&nbsp;</span>\n        <span class=\"todo__description\" ng-bind-html=\"todo.description\"></span>\n        <span ng-class=\"{'todo__dates': true, 'todo__dates-danger': isInDanger(todo)}\">\n          <span ng-if=\"isNonEmptyString(todo.start_by_datetime)\">\n            Start <datetime-display datetime=\"todo.start_by_datetime\" show-time=\"true\"/>\n          </span>\n          <span ng-if=\"isNonEmptyString(todo.start_by_datetime) && isNonEmptyString(todo.due_datetime)\" class=\"todo__dates-separator\">|</span>\n          <span ng-if=\"isNonEmptyString(todo.due_datetime)\">\n            Due <datetime-display datetime=\"todo.due_datetime\" show-time=\"true\"/></span>\n        </span>\n      </span>\n      <span ng-if=\"templates.length > 0\">\n        &nbsp;&nbsp;\n        <a href=\"#\" ng-hide=\"!showSkipped\" ng-click=\"unskipTodo(todo)\">[relevant]</a>\n        <a href=\"#\" ng-hide=\"showSkipped\" ng-click=\"skipTodo(todo)\">[not relevant]</a>\n        <a href=\"#\" ng-hide=\"todo.parent_todo\" ng-click=\"removeTodo(todo)\">[remove]</a>\n      </span>\n    </label>\n    <form class=\"form-inline\" ng-if=\"recommendations[todo.description] && recommendations[todo.description].approval_reason\" >\n      <textarea class=\"form-control input-sm\" rows=\"1\" cols=\"50\" ng-trim=\"true\" disabled>{{recommendations[todo.description].approval_reason}}</textarea>\n    </form>\n  </div>\n  <ol ui-tree-nodes ng-model=\"todo.items\" ng-class=\"{hidden: collapsed}\">\n    <li ng-repeat=\"todo in filterTodoList(todo.items, showSkipped)\" ui-tree-node data-collapsed=\"true\" ng-include=\"'todoItemTemplate'\"></li>\n  </ol>\n</script>\n\n\n<div class=\"list-by-status\" ng-if=\"todos.length > 0\">\n  <div class=\"todo\">\n    <div ui-tree data-drag-enabled=\"false\" id=\"tree-root\">\n      <ol ui-tree-nodes ng-model=\"todos\">\n        <li ng-repeat=\"todo in filterTodoList(todos, showSkipped)\" ui-tree-node data-collapsed=\"true\" ng-include=\"'todoItemTemplate'\"></li>\n      </ol>\n    </div>\n  </div>\n</div>\n";
+
+/***/ }),
+/* 215 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
 
 /***/ }),
 /* 216 */
@@ -61773,110 +61707,6 @@ module.exports = "<script type=\"text/ng-template\" id=\"todoItemTemplate\">\n  
 
 /***/ }),
 /* 217 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 218 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = todoApi;
-function todoApi($http) {
-  var apiBase = '/orchestra/todos/todo/';
-
-  var listCreate = function listCreate(projectId) {
-    if (projectId === undefined) {
-      return apiBase;
-    }
-    return apiBase + '?project=' + projectId;
-  };
-
-  var details = function details(todoId) {
-    return '' + apiBase + todoId + '/';
-  };
-
-  return {
-    create: function create(todo) {
-      return $http.post(listCreate(), todo).then(function (response) {
-        return response.data;
-      });
-    },
-    list: function list(projectId) {
-      return $http.get(listCreate(projectId)).then(function (response) {
-        return response.data;
-      });
-    },
-    update: function update(todo) {
-      return $http.put(details(todo.id), todo);
-    },
-    delete: function _delete(todo) {
-      return $http.delete(details(todo.id));
-    }
-  };
-};
-
-/***/ }),
-/* 219 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = todoQaApi;
-function todoQaApi($http) {
-  var apiBase = '/orchestra/todos/todo_qa/';
-
-  var listCreate = function listCreate(projectId) {
-    if (projectId === undefined) {
-      return apiBase;
-    }
-    return apiBase + '?project=' + projectId;
-  };
-
-  var details = function details(todoQaId) {
-    return '' + apiBase + todoQaId + '/';
-  };
-  var _recommendations = function _recommendations(projectId) {
-    return '/orchestra/todos/recommendations/?project=' + projectId;
-  };
-
-  return {
-    create: function create(todoQa) {
-      return $http.post(listCreate(), todoQa).then(function (response) {
-        return response.data;
-      });
-    },
-    list: function list(projectId) {
-      return $http.get(listCreate(projectId)).then(function (response) {
-        return response.data;
-      });
-    },
-    update: function update(todoQa) {
-      return $http.put(details(todoQa.id), todoQa);
-    },
-    delete: function _delete(todoQa) {
-      return $http.delete(details(todoQa.id));
-    },
-    recommendations: function recommendations(projectId) {
-      return $http.get(_recommendations(projectId)).then(function (response) {
-        return response.data;
-      });
-    }
-  };
-};
-
-/***/ }),
-/* 220 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61912,15 +61742,7 @@ function todoListTemplateApi($http) {
 };
 
 /***/ }),
-/* 221 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(222);
-module.exports = 'ui.tree';
-
-
-/***/ }),
-/* 222 */
+/* 218 */
 /***/ (function(module, exports) {
 
 /**
@@ -63781,6 +63603,140 @@ module.exports = 'ui.tree';
 })();
 
 /***/ }),
+/* 219 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _commonModuleEs = __webpack_require__(4);
+
+var _commonModuleEs2 = _interopRequireDefault(_commonModuleEs);
+
+var _qaDirectiveEs = __webpack_require__(220);
+
+var _qaDirectiveEs2 = _interopRequireDefault(_qaDirectiveEs);
+
+var _todoQaListDirectiveEs = __webpack_require__(253);
+
+var _todoQaListDirectiveEs2 = _interopRequireDefault(_todoQaListDirectiveEs);
+
+var _todosServiceEs = __webpack_require__(123);
+
+var _todosServiceEs2 = _interopRequireDefault(_todosServiceEs);
+
+var _todoQasServiceEs = __webpack_require__(256);
+
+var _todoQasServiceEs2 = _interopRequireDefault(_todoQasServiceEs);
+
+__webpack_require__(124);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/* global angular */
+
+var name = 'orchestra.qa';
+angular.module(name, ['ngSanitize', 'ui.tree', _commonModuleEs2.default]).directive('qa', _qaDirectiveEs2.default).directive('todoQaList', _todoQaListDirectiveEs2.default).factory('todoApi', _todosServiceEs2.default).factory('todoQaApi', _todoQasServiceEs2.default);
+exports.default = name;
+
+/***/ }),
+/* 220 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = todoQaList;
+
+var _lodash = __webpack_require__(5);
+
+var _qa = __webpack_require__(221);
+
+var _qa2 = _interopRequireDefault(_qa);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function todoQaList() {
+  return {
+    template: _qa2.default,
+    restrict: 'E',
+    scope: {
+      projectId: '=',
+      taskId: '='
+    },
+    controllerAs: 'qa',
+    bindToController: true,
+    controller: function controller(todoApi, todoQaApi, $scope) {
+      var qa = this;
+      qa.todos = [];
+      qa.ready = false;
+
+      qa.updateTodoApprovalReason = function (todo) {
+        todoQaApi.update(todo.qa);
+      };
+
+      qa.approveTodo = function (todo) {
+        if (todo.qa) {
+          todo.qa.approved = true;
+          todoQaApi.update(todo.qa);
+        } else {
+          todoQaApi.create({
+            'todo': todo.id,
+            'approved': true
+          }).then(function (qa) {
+            todo.qa = qa;
+          });
+        }
+      };
+
+      qa.disapproveTodo = function (todo) {
+        if (todo.qa) {
+          todo.qa.approved = false;
+          todoQaApi.update(todo.qa);
+        } else {
+          todoQaApi.create({
+            'todo': todo.id,
+            'approved': false
+          }).then(function (qa) {
+            todo.qa = qa;
+          });
+        }
+      };
+
+      qa.transformToTree = function (todos) {
+        var nodes = {};
+        return todos.filter(function (obj) {
+          nodes[obj.id] = (0, _lodash.defaults)(obj, nodes[obj.id], { items: [] });
+          obj.parent_todo && (nodes[obj.parent_todo] = nodes[obj.parent_todo] || { items: [] })['items'].push(obj);
+
+          return !obj.parent_todo;
+        });
+      };
+
+      // TODO(marcua): parallelize requests rather than chaining `then`s.
+      todoApi.list(qa.projectId).then(function (todos) {
+        qa.todos = qa.transformToTree(todos);
+        qa.ready = true;
+      });
+    }
+  };
+}
+
+/***/ }),
+/* 221 */
+/***/ (function(module, exports) {
+
+module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          QA\n        </h3>\n      </div>\n    </div>\n\n    <div class=\"row section-body\">\n      <div class=\"col-sm-12\">\n        <todo-qa-list\n        todos=\"qa.todos\"\n        approve-todo=\"qa.approveTodo\"\n        disapprove-todo=\"qa.disapproveTodo\"\n        update-todo-approval-reason=\"qa.updateTodoApprovalReason\"\n        ></todo-qa-list>\n      </div>\n    </div>\n\n  </div>\n</section>\n";
+
+/***/ }),
+/* 222 */,
 /* 223 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -63791,7 +63747,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _commonModuleEs = __webpack_require__(5);
+var _commonModuleEs = __webpack_require__(4);
 
 var _commonModuleEs2 = _interopRequireDefault(_commonModuleEs);
 
@@ -63820,7 +63776,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = teamInfoCard;
 
-var _lodash = __webpack_require__(4);
+var _lodash = __webpack_require__(5);
 
 var _teamInfoCard = __webpack_require__(225);
 
@@ -64014,6 +63970,168 @@ module.exports = "<div class=\"timecard-view\" ng-if=\"!vm.dataLoading\">\n  <di
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"project-management\">\n  <div class=\"overlay\" ng-if=\"vis.dataService.loading\">\n    <div class=\"spinner\"></div>\n  </div>\n  <section class=\"section-panel\">\n    <div class=\"container-fluid\">\n      <div class=\"row padded\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <ui-select class=\"project-description\" ng-model=\"vis.dataService.currentProject\"\n              ng-change=\"vis.dataService.setSelectedProject()\"\n              ng-disabled=\"vis.dataService.loading\">\n            <ui-select-match>\n              <span ng-bind=\"projectDescription($select.selected)\"></span>\n            </ui-select-match>\n            <ui-select-choices repeat=\"item in (vis.dataService.allProjects | toArray | filter: $select.search) track by item.id\">\n              <span ng-bind=\"projectDescription(item)\"></span>\n            </ui-select-choices>\n          </ui-select>\n          <div class=\"project-actions\" ng-show=\"vis.dataService.currentProject.id\">\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.createSubsequentTasks()\" class=\"btn btn-default\">\n              Create subsequent tasks\n            </button>\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.showSlackActions()\" class=\"btn btn-default\">\n              Edit Slack users\n            </button>\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.showProjectData()\" class=\"btn btn-default\">\n              View project data\n            </button>\n            <a ng-href=\"{{vis.dataService.data.project.admin_url}}\" ng-disabled=\"vis.dataService.loading\" target=\"_blank\">\n              <button type=\"button\" class=\"btn btn-default\">View in admin</button>\n            </a>\n            <button ng-click=\"vis.endProject()\" class=\"btn btn-danger\">Abort project</button>\n          </div>\n        </div>\n      </div>\n      <div class=\"row\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <div class=\"vis-wrapper\" ng-show=\"vis.dataService.currentProject.id\">\n            <div class=\"freeze-pane-left\">\n              <div class=\"scale-buttons\">\n                <button ng-click=\"vis.axis.relativeTime = !vis.axis.relativeTime; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  Switch to {{vis.axis.relativeTime ? 'local' : 'relative'}} time\n                </button>\n                <button ng-click=\"vis.params.scaleWidth = vis.params.scaleWidth / 1.1; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  -\n                </button>\n                <button ng-click=\"vis.params.scaleWidth = vis.params.scaleWidth * 1.1; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  +\n                </button>\n              </div>\n              <div class=\"task-names\"></div>\n            </div>\n            <div class=\"svg-wrapper\"></div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n</div>\n";
+
+/***/ }),
+/* 231 */,
+/* 232 */,
+/* 233 */,
+/* 234 */,
+/* 235 */,
+/* 236 */,
+/* 237 */,
+/* 238 */,
+/* 239 */,
+/* 240 */,
+/* 241 */,
+/* 242 */,
+/* 243 */,
+/* 244 */,
+/* 245 */,
+/* 246 */,
+/* 247 */,
+/* 248 */,
+/* 249 */,
+/* 250 */,
+/* 251 */,
+/* 252 */,
+/* 253 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = todoQa;
+
+var _lodash = __webpack_require__(5);
+
+var _todoQaList = __webpack_require__(254);
+
+var _todoQaList2 = _interopRequireDefault(_todoQaList);
+
+__webpack_require__(255);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function todoQa() {
+  return {
+    template: _todoQaList2.default,
+    restrict: 'E',
+    scope: {
+      todos: '<',
+      approveTodo: '=',
+      disapproveTodo: '=',
+      updateTodoApprovalReason: '='
+    },
+    link: function link(scope, elem, attrs) {
+      scope.changedReasons = {};
+      scope.reasonChanged = function (todo) {
+        todo.qa.approval_reason = todo.qa.approval_reason.trim();
+        scope.changedReasons[todo.id] = true;
+      };
+
+      scope.isDisapproved = function (todo) {
+        return todo.qa && !todo.qa.approved;
+      };
+
+      scope.isApproved = function (todo) {
+        return todo.qa && todo.qa.approved;
+      };
+
+      scope.isApprovalPending = function (todo) {
+        return !todo.qa;
+      };
+
+      scope.isApprovalReasonProvided = function (todo) {
+        return todo.qa && todo.qa.approval_reason;
+      };
+
+      scope.submitReason = function (todo) {
+        scope.updateTodoApprovalReason(todo);
+        scope.changedReasons[todo.id] = false;
+      };
+
+      scope.addReason = function (todo) {
+        todo.qa.approval_reason = ' ';
+      };
+
+      scope.isTemplateTodo = function (todo) {
+        return todo.template;
+      };
+
+      scope.filterTemplateTodos = function (todos) {
+        return (0, _lodash.filter)(todos, scope.isTemplateTodo);
+      };
+    }
+  };
+}
+
+/***/ }),
+/* 254 */
+/***/ (function(module, exports) {
+
+module.exports = "<script type=\"text/ng-template\" id=\"todoQaItemTemplate\">\n  <div ui-tree-handle class=\"tree-node tree-node-content\">\n    <label ng-class=\"{\n      'todo-disapproved': isDisapproved(todo),\n      'todo-approved': isApproved(todo)\n      }\">\n      <span ng-click=\"toggle(this)\">\n        <i aria-hidden=\"true\" ng-if=\"todo.items && todo.items.length > 0\" data-nodrag\n          class=\"fa skipped-todos\"\n          ng-class=\"{\n            'fa-caret-right': collapsed,\n            'fa-caret-down': !collapsed\n          }\">&nbsp;</i>\n        <i class=\"fa fa-circle-o\" aria-hidden=\"true\" ng-if=\"(!todo.items || todo.items.length === 0)\" data-nodrag>&nbsp;</i>\n        <span ng-class=\"{'todo-skipped': todo.skipped_datetime}\" ng-if=\"todo.skipped_datetime\">(Not relevant)&nbsp;</span>\n        <span ng-class=\"{'todo-skipped': todo.skipped_datetime}\" class=\"todo__description\" ng-bind-html=\"todo.description\"></span>\n      </span>\n      <span>\n        &nbsp;&nbsp;\n        <a href=\"#\" ng-if=\"isApprovalPending(todo) || isDisapproved(todo)\" ng-click=\"approveTodo(todo)\">[approve]</a>\n        <a href=\"#\" ng-if=\"isApprovalPending(todo) || isApproved(todo)\" ng-click=\"disapproveTodo(todo)\">[disapprove]</a>\n        <a href=\"#\" ng-if=\"!isApprovalPending(todo) && !isApprovalReasonProvided(todo)\" ng-click=\"addReason(todo)\">[add reason]</a>\n      </span>\n    </label>\n    <form class=\"form-inline\" ng-if=\"isApprovalReasonProvided(todo)\" >\n      <textarea class=\"form-control input-sm\" rows=\"1\" cols=\"50\" ng-change=\"reasonChanged(todo)\" ng-model=\"todo.qa.approval_reason\" ng-trim=\"true\"></textarea>\n      <button ng-if=\"changedReasons[todo.id]\" ng-click=\"submitReason(todo)\" class=\"btn btn-primary btn-sm\">Submit</button>\n    </form>\n\n  </div>\n  <ol ui-tree-nodes ng-model=\"todo.items\" ng-class=\"{hidden: collapsed}\">\n    <li ng-repeat=\"todo in filterTemplateTodos(todo.items)\" ui-tree-node data-collapsed=\"true\" ng-include=\"'todoQaItemTemplate'\"></li>\n  </ol>\n</script>\n\n\n<div class=\"list-by-status\" ng-if=\"todos.length > 0\">\n  <div class=\"todo\">\n    <div ui-tree data-drag-enabled=\"false\" id=\"tree-root\">\n      <ol ui-tree-nodes ng-model=\"todos\">\n        <li ng-repeat=\"todo in filterTemplateTodos(todos)\" ui-tree-node data-collapsed=\"true\" ng-include=\"'todoQaItemTemplate'\"></li>\n      </ol>\n    </div>\n  </div>\n</div>\n";
+
+/***/ }),
+/* 255 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 256 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = todoQaApi;
+function todoQaApi($http) {
+  var apiBase = '/orchestra/todos/todo_qa/';
+
+  var listCreate = function listCreate(projectId) {
+    if (projectId === undefined) {
+      return apiBase;
+    }
+    return apiBase + '?project=' + projectId;
+  };
+
+  var details = function details(todoQaId) {
+    return '' + apiBase + todoQaId + '/';
+  };
+  var _recommendations = function _recommendations(projectId) {
+    return '/orchestra/todos/recommendations/?project=' + projectId;
+  };
+
+  return {
+    create: function create(todoQa) {
+      return $http.post(listCreate(), todoQa).then(function (response) {
+        return response.data;
+      });
+    },
+    list: function list(projectId) {
+      return $http.get(listCreate(projectId)).then(function (response) {
+        return response.data;
+      });
+    },
+    update: function update(todoQa) {
+      return $http.put(details(todoQa.id), todoQa);
+    },
+    delete: function _delete(todoQa) {
+      return $http.delete(details(todoQa.id));
+    },
+    recommendations: function recommendations(projectId) {
+      return $http.get(_recommendations(projectId)).then(function (response) {
+        return response.data;
+      });
+    }
+  };
+};
 
 /***/ })
 /******/ ]);

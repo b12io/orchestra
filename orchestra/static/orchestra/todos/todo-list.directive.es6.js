@@ -116,38 +116,6 @@ export default function todoList (orchestraApi) {
         todoApi.update(todo)
       }
 
-      todoList.updateTodoApprovalReason = (todo) => {
-        todoQaApi.update(todo.qa)
-      }
-
-      todoList.approveTodo = (todo) => {
-        if (todo.qa) {
-          todo.qa.approved = true
-          todoQaApi.update(todo.qa)
-        } else {
-          todoQaApi.create({
-            'todo': todo.id,
-            'approved': true
-          }).then((qa) => {
-            todo.qa = qa
-          })
-        }
-      }
-
-      todoList.disapproveTodo = (todo) => {
-        if (todo.qa) {
-          todo.qa.approved = false
-          todoQaApi.update(todo.qa)
-        } else {
-          todoQaApi.create({
-            'todo': todo.id,
-            'approved': false
-          }).then((qa) => {
-            todo.qa = qa
-          })
-        }
-      }
-
       todoList.setTimeOfDate = (datetime) => {
         $scope.$apply()
       }
