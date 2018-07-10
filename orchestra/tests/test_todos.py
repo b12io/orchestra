@@ -222,18 +222,6 @@ class TodoQAEndpointTests(EndpointTestCase):
         self.assertGreater(len(created_at), 0)
         self.assertGreaterEqual(todo_qa_id, 0)
 
-    def _verify_todo_qas_list(
-            self, project_id, expected_todo_qas, success):
-        resp = self.request_client.get(self.list_create_url,
-                                       {'project': project_id})
-        if success:
-            self.assertEqual(resp.status_code, 200)
-            data = load_encoded_json(resp.content)
-            for todo_qa, expected_todo_qa in zip(data, expected_todo_qas):
-                self._verify_todo_qa_content(todo_qa, expected_todo_qa)
-        else:
-            self.assertEqual(resp.status_code, 403)
-
     def _verify_todo_qa_creation(self, todo, success):
         num_todo_qas = TodoQA.objects.all().count()
         resp = self.request_client.post(self.list_create_url, {
@@ -272,18 +260,10 @@ class TodoQAEndpointTests(EndpointTestCase):
                 updated_todo_qa['approval_reason'], approval_reason)
 
     def test_todo_qas_list_create(self):
-        self._verify_todo_qas_list(self.todo.task.project.id, [], True)
         self._verify_todo_qa_creation(self.todo, True)
-        self._verify_todo_qas_list(self.todo.task.project.id,
-                                   [self._todo_qa_data(
-                                       self.todo,
-                                       True, self.approval_reason)],
-                                   True)
 
-    def test_todo_qas_list_create_permissions(self):
+    def test_todo_qas_create_permissions(self):
         # Can't make requests for projects in which you're uninvolved.
-        task = TaskFactory()
-        self._verify_todo_qas_list(task.project.id, [], False)
         todo = TodoFactory()
         self._verify_todo_qa_creation(todo, False)
 
