@@ -1,7 +1,7 @@
 import { defaults } from 'lodash'
 import template from './qa.html'
 
-export default function todoQaList () {
+export default function qa () {
   return {
     template,
     restrict: 'E',
@@ -58,7 +58,6 @@ export default function todoQaList () {
         })
       }
 
-      // TODO(marcua): parallelize requests rather than chaining `then`s.
       todoApi.list(qa.projectId).then((todos) => {
         qa.todos = qa.transformToTree(todos)
         qa.ready = true

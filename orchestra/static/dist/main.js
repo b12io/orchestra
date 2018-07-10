@@ -63621,7 +63621,7 @@ var _qaDirectiveEs = __webpack_require__(220);
 
 var _qaDirectiveEs2 = _interopRequireDefault(_qaDirectiveEs);
 
-var _todoQaListDirectiveEs = __webpack_require__(253);
+var _todoQaListDirectiveEs = __webpack_require__(250);
 
 var _todoQaListDirectiveEs2 = _interopRequireDefault(_todoQaListDirectiveEs);
 
@@ -63629,7 +63629,7 @@ var _todosServiceEs = __webpack_require__(123);
 
 var _todosServiceEs2 = _interopRequireDefault(_todosServiceEs);
 
-var _todoQasServiceEs = __webpack_require__(256);
+var _todoQasServiceEs = __webpack_require__(222);
 
 var _todoQasServiceEs2 = _interopRequireDefault(_todoQasServiceEs);
 
@@ -63653,7 +63653,7 @@ exports.default = name;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = todoQaList;
+exports.default = qa;
 
 var _lodash = __webpack_require__(5);
 
@@ -63663,7 +63663,7 @@ var _qa2 = _interopRequireDefault(_qa);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function todoQaList() {
+function qa() {
   return {
     template: _qa2.default,
     restrict: 'E',
@@ -63720,7 +63720,6 @@ function todoQaList() {
         });
       };
 
-      // TODO(marcua): parallelize requests rather than chaining `then`s.
       todoApi.list(qa.projectId).then(function (todos) {
         qa.todos = qa.transformToTree(todos);
         qa.ready = true;
@@ -63733,10 +63732,54 @@ function todoQaList() {
 /* 221 */
 /***/ (function(module, exports) {
 
-module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          QA\n        </h3>\n      </div>\n    </div>\n\n    <div class=\"row section-body\">\n      <div class=\"col-sm-12\">\n        <todo-qa-list\n        todos=\"qa.todos\"\n        approve-todo=\"qa.approveTodo\"\n        disapprove-todo=\"qa.disapproveTodo\"\n        update-todo-approval-reason=\"qa.updateTodoApprovalReason\"\n        ></todo-qa-list>\n      </div>\n    </div>\n\n  </div>\n</section>\n";
+module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          QA\n        </h3>\n      </div>\n    </div>\n\n    <div class=\"row section-body\" ng-if=\"qa.ready\">\n      <div class=\"col-sm-12\">\n        <todo-qa-list\n        todos=\"qa.todos\"\n        approve-todo=\"qa.approveTodo\"\n        disapprove-todo=\"qa.disapproveTodo\"\n        update-todo-approval-reason=\"qa.updateTodoApprovalReason\"\n        ></todo-qa-list>\n      </div>\n    </div>\n\n  </div>\n</section>\n";
 
 /***/ }),
-/* 222 */,
+/* 222 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = todoQaApi;
+function todoQaApi($http) {
+  var apiBase = '/orchestra/todos/todo_qa/';
+
+  var listCreate = function listCreate(projectId) {
+    if (projectId === undefined) {
+      return apiBase;
+    }
+    return apiBase + '?project=' + projectId;
+  };
+
+  var details = function details(todoQaId) {
+    return '' + apiBase + todoQaId + '/';
+  };
+  var _recommendations = function _recommendations(projectId) {
+    return '/orchestra/todos/recommendations/?project=' + projectId;
+  };
+
+  return {
+    create: function create(todoQa) {
+      return $http.post(listCreate(), todoQa).then(function (response) {
+        return response.data;
+      });
+    },
+    update: function update(todoQa) {
+      return $http.put(details(todoQa.id), todoQa);
+    },
+    recommendations: function recommendations(projectId) {
+      return $http.get(_recommendations(projectId)).then(function (response) {
+        return response.data;
+      });
+    }
+  };
+};
+
+/***/ }),
 /* 223 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -63991,10 +64034,7 @@ module.exports = "<div class=\"project-management\">\n  <div class=\"overlay\" n
 /* 247 */,
 /* 248 */,
 /* 249 */,
-/* 250 */,
-/* 251 */,
-/* 252 */,
-/* 253 */
+/* 250 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -64007,11 +64047,11 @@ exports.default = todoQa;
 
 var _lodash = __webpack_require__(5);
 
-var _todoQaList = __webpack_require__(254);
+var _todoQaList = __webpack_require__(251);
 
 var _todoQaList2 = _interopRequireDefault(_todoQaList);
 
-__webpack_require__(255);
+__webpack_require__(252);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -64069,69 +64109,16 @@ function todoQa() {
 }
 
 /***/ }),
-/* 254 */
+/* 251 */
 /***/ (function(module, exports) {
 
 module.exports = "<script type=\"text/ng-template\" id=\"todoQaItemTemplate\">\n  <div ui-tree-handle class=\"tree-node tree-node-content\">\n    <label ng-class=\"{\n      'todo-disapproved': isDisapproved(todo),\n      'todo-approved': isApproved(todo)\n      }\">\n      <span ng-click=\"toggle(this)\">\n        <i aria-hidden=\"true\" ng-if=\"todo.items && todo.items.length > 0\" data-nodrag\n          class=\"fa skipped-todos\"\n          ng-class=\"{\n            'fa-caret-right': collapsed,\n            'fa-caret-down': !collapsed\n          }\">&nbsp;</i>\n        <i class=\"fa fa-circle-o\" aria-hidden=\"true\" ng-if=\"(!todo.items || todo.items.length === 0)\" data-nodrag>&nbsp;</i>\n        <span ng-class=\"{'todo-skipped': todo.skipped_datetime}\" ng-if=\"todo.skipped_datetime\">(Not relevant)&nbsp;</span>\n        <span ng-class=\"{'todo-skipped': todo.skipped_datetime}\" class=\"todo__description\" ng-bind-html=\"todo.description\"></span>\n      </span>\n      <span>\n        &nbsp;&nbsp;\n        <a href=\"#\" ng-if=\"isApprovalPending(todo) || isDisapproved(todo)\" ng-click=\"approveTodo(todo)\">[approve]</a>\n        <a href=\"#\" ng-if=\"isApprovalPending(todo) || isApproved(todo)\" ng-click=\"disapproveTodo(todo)\">[disapprove]</a>\n        <a href=\"#\" ng-if=\"!isApprovalPending(todo) && !isApprovalReasonProvided(todo)\" ng-click=\"addReason(todo)\">[add reason]</a>\n      </span>\n    </label>\n    <form class=\"form-inline\" ng-if=\"isApprovalReasonProvided(todo)\" >\n      <textarea class=\"form-control input-sm\" rows=\"1\" cols=\"50\" ng-change=\"reasonChanged(todo)\" ng-model=\"todo.qa.approval_reason\" ng-trim=\"true\"></textarea>\n      <button ng-if=\"changedReasons[todo.id]\" ng-click=\"submitReason(todo)\" class=\"btn btn-primary btn-sm\">Submit</button>\n    </form>\n\n  </div>\n  <ol ui-tree-nodes ng-model=\"todo.items\" ng-class=\"{hidden: collapsed}\">\n    <li ng-repeat=\"todo in filterTemplateTodos(todo.items)\" ui-tree-node data-collapsed=\"true\" ng-include=\"'todoQaItemTemplate'\"></li>\n  </ol>\n</script>\n\n\n<div class=\"list-by-status\" ng-if=\"todos.length > 0\">\n  <div class=\"todo\">\n    <div ui-tree data-drag-enabled=\"false\" id=\"tree-root\">\n      <ol ui-tree-nodes ng-model=\"todos\">\n        <li ng-repeat=\"todo in filterTemplateTodos(todos)\" ui-tree-node data-collapsed=\"true\" ng-include=\"'todoQaItemTemplate'\"></li>\n      </ol>\n    </div>\n  </div>\n</div>\n";
 
 /***/ }),
-/* 255 */
+/* 252 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 256 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = todoQaApi;
-function todoQaApi($http) {
-  var apiBase = '/orchestra/todos/todo_qa/';
-
-  var listCreate = function listCreate(projectId) {
-    if (projectId === undefined) {
-      return apiBase;
-    }
-    return apiBase + '?project=' + projectId;
-  };
-
-  var details = function details(todoQaId) {
-    return '' + apiBase + todoQaId + '/';
-  };
-  var _recommendations = function _recommendations(projectId) {
-    return '/orchestra/todos/recommendations/?project=' + projectId;
-  };
-
-  return {
-    create: function create(todoQa) {
-      return $http.post(listCreate(), todoQa).then(function (response) {
-        return response.data;
-      });
-    },
-    list: function list(projectId) {
-      return $http.get(listCreate(projectId)).then(function (response) {
-        return response.data;
-      });
-    },
-    update: function update(todoQa) {
-      return $http.put(details(todoQa.id), todoQa);
-    },
-    delete: function _delete(todoQa) {
-      return $http.delete(details(todoQa.id));
-    },
-    recommendations: function recommendations(projectId) {
-      return $http.get(_recommendations(projectId)).then(function (response) {
-        return response.data;
-      });
-    }
-  };
-};
 
 /***/ })
 /******/ ]);

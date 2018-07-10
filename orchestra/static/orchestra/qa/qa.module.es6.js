@@ -3,9 +3,9 @@
 import common from 'orchestra/common/common.module.es6.js'
 
 import qa from 'orchestra/qa/qa.directive.es6.js'
-import todoQaList from 'orchestra/qa/todo-qa-list.directive.es6.js'
+import todoQaList from 'orchestra/todos/todo-qa-list.directive.es6.js'
 import todoApi from 'orchestra/todos/todos.service.es6.js'
-import todoQaApi from 'orchestra/qa/todo-qas.service.es6.js'
+import todoQaApi from 'orchestra/todos/todo-qas.service.es6.js'
 import 'angular-ui-tree'
 
 const name = 'orchestra.qa'
