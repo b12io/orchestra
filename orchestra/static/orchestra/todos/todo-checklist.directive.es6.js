@@ -48,6 +48,16 @@ export default function todoChecklist () {
         return (todo.skipped_datetime == null && (!todo.items || todo.items.length === 0)) || items.length > 0
       }
 
+      scope.hasTodoQaComment = (todo, showSkipped) => {
+        var items = []
+        if (todo.items) {
+          items = filter(todo.items, (todo) => {
+            return scope.hasTodoQaComment(todo, showSkipped)
+          })
+        }
+        return (todo.items.length === 0 && scope.todoQas[todo.description] && (showSkipped ? scope.isSkipped(todo) : scope.isNotSkipped(todo))) || items.length !== 0
+      }
+
       scope.filterTodoList = (todos, showSkipped) => {
         return filter(todos, showSkipped ? scope.isSkipped : scope.isNotSkipped)
       }

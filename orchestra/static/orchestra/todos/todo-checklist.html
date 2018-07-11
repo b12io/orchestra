@@ -42,7 +42,7 @@
     </div>
   </div>
   <ol ui-tree-nodes ng-model="todo.items" ng-class="{hidden: collapsed}">
-    <li ng-repeat="todo in filterTodoList(todo.items, showSkipped)" ui-tree-node data-collapsed="true" ng-include="'todoItemTemplate'"></li>
+    <li ng-repeat="todo in filterTodoList(todo.items, showSkipped)" ui-tree-node data-collapsed="!hasTodoQaComment(todo, showSkipped)" ng-include="'todoItemTemplate'"></li>
   </ol>
 </script>
 
@@ -51,7 +51,7 @@
   <div class="todo">
     <div ui-tree data-drag-enabled="false" id="tree-root">
       <ol ui-tree-nodes ng-model="todos">
-        <li ng-repeat="todo in filterTodoList(todos, showSkipped)" ui-tree-node data-collapsed="true" ng-include="'todoItemTemplate'"></li>
+        <li ng-repeat="todo in filterTodoList(todos, showSkipped)" ui-tree-node data-collapsed="!hasTodoQaComment(todo, showSkipped)" ng-include="'todoItemTemplate'"></li>
       </ol>
     </div>
   </div>
