@@ -28,7 +28,14 @@
         font-style: normal;
       }
     }
-
+    &-qa {
+      margin-bottom: 0;
+      .panel-body {
+        padding: 5px;
+        font-size: x-small;
+        font-weight: normal;
+      }
+    }
   }
   .angular-ui-tree-node {
       padding-top: 5px;

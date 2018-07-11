@@ -2359,6 +2359,12 @@ a.logo {
         color: #a94442; }
       .list-by-status .todo__dates-separator {
         font-style: normal; }
+    .list-by-status .todo-qa {
+      margin-bottom: 0; }
+      .list-by-status .todo-qa .panel-body {
+        padding: 5px;
+        font-size: x-small;
+        font-weight: normal; }
   .list-by-status .angular-ui-tree-node {
     padding-top: 5px;
     padding-bottom: 0; }

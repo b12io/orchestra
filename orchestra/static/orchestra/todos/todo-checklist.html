@@ -33,9 +33,13 @@
         <a href="#" ng-hide="todo.parent_todo" ng-click="removeTodo(todo)">[remove]</a>
       </span>
     </label>
-    <form class="form-inline" ng-if="todoQas[todo.description] && todoQas[todo.description].comment" >
-      <textarea class="form-control input-sm" rows="1" cols="50" ng-trim="true" disabled>{{todoQas[todo.description].comment}}</textarea>
-    </form>
+    <div class="todo-qa panel panel-default" ng-if="todoQas[todo.description] && todoQas[todo.description].comment">
+      <div class="panel-body">
+        <strong ng-if="todoQas[todo.description].todo === todo.id">Feedback on this project</strong>
+        <strong ng-if="todoQas[todo.description].todo !== todo.id">Feedback from previous project</strong>
+        : {{todoQas[todo.description].comment}}
+      </div>
+    </div>
   </div>
   <ol ui-tree-nodes ng-model="todo.items" ng-class="{hidden: collapsed}">
     <li ng-repeat="todo in filterTodoList(todo.items, showSkipped)" ui-tree-node data-collapsed="true" ng-include="'todoItemTemplate'"></li>
