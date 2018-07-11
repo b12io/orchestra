@@ -282,7 +282,11 @@ class TodoQAEndpointTests(EndpointTestCase):
         project_id = task.project.id
         todo = TodoFactory(task=task)
         todo1 = TodoFactory(task=self.task1)
-        older_todo_qa = TodoQAFactory(todo=todo1, approved=False)
+        # Create an todo QA
+        TodoQAFactory(todo=todo1, approved=False)
+        # Create another todo QA with a different task
+        # Since this todo qa was created most recently it should be the only
+        # todo qa in the workers recent todo qas.
         todo_qa = TodoQAFactory(todo=todo, approved=False)
         resp = self.request_client.get(self.worker_recent_todo_qas_url,
                                        {'project': project_id})
@@ -292,6 +296,7 @@ class TodoQAEndpointTests(EndpointTestCase):
             self.assertEqual(
                 TodoQASerializer(todo_qa).data,
                 data[todo.description])
+            self.assertEqual(1, len(data.keys()))
         else:
             self.assertEqual(resp.status_code, 403)
 
