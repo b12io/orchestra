@@ -2,7 +2,7 @@ import { filter } from 'lodash'
 import template from './todo-qa-list.html'
 import './todo-qa-list.scss'
 
-export default function todoQaList () {
+export default function todoQa () {
   return {
     template,
     restrict: 'E',

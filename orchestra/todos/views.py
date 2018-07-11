@@ -1,5 +1,6 @@
 import logging
 
+from datetime import datetime, timedelta
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework.response import Response
@@ -44,10 +45,16 @@ def update_todos_from_todolist_template(request):
               permissions=(permissions.IsAuthenticated,
                            IsAssociatedWithProject),
               logger=logger)
-def recommendations(request):
+def worker_recent_todo_qas(request):
+    """
+    The function returns TodoQAs from the requesting user's most recent
+    task assignment provided they were created in the last 90 days.
+    """
     try:
         todoQAs = TodoQA.objects.filter(
-            todo__task__assignments__worker__user=request.user, approved=False)
+            todo__task__assignments__worker__user=request.user,
+            approved=False,
+            created_at__gte=datetime.now() - timedelta(days=90))
         todos_recommendation = {todoQA.todo.description: TodoQASerializer(
             todoQA).data for todoQA in todoQAs}
     except TodoQA.DoesNotExist:

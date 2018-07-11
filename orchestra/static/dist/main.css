@@ -2323,6 +2323,19 @@ a.logo {
   border-radius: 0;
   -webkit-border-radius: 0;
   -moz-border-radius: none; }
+.todo--skipped {
+  opacity: 0.5; }
+
+.todo--disapproved {
+  color: #a94442; }
+
+.todo--approved {
+  color: #3ab73a; }
+
+.todo-qa-comment {
+  display: block;
+  font-size: xx-small;
+  padding: 0px; }
 .list-by-status {
   padding-top: 20px; }
   .list-by-status h4 {
@@ -2412,16 +2425,3 @@ a.logo {
 
 .angular-ui-tree-drag .tree-node-content {
   margin-top: 0; }
-.todo--skipped {
-  opacity: 0.5; }
-
-.todo--disapproved {
-  color: #a94442; }
-
-.todo--approved {
-  color: #3ab73a; }
-
-.todo-qa-comment {
-  display: block;
-  font-size: xx-small;
-  padding: 0px; }

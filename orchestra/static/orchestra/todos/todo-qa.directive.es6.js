@@ -1,5 +1,5 @@
 import { defaults } from 'lodash'
-import template from './qa.html'
+import template from './todo-qa.html'
 
 export default function qa () {
   return {
@@ -9,18 +9,18 @@ export default function qa () {
       projectId: '=',
       taskId: '='
     },
-    controllerAs: 'qa',
+    controllerAs: 'todoQa',
     bindToController: true,
     controller: function (todoApi, todoQaApi, $scope) {
-      var qa = this
-      qa.todos = []
-      qa.ready = false
+      var todoQa = this
+      todoQa.todos = []
+      todoQa.ready = false
 
-      qa.updateTodoQAComment = (todo) => {
+      todoQa.updateTodoQaComment = (todo) => {
         todoQaApi.update(todo.qa)
       }
 
-      qa.approveTodo = (todo) => {
+      todoQa.approveTodo = (todo) => {
         if (todo.qa) {
           todo.qa.approved = true
           todoQaApi.update(todo.qa)
@@ -34,7 +34,7 @@ export default function qa () {
         }
       }
 
-      qa.disapproveTodo = (todo) => {
+      todoQa.disapproveTodo = (todo) => {
         if (todo.qa) {
           todo.qa.approved = false
           todoQaApi.update(todo.qa)
@@ -48,7 +48,7 @@ export default function qa () {
         }
       }
 
-      qa.transformToTree = (todos) => {
+      todoQa.transformToTree = (todos) => {
         var nodes = {}
         return todos.filter(function (obj) {
           nodes[obj.id] = defaults(obj, nodes[obj.id], { items: [] })
@@ -58,9 +58,9 @@ export default function qa () {
         })
       }
 
-      todoApi.list(qa.projectId).then((todos) => {
-        qa.todos = qa.transformToTree(todos)
-        qa.ready = true
+      todoApi.list(todoQa.projectId).then((todos) => {
+        todoQa.todos = todoQa.transformToTree(todos)
+        todoQa.ready = true
       })
     }
   }

@@ -42457,8 +42457,8 @@ function todoQaApi($http) {
   var details = function details(todoQaId) {
     return '' + apiBase + todoQaId + '/';
   };
-  var _recommendations = function _recommendations(projectId) {
-    return '/orchestra/todos/recommendations/?project=' + projectId;
+  var _workerRecentTodoQas = function _workerRecentTodoQas(projectId) {
+    return '/orchestra/todos/worker_recent_todo_qas/?project=' + projectId;
   };
 
   return {
@@ -42470,8 +42470,8 @@ function todoQaApi($http) {
     update: function update(todoQa) {
       return $http.put(details(todoQa.id), todoQa);
     },
-    recommendations: function recommendations(projectId) {
-      return $http.get(_recommendations(projectId)).then(function (response) {
+    workerRecentTodoQas: function workerRecentTodoQas(projectId) {
+      return $http.get(_workerRecentTodoQas(projectId)).then(function (response) {
         return response.data;
       });
     }
@@ -42519,10 +42519,6 @@ var _todosModuleEs = __webpack_require__(210);
 
 var _todosModuleEs2 = _interopRequireDefault(_todosModuleEs);
 
-var _qaModuleEs = __webpack_require__(220);
-
-var _qaModuleEs2 = _interopRequireDefault(_qaModuleEs);
-
 var _teamInfoModuleEs = __webpack_require__(226);
 
 var _teamInfoModuleEs2 = _interopRequireDefault(_teamInfoModuleEs);
@@ -42533,17 +42529,17 @@ var _configEs2 = _interopRequireDefault(_configEs);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/* global angular */
-
 angular.module('orchestra.analytics', []);
 
 // Include any custom workflow modules as dependencies
+/* global angular */
+
 window.orchestra.angular_modules.forEach(function (module) {
   return angular.module(module, []);
 });
 angular.module('orchestra.workflows', window.orchestra.angular_modules);
 
-angular.module('orchestra', ['ngRoute', _commonModuleEs2.default, _timingModuleEs2.default, _dashboardModuleEs2.default, _taskModuleEs2.default, _todosModuleEs2.default, _qaModuleEs2.default, _teamInfoModuleEs2.default, _projectManagementModuleEs2.default, 'orchestra.analytics', 'orchestra.workflows']).config(_configEs2.default).run(['$http', '$location', '$rootScope', '$window', function ($http, $location, $rootScope, $window) {
+angular.module('orchestra', ['ngRoute', _commonModuleEs2.default, _timingModuleEs2.default, _dashboardModuleEs2.default, _taskModuleEs2.default, _todosModuleEs2.default, _teamInfoModuleEs2.default, _projectManagementModuleEs2.default, 'orchestra.analytics', 'orchestra.workflows']).config(_configEs2.default).run(['$http', '$location', '$rootScope', '$window', function ($http, $location, $rootScope, $window) {
   'ngAnnotate';
 
   // Update xsrf $http headers to align with Django's defaults
@@ -61432,6 +61428,14 @@ var _todoListDirectiveEs = __webpack_require__(211);
 
 var _todoListDirectiveEs2 = _interopRequireDefault(_todoListDirectiveEs);
 
+var _todoQaDirectiveEs = __webpack_require__(254);
+
+var _todoQaDirectiveEs2 = _interopRequireDefault(_todoQaDirectiveEs);
+
+var _todoQaListDirectiveEs = __webpack_require__(223);
+
+var _todoQaListDirectiveEs2 = _interopRequireDefault(_todoQaListDirectiveEs);
+
 var _todoChecklistDirectiveEs = __webpack_require__(214);
 
 var _todoChecklistDirectiveEs2 = _interopRequireDefault(_todoChecklistDirectiveEs);
@@ -61454,7 +61458,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var name = 'orchestra.todos'; /* global angular */
 
-angular.module(name, ['ui.select', 'ngSanitize', 'ui.tree', _commonModuleEs2.default]).directive('todoList', _todoListDirectiveEs2.default).directive('todoChecklist', _todoChecklistDirectiveEs2.default).factory('todoApi', _todosServiceEs2.default).factory('todoListTemplateApi', _todolistTemplateServiceEs2.default).factory('todoQaApi', _todoQasServiceEs2.default);
+angular.module(name, ['ui.select', 'ngSanitize', 'ui.tree', _commonModuleEs2.default]).directive('todoList', _todoListDirectiveEs2.default).directive('todoChecklist', _todoChecklistDirectiveEs2.default).directive('todoQa', _todoQaDirectiveEs2.default).directive('todoQaList', _todoQaListDirectiveEs2.default).factory('todoApi', _todosServiceEs2.default).factory('todoListTemplateApi', _todolistTemplateServiceEs2.default).factory('todoQaApi', _todoQasServiceEs2.default);
 exports.default = name;
 
 /***/ }),
@@ -61506,7 +61510,7 @@ function todoList(orchestraApi) {
       todoList.taskSlugs = {};
       todoList.todos = [];
       todoList.templates = [];
-      todoList.recommendations = [];
+      todoList.todoQas = [];
 
       var createTodo = function createTodo(taskId, description, completed, startDate, dueDate) {
         return todoApi.create({
@@ -61627,8 +61631,8 @@ function todoList(orchestraApi) {
         // TODO(marcua): parallelize requests rather than chaining `then`s.
         todoApi.list(todoList.projectId).then(function (todos) {
           todoListTemplateApi.list().then(function (templates) {
-            todoQaApi.recommendations(todoList.projectId).then(function (recommendations) {
-              todoList.recommendations = recommendations;
+            todoQaApi.workerRecentTodoQas(todoList.projectId).then(function (todoQas) {
+              todoList.todoQas = todoQas;
               todoList.templates = templates;
               todoList.todos = todoList.transformToTree(todos);
               todoList.ready = true;
@@ -61644,7 +61648,7 @@ function todoList(orchestraApi) {
 /* 212 */
 /***/ (function(module, exports) {
 
-module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Todo List\n        </h3>\n      </div>\n    </div>\n\n    <div class=\"row section-body new-todo\">\n      <div class=\"col-lg-2\">\n        <select class=\"form-control input-sm\" name=\"todoList\" id=\"todoList\" ng-model=\"todoList.newTodoTaskId\">\n          <option value=\"\" selected>Select owner</option>\n          <option value=\"{{task.id}}\" ng-repeat=\"task in todoList.possibleTasks\">{{todoList.steps[task.step_slug].name}}</option>\n        </select>\n      </div>\n      <div class=\"col-lg-5\">\n        <input class=\"form-control input-sm\"\n               type=\"text\"\n               ng-model=\"todoList.newTodoDescription\"\n               placeholder=\"Add a todo item\">\n        <div class=\"pull-right\">\n          <div class=\"new-todo__datetime\">\n            <label>Start</label>\n            <date-picker\n              date=\"todoList.newTodoStartDate\"\n              callback=\"todoList.setTimeOfDate\"></date-picker>\n            <time-input\n              datetime=\"todoList.newTodoStartDate\"\n              default-hour=\"8\"\n              ></time-input>\n          </div>\n          <div class=\"new-todo__datetime\">\n            <label>Due</label>\n            <date-picker\n              date=\"todoList.newTodoDueDate\"\n              callback=\"todoList.setTimeOfDate\"></date-picker>\n            <time-input\n              datetime=\"todoList.newTodoDueDate\"\n              default-hour=\"18\"\n              ></time-input>\n          </div>\n        </div>\n      </div>\n      <div class=\"col-lg-1\">\n        <button type=\"submit\"\n                 class=\"btn btn-primary btn-sm btn-block edit-save-handle\"\n                 ng-disabled=\"!todoList.canAddTodo()\"\n                 ng-click=\"todoList.addTodo()\">\n                Add todo\n        </button>\n      </div>\n      <div class=\"col-lg-2\" ng-if=\"todoList.templates.length > 0\">\n        <div class=\"btn-group\">\n          <button type=\"button\" class=\"btn btn-primary btn-sm dropdown-toggle\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"\n                  ng-disabled=\"!todoList.newTodoTaskId\">\n            Add todos from a template <span class=\"caret\"></span>\n          </button>\n          <ul class=\"dropdown-menu\">\n            <li ng-repeat=\"template in todoList.templates\" ng-click=\"todoList.updateTodoListFromTemplate(template.slug)\">\n              <a href=\"\">{{template.name}}</a>\n            </li>\n          </ul>\n        </div>\n      </div>\n    </div>\n\n    <div class=\"row section-body\" ng-if=\"todoList.ready\">\n      <div class=\"col-lg-6 col-md-6 col-sm-12\">\n        <div class=\"todolist-pane\">\n          <p class=\"todolist-pane__heading col-sm-3\">Todo items</p>\n          <todo-checklist\n              title=\"Todos\"\n              todos=\"todoList.todos\"\n              recommendations=\"todoList.recommendations\"\n              templates=\"todoList.templates\"\n              show-skipped=\"false\"\n              update-todo=\"todoList.updateTodo\"\n              remove-todo=\"todoList.removeTodo\"\n              skip-todo=\"todoList.skipTodo\"\n              unskip-todo=\"todoList.unskipTodo\"\n              steps=\"todoList.steps\"\n              task-slugs=\"todoList.taskSlugs\"\n          ></todo-checklist>\n        </div>\n      </div>\n      <div class=\"col-lg-6 col-md-6 col-sm-12\">\n        <div class=\"todolist-pane\" ng-if=\"todoList.templates.length > 0\">\n          <p class=\"todolist-pane__heading col-sm-4\">Skipped todo items</p>\n          <todo-checklist\n              title=\"Todos\"\n              todos=\"todoList.todos\"\n              recommendations=\"todoList.recommendations\"\n              templates=\"todoList.templates\"\n              show-skipped=\"true\"\n              update-todo=\"todoList.updateTodo\"\n              remove-todo=\"todoList.removeTodo\"\n              steps=\"todoList.steps\"\n              skip-todo=\"todoList.skipTodo\"\n              unskip-todo=\"todoList.unskipTodo\"\n              task-slugs=\"todoList.taskSlugs\"\n          ></todo-checklist>\n        </div>\n      </div>\n    </div>\n\n  </div>\n</section>\n";
+module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Todo List\n        </h3>\n      </div>\n    </div>\n\n    <div class=\"row section-body new-todo\">\n      <div class=\"col-lg-2\">\n        <select class=\"form-control input-sm\" name=\"todoList\" id=\"todoList\" ng-model=\"todoList.newTodoTaskId\">\n          <option value=\"\" selected>Select owner</option>\n          <option value=\"{{task.id}}\" ng-repeat=\"task in todoList.possibleTasks\">{{todoList.steps[task.step_slug].name}}</option>\n        </select>\n      </div>\n      <div class=\"col-lg-5\">\n        <input class=\"form-control input-sm\"\n               type=\"text\"\n               ng-model=\"todoList.newTodoDescription\"\n               placeholder=\"Add a todo item\">\n        <div class=\"pull-right\">\n          <div class=\"new-todo__datetime\">\n            <label>Start</label>\n            <date-picker\n              date=\"todoList.newTodoStartDate\"\n              callback=\"todoList.setTimeOfDate\"></date-picker>\n            <time-input\n              datetime=\"todoList.newTodoStartDate\"\n              default-hour=\"8\"\n              ></time-input>\n          </div>\n          <div class=\"new-todo__datetime\">\n            <label>Due</label>\n            <date-picker\n              date=\"todoList.newTodoDueDate\"\n              callback=\"todoList.setTimeOfDate\"></date-picker>\n            <time-input\n              datetime=\"todoList.newTodoDueDate\"\n              default-hour=\"18\"\n              ></time-input>\n          </div>\n        </div>\n      </div>\n      <div class=\"col-lg-1\">\n        <button type=\"submit\"\n                 class=\"btn btn-primary btn-sm btn-block edit-save-handle\"\n                 ng-disabled=\"!todoList.canAddTodo()\"\n                 ng-click=\"todoList.addTodo()\">\n                Add todo\n        </button>\n      </div>\n      <div class=\"col-lg-2\" ng-if=\"todoList.templates.length > 0\">\n        <div class=\"btn-group\">\n          <button type=\"button\" class=\"btn btn-primary btn-sm dropdown-toggle\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"\n                  ng-disabled=\"!todoList.newTodoTaskId\">\n            Add todos from a template <span class=\"caret\"></span>\n          </button>\n          <ul class=\"dropdown-menu\">\n            <li ng-repeat=\"template in todoList.templates\" ng-click=\"todoList.updateTodoListFromTemplate(template.slug)\">\n              <a href=\"\">{{template.name}}</a>\n            </li>\n          </ul>\n        </div>\n      </div>\n    </div>\n\n    <div class=\"row section-body\" ng-if=\"todoList.ready\">\n      <div class=\"col-lg-6 col-md-6 col-sm-12\">\n        <div class=\"todolist-pane\">\n          <p class=\"todolist-pane__heading col-sm-3\">Todo items</p>\n          <todo-checklist\n              title=\"Todos\"\n              todos=\"todoList.todos\"\n              todo-qas=\"todoList.todoQas\"\n              templates=\"todoList.templates\"\n              show-skipped=\"false\"\n              update-todo=\"todoList.updateTodo\"\n              remove-todo=\"todoList.removeTodo\"\n              skip-todo=\"todoList.skipTodo\"\n              unskip-todo=\"todoList.unskipTodo\"\n              steps=\"todoList.steps\"\n              task-slugs=\"todoList.taskSlugs\"\n          ></todo-checklist>\n        </div>\n      </div>\n      <div class=\"col-lg-6 col-md-6 col-sm-12\">\n        <div class=\"todolist-pane\" ng-if=\"todoList.templates.length > 0\">\n          <p class=\"todolist-pane__heading col-sm-4\">Skipped todo items</p>\n          <todo-checklist\n              title=\"Todos\"\n              todos=\"todoList.todos\"\n              todo-qas=\"todoList.todoQas\"\n              templates=\"todoList.templates\"\n              show-skipped=\"true\"\n              update-todo=\"todoList.updateTodo\"\n              remove-todo=\"todoList.removeTodo\"\n              steps=\"todoList.steps\"\n              skip-todo=\"todoList.skipTodo\"\n              unskip-todo=\"todoList.unskipTodo\"\n              task-slugs=\"todoList.taskSlugs\"\n          ></todo-checklist>\n        </div>\n      </div>\n    </div>\n\n  </div>\n</section>\n";
 
 /***/ }),
 /* 213 */
@@ -61688,7 +61692,7 @@ function todoChecklist() {
       title: '@',
       todos: '<',
       templates: '<',
-      recommendations: '<',
+      todoQas: '<',
       showChecked: '=',
       showSkipped: '=',
       updateTodo: '=',
@@ -61704,7 +61708,7 @@ function todoChecklist() {
       };
 
       scope.isInDanger = function (todo) {
-        return !todo.completed && _momentTimezone2.default.isBeforeNowBy(todo.due_datetime, 1, 'days') || scope.recommendations[todo.description];
+        return !todo.completed && _momentTimezone2.default.isBeforeNowBy(todo.due_datetime, 1, 'days') || scope.todoQas[todo.description];
       };
 
       scope.isSkipped = function (todo) {
@@ -61735,7 +61739,7 @@ function todoChecklist() {
 /* 215 */
 /***/ (function(module, exports) {
 
-module.exports = "<script type=\"text/ng-template\" id=\"todoItemTemplate\">\n  <div ui-tree-handle class=\"tree-node tree-node-content\">\n    <input type=\"checkbox\"\n           ng-hide=\"showSkipped\"\n           ng-model=\"todo.completed\"\n           ng-change=\"updateTodo(todo)\">\n    <label ng-class=\"{'text-danger': isInDanger(todo)}\">\n      <span ng-click=\"toggle(this)\">\n        <i aria-hidden=\"true\" ng-if=\"todo.items && todo.items.length > 0\" data-nodrag\n          class=\"fa\"\n          ng-class=\"{\n            'skipped-todos': showSkipped,\n            'fa-caret-right': collapsed,\n            'fa-caret-down': !collapsed\n          }\"></i>\n        <i class=\"fa fa-circle-o\" aria-hidden=\"true\" ng-if=\"(!todo.items || todo.items.length === 0) && showSkipped\" data-nodrag></i>\n        <span ng-hide=\"!todo.items || todo.items.length < 1 || showSkipped\">[{{ ( todo.items | filter: { completed: true, skipped_datetime: '!' } ).length }}/{{ ( todo.items | filter: { skipped_datetime: '!' } ).length }}] </span>\n        <span class=\"todo__role\">{{steps[taskSlugs[todo.task]].name}}:&nbsp;</span>\n        <span class=\"todo__description\" ng-bind-html=\"todo.description\"></span>\n        <span ng-class=\"{'todo__dates': true, 'todo__dates-danger': isInDanger(todo)}\">\n          <span ng-if=\"isNonEmptyString(todo.start_by_datetime)\">\n            Start <datetime-display datetime=\"todo.start_by_datetime\" show-time=\"true\"/>\n          </span>\n          <span ng-if=\"isNonEmptyString(todo.start_by_datetime) && isNonEmptyString(todo.due_datetime)\" class=\"todo__dates-separator\">|</span>\n          <span ng-if=\"isNonEmptyString(todo.due_datetime)\">\n            Due <datetime-display datetime=\"todo.due_datetime\" show-time=\"true\"/></span>\n        </span>\n      </span>\n      <span ng-if=\"templates.length > 0\">\n        &nbsp;&nbsp;\n        <a href=\"#\" ng-hide=\"!showSkipped\" ng-click=\"unskipTodo(todo)\">[relevant]</a>\n        <a href=\"#\" ng-hide=\"showSkipped\" ng-click=\"skipTodo(todo)\">[not relevant]</a>\n        <a href=\"#\" ng-hide=\"todo.parent_todo\" ng-click=\"removeTodo(todo)\">[remove]</a>\n      </span>\n    </label>\n    <form class=\"form-inline\" ng-if=\"recommendations[todo.description] && recommendations[todo.description].comment\" >\n      <textarea class=\"form-control input-sm\" rows=\"1\" cols=\"50\" ng-trim=\"true\" disabled>{{recommendations[todo.description].comment}}</textarea>\n    </form>\n  </div>\n  <ol ui-tree-nodes ng-model=\"todo.items\" ng-class=\"{hidden: collapsed}\">\n    <li ng-repeat=\"todo in filterTodoList(todo.items, showSkipped)\" ui-tree-node data-collapsed=\"true\" ng-include=\"'todoItemTemplate'\"></li>\n  </ol>\n</script>\n\n\n<div class=\"list-by-status\" ng-if=\"todos.length > 0\">\n  <div class=\"todo\">\n    <div ui-tree data-drag-enabled=\"false\" id=\"tree-root\">\n      <ol ui-tree-nodes ng-model=\"todos\">\n        <li ng-repeat=\"todo in filterTodoList(todos, showSkipped)\" ui-tree-node data-collapsed=\"true\" ng-include=\"'todoItemTemplate'\"></li>\n      </ol>\n    </div>\n  </div>\n</div>\n";
+module.exports = "<script type=\"text/ng-template\" id=\"todoItemTemplate\">\n  <div ui-tree-handle class=\"tree-node tree-node-content\">\n    <input type=\"checkbox\"\n           ng-hide=\"showSkipped\"\n           ng-model=\"todo.completed\"\n           ng-change=\"updateTodo(todo)\">\n    <label ng-class=\"{'text-danger': isInDanger(todo)}\">\n      <span ng-click=\"toggle(this)\">\n        <i aria-hidden=\"true\" ng-if=\"todo.items && todo.items.length > 0\" data-nodrag\n          class=\"fa\"\n          ng-class=\"{\n            'skipped-todos': showSkipped,\n            'fa-caret-right': collapsed,\n            'fa-caret-down': !collapsed\n          }\"></i>\n        <i class=\"fa fa-circle-o\" aria-hidden=\"true\" ng-if=\"(!todo.items || todo.items.length === 0) && showSkipped\" data-nodrag></i>\n        <span ng-hide=\"!todo.items || todo.items.length < 1 || showSkipped\">[{{ ( todo.items | filter: { completed: true, skipped_datetime: '!' } ).length }}/{{ ( todo.items | filter: { skipped_datetime: '!' } ).length }}] </span>\n        <span class=\"todo__role\">{{steps[taskSlugs[todo.task]].name}}:&nbsp;</span>\n        <span class=\"todo__description\" ng-bind-html=\"todo.description\"></span>\n        <span ng-class=\"{'todo__dates': true, 'todo__dates-danger': isInDanger(todo)}\">\n          <span ng-if=\"isNonEmptyString(todo.start_by_datetime)\">\n            Start <datetime-display datetime=\"todo.start_by_datetime\" show-time=\"true\"/>\n          </span>\n          <span ng-if=\"isNonEmptyString(todo.start_by_datetime) && isNonEmptyString(todo.due_datetime)\" class=\"todo__dates-separator\">|</span>\n          <span ng-if=\"isNonEmptyString(todo.due_datetime)\">\n            Due <datetime-display datetime=\"todo.due_datetime\" show-time=\"true\"/></span>\n        </span>\n      </span>\n      <span ng-if=\"templates.length > 0\">\n        &nbsp;&nbsp;\n        <a href=\"#\" ng-hide=\"!showSkipped\" ng-click=\"unskipTodo(todo)\">[relevant]</a>\n        <a href=\"#\" ng-hide=\"showSkipped\" ng-click=\"skipTodo(todo)\">[not relevant]</a>\n        <a href=\"#\" ng-hide=\"todo.parent_todo\" ng-click=\"removeTodo(todo)\">[remove]</a>\n      </span>\n    </label>\n    <form class=\"form-inline\" ng-if=\"todoQas[todo.description] && todoQas[todo.description].comment\" >\n      <textarea class=\"form-control input-sm\" rows=\"1\" cols=\"50\" ng-trim=\"true\" disabled>{{todoQas[todo.description].comment}}</textarea>\n    </form>\n  </div>\n  <ol ui-tree-nodes ng-model=\"todo.items\" ng-class=\"{hidden: collapsed}\">\n    <li ng-repeat=\"todo in filterTodoList(todo.items, showSkipped)\" ui-tree-node data-collapsed=\"true\" ng-include=\"'todoItemTemplate'\"></li>\n  </ol>\n</script>\n\n\n<div class=\"list-by-status\" ng-if=\"todos.length > 0\">\n  <div class=\"todo\">\n    <div ui-tree data-drag-enabled=\"false\" id=\"tree-root\">\n      <ol ui-tree-nodes ng-model=\"todos\">\n        <li ng-repeat=\"todo in filterTodoList(todos, showSkipped)\" ui-tree-node data-collapsed=\"true\" ng-include=\"'todoItemTemplate'\"></li>\n      </ol>\n    </div>\n  </div>\n</div>\n";
 
 /***/ }),
 /* 216 */
@@ -63647,138 +63651,9 @@ function todoListTemplateApi($http) {
 })();
 
 /***/ }),
-/* 220 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _commonModuleEs = __webpack_require__(5);
-
-var _commonModuleEs2 = _interopRequireDefault(_commonModuleEs);
-
-var _qaDirectiveEs = __webpack_require__(221);
-
-var _qaDirectiveEs2 = _interopRequireDefault(_qaDirectiveEs);
-
-var _todoQaListDirectiveEs = __webpack_require__(223);
-
-var _todoQaListDirectiveEs2 = _interopRequireDefault(_todoQaListDirectiveEs);
-
-var _todosServiceEs = __webpack_require__(123);
-
-var _todosServiceEs2 = _interopRequireDefault(_todosServiceEs);
-
-var _todoQasServiceEs = __webpack_require__(124);
-
-var _todoQasServiceEs2 = _interopRequireDefault(_todoQasServiceEs);
-
-__webpack_require__(125);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/* global angular */
-
-var name = 'orchestra.qa';
-angular.module(name, ['ngSanitize', 'ui.tree', _commonModuleEs2.default]).directive('qa', _qaDirectiveEs2.default).directive('todoQaList', _todoQaListDirectiveEs2.default).factory('todoApi', _todosServiceEs2.default).factory('todoQaApi', _todoQasServiceEs2.default);
-exports.default = name;
-
-/***/ }),
-/* 221 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = qa;
-
-var _lodash = __webpack_require__(4);
-
-var _qa = __webpack_require__(222);
-
-var _qa2 = _interopRequireDefault(_qa);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function qa() {
-  return {
-    template: _qa2.default,
-    restrict: 'E',
-    scope: {
-      projectId: '=',
-      taskId: '='
-    },
-    controllerAs: 'qa',
-    bindToController: true,
-    controller: function controller(todoApi, todoQaApi, $scope) {
-      var qa = this;
-      qa.todos = [];
-      qa.ready = false;
-
-      qa.updateTodoQAComment = function (todo) {
-        todoQaApi.update(todo.qa);
-      };
-
-      qa.approveTodo = function (todo) {
-        if (todo.qa) {
-          todo.qa.approved = true;
-          todoQaApi.update(todo.qa);
-        } else {
-          todoQaApi.create({
-            'todo': todo.id,
-            'approved': true
-          }).then(function (qa) {
-            todo.qa = qa;
-          });
-        }
-      };
-
-      qa.disapproveTodo = function (todo) {
-        if (todo.qa) {
-          todo.qa.approved = false;
-          todoQaApi.update(todo.qa);
-        } else {
-          todoQaApi.create({
-            'todo': todo.id,
-            'approved': false
-          }).then(function (qa) {
-            todo.qa = qa;
-          });
-        }
-      };
-
-      qa.transformToTree = function (todos) {
-        var nodes = {};
-        return todos.filter(function (obj) {
-          nodes[obj.id] = (0, _lodash.defaults)(obj, nodes[obj.id], { items: [] });
-          obj.parent_todo && (nodes[obj.parent_todo] = nodes[obj.parent_todo] || { items: [] })['items'].push(obj);
-
-          return !obj.parent_todo;
-        });
-      };
-
-      todoApi.list(qa.projectId).then(function (todos) {
-        qa.todos = qa.transformToTree(todos);
-        qa.ready = true;
-      });
-    }
-  };
-}
-
-/***/ }),
-/* 222 */
-/***/ (function(module, exports) {
-
-module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          QA\n        </h3>\n      </div>\n    </div>\n\n    <div class=\"row section-body\" ng-if=\"qa.ready\">\n      <div class=\"col-sm-12\">\n        <todo-qa-list\n        todos=\"qa.todos\"\n        approve-todo=\"qa.approveTodo\"\n        disapprove-todo=\"qa.disapproveTodo\"\n        update-todo-qa-comment=\"qa.updateTodoQAComment\"\n        ></todo-qa-list>\n      </div>\n    </div>\n\n  </div>\n</section>\n";
-
-/***/ }),
+/* 220 */,
+/* 221 */,
+/* 222 */,
 /* 223 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -63788,7 +63663,7 @@ module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"co
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = todoQa;
+exports.default = todoQaList;
 
 var _lodash = __webpack_require__(4);
 
@@ -63800,7 +63675,7 @@ __webpack_require__(225);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function todoQa() {
+function todoQaList() {
   return {
     template: _todoQaList2.default,
     restrict: 'E',
@@ -63808,7 +63683,7 @@ function todoQa() {
       todos: '<',
       approveTodo: '=',
       disapproveTodo: '=',
-      updateComment: '='
+      updateTodoQaComment: '='
     },
     link: function link(scope, elem, attrs) {
       scope.updatedComments = {};
@@ -63834,7 +63709,7 @@ function todoQa() {
       };
 
       scope.submitComment = function (todo) {
-        scope.updateComment(todo);
+        scope.updateTodoQaComment(todo);
         scope.updatedComments[todo.id] = false;
       };
 
@@ -64099,6 +63974,117 @@ module.exports = "<div class=\"timecard-view\" ng-if=\"!vm.dataLoading\">\n  <di
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"project-management\">\n  <div class=\"overlay\" ng-if=\"vis.dataService.loading\">\n    <div class=\"spinner\"></div>\n  </div>\n  <section class=\"section-panel\">\n    <div class=\"container-fluid\">\n      <div class=\"row padded\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <ui-select class=\"project-description\" ng-model=\"vis.dataService.currentProject\"\n              ng-change=\"vis.dataService.setSelectedProject()\"\n              ng-disabled=\"vis.dataService.loading\">\n            <ui-select-match>\n              <span ng-bind=\"projectDescription($select.selected)\"></span>\n            </ui-select-match>\n            <ui-select-choices repeat=\"item in (vis.dataService.allProjects | toArray | filter: $select.search) track by item.id\">\n              <span ng-bind=\"projectDescription(item)\"></span>\n            </ui-select-choices>\n          </ui-select>\n          <div class=\"project-actions\" ng-show=\"vis.dataService.currentProject.id\">\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.createSubsequentTasks()\" class=\"btn btn-default\">\n              Create subsequent tasks\n            </button>\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.showSlackActions()\" class=\"btn btn-default\">\n              Edit Slack users\n            </button>\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.showProjectData()\" class=\"btn btn-default\">\n              View project data\n            </button>\n            <a ng-href=\"{{vis.dataService.data.project.admin_url}}\" ng-disabled=\"vis.dataService.loading\" target=\"_blank\">\n              <button type=\"button\" class=\"btn btn-default\">View in admin</button>\n            </a>\n            <button ng-click=\"vis.endProject()\" class=\"btn btn-danger\">Abort project</button>\n          </div>\n        </div>\n      </div>\n      <div class=\"row\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <div class=\"vis-wrapper\" ng-show=\"vis.dataService.currentProject.id\">\n            <div class=\"freeze-pane-left\">\n              <div class=\"scale-buttons\">\n                <button ng-click=\"vis.axis.relativeTime = !vis.axis.relativeTime; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  Switch to {{vis.axis.relativeTime ? 'local' : 'relative'}} time\n                </button>\n                <button ng-click=\"vis.params.scaleWidth = vis.params.scaleWidth / 1.1; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  -\n                </button>\n                <button ng-click=\"vis.params.scaleWidth = vis.params.scaleWidth * 1.1; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  +\n                </button>\n              </div>\n              <div class=\"task-names\"></div>\n            </div>\n            <div class=\"svg-wrapper\"></div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n</div>\n";
+
+/***/ }),
+/* 234 */,
+/* 235 */,
+/* 236 */,
+/* 237 */,
+/* 238 */,
+/* 239 */,
+/* 240 */,
+/* 241 */,
+/* 242 */,
+/* 243 */,
+/* 244 */,
+/* 245 */,
+/* 246 */,
+/* 247 */,
+/* 248 */,
+/* 249 */,
+/* 250 */,
+/* 251 */,
+/* 252 */,
+/* 253 */,
+/* 254 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = qa;
+
+var _lodash = __webpack_require__(4);
+
+var _todoQa = __webpack_require__(255);
+
+var _todoQa2 = _interopRequireDefault(_todoQa);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function qa() {
+  return {
+    template: _todoQa2.default,
+    restrict: 'E',
+    scope: {
+      projectId: '=',
+      taskId: '='
+    },
+    controllerAs: 'todoQa',
+    bindToController: true,
+    controller: function controller(todoApi, todoQaApi, $scope) {
+      var todoQa = this;
+      todoQa.todos = [];
+      todoQa.ready = false;
+
+      todoQa.updateTodoQaComment = function (todo) {
+        todoQaApi.update(todo.qa);
+      };
+
+      todoQa.approveTodo = function (todo) {
+        if (todo.qa) {
+          todo.qa.approved = true;
+          todoQaApi.update(todo.qa);
+        } else {
+          todoQaApi.create({
+            'todo': todo.id,
+            'approved': true
+          }).then(function (qa) {
+            todo.qa = qa;
+          });
+        }
+      };
+
+      todoQa.disapproveTodo = function (todo) {
+        if (todo.qa) {
+          todo.qa.approved = false;
+          todoQaApi.update(todo.qa);
+        } else {
+          todoQaApi.create({
+            'todo': todo.id,
+            'approved': false
+          }).then(function (qa) {
+            todo.qa = qa;
+          });
+        }
+      };
+
+      todoQa.transformToTree = function (todos) {
+        var nodes = {};
+        return todos.filter(function (obj) {
+          nodes[obj.id] = (0, _lodash.defaults)(obj, nodes[obj.id], { items: [] });
+          obj.parent_todo && (nodes[obj.parent_todo] = nodes[obj.parent_todo] || { items: [] })['items'].push(obj);
+
+          return !obj.parent_todo;
+        });
+      };
+
+      todoApi.list(todoQa.projectId).then(function (todos) {
+        todoQa.todos = todoQa.transformToTree(todos);
+        todoQa.ready = true;
+      });
+    }
+  };
+}
+
+/***/ }),
+/* 255 */
+/***/ (function(module, exports) {
+
+module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          QA\n        </h3>\n      </div>\n    </div>\n\n    <div class=\"row section-body\" ng-if=\"todoQa.ready\">\n      <div class=\"col-sm-12\">\n        <todo-qa-list\n        todos=\"todoQa.todos\"\n        approve-todo=\"todoQa.approveTodo\"\n        disapprove-todo=\"todoQa.disapproveTodo\"\n        update-todo-qa-comment=\"todoQa.updateTodoQaComment\"\n        ></todo-qa-list>\n      </div>\n    </div>\n\n  </div>\n</section>\n";
 
 /***/ })
 /******/ ]);

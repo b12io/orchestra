@@ -9,13 +9,13 @@ export default function todoQaApi ($http) {
   }
 
   const details = (todoQaId) => `${apiBase}${todoQaId}/`
-  const recommendations = (projectId) => `/orchestra/todos/recommendations/?project=${projectId}`
+  const workerRecentTodoQas = (projectId) => `/orchestra/todos/worker_recent_todo_qas/?project=${projectId}`
 
   return {
     create: (todoQa) => $http.post(listCreate(), todoQa)
       .then(response => response.data),
     update: (todoQa) => $http.put(details(todoQa.id), todoQa),
-    recommendations: (projectId) => $http.get(recommendations(projectId))
+    workerRecentTodoQas: (projectId) => $http.get(workerRecentTodoQas(projectId))
       .then(response => response.data)
   }
 };

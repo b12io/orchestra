@@ -33,8 +33,8 @@
         <a href="#" ng-hide="todo.parent_todo" ng-click="removeTodo(todo)">[remove]</a>
       </span>
     </label>
-    <form class="form-inline" ng-if="recommendations[todo.description] && recommendations[todo.description].comment" >
-      <textarea class="form-control input-sm" rows="1" cols="50" ng-trim="true" disabled>{{recommendations[todo.description].comment}}</textarea>
+    <form class="form-inline" ng-if="todoQas[todo.description] && todoQas[todo.description].comment" >
+      <textarea class="form-control input-sm" rows="1" cols="50" ng-trim="true" disabled>{{todoQas[todo.description].comment}}</textarea>
     </form>
   </div>
   <ol ui-tree-nodes ng-model="todo.items" ng-class="{hidden: collapsed}">
