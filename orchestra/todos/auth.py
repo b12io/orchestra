@@ -48,13 +48,12 @@ class IsAssociatedWithProject(permissions.BasePermission):
                 if task_id:
                     task = Task.objects.get(id=task_id)
                 elif todo_id:
-                    todo = Todo.objects.get(id=todo_id)
-                    task = Task.objects.get(id=todo.task.id) if todo else None
+                    task = Todo.objects.get(id=todo_id).task
                 else:
                     task = None
                 return task and \
                     worker.assignments.filter(
                         task__project=task.project).exists()
-            except Task.DoesNotExist:
+            except (Task.DoesNotExist, Todo.DoesNotExist):
                 return False
         return False
