@@ -198,7 +198,8 @@ class TodoQAEndpointTests(EndpointTestCase):
         self.request_client.login(username=self.worker.user.username,
                                   password='defaultpassword')
         self.list_create_url = reverse('orchestra:todos:todo_qas')
-        self.recommendations_url = reverse('orchestra:todos:recommendations')
+        self.worker_recent_todo_qas_url = reverse(
+            'orchestra:todos:worker_recent_todo_qas')
         self.list_details_url_name = 'orchestra:todos:todo_qa'
         self.tasks = Task.objects.filter(assignments__worker=self.worker)
         self.task = self.tasks[0]
@@ -275,11 +276,11 @@ class TodoQAEndpointTests(EndpointTestCase):
         bad_todo_qa = TodoQAFactory()
         self._verify_todo_qa_update(bad_todo_qa, False)
 
-    def _verify_recommendations(self, task, success):
+    def _verify_worker_recent_todo_qas(self, task, success):
         project_id = task.project.id
         todo = TodoFactory(task=task)
         todo_qa = TodoQAFactory(todo=todo, approved=False)
-        resp = self.request_client.get(self.recommendations_url,
+        resp = self.request_client.get(self.worker_recent_todo_qas_url,
                                        {'project': project_id})
         if success:
             self.assertEqual(resp.status_code, 200)
@@ -290,10 +291,10 @@ class TodoQAEndpointTests(EndpointTestCase):
         else:
             self.assertEqual(resp.status_code, 403)
 
-    def test_recommendations(self):
-        self._verify_recommendations(self.task, True)
+    def test_worker_recent_todo_qas(self):
+        self._verify_worker_recent_todo_qas(self.task, True)
         task = TaskFactory()
-        self._verify_recommendations(task, False)
+        self._verify_worker_recent_todo_qas(task, False)
 
 
 class TodoTemplateEndpointTests(EndpointTestCase):
