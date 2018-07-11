@@ -48,15 +48,16 @@ def update_todos_from_todolist_template(request):
 def worker_recent_todo_qas(request):
     """
     The function returns TodoQAs from the requesting user's most recent
-    task assignment provided they were created in the last 90 days.
+    task assignment with a todo qa.
     """
     try:
-        todoQAs = TodoQA.objects.filter(
-            todo__task__assignments__worker__user=request.user,
-            approved=False,
-            created_at__gte=datetime.now() - timedelta(days=90))
-        todos_recommendation = {todoQA.todo.description: TodoQASerializer(
-            todoQA).data for todoQA in todoQAs}
+        most_recent_worker_task = TodoQA.objects.filter(
+            todo__task__assignments__worker__user=request.user).order_by('-created_at').first().todo.task
+        todo_qas = TodoQA.objects.filter(
+            todo__task=most_recent_worker_task,
+            approved=False).order_by('-created_at')
+        todos_recommendation = {todo_qa.todo.description: TodoQASerializer(
+            todo_qa).data for todo_qa in todo_qas}
     except TodoQA.DoesNotExist:
         todos_recommendation = {}
     return Response(todos_recommendation)

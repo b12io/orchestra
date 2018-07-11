@@ -48,6 +48,16 @@ export default function todoChecklist () {
         return (todo.skipped_datetime == null && (!todo.items || todo.items.length === 0)) || items.length > 0
       }
 
+      scope.isCollapsed = (todo, showSkipped) => {
+        var items = []
+        if (todo.items) {
+          items = filter(todo.items, (todo) => {
+            return scope.hasTodoQaComment(todo, showSkipped)
+          })
+        }
+        return items.length === 0
+      }
+
       scope.hasTodoQaComment = (todo, showSkipped) => {
         var items = []
         if (todo.items) {
@@ -55,7 +65,7 @@ export default function todoChecklist () {
             return scope.hasTodoQaComment(todo, showSkipped)
           })
         }
-        return (todo.items.length === 0 && scope.todoQas[todo.description] && (showSkipped ? scope.isSkipped(todo) : scope.isNotSkipped(todo))) || items.length !== 0
+        return (scope.todoQas[todo.description] && (showSkipped ? scope.isSkipped(todo) : scope.isNotSkipped(todo))) || items.length !== 0
       }
 
       scope.filterTodoList = (todos, showSkipped) => {
