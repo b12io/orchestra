@@ -201,8 +201,10 @@ class TodoQAEndpointTests(EndpointTestCase):
         self.worker_recent_todo_qas_url = reverse(
             'orchestra:todos:worker_recent_todo_qas')
         self.list_details_url_name = 'orchestra:todos:todo_qa'
-        self.tasks = Task.objects.filter(assignments__worker=self.worker)
+        self.tasks = Task.objects.filter(
+            assignments__worker=self.worker).order_by('-created_at')
         self.task = self.tasks[0]
+        self.older_task = self.tasks[1]
         self.todo = TodoFactory(task=self.task)
         self.comment = 'Test comment'
 
@@ -279,7 +281,9 @@ class TodoQAEndpointTests(EndpointTestCase):
     def _verify_worker_recent_todo_qas(self, task, success):
         project_id = task.project.id
         todo = TodoFactory(task=task)
+        older_todo = TodoFactory(task=older_task)
         todo_qa = TodoQAFactory(todo=todo, approved=False)
+        older_todo_qa = TodoQAFactory(todo=older_todo, approved=False)
         resp = self.request_client.get(self.worker_recent_todo_qas_url,
                                        {'project': project_id})
         if success:

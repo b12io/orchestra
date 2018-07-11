@@ -52,7 +52,8 @@ def worker_recent_todo_qas(request):
     """
     try:
         most_recent_worker_task = TodoQA.objects.filter(
-            todo__task__assignments__worker__user=request.user).order_by('-created_at').first().todo.task
+            todo__task__assignments__worker__user=request.user
+        ).order_by('-created_at').first().todo.task
         todo_qas = TodoQA.objects.filter(
             todo__task=most_recent_worker_task,
             approved=False).order_by('-created_at')
