@@ -58,7 +58,7 @@ def worker_task_recent_todo_qas(request):
     task_todo_qas = TodoQA.objects.filter(todo__task=task_id)
 
     if task_todo_qas:
-        todo_qas = task_todo_qas
+        todo_qas = task_todo_qas.filter(approved=False)
     else:
         task = Task.objects.get(pk=task_id)
         most_recent_worker_task_todo_qa = TodoQA.objects.filter(
