@@ -300,8 +300,19 @@ class TodoQAEndpointTests(EndpointTestCase):
         else:
             self.assertEqual(resp.status_code, 403)
 
+    def _verify_worker_recent_todo_qas_zero_todo_qas(self, task):
+        project_id = task.project.id
+        todo = TodoFactory(task=task)
+        resp = self.request_client.get(self.worker_recent_todo_qas_url,
+                                       {'project': project_id})
+        self.assertEqual(resp.status_code, 200)
+        data = load_encoded_json(resp.content)
+        self.assertEqual({}, data)
+
     def test_worker_recent_todo_qas(self):
+        self._verify_worker_recent_todo_qas_zero_todo_qas(self.task)
         self._verify_worker_recent_todo_qas(self.task, True)
+        # Can't make requests for projects in which you're uninvolved.
         task = TaskFactory()
         self._verify_worker_recent_todo_qas(task, False)
 

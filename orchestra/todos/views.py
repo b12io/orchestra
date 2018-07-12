@@ -49,16 +49,16 @@ def worker_recent_todo_qas(request):
     The function returns TodoQAs from the requesting user's most recent
     task assignment with a todo qa.
     """
-    try:
-        most_recent_worker_task = TodoQA.objects.filter(
-            todo__task__assignments__worker__user=request.user
-        ).order_by('-created_at').first().todo.task
+    most_recent_worker_todo_qa = TodoQA.objects.filter(
+        todo__task__assignments__worker__user=request.user
+    ).order_by('-created_at').first()
+    if most_recent_worker_todo_qa:
         todo_qas = TodoQA.objects.filter(
-            todo__task=most_recent_worker_task,
-            approved=False).order_by('-created_at')
+            todo__task=most_recent_worker_todo_qa.todo.task,
+            approved=False)
         todos_recommendation = {todo_qa.todo.description: TodoQASerializer(
             todo_qa).data for todo_qa in todo_qas}
-    except TodoQA.DoesNotExist:
+    else:
         todos_recommendation = {}
     return Response(todos_recommendation)
 
