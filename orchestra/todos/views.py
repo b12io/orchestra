@@ -44,23 +44,39 @@ def update_todos_from_todolist_template(request):
               permissions=(permissions.IsAuthenticated,
                            IsAssociatedWithProject),
               logger=logger)
-def worker_recent_todo_qas(request):
+def worker_task_recent_todo_qas(request):
     """
-    The function returns TodoQAs from the requesting user's most recent
-    task assignment with a todo qa.
+    Returns TodoQA recommendations for the requesting user and task.
+
+    The TodoQAs for the recommendation are selected using the following logic:
+    1. If the given task has TodoQAs, use them.
+    2. Otherwise, use the TodoQAs from the requesting user's most recent
+    task with matching task slug.
     """
-    most_recent_worker_todo_qa = TodoQA.objects.filter(
-        todo__task__assignments__worker__user=request.user
-    ).order_by('-created_at').first()
-    if most_recent_worker_todo_qa:
-        todo_qas = TodoQA.objects.filter(
-            todo__task=most_recent_worker_todo_qa.todo.task,
-            approved=False)
+    task_id = request.query_params.get('task')
+    task_todo_qas = TodoQA.objects.filter(todo__task=task_id)
+    try:
+        if task_todo_qas:
+            todo_qas = task_todo_qas
+        else:
+            task = Task.objects.get(pk=task_id)
+            most_recent_worker_task_todo_qa = TodoQA.objects.filter(
+                todo__task__assignments__worker__user=request.user,
+                todo__task__step__slug=task.step.slug
+            ).order_by('-created_at').first()
+
+            if most_recent_worker_task_todo_qa:
+                todo_qas = TodoQA.objects.filter(
+                    todo__task=most_recent_worker_task_todo_qa.todo.task,
+                    approved=False)
+            else:
+                todo_qas = {}
+
         todos_recommendation = {todo_qa.todo.description: TodoQASerializer(
             todo_qa).data for todo_qa in todo_qas}
-    else:
-        todos_recommendation = {}
-    return Response(todos_recommendation)
+        return Response(todos_recommendation)
+    except Task.DoesNotExist:
+        raise BadRequest('Task not found for the given task id.')
 
 
 class TodoList(generics.ListCreateAPIView):

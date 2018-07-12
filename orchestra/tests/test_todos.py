@@ -198,14 +198,14 @@ class TodoQAEndpointTests(EndpointTestCase):
         self.request_client.login(username=self.worker.user.username,
                                   password='defaultpassword')
         self.list_create_url = reverse('orchestra:todos:todo_qas')
-        self.worker_recent_todo_qas_url = reverse(
-            'orchestra:todos:worker_recent_todo_qas')
+        self.worker_task_recent_todo_qas_url = reverse(
+            'orchestra:todos:worker_task_recent_todo_qas')
         self.list_details_url_name = 'orchestra:todos:todo_qa'
         self.tasks = Task.objects.filter(
             assignments__worker=self.worker)
-        self.task = self.tasks[0]
-        self.task1 = self.tasks[1]
-        self.todo = TodoFactory(task=self.task)
+        self.task_0 = self.tasks[0]
+        self.task_1 = self.tasks[1]
+        self.todo = TodoFactory(task=self.task_0)
         self.comment = 'Test comment'
 
     def _todo_qa_data(
@@ -278,42 +278,64 @@ class TodoQAEndpointTests(EndpointTestCase):
         bad_todo_qa = TodoQAFactory()
         self._verify_todo_qa_update(bad_todo_qa, False)
 
-    def _verify_worker_recent_todo_qas(self, task, success):
-        project_id = task.project.id
-        todo = TodoFactory(task=task)
-        todo1 = TodoFactory(task=self.task1)
-        # Create an todo QA
-        TodoQAFactory(todo=todo1, approved=False)
-        # Create another todo QA with a different task
-        # Since this todo qa was created most recently it should be the only
-        # todo qa in the workers recent todo qas.
-        todo_qa = TodoQAFactory(todo=todo, approved=False)
-        resp = self.request_client.get(self.worker_recent_todo_qas_url,
-                                       {'project': project_id})
+    def _verify_worker_task_recent_todo_qas(self, task, todo_qa, success):
+        resp = self.request_client.get(self.worker_task_recent_todo_qas_url,
+                                       {'project': task.project.id,
+                                        'task': task.id})
         if success:
             self.assertEqual(resp.status_code, 200)
             data = load_encoded_json(resp.content)
-            self.assertEqual(
-                TodoQASerializer(todo_qa).data,
-                data[todo.description])
-            self.assertEqual(1, len(data.keys()))
+            if todo_qa:
+                self.assertEqual(
+                    TodoQASerializer(todo_qa).data,
+                    list(data.values())[0])
+                self.assertEqual(1, len(data.keys()))
+            else:
+                self.assertEqual({}, data)
         else:
             self.assertEqual(resp.status_code, 403)
 
-    def _verify_worker_recent_todo_qas_zero_todo_qas(self, task):
-        project_id = task.project.id
-        resp = self.request_client.get(self.worker_recent_todo_qas_url,
-                                       {'project': project_id})
-        self.assertEqual(resp.status_code, 200)
-        data = load_encoded_json(resp.content)
-        self.assertEqual({}, data)
+    def test_worker_task_recent_todo_qas(self):
+        todo_task_0 = TodoFactory(task=self.task_0)
+        todo_task_1 = TodoFactory(task=self.task_1)
 
-    def test_worker_recent_todo_qas(self):
-        self._verify_worker_recent_todo_qas_zero_todo_qas(self.task)
-        self._verify_worker_recent_todo_qas(self.task, True)
+        # Zero TodoQAs
+        self._verify_worker_task_recent_todo_qas(
+            self.task_0, None, True)
+
+        todo_qa_task_0 = TodoQAFactory(todo=todo_task_0, approved=False)
+
+        # Most recent TodoQA is todo_qa_task_0
+        self._verify_worker_task_recent_todo_qas(
+            self.task_0, todo_qa_task_0, True)
+
+        self._verify_worker_task_recent_todo_qas(
+            self.task_1, todo_qa_task_0, True)
+
+        todo_qa_task_1 = TodoQAFactory(todo=todo_task_1, approved=False)
+
+        # If available use the todo qa for the corresponding task.
+        self._verify_worker_task_recent_todo_qas(
+            self.task_0, todo_qa_task_0, True)
+
+        self._verify_worker_task_recent_todo_qas(
+            self.task_1, todo_qa_task_1, True)
+
+        todo_qa_task_0.delete()
+
+        # Most recent TodoQA is todo_qa_task_1
+        self._verify_worker_task_recent_todo_qas(
+            self.task_0, todo_qa_task_1, True)
+
+        self._verify_worker_task_recent_todo_qas(
+            self.task_1, todo_qa_task_1, True)
+
         # Can't make requests for projects in which you're uninvolved.
-        task = TaskFactory()
-        self._verify_worker_recent_todo_qas(task, False)
+        bad_task = TaskFactory()
+        todo_bad_task = TodoFactory(task=bad_task)
+        todo_qa_bad_task = TodoQAFactory(todo=todo_bad_task, approved=False)
+        self._verify_worker_task_recent_todo_qas(
+            bad_task, todo_qa_bad_task, False)
 
 
 class TodoTemplateEndpointTests(EndpointTestCase):
