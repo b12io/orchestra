@@ -302,7 +302,6 @@ class TodoQAEndpointTests(EndpointTestCase):
 
     def _verify_worker_recent_todo_qas_zero_todo_qas(self, task):
         project_id = task.project.id
-        todo = TodoFactory(task=task)
         resp = self.request_client.get(self.worker_recent_todo_qas_url,
                                        {'project': project_id})
         self.assertEqual(resp.status_code, 200)
