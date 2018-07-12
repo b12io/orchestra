@@ -57,7 +57,7 @@ def worker_task_recent_todo_qas(request):
     task_id = request.query_params.get('task')
     task_todo_qas = TodoQA.objects.filter(todo__task=task_id)
 
-    if task_todo_qas:
+    if task_todo_qas.exists():
         todo_qas = task_todo_qas.filter(approved=False)
     else:
         task = Task.objects.get(pk=task_id)
@@ -71,7 +71,7 @@ def worker_task_recent_todo_qas(request):
                 todo__task=most_recent_worker_task_todo_qa.todo.task,
                 approved=False)
         else:
-            todo_qas = {}
+            todo_qas = TodoQA.objects.none()
 
     todos_recommendation = {todo_qa.todo.description: TodoQASerializer(
         todo_qa).data for todo_qa in todo_qas}
