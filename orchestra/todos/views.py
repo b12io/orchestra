@@ -19,6 +19,7 @@ from orchestra.todos.api import add_todolist_template
 from orchestra.utils.decorators import api_endpoint
 from orchestra.todos.auth import IsAssociatedWithTodosProject
 from orchestra.todos.auth import IsAssociatedWithProject
+from orchestra.todos.auth import IsAssociatedWithTask
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +43,7 @@ def update_todos_from_todolist_template(request):
 
 @api_endpoint(methods=['GET'],
               permissions=(permissions.IsAuthenticated,
-                           IsAssociatedWithProject),
+                           IsAssociatedWithTask),
               logger=logger)
 def worker_task_recent_todo_qas(request):
     """
@@ -55,28 +56,26 @@ def worker_task_recent_todo_qas(request):
     """
     task_id = request.query_params.get('task')
     task_todo_qas = TodoQA.objects.filter(todo__task=task_id)
-    try:
-        if task_todo_qas:
-            todo_qas = task_todo_qas
+
+    if task_todo_qas:
+        todo_qas = task_todo_qas
+    else:
+        task = Task.objects.get(pk=task_id)
+        most_recent_worker_task_todo_qa = TodoQA.objects.filter(
+            todo__task__assignments__worker__user=request.user,
+            todo__task__step__slug=task.step.slug
+        ).order_by('-created_at').first()
+
+        if most_recent_worker_task_todo_qa:
+            todo_qas = TodoQA.objects.filter(
+                todo__task=most_recent_worker_task_todo_qa.todo.task,
+                approved=False)
         else:
-            task = Task.objects.get(pk=task_id)
-            most_recent_worker_task_todo_qa = TodoQA.objects.filter(
-                todo__task__assignments__worker__user=request.user,
-                todo__task__step__slug=task.step.slug
-            ).order_by('-created_at').first()
+            todo_qas = {}
 
-            if most_recent_worker_task_todo_qa:
-                todo_qas = TodoQA.objects.filter(
-                    todo__task=most_recent_worker_task_todo_qa.todo.task,
-                    approved=False)
-            else:
-                todo_qas = {}
-
-        todos_recommendation = {todo_qa.todo.description: TodoQASerializer(
-            todo_qa).data for todo_qa in todo_qas}
-        return Response(todos_recommendation)
-    except Task.DoesNotExist:
-        raise BadRequest('Task not found for the given task id.')
+    todos_recommendation = {todo_qa.todo.description: TodoQASerializer(
+        todo_qa).data for todo_qa in todo_qas}
+    return Response(todos_recommendation)
 
 
 class TodoList(generics.ListCreateAPIView):

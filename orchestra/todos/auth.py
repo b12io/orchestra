@@ -57,3 +57,20 @@ class IsAssociatedWithProject(permissions.BasePermission):
             except (Task.DoesNotExist, Todo.DoesNotExist):
                 return False
         return False
+
+
+class IsAssociatedWithTask(permissions.BasePermission):
+    """
+    Ensures that a user's worker is associated with the request's
+    `task`.
+
+    """
+
+    def has_permission(self, request, view):
+        worker = Worker.objects.get(user=request.user)
+        if worker.is_project_admin():
+            return True
+        if request.method == 'GET':
+            task_id = request.query_params.get('task')
+            return worker.assignments.filter(task=task_id).exists()
+        return False

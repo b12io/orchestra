@@ -147,7 +147,7 @@ export default function todoList (orchestraApi) {
           // TODO(marcua): parallelize requests rather than chaining `then`s.
           todoApi.list(todoList.projectId).then((todos) => {
             todoListTemplateApi.list().then((templates) => {
-              todoQaApi.workerRecentTodoQas(todoList.projectId).then((todoQas) => {
+              todoQaApi.workerTaskRecentTodoQas(todoList.taskId).then((todoQas) => {
                 todoList.todoQas = todoQas
                 todoList.templates = templates
                 todoList.todos = todoList.transformToTree(todos)

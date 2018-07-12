@@ -280,8 +280,7 @@ class TodoQAEndpointTests(EndpointTestCase):
 
     def _verify_worker_task_recent_todo_qas(self, task, todo_qa, success):
         resp = self.request_client.get(self.worker_task_recent_todo_qas_url,
-                                       {'project': task.project.id,
-                                        'task': task.id})
+                                       {'task': task.id})
         if success:
             self.assertEqual(resp.status_code, 200)
             data = load_encoded_json(resp.content)
