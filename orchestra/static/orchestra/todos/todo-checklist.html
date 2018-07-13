@@ -48,7 +48,7 @@
 
 <div class="list-by-status" ng-if="todos.length > 0">
   <div class="todo">
-    <div ui-tree="treeOptions" data-drag-enabled="false" id="tree-root">
+    <div ui-tree data-drag-enabled="false" id="tree-root">
       <ol ui-tree-nodes ng-model="todos">
         <li ng-repeat="todo in filterTodoList(todos, showSkipped)" ui-tree-node data-collapsed="isCollapsed(todo, showSkipped)" ng-include="'todoItemTemplate'"></li>
       </ol>
