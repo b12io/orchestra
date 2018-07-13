@@ -61502,7 +61502,6 @@ function todoList(orchestraApi) {
         todo.skipped_datetime = datetimeUtc.format('YYYY-MM-DD HH:mm');
         // Not passing todo.skipped_datetime because we want to log datetime at a higher resolution (includes seconds).
         todoList.addActionToTodoActivityLog(todo, 'skip');
-
         if (todo.items) {
           todo.items.forEach(todoList.skipTodo);
         }
@@ -61512,7 +61511,6 @@ function todoList(orchestraApi) {
       todoList.unskipTodo = function (todo) {
         todo.skipped_datetime = null;
         todoList.addActionToTodoActivityLog(todo, 'unskip');
-
         if (todo.items) {
           todo.items.forEach(todoList.unskipTodo);
         }
