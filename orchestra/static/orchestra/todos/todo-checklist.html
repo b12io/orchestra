@@ -5,7 +5,7 @@
            ng-model="todo.completed"
            ng-change="updateTodo(todo)">
     <label ng-class="{'text-danger': isInDanger(todo)}">
-      <span ng-click="toggle(this)">
+      <span ng-click="toggleTodo(todo, this)">
         <i aria-hidden="true" ng-if="todo.items && todo.items.length > 0" data-nodrag
           class="fa"
           ng-class="{
@@ -48,7 +48,7 @@
 
 <div class="list-by-status" ng-if="todos.length > 0">
   <div class="todo">
-    <div ui-tree data-drag-enabled="false" id="tree-root">
+    <div ui-tree="treeOptions" data-drag-enabled="false" id="tree-root">
       <ol ui-tree-nodes ng-model="todos">
         <li ng-repeat="todo in filterTodoList(todos, showSkipped)" ui-tree-node data-collapsed="isCollapsed(todo, showSkipped)" ng-include="'todoItemTemplate'"></li>
       </ol>

@@ -99,20 +99,26 @@ export default function todoList (orchestraApi) {
         todoApi.delete(todo)
       }
 
-      todoList.addActionToTodoActivityLog = (todo, action, datetime) => {
+      todoList.addActionToTodoActivityLog = (todo, action) => {
         const datetimeUtc = moment.tz(moment(), moment.tz.guess()).utc()
         var activityLog = JSON.parse(todo.activity_log.replace(/'/g, '"'))
         activityLog['actions'].push({
           'action': action,
-          'datetime': datetime || datetimeUtc.format('YYYY-MM-DD HH:mm')
+          'datetime': datetimeUtc.format('YYYY-MM-DD HH:mm:ss')
         })
         todo.activity_log = JSON.stringify(activityLog).replace(/'/g, '"')
+      }
+
+      todoList.onToggleTodo = (todo, collapsed) => {
+        todoList.addActionToTodoActivityLog(todo, collapsed ? 'collapse' : 'expand')
+        todoApi.update(todo)
       }
 
       todoList.skipTodo = (todo) => {
         const datetimeUtc = moment.tz(moment(), moment.tz.guess()).utc()
         todo.skipped_datetime = datetimeUtc.format('YYYY-MM-DD HH:mm')
-        todoList.addActionToTodoActivityLog(todo, 'skip', todo.skipped_datetime)
+        // Not passing todo.skipped_datetime because we want to log datetime at a higher resolution (includes seconds).
+        todoList.addActionToTodoActivityLog(todo, 'skip')
 
         if (todo.items) {
           todo.items.forEach(todoList.skipTodo)
