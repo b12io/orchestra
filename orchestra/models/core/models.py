@@ -13,6 +13,7 @@ from orchestra.models.core.mixins import SanityCheckMixin
 from orchestra.models.core.mixins import TaskAssignmentMixin
 from orchestra.models.core.mixins import TaskMixin
 from orchestra.models.core.mixins import TodoMixin
+from orchestra.models.core.mixins import TodoQAMixin
 from orchestra.models.core.mixins import WorkerCertificationMixin
 from orchestra.models.core.mixins import WorkerMixin
 from orchestra.models.core.mixins import WorkflowMixin
@@ -657,6 +658,31 @@ class Todo(TodoMixin, BaseModel):
         TodoListTemplate, null=True, blank=True, related_name='template',
         on_delete=models.SET_NULL)
     activity_log = JSONField(default={'actions': []})
+
+
+class TodoQA(TodoQAMixin, BaseModel):
+    """
+    A QA check for a todo on a task.
+
+    Attributes:
+        todo (orchestra.models.Todo):
+            The given todo for which QA is done.
+        approved (boolean):
+            Whether the todo has been approved or not.
+        comment (str):
+            A text description explaining why a todo was
+            approved or disapproved.
+
+    Constraints:
+        `todo` has to be unique.
+    """
+    class Meta:
+        app_label = 'orchestra'
+
+    todo = models.OneToOneField(
+        Todo, related_name='qa', on_delete=models.CASCADE)
+    comment = models.TextField(null=True, blank=True)
+    approved = models.NullBooleanField(blank=True)
 
 
 class SanityCheck(SanityCheckMixin, BaseModel):

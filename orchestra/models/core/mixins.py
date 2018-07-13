@@ -188,6 +188,15 @@ class TodoMixin(object):
             self.completed)
 
 
+class TodoQAMixin(object):
+
+    def __str__(self):
+        return '{} - {} ({})'.format(
+            self.todo,
+            self.comment,
+            self.approved)
+
+
 class TodoListTemplateMixin(object):
 
     def __str__(self):

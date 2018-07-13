@@ -28,14 +28,20 @@
       </span>
       <span ng-if="templates.length > 0">
         &nbsp;&nbsp;
-        <a href="#" ng-hide="!showSkipped" ng-click="unskipTodo(todo)">[add]</a>
-        <a href="#" ng-hide="showSkipped" ng-click="skipTodo(todo)">[skip]</a>
+        <a href="#" ng-hide="!showSkipped" ng-click="unskipTodo(todo)">[relevant]</a>
+        <a href="#" ng-hide="showSkipped" ng-click="skipTodo(todo)">[not relevant]</a>
         <a href="#" ng-hide="todo.parent_todo" ng-click="removeTodo(todo)">[remove]</a>
       </span>
     </label>
+    <div class="todo-qa panel panel-default" ng-if="todoQas[todo.description] && todoQas[todo.description].comment">
+      <div class="panel-body">
+        <span>{{todoQas[todo.description].todo === todo.id?"Feedback on this project":"Feedback from previous project"}}:</span>
+        <strong>{{todoQas[todo.description].comment}}</strong>
+      </div>
+    </div>
   </div>
   <ol ui-tree-nodes ng-model="todo.items" ng-class="{hidden: collapsed}">
-    <li ng-repeat="todo in filterTodoList(todo.items, showSkipped)" ui-tree-node data-collapsed="true" ng-include="'todoItemTemplate'"></li>
+    <li ng-repeat="todo in filterTodoList(todo.items, showSkipped)" ui-tree-node data-collapsed="isCollapsed(todo, showSkipped)" ng-include="'todoItemTemplate'"></li>
   </ol>
 </script>
 
@@ -44,7 +50,7 @@
   <div class="todo">
     <div ui-tree data-drag-enabled="false" id="tree-root">
       <ol ui-tree-nodes ng-model="todos">
-        <li ng-repeat="todo in filterTodoList(todos, showSkipped)" ui-tree-node data-collapsed="true" ng-include="'todoItemTemplate'"></li>
+        <li ng-repeat="todo in filterTodoList(todos, showSkipped)" ui-tree-node data-collapsed="isCollapsed(todo, showSkipped)" ng-include="'todoItemTemplate'"></li>
       </ol>
     </div>
   </div>

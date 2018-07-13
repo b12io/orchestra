@@ -6,22 +6,25 @@ from django.core.urlresolvers import reverse
 
 from orchestra.models import Task
 from orchestra.models import Todo
+from orchestra.models import TodoQA
 from orchestra.models import TodoListTemplate
 from orchestra.models import Worker
 from orchestra.project_api.serializers import TimeEntrySerializer
 from orchestra.tests.helpers import EndpointTestCase
 from orchestra.tests.helpers.fixtures import TaskFactory
 from orchestra.tests.helpers.fixtures import TodoFactory
+from orchestra.tests.helpers.fixtures import TodoQAFactory
 from orchestra.tests.helpers.fixtures import TodoListTemplateFactory
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.todos.serializers import TodoSerializer
+from orchestra.todos.serializers import TodoQASerializer
 from orchestra.todos.serializers import TodoListTemplateSerializer
 from orchestra.utils.load_json import load_encoded_json
 
 
 def _todo_data(task, description, completed,
                skipped_datetime=None, start_by=None,
-               due=None, parent_todo=None, template=None,):
+               due=None, parent_todo=None, template=None, qa=None):
     return {
         'task': task.id,
         'completed': completed,
@@ -30,7 +33,8 @@ def _todo_data(task, description, completed,
         'parent_todo': parent_todo,
         'start_by_datetime': start_by,
         'due_datetime': due,
-        'skipped_datetime': skipped_datetime
+        'skipped_datetime': skipped_datetime,
+        'qa': qa
     }
 
 
@@ -183,6 +187,154 @@ class TodosEndpointTests(EndpointTestCase):
                 None,
                 self.deadline.strftime('%Y-%m-%dT%H:%M:%SZ')),
         ], True)
+
+
+class TodoQAEndpointTests(EndpointTestCase):
+
+    def setUp(self):
+        super().setUp()
+        setup_models(self)
+        self.worker = Worker.objects.get(user__username='test_user_6')
+        self.request_client.login(username=self.worker.user.username,
+                                  password='defaultpassword')
+        self.list_create_url = reverse('orchestra:todos:todo_qas')
+        self.worker_task_recent_todo_qas_url = reverse(
+            'orchestra:todos:worker_task_recent_todo_qas')
+        self.list_details_url_name = 'orchestra:todos:todo_qa'
+        self.tasks = Task.objects.filter(
+            assignments__worker=self.worker)
+        self.task_0 = self.tasks[0]
+        self.task_1 = self.tasks[1]
+        self.todo = TodoFactory(task=self.task_0)
+        self.comment = 'Test comment'
+
+    def _todo_qa_data(
+            self, todo, approved, comment):
+        return {
+            'todo': todo.id,
+            'approved': approved,
+            'comment': comment
+        }
+
+    def _verify_todo_qa_content(self, todo_qa,
+                                expected_todo_qa):
+        todo_qa = dict(todo_qa)
+        created_at = todo_qa.pop('created_at')
+        todo_qa_id = todo_qa.pop('id')
+        self.assertEqual(todo_qa, expected_todo_qa)
+        self.assertGreater(len(created_at), 0)
+        self.assertGreaterEqual(todo_qa_id, 0)
+
+    def _verify_todo_qa_creation(self, todo, success):
+        num_todo_qas = TodoQA.objects.all().count()
+        resp = self.request_client.post(self.list_create_url, {
+            'todo': todo.id,
+            'approved': True,
+            'comment': self.comment})
+        if success:
+            self.assertEqual(resp.status_code, 201)
+            self.assertEqual(TodoQA.objects.all().count(), num_todo_qas + 1)
+            todo_qa = load_encoded_json(resp.content)
+            self._verify_todo_qa_content(todo_qa, self._todo_qa_data(
+                todo, True, self.comment))
+        else:
+            self.assertEqual(resp.status_code, 403)
+            self.assertEqual(TodoQA.objects.all().count(), num_todo_qas)
+
+    def _verify_todo_qa_update(self, todo_qa, success):
+        comment = 'new comment'
+        list_details_url = reverse(
+            self.list_details_url_name,
+            kwargs={'pk': todo_qa.id})
+        resp = self.request_client.put(
+            list_details_url,
+            json.dumps(self._todo_qa_data(
+                todo_qa.todo, True, comment)),
+            content_type='application/json')
+        updated_todo_qa = TodoQASerializer(
+            TodoQA.objects.get(id=todo_qa.id)).data
+        if success:
+            self.assertEqual(resp.status_code, 200)
+            self._verify_todo_qa_content(updated_todo_qa, self._todo_qa_data(
+                todo_qa.todo, True, comment))
+        else:
+            self.assertEqual(resp.status_code, 403)
+            self.assertNotEqual(
+                updated_todo_qa['comment'], comment)
+
+    def test_todo_qas_list_create(self):
+        self._verify_todo_qa_creation(self.todo, True)
+
+    def test_todo_qas_create_permissions(self):
+        # Can't make requests for projects in which you're uninvolved.
+        todo = TodoFactory()
+        self._verify_todo_qa_creation(todo, False)
+
+    def test_todo_qa_details_and_permissions(self):
+        # You should be able to update TodoQAs for projects in which
+        # you're involved, and not for other projects.
+        good_todo_qa = TodoQAFactory(todo=self.todo)
+        self._verify_todo_qa_update(good_todo_qa, True)
+        bad_todo_qa = TodoQAFactory()
+        self._verify_todo_qa_update(bad_todo_qa, False)
+
+    def _verify_worker_task_recent_todo_qas(self, task, todo_qa, success):
+        resp = self.request_client.get(self.worker_task_recent_todo_qas_url,
+                                       {'task': task.id})
+        if success:
+            self.assertEqual(resp.status_code, 200)
+            data = load_encoded_json(resp.content)
+            if todo_qa:
+                self.assertEqual(
+                    TodoQASerializer(todo_qa).data,
+                    list(data.values())[0])
+                self.assertEqual(1, len(data.keys()))
+            else:
+                self.assertEqual({}, data)
+        else:
+            self.assertEqual(resp.status_code, 403)
+
+    def test_worker_task_recent_todo_qas(self):
+        todo_task_0 = TodoFactory(task=self.task_0)
+        todo_task_1 = TodoFactory(task=self.task_1)
+
+        # Zero TodoQAs
+        self._verify_worker_task_recent_todo_qas(
+            self.task_0, None, True)
+
+        todo_qa_task_0 = TodoQAFactory(todo=todo_task_0, approved=False)
+
+        # Most recent TodoQA is todo_qa_task_0
+        self._verify_worker_task_recent_todo_qas(
+            self.task_0, todo_qa_task_0, True)
+
+        self._verify_worker_task_recent_todo_qas(
+            self.task_1, todo_qa_task_0, True)
+
+        todo_qa_task_1 = TodoQAFactory(todo=todo_task_1, approved=False)
+
+        # If available use the todo qa for the corresponding task.
+        self._verify_worker_task_recent_todo_qas(
+            self.task_0, todo_qa_task_0, True)
+
+        self._verify_worker_task_recent_todo_qas(
+            self.task_1, todo_qa_task_1, True)
+
+        todo_qa_task_0.delete()
+
+        # Most recent TodoQA is todo_qa_task_1
+        self._verify_worker_task_recent_todo_qas(
+            self.task_0, todo_qa_task_1, True)
+
+        self._verify_worker_task_recent_todo_qas(
+            self.task_1, todo_qa_task_1, True)
+
+        # Can't make requests for projects in which you're uninvolved.
+        bad_task = TaskFactory()
+        todo_bad_task = TodoFactory(task=bad_task)
+        todo_qa_bad_task = TodoQAFactory(todo=todo_bad_task, approved=False)
+        self._verify_worker_task_recent_todo_qas(
+            bad_task, todo_qa_bad_task, False)
 
 
 class TodoTemplateEndpointTests(EndpointTestCase):

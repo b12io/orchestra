@@ -16,6 +16,7 @@ from orchestra.models.core.models import Iteration
 from orchestra.models.core.models import TimeEntry
 from orchestra.models.core.models import TaskTimer
 from orchestra.models.core.models import Todo
+from orchestra.models.core.models import TodoQA
 from orchestra.models.core.models import TodoListTemplate
 from orchestra.models.core.models import PayRate
 
@@ -39,6 +40,7 @@ __all__ = [
     'TimeEntry',
     'TaskTimer',
     'Todo',
+    'TodoQA',
     'TodoListTemplate',
     'PayRate',
 ]

@@ -1,0 +1,24 @@
+<section class="section-panel todo-list">
+  <div class="container-fluid">
+
+    <div class="row section-header">
+      <div class="col-lg-12 col-md-12 col-sm-12">
+        <h3>
+          QA
+        </h3>
+      </div>
+    </div>
+
+    <div class="row section-body" ng-if="todoQa.ready">
+      <div class="col-sm-12">
+        <todo-qa-list
+        todos="todoQa.todos"
+        approve-todo="todoQa.approveTodo"
+        disapprove-todo="todoQa.disapproveTodo"
+        update-todo-qa-comment="todoQa.updateTodoQaComment"
+        ></todo-qa-list>
+      </div>
+    </div>
+
+  </div>
+</section>

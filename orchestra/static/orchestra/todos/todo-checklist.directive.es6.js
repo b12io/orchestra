@@ -13,6 +13,7 @@ export default function todoChecklist () {
       title: '@',
       todos: '<',
       templates: '<',
+      todoQas: '<',
       showChecked: '=',
       showSkipped: '=',
       updateTodo: '=',
@@ -28,7 +29,7 @@ export default function todoChecklist () {
       }
 
       scope.isInDanger = (todo) => {
-        return !todo.completed && moment.isBeforeNowBy(todo.due_datetime, 1, 'days')
+        return (!todo.completed && moment.isBeforeNowBy(todo.due_datetime, 1, 'days')) || scope.todoQas[todo.description]
       }
 
       scope.isSkipped = (todo) => {
@@ -45,6 +46,26 @@ export default function todoChecklist () {
           items = filter(todo.items, scope.isNotSkipped)
         }
         return (todo.skipped_datetime == null && (!todo.items || todo.items.length === 0)) || items.length > 0
+      }
+
+      scope.isCollapsed = (todo, showSkipped) => {
+        var items = []
+        if (todo.items) {
+          items = filter(todo.items, (todo) => {
+            return scope.hasTodoQaComment(todo, showSkipped)
+          })
+        }
+        return items.length === 0
+      }
+
+      scope.hasTodoQaComment = (todo, showSkipped) => {
+        var items = []
+        if (todo.items) {
+          items = filter(todo.items, (todo) => {
+            return scope.hasTodoQaComment(todo, showSkipped)
+          })
+        }
+        return (scope.todoQas[todo.description] && (showSkipped ? scope.isSkipped(todo) : scope.isNotSkipped(todo))) || items.length !== 0
       }
 
       scope.filterTodoList = (todos, showSkipped) => {

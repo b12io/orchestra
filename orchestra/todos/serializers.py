@@ -1,12 +1,30 @@
 from rest_framework import serializers
 
 from orchestra.models import Todo
+from orchestra.models import TodoQA
 from orchestra.models import TodoListTemplate
 from orchestra.json_schemas.todos import TodoListSchema
 from orchestra.utils.mixins import JSONSchemaValidationMixin
 
 
+class TodoQASerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = TodoQA
+        fields = (
+            'id',
+            'created_at',
+            'todo',
+            'approved',
+            'comment')
+        read_only_fields = ('id',)
+
+
 class TodoSerializer(serializers.ModelSerializer):
+    qa = serializers.SerializerMethodField()
+
+    def get_qa(self, obj):
+        return None
 
     class Meta:
         model = Todo
@@ -17,6 +35,27 @@ class TodoSerializer(serializers.ModelSerializer):
             'description',
             'parent_todo',
             'template',
+            'qa',
+            'completed',
+            'skipped_datetime',
+            'start_by_datetime',
+            'due_datetime')
+        read_only_fields = ('id',)
+
+
+class TodoWithQASerializer(serializers.ModelSerializer):
+    qa = TodoQASerializer(read_only=True)
+
+    class Meta:
+        model = Todo
+        fields = (
+            'id',
+            'created_at',
+            'task',
+            'description',
+            'parent_todo',
+            'template',
+            'qa',
             'completed',
             'skipped_datetime',
             'start_by_datetime',

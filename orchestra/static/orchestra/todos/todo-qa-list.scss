@@ -1,0 +1,16 @@
+.todo {
+  &--skipped {
+    opacity: 0.5;
+  }
+  &--disapproved {
+    color: #a94442;
+  }
+  &--approved {
+    color: #3ab73a;
+  }
+  &-qa-comment {
+    display: block;
+    font-size: xx-small;
+    padding: 0px;
+  }
+}
