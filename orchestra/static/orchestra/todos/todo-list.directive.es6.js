@@ -123,14 +123,13 @@ export default function todoList (orchestraApi) {
         if (todo.items) {
           todo.items.forEach(todoList.skipTodo)
         }
-
         todoApi.update(todo)
       }
 
       todoList.unskipTodo = (todo) => {
         todo.skipped_datetime = null
         todoList.addActionToTodoActivityLog(todo, 'unskip')
-
+        
         if (todo.items) {
           todo.items.forEach(todoList.unskipTodo)
         }

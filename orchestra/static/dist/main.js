@@ -61506,7 +61506,6 @@ function todoList(orchestraApi) {
         if (todo.items) {
           todo.items.forEach(todoList.skipTodo);
         }
-
         todoApi.update(todo);
       };
 
