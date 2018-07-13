@@ -89,6 +89,7 @@ export default function todoList (orchestraApi) {
       }
 
       todoList.updateTodo = (todo) => {
+        todoList.addActionToTodoActivityLog(todo, todo.completed ? 'complete' : 'incomplete')
         todoApi.update(todo)
       }
 
@@ -98,17 +99,32 @@ export default function todoList (orchestraApi) {
         todoApi.delete(todo)
       }
 
+      todoList.addActionToTodoActivityLog = (todo, action, datetime) => {
+        const datetimeUtc = moment.tz(moment(), moment.tz.guess()).utc()
+        var activityLog = JSON.parse(todo.activity_log.replace(/'/g, '"'))
+        activityLog['actions'].push({
+          'action': action,
+          'datetime': datetime || datetimeUtc.format('YYYY-MM-DD HH:mm')
+        })
+        todo.activity_log = JSON.stringify(activityLog).replace(/'/g, '"')
+      }
+
       todoList.skipTodo = (todo) => {
         const datetimeUtc = moment.tz(moment(), moment.tz.guess()).utc()
         todo.skipped_datetime = datetimeUtc.format('YYYY-MM-DD HH:mm')
+        todoList.addActionToTodoActivityLog(todo, 'skip', todo.skipped_datetime)
+
         if (todo.items) {
           todo.items.forEach(todoList.skipTodo)
         }
+
         todoApi.update(todo)
       }
 
       todoList.unskipTodo = (todo) => {
         todo.skipped_datetime = null
+        todoList.addActionToTodoActivityLog(todo, 'unskip')
+
         if (todo.items) {
           todo.items.forEach(todoList.unskipTodo)
         }

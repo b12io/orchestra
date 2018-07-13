@@ -61472,6 +61472,7 @@ function todoList(orchestraApi) {
       };
 
       todoList.updateTodo = function (todo) {
+        todoList.addActionToTodoActivityLog(todo, todo.completed ? 'complete' : 'incomplete');
         todoApi.update(todo);
       };
 
@@ -61481,17 +61482,32 @@ function todoList(orchestraApi) {
         todoApi.delete(todo);
       };
 
+      todoList.addActionToTodoActivityLog = function (todo, action, datetime) {
+        var datetimeUtc = _momentTimezone2.default.tz((0, _momentTimezone2.default)(), _momentTimezone2.default.tz.guess()).utc();
+        var activityLog = JSON.parse(todo.activity_log.replace(/'/g, '"'));
+        activityLog['actions'].push({
+          'action': action,
+          'datetime': datetime || datetimeUtc.format('YYYY-MM-DD HH:mm')
+        });
+        todo.activity_log = JSON.stringify(activityLog).replace(/'/g, '"');
+      };
+
       todoList.skipTodo = function (todo) {
         var datetimeUtc = _momentTimezone2.default.tz((0, _momentTimezone2.default)(), _momentTimezone2.default.tz.guess()).utc();
         todo.skipped_datetime = datetimeUtc.format('YYYY-MM-DD HH:mm');
+        todoList.addActionToTodoActivityLog(todo, 'skip', todo.skipped_datetime);
+
         if (todo.items) {
           todo.items.forEach(todoList.skipTodo);
         }
+
         todoApi.update(todo);
       };
 
       todoList.unskipTodo = function (todo) {
         todo.skipped_datetime = null;
+        todoList.addActionToTodoActivityLog(todo, 'unskip');
+
         if (todo.items) {
           todo.items.forEach(todoList.unskipTodo);
         }
