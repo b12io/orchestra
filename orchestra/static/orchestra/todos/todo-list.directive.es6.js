@@ -100,7 +100,7 @@ export default function todoList (orchestraApi) {
       }
 
       todoList.addActionToTodoActivityLog = (todo, action, datetime) => {
-        const activityDatetime = datetime || moment.tz(moment(), moment.tz.guess()).utc().format('YYYY-MM-DD HH:mm:ss')
+        const activityDatetime = datetime || todoList.getUTCDateTimeString(moment())
         var activityLog = JSON.parse(todo.activity_log.replace(/'/g, '"'))
         activityLog['actions'].push({
           'action': action,
@@ -116,8 +116,7 @@ export default function todoList (orchestraApi) {
       }
 
       todoList.skipTodo = (todo) => {
-        const datetimeUtc = moment.tz(moment(), moment.tz.guess()).utc()
-        todo.skipped_datetime = datetimeUtc.format('YYYY-MM-DD HH:mm:ss')
+        todo.skipped_datetime = todoList.getUTCDateTimeString(moment())
         todoList.addActionToTodoActivityLog(todo, 'skip', todo.skipped_datetime)
         if (todo.items) {
           todo.items.forEach(todoList.skipTodo)

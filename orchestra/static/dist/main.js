@@ -61483,7 +61483,7 @@ function todoList(orchestraApi) {
       };
 
       todoList.addActionToTodoActivityLog = function (todo, action, datetime) {
-        var activityDatetime = datetime || _momentTimezone2.default.tz((0, _momentTimezone2.default)(), _momentTimezone2.default.tz.guess()).utc().format('YYYY-MM-DD HH:mm:ss');
+        var activityDatetime = datetime || todoList.getUTCDateTimeString((0, _momentTimezone2.default)());
         var activityLog = JSON.parse(todo.activity_log.replace(/'/g, '"'));
         activityLog['actions'].push({
           'action': action,
@@ -61499,8 +61499,7 @@ function todoList(orchestraApi) {
       };
 
       todoList.skipTodo = function (todo) {
-        var datetimeUtc = _momentTimezone2.default.tz((0, _momentTimezone2.default)(), _momentTimezone2.default.tz.guess()).utc();
-        todo.skipped_datetime = datetimeUtc.format('YYYY-MM-DD HH:mm:ss');
+        todo.skipped_datetime = todoList.getUTCDateTimeString((0, _momentTimezone2.default)());
         todoList.addActionToTodoActivityLog(todo, 'skip', todo.skipped_datetime);
         if (todo.items) {
           todo.items.forEach(todoList.skipTodo);
