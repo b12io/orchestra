@@ -61446,8 +61446,8 @@ function todoList(orchestraApi) {
         if (!datetime) {
           return null;
         }
-        var datetimeUtc = _momentTimezone2.default.tz(datetime.format('YYYY-MM-DD HH:mm'), _momentTimezone2.default.tz.guess()).utc();
-        return datetimeUtc.format('YYYY-MM-DD HH:mm');
+        var datetimeUtc = _momentTimezone2.default.tz(datetime.format('YYYY-MM-DD HH:mm:ss'), _momentTimezone2.default.tz.guess()).utc();
+        return datetimeUtc.format('YYYY-MM-DD HH:mm:ss');
       };
 
       todoList.addTodo = function () {
@@ -61482,12 +61482,12 @@ function todoList(orchestraApi) {
         todoApi.delete(todo);
       };
 
-      todoList.addActionToTodoActivityLog = function (todo, action) {
-        var datetimeUtc = _momentTimezone2.default.tz((0, _momentTimezone2.default)(), _momentTimezone2.default.tz.guess()).utc();
+      todoList.addActionToTodoActivityLog = function (todo, action, datetime) {
+        var activityDatetime = datetime ? datetime : _momentTimezone2.default.tz((0, _momentTimezone2.default)(), _momentTimezone2.default.tz.guess()).utc().format('YYYY-MM-DD HH:mm:ss');
         var activityLog = JSON.parse(todo.activity_log.replace(/'/g, '"'));
         activityLog['actions'].push({
           'action': action,
-          'datetime': datetimeUtc.format('YYYY-MM-DD HH:mm:ss')
+          'datetime': activityDatetime
         });
         todo.activity_log = JSON.stringify(activityLog).replace(/'/g, '"');
       };
@@ -61499,9 +61499,8 @@ function todoList(orchestraApi) {
 
       todoList.skipTodo = function (todo) {
         var datetimeUtc = _momentTimezone2.default.tz((0, _momentTimezone2.default)(), _momentTimezone2.default.tz.guess()).utc();
-        todo.skipped_datetime = datetimeUtc.format('YYYY-MM-DD HH:mm');
-        // Not passing todo.skipped_datetime because we want to log datetime at a higher resolution (includes seconds).
-        todoList.addActionToTodoActivityLog(todo, 'skip');
+        todo.skipped_datetime = datetimeUtc.format('YYYY-MM-DD HH:mm:ss');
+        todoList.addActionToTodoActivityLog(todo, 'skip', todo.skipped_datetime);
         if (todo.items) {
           todo.items.forEach(todoList.skipTodo);
         }

@@ -58,8 +58,8 @@ export default function todoList (orchestraApi) {
         if (!datetime) {
           return null
         }
-        const datetimeUtc = moment.tz(datetime.format('YYYY-MM-DD HH:mm'), moment.tz.guess()).utc()
-        return datetimeUtc.format('YYYY-MM-DD HH:mm')
+        const datetimeUtc = moment.tz(datetime.format('YYYY-MM-DD HH:mm:ss'), moment.tz.guess()).utc()
+        return datetimeUtc.format('YYYY-MM-DD HH:mm:ss')
       }
 
       todoList.addTodo = () => {
@@ -99,12 +99,12 @@ export default function todoList (orchestraApi) {
         todoApi.delete(todo)
       }
 
-      todoList.addActionToTodoActivityLog = (todo, action) => {
-        const datetimeUtc = moment.tz(moment(), moment.tz.guess()).utc()
+      todoList.addActionToTodoActivityLog = (todo, action, datetime) => {
+        const activityDatetime = datetime ? datetime : moment.tz(moment(), moment.tz.guess()).utc().format('YYYY-MM-DD HH:mm:ss')
         var activityLog = JSON.parse(todo.activity_log.replace(/'/g, '"'))
         activityLog['actions'].push({
           'action': action,
-          'datetime': datetimeUtc.format('YYYY-MM-DD HH:mm:ss')
+          'datetime': activityDatetime
         })
         todo.activity_log = JSON.stringify(activityLog).replace(/'/g, '"')
       }
@@ -116,9 +116,8 @@ export default function todoList (orchestraApi) {
 
       todoList.skipTodo = (todo) => {
         const datetimeUtc = moment.tz(moment(), moment.tz.guess()).utc()
-        todo.skipped_datetime = datetimeUtc.format('YYYY-MM-DD HH:mm')
-        // Not passing todo.skipped_datetime because we want to log datetime at a higher resolution (includes seconds).
-        todoList.addActionToTodoActivityLog(todo, 'skip')
+        todo.skipped_datetime = datetimeUtc.format('YYYY-MM-DD HH:mm:ss')
+        todoList.addActionToTodoActivityLog(todo, 'skip', todo.skipped_datetime)
         if (todo.items) {
           todo.items.forEach(todoList.skipTodo)
         }
