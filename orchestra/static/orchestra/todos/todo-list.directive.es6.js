@@ -100,11 +100,12 @@ export default function todoList (orchestraApi) {
       }
 
       todoList.addActionToTodoActivityLog = (todo, action, datetime) => {
-        const activityDatetime = datetime ? datetime : moment.tz(moment(), moment.tz.guess()).utc().format('YYYY-MM-DD HH:mm:ss')
+        const activityDatetime = datetime || moment.tz(moment(), moment.tz.guess()).utc().format('YYYY-MM-DD HH:mm:ss')
         var activityLog = JSON.parse(todo.activity_log.replace(/'/g, '"'))
         activityLog['actions'].push({
           'action': action,
-          'datetime': activityDatetime
+          'datetime': activityDatetime,
+          'step_slug': todoList.taskSlugs[todoList.taskId]
         })
         todo.activity_log = JSON.stringify(activityLog).replace(/'/g, '"')
       }

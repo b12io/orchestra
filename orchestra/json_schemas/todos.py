@@ -64,10 +64,13 @@ class TodoActionSchema(jsl.Document):
             Specify the action taken by the worker on the given todo.
             Examples: skip, unskip, complete, incomplete
         datetime (datetime):
-            The time the action was taken
+            The time the action was taken.
+        step_slug (str):
+            Unique identifier for the workflow step that the task represents.
     """
     action = jsl.StringField(required=True)
     datetime = jsl.DateTimeField(required=True)
+    step_slug = jsl.StringField(required=True)
 
 
 class TodoActionListSchema(jsl.Document):

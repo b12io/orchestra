@@ -61483,11 +61483,12 @@ function todoList(orchestraApi) {
       };
 
       todoList.addActionToTodoActivityLog = function (todo, action, datetime) {
-        var activityDatetime = datetime ? datetime : _momentTimezone2.default.tz((0, _momentTimezone2.default)(), _momentTimezone2.default.tz.guess()).utc().format('YYYY-MM-DD HH:mm:ss');
+        var activityDatetime = datetime || _momentTimezone2.default.tz((0, _momentTimezone2.default)(), _momentTimezone2.default.tz.guess()).utc().format('YYYY-MM-DD HH:mm:ss');
         var activityLog = JSON.parse(todo.activity_log.replace(/'/g, '"'));
         activityLog['actions'].push({
           'action': action,
-          'datetime': activityDatetime
+          'datetime': activityDatetime,
+          'step_slug': todoList.taskSlugs[todoList.taskId]
         });
         todo.activity_log = JSON.stringify(activityLog).replace(/'/g, '"');
       };
