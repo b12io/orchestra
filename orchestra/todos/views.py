@@ -134,8 +134,12 @@ class TodoDetail(generics.RetrieveUpdateDestroyAPIView):
             todo_change = 'not relevant' \
                 if todo.skipped_datetime else 'relevant'
         else:
+            # When activity_log is updated, `todo_change = None`
+            # to avoid triggering any slack messages
             todo_change = None
 
+        # To avoid Slack noise, only send updates for changed TODOs with
+        # depth 0 (no parent) or 1 (no grantparent).
         if todo_change and \
                 (not (todo.parent_todo and todo.parent_todo.parent_todo)):
             message = '{} has marked `{}` as `{}`.'.format(
