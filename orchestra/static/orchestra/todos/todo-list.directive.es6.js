@@ -58,8 +58,8 @@ export default function todoList (orchestraApi) {
         if (!datetime) {
           return null
         }
-        const datetimeUtc = moment.tz(datetime.format('YYYY-MM-DD HH:mm'), moment.tz.guess()).utc()
-        return datetimeUtc.format('YYYY-MM-DD HH:mm')
+        const datetimeUtc = moment.tz(datetime.format('YYYY-MM-DD HH:mm:ss'), moment.tz.guess()).utc()
+        return datetimeUtc.format('YYYY-MM-DD HH:mm:ss')
       }
 
       todoList.addTodo = () => {
@@ -89,6 +89,7 @@ export default function todoList (orchestraApi) {
       }
 
       todoList.updateTodo = (todo) => {
+        todoList.addActionToTodoActivityLog(todo, todo.completed ? 'complete' : 'incomplete')
         todoApi.update(todo)
       }
 
@@ -98,9 +99,25 @@ export default function todoList (orchestraApi) {
         todoApi.delete(todo)
       }
 
+      todoList.addActionToTodoActivityLog = (todo, action, datetime) => {
+        const activityDatetime = datetime || todoList.getUTCDateTimeString(moment())
+        var activityLog = JSON.parse(todo.activity_log.replace(/'/g, '"'))
+        activityLog['actions'].push({
+          'action': action,
+          'datetime': activityDatetime,
+          'step_slug': todoList.taskSlugs[todoList.taskId]
+        })
+        todo.activity_log = JSON.stringify(activityLog).replace(/'/g, '"')
+      }
+
+      todoList.onToggleTodo = (todo, collapsed) => {
+        todoList.addActionToTodoActivityLog(todo, collapsed ? 'collapse' : 'expand')
+        todoApi.update(todo)
+      }
+
       todoList.skipTodo = (todo) => {
-        const datetimeUtc = moment.tz(moment(), moment.tz.guess()).utc()
-        todo.skipped_datetime = datetimeUtc.format('YYYY-MM-DD HH:mm')
+        todo.skipped_datetime = todoList.getUTCDateTimeString(moment())
+        todoList.addActionToTodoActivityLog(todo, 'skip', todo.skipped_datetime)
         if (todo.items) {
           todo.items.forEach(todoList.skipTodo)
         }
@@ -109,6 +126,7 @@ export default function todoList (orchestraApi) {
 
       todoList.unskipTodo = (todo) => {
         todo.skipped_datetime = null
+        todoList.addActionToTodoActivityLog(todo, 'unskip')
         if (todo.items) {
           todo.items.forEach(todoList.unskipTodo)
         }

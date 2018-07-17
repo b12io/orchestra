@@ -53,3 +53,25 @@ class TodoSchema(jsl.Document):
 
 class TodoListSchema(jsl.Document):
     items = jsl.ArrayField(jsl.DocumentField('TodoSchema'))
+
+
+class TodoActionSchema(jsl.Document):
+    """
+    A todo action schema
+
+    Attributes:
+        action (str):
+            Specify the action taken by the worker on the given todo.
+            Examples: skip, unskip, complete, incomplete
+        datetime (datetime):
+            The time the action was taken.
+        step_slug (str):
+            Unique identifier for the workflow step that the task represents.
+    """
+    action = jsl.StringField(required=True)
+    datetime = jsl.DateTimeField(required=True)
+    step_slug = jsl.StringField(required=True)
+
+
+class TodoActionListSchema(jsl.Document):
+    actions = jsl.ArrayField(jsl.DocumentField('TodoActionSchema'))

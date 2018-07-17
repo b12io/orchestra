@@ -5,7 +5,7 @@
            ng-model="todo.completed"
            ng-change="updateTodo(todo)">
     <label ng-class="{'text-danger': isInDanger(todo)}">
-      <span ng-click="toggle(this)">
+      <span ng-click="toggleTodo(todo, this)">
         <i aria-hidden="true" ng-if="todo.items && todo.items.length > 0" data-nodrag
           class="fa"
           ng-class="{

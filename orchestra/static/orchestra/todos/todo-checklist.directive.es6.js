@@ -20,12 +20,18 @@ export default function todoChecklist () {
       removeTodo: '=',
       skipTodo: '=',
       unskipTodo: '=',
+      onToggleTodo: '=',
       steps: '<',
       taskSlugs: '<'
     },
     link: (scope, elem, attrs) => {
       scope.isNonEmptyString = (str) => {
         return str !== null && str !== undefined && str !== ''
+      }
+
+      scope.toggleTodo = (todo, todoNodeScope) => {
+        todoNodeScope.toggle()
+        scope.onToggleTodo(todo, todoNodeScope.collapsed)
       }
 
       scope.isInDanger = (todo) => {
