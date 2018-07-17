@@ -123,15 +123,31 @@ class TodoDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = TodoSerializer
 
     def perform_update(self, serializer):
+        old_todo = self.get_object()
         todo = serializer.save()
         sender = Worker.objects.get(
             user=self.request.user).formatted_slack_username()
-        message = '{} has marked `{}` as `{}`.'.format(
-            sender,
-            todo.description,
-            'complete' if todo.completed else 'incomplete')
-        message_experts_slack_group(
-            todo.task.project.slack_group_id, message)
+
+        if old_todo.completed != todo.completed:
+            todo_change = 'complete' if todo.completed else 'incomplete'
+        elif old_todo.skipped_datetime != todo.skipped_datetime:
+            todo_change = 'not relevant' \
+                if todo.skipped_datetime else 'relevant'
+        else:
+            # When activity_log is updated, `todo_change = None`
+            # to avoid triggering any slack messages
+            todo_change = None
+
+        # To avoid Slack noise, only send updates for changed TODOs with
+        # depth 0 (no parent) or 1 (no grantparent).
+        if todo_change and \
+                (not (todo.parent_todo and todo.parent_todo.parent_todo)):
+            message = '{} has marked `{}` as `{}`.'.format(
+                sender,
+                todo.description,
+                todo_change)
+            message_experts_slack_group(
+                todo.task.project.slack_group_id, message)
 
 
 class TodoQADetail(generics.UpdateAPIView):
