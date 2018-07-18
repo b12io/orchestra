@@ -17,7 +17,6 @@ djangocms-admin-style==1.2.7
 lxml==3.8.0
 beautifulsoup4==4.6.0
 pyOpenSSL==17.5.0
-pycrypto==2.6.1
 google-api-python-client==1.6.5
 slacker==0.9.60
 python-dateutil==2.6.1
@@ -34,7 +33,7 @@ django-gulp==2.5.1
 django-related-admin==0.5.0
 django-ajax-selects==1.7.0
 django-kronos==1.0
-httpsig==1.1.2 # The 1.2.0 release breaks our tests, so we pin this version.
+httpsig==1.2.0
 markdown2==2.3.4
 timeout-decorator==0.4.0
 phonenumbers==8.9.0
