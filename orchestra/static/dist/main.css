@@ -2366,7 +2366,7 @@ a.logo {
         font-size: x-small;
         font-weight: normal; }
   .list-by-status .angular-ui-tree-node {
-    padding-top: 5px;
+    padding-top: 12px;
     padding-bottom: 0; }
   .list-by-status .skipped-todos {
     margin-left: -18px; }
