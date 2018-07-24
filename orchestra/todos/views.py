@@ -178,14 +178,3 @@ class TodoListTemplateList(generics.ListCreateAPIView):
 
     serializer_class = TodoListTemplateSerializer
     queryset = TodoListTemplate.objects.all()
-
-    def get_queryset(self):
-        # Only enable todolist template feature functionality for users
-        # in the `todolist_template_feature` group to facilitate A/B testing.
-        if self.request.user.groups.filter(
-                name='todolist_template_feature').exists():
-            queryset = TodoListTemplate.objects.all()
-            queryset = queryset.order_by('-created_at')
-        else:
-            queryset = TodoListTemplate.objects.none()
-        return queryset
