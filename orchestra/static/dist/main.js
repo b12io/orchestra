@@ -61611,6 +61611,26 @@ function qa() {
       todoQa.todos = [];
       todoQa.ready = false;
 
+      todoQa.copyToClipboard = function (str) {
+        var el = document.createElement('textarea');
+        el.value = str;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+      };
+
+      todoQa.summary = function (todos, summary) {
+        summary = summary || '';
+        todos.forEach(function (todo) {
+          summary = todoQa.summary(todo.items, summary);
+          if (todo.qa && todo.qa.comment) {
+            summary = '*Todo*: ' + todo.description + '\n*Comment*: ' + todo.qa.comment + '\n\n' + summary;
+          }
+        });
+        return summary;
+      };
+
       todoQa.updateTodoQaComment = function (todo) {
         todoQaApi.update(todo.qa);
       };
@@ -61665,7 +61685,7 @@ function qa() {
 /* 212 */
 /***/ (function(module, exports) {
 
-module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          QA\n        </h3>\n      </div>\n    </div>\n\n    <div class=\"row section-body\" ng-if=\"todoQa.ready\">\n      <div class=\"col-sm-12\">\n        <todo-qa-list\n        todos=\"todoQa.todos\"\n        approve-todo=\"todoQa.approveTodo\"\n        disapprove-todo=\"todoQa.disapproveTodo\"\n        update-todo-qa-comment=\"todoQa.updateTodoQaComment\"\n        ></todo-qa-list>\n      </div>\n    </div>\n\n  </div>\n</section>\n";
+module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          QA\n          <button class=\"btn\" ng-click=\"todoQa.copyToClipboard(todoQa.summary(todoQa.todos))\">\n              Copy QA Summary\n          </button>\n        </h3>\n      </div>\n    </div>\n\n    <div class=\"row section-body\" ng-if=\"todoQa.ready\">\n      <div class=\"col-sm-12\">\n        <todo-qa-list\n        todos=\"todoQa.todos\"\n        approve-todo=\"todoQa.approveTodo\"\n        disapprove-todo=\"todoQa.disapproveTodo\"\n        update-todo-qa-comment=\"todoQa.updateTodoQaComment\"\n        ></todo-qa-list>\n      </div>\n    </div>\n\n  </div>\n</section>\n";
 
 /***/ }),
 /* 213 */

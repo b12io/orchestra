@@ -16,6 +16,26 @@ export default function qa () {
       todoQa.todos = []
       todoQa.ready = false
 
+      todoQa.copyToClipboard = str => {
+        const el = document.createElement('textarea')
+        el.value = str
+        document.body.appendChild(el)
+        el.select()
+        document.execCommand('copy')
+        document.body.removeChild(el)
+      }
+
+      todoQa.summary = (todos, summary) => {
+        summary = summary || ''
+        todos.forEach((todo) => {
+          summary = todoQa.summary(todo.items, summary)
+          if (todo.qa && todo.qa.comment) {
+            summary = '*Todo*: ' + todo.description + '\n*Comment*: ' + todo.qa.comment + '\n\n' + summary
+          }
+        })
+        return summary
+      }
+
       todoQa.updateTodoQaComment = (todo) => {
         todoQaApi.update(todo.qa)
       }
