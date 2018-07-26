@@ -94,7 +94,7 @@ export default function qa (orchestraApi) {
             todoQa.todos = todoQa.transformToTree(todos)
             todoQa.ready = true
           })
-      })
+        })
     }
   }
 }
