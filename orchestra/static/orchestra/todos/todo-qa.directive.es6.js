@@ -25,15 +25,20 @@ export default function qa () {
         document.body.removeChild(el)
       }
 
-      todoQa.summary = (todos, summary) => {
+      todoQa.commentSummary = (todos, summary) => {
         summary = summary || ''
         todos.forEach((todo) => {
-          summary = todoQa.summary(todo.items, summary)
+          summary = todoQa.commentSummary(todo.items, summary)
           if (todo.qa && todo.qa.comment) {
-            summary = '*Todo*: ' + todo.description + '\n*Comment*: ' + todo.qa.comment + '\n\n' + summary
+            summary = `*Todo*: ${todo.description}\n*Comment*: ${todo.qa.comment}\n\n${summary}`
           }
         })
         return summary
+      }
+
+      todoQa.qaSummary = () => {
+        const commentSummary = todoQa.commentSummary(todoQa.todos)
+        return `*Feedback on project*\n\n${commentSummary}`
       }
 
       todoQa.updateTodoQaComment = (todo) => {
