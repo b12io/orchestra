@@ -44,4 +44,13 @@ $bootstrap-md: "(min-width: 992px)";
     margin-bottom: 0;
     font-size: 1.4rem;
   }
+  .row {
+    overflow-x: scroll;
+  }
+  .st-sort-ascent:before{
+    content: '\25B2';
+  }
+  .st-sort-descent:before{
+    content: '\25BC';
+  }
 }

@@ -31,23 +31,28 @@
     </div>
     <div class="row">
           <table ng-if="vm.tasktable.tasks.length > 0"
-                 st-table="vm.tasktable.tasks"
+                 st-table="displayedTasks"
+                 st-safe-src="vm.tasktable.tasks"
                  class="table table-striped">
             <thead>
               <tr>
-                <th>Priority</th>
-                <th>Project</th>
-                <th>Task</th>
-                <th>Details</th>
-                <th>Next steps</th>
-                <th>Start by</th>
-                <th>Due on</th>
+                <th colspan="1"><input st-search="" class="form-control" placeholder="Search table" type="text"/></th>
+              </tr>
+              <tr>
+                <th st-sort="priority">Priority</th>
+                <th st-sort="project">Project</th>
+                <th st-sort="step">Task</th>
+                <th st-sort="detail">Details</th>
+                <th st-sort="next_todo_dict.description">Next steps</th>
+                <th st-sort="next_todo_dict.start_by_datetime">Start by</th>
+                <th st-sort="next_todo_dict.due_datetime">Due on</th>
               </tr>
             </thead>
             <tbody>
+              
               <tr
                  ng-class="{'task-row':true, 'danger': vm.isInDanger(task)}"
-                 ng-repeat="task in vm.tasktable.tasks"
+                 ng-repeat="task in displayedTasks"
                  ng-click="vm.openTask(task)">
                 <td>{{task.priority}}</td>
                 <td>{{task.project}}</td>
