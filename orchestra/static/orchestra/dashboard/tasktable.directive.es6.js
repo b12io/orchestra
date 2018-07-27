@@ -19,6 +19,7 @@ export default function tasktable () {
       }
       // Surface service to interpolator
       vm.orchestraTasks = orchestraTasks
+      console.log(orchestraTasks.tasks)
       vm.enableNewTaskButtons = vm.tasktable.newTasks && window.orchestra.enable_new_task_buttons
 
       vm.waiting = true
