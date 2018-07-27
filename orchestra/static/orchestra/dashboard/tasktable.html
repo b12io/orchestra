@@ -1,7 +1,9 @@
-<section class="section-panel tasks-section">
+<section class="section-panel tasks-section"
+         st-table="displayedTasks"
+         st-safe-src="vm.tasktable.tasks">
   <div class="container-fluid">
     <div class="row section-header">
-      <div class="col-lg-12">
+      <div class="col-lg-10">
         <h3>
           {{vm.tasktable.label}} ({{ vm.tasktable.tasks.length || 0 }})
           <button type="button"
@@ -27,17 +29,20 @@
             </span>
             <i class="fa fa-spinner fa-spin" ng-show="vm.waiting"></i>
         </h3>
+
+      </div>
+      <div class="tasks-search-bar-container col-lg-2">
+        <div class="tasks-search-bar">
+          <i class="fa fa-search"></i>
+          <input st-search="" placeholder="Search..." type="text"/>
+        </div>
       </div>
     </div>
     <div class="row">
           <table ng-if="vm.tasktable.tasks.length > 0"
-                 st-table="displayedTasks"
-                 st-safe-src="vm.tasktable.tasks"
+                 
                  class="table table-striped">
             <thead>
-              <tr>
-                <th colspan="1"><input st-search="" class="form-control" placeholder="Search table" type="text"/></th>
-              </tr>
               <tr>
                 <th st-sort="priority">Priority</th>
                 <th st-sort="project">Project</th>
