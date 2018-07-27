@@ -61625,7 +61625,7 @@ function qa(orchestraApi) {
         summary = summary || '';
         todos.forEach(function (todo) {
           summary = todoQa.commentSummary(todo.items, summary);
-          if (todo.qa && !todo.qa.approved && todo.qa.comment) {
+          if (todo.qa && todo.qa.comment) {
             summary = '*Todo*: ' + todo.description + '\n*Comment*: ' + todo.qa.comment + '\n\n' + summary;
           }
         });
@@ -61697,7 +61697,7 @@ function qa(orchestraApi) {
 /* 212 */
 /***/ (function(module, exports) {
 
-module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          QA\n          <button class=\"btn\" ng-if=\"todoQa.todos.length\" ng-click=\"todoQa.copyToClipboard(todoQa.qaSummary())\">\n              Copy QA Summary\n          </button>\n        </h3>\n      </div>\n    </div>\n\n    <div class=\"row section-body\" ng-if=\"todoQa.ready\">\n      <div class=\"col-sm-12\">\n        <todo-qa-list\n        todos=\"todoQa.todos\"\n        approve-todo=\"todoQa.approveTodo\"\n        disapprove-todo=\"todoQa.disapproveTodo\"\n        update-todo-qa-comment=\"todoQa.updateTodoQaComment\"\n        ></todo-qa-list>\n      </div>\n    </div>\n\n  </div>\n</section>\n";
+module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          QA\n          <button class=\"btn\" ng-if=\"todoQa.todos.length\" ng-click=\"todoQa.copyToClipboard(todoQa.qaSummary())\">\n              Copy QA summary\n          </button>\n        </h3>\n      </div>\n    </div>\n\n    <div class=\"row section-body\" ng-if=\"todoQa.ready\">\n      <div class=\"col-sm-12\">\n        <todo-qa-list\n        todos=\"todoQa.todos\"\n        approve-todo=\"todoQa.approveTodo\"\n        disapprove-todo=\"todoQa.disapproveTodo\"\n        update-todo-qa-comment=\"todoQa.updateTodoQaComment\"\n        ></todo-qa-list>\n      </div>\n    </div>\n\n  </div>\n</section>\n";
 
 /***/ }),
 /* 213 */
