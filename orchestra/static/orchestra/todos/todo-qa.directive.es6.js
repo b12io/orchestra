@@ -1,7 +1,7 @@
 import { defaults } from 'lodash'
 import template from './todo-qa.html'
 
-export default function qa () {
+export default function qa (orchestraApi) {
   return {
     template,
     restrict: 'E',
@@ -14,7 +14,37 @@ export default function qa () {
     controller: function (todoApi, todoQaApi, $scope) {
       var todoQa = this
       todoQa.todos = []
+      todoQa.project = null
       todoQa.ready = false
+
+      todoQa.copyToClipboard = str => {
+        const el = document.createElement('textarea')
+        el.value = str
+        document.body.appendChild(el)
+        el.select()
+        document.execCommand('copy')
+        document.body.removeChild(el)
+      }
+
+      todoQa.commentSummary = (todos, summary) => {
+        summary = summary || ''
+        todos.forEach((todo) => {
+          summary = todoQa.commentSummary(todo.items, summary)
+          if (todo.qa && todo.qa.comment) {
+            summary = `*Todo*: ${todo.description}\n*Comment*: ${todo.qa.comment}\n\n${summary}`
+          }
+        })
+        return summary
+      }
+
+      todoQa.qaSummary = () => {
+        const commentSummary = todoQa.commentSummary(todoQa.todos)
+        if (commentSummary.length) {
+          return `*Feedback on ${todoQa.project.short_description}*\n\n${commentSummary}`
+        } else {
+          return `*No feedback on ${todoQa.project.short_description}*`
+        }
+      }
 
       todoQa.updateTodoQaComment = (todo) => {
         todoQaApi.update(todo.qa)
@@ -57,11 +87,14 @@ export default function qa () {
           return !obj.parent_todo
         })
       }
-
-      todoApi.list(todoQa.projectId).then((todos) => {
-        todoQa.todos = todoQa.transformToTree(todos)
-        todoQa.ready = true
-      })
+      orchestraApi.projectInformation(todoQa.projectId)
+        .then((response) => {
+          todoQa.project = response.data.project
+          todoApi.list(todoQa.projectId).then((todos) => {
+            todoQa.todos = todoQa.transformToTree(todos)
+            todoQa.ready = true
+          })
+        })
     }
   }
 }

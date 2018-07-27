@@ -5,6 +5,9 @@
       <div class="col-lg-12 col-md-12 col-sm-12">
         <h3>
           QA
+          <button class="btn" ng-if="todoQa.todos.length" ng-click="todoQa.copyToClipboard(todoQa.qaSummary())">
+              Copy QA summary
+          </button>
         </h3>
       </div>
     </div>

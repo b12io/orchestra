@@ -61596,7 +61596,7 @@ var _todoQa2 = _interopRequireDefault(_todoQa);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function qa() {
+function qa(orchestraApi) {
   return {
     template: _todoQa2.default,
     restrict: 'E',
@@ -61609,7 +61609,37 @@ function qa() {
     controller: function controller(todoApi, todoQaApi, $scope) {
       var todoQa = this;
       todoQa.todos = [];
+      todoQa.project = null;
       todoQa.ready = false;
+
+      todoQa.copyToClipboard = function (str) {
+        var el = document.createElement('textarea');
+        el.value = str;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+      };
+
+      todoQa.commentSummary = function (todos, summary) {
+        summary = summary || '';
+        todos.forEach(function (todo) {
+          summary = todoQa.commentSummary(todo.items, summary);
+          if (todo.qa && todo.qa.comment) {
+            summary = '*Todo*: ' + todo.description + '\n*Comment*: ' + todo.qa.comment + '\n\n' + summary;
+          }
+        });
+        return summary;
+      };
+
+      todoQa.qaSummary = function () {
+        var commentSummary = todoQa.commentSummary(todoQa.todos);
+        if (commentSummary.length) {
+          return '*Feedback on ' + todoQa.project.short_description + '*\n\n' + commentSummary;
+        } else {
+          return '*No feedback on ' + todoQa.project.short_description + '*';
+        }
+      };
 
       todoQa.updateTodoQaComment = function (todo) {
         todoQaApi.update(todo.qa);
@@ -61652,10 +61682,12 @@ function qa() {
           return !obj.parent_todo;
         });
       };
-
-      todoApi.list(todoQa.projectId).then(function (todos) {
-        todoQa.todos = todoQa.transformToTree(todos);
-        todoQa.ready = true;
+      orchestraApi.projectInformation(todoQa.projectId).then(function (response) {
+        todoQa.project = response.data.project;
+        todoApi.list(todoQa.projectId).then(function (todos) {
+          todoQa.todos = todoQa.transformToTree(todos);
+          todoQa.ready = true;
+        });
       });
     }
   };
@@ -61665,7 +61697,7 @@ function qa() {
 /* 212 */
 /***/ (function(module, exports) {
 
-module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          QA\n        </h3>\n      </div>\n    </div>\n\n    <div class=\"row section-body\" ng-if=\"todoQa.ready\">\n      <div class=\"col-sm-12\">\n        <todo-qa-list\n        todos=\"todoQa.todos\"\n        approve-todo=\"todoQa.approveTodo\"\n        disapprove-todo=\"todoQa.disapproveTodo\"\n        update-todo-qa-comment=\"todoQa.updateTodoQaComment\"\n        ></todo-qa-list>\n      </div>\n    </div>\n\n  </div>\n</section>\n";
+module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          QA\n          <button class=\"btn\" ng-if=\"todoQa.todos.length\" ng-click=\"todoQa.copyToClipboard(todoQa.qaSummary())\">\n              Copy QA summary\n          </button>\n        </h3>\n      </div>\n    </div>\n\n    <div class=\"row section-body\" ng-if=\"todoQa.ready\">\n      <div class=\"col-sm-12\">\n        <todo-qa-list\n        todos=\"todoQa.todos\"\n        approve-todo=\"todoQa.approveTodo\"\n        disapprove-todo=\"todoQa.disapproveTodo\"\n        update-todo-qa-comment=\"todoQa.updateTodoQaComment\"\n        ></todo-qa-list>\n      </div>\n    </div>\n\n  </div>\n</section>\n";
 
 /***/ }),
 /* 213 */
