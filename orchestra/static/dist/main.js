@@ -61812,7 +61812,7 @@ function todoChecklist() {
       };
 
       scope.isInDanger = function (todo) {
-        return !todo.completed && _momentTimezone2.default.isBeforeNowBy(todo.due_datetime, 1, 'days') || scope.todoQas[todo.description];
+        return !todo.completed && _momentTimezone2.default.isBeforeNowBy(todo.due_datetime, 1, 'days') || scope.todoQas[todo.description] && !scope.todoQas[todo.description].approved;
       };
 
       scope.isSkipped = function (todo) {
