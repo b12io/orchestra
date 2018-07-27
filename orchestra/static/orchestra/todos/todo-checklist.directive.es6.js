@@ -35,7 +35,7 @@ export default function todoChecklist () {
       }
 
       scope.isInDanger = (todo) => {
-        return (!todo.completed && moment.isBeforeNowBy(todo.due_datetime, 1, 'days')) || scope.todoQas[todo.description]
+        return (!todo.completed && moment.isBeforeNowBy(todo.due_datetime, 1, 'days')) || (scope.todoQas[todo.description] && scope.todoQas[todo.description].approved === false)
       }
 
       scope.isSkipped = (todo) => {
