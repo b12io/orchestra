@@ -42405,27 +42405,27 @@ var _dashboardModuleEs = __webpack_require__(159);
 
 var _dashboardModuleEs2 = _interopRequireDefault(_dashboardModuleEs);
 
-var _projectManagementModuleEs = __webpack_require__(167);
+var _projectManagementModuleEs = __webpack_require__(169);
 
 var _projectManagementModuleEs2 = _interopRequireDefault(_projectManagementModuleEs);
 
-var _taskModuleEs = __webpack_require__(180);
+var _taskModuleEs = __webpack_require__(182);
 
 var _taskModuleEs2 = _interopRequireDefault(_taskModuleEs);
 
-var _timingModuleEs = __webpack_require__(187);
+var _timingModuleEs = __webpack_require__(189);
 
 var _timingModuleEs2 = _interopRequireDefault(_timingModuleEs);
 
-var _todosModuleEs = __webpack_require__(207);
+var _todosModuleEs = __webpack_require__(209);
 
 var _todosModuleEs2 = _interopRequireDefault(_todosModuleEs);
 
-var _teamInfoModuleEs = __webpack_require__(225);
+var _teamInfoModuleEs = __webpack_require__(227);
 
 var _teamInfoModuleEs2 = _interopRequireDefault(_teamInfoModuleEs);
 
-var _configEs = __webpack_require__(228);
+var _configEs = __webpack_require__(230);
 
 var _configEs2 = _interopRequireDefault(_configEs);
 
@@ -55677,12 +55677,13 @@ var _dashboardControllerEs = __webpack_require__(165);
 
 var _dashboardControllerEs2 = _interopRequireDefault(_dashboardControllerEs);
 
+__webpack_require__(167);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/* global angular */
+var name = 'orchestra.dashboard'; /* global angular */
 
-var name = 'orchestra.dashboard';
-angular.module(name, ['orchestra.timing']).directive('tasktable', _tasktableDirectiveEs2.default).controller('DashboardController', _dashboardControllerEs2.default);
+angular.module(name, ['orchestra.timing', 'smart-table']).directive('tasktable', _tasktableDirectiveEs2.default).controller('DashboardController', _dashboardControllerEs2.default);
 
 exports.default = name;
 
@@ -55768,7 +55769,7 @@ function tasktable() {
 /* 161 */
 /***/ (function(module, exports) {
 
-module.exports = "<section class=\"section-panel tasks-section\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12\">\n        <h3>\n          {{vm.tasktable.label}} ({{ vm.tasktable.tasks.length || 0 }})\n          <button type=\"button\"\n                    ng-if=\"vm.enableNewTaskButtons\"\n                    ng-click=\"vm.newTask('entry_level')\"\n                    ng-class=\"{'disabled': vm.orchestraTasks.preventNew ||\n                                           vm.noTaskTimer}\"\n                    class=\"btn btn-primary btn-new-entry-task\">\n              New delivery task\n            </button>\n            <button type=\"button\"\n                    ng-if=\"vm.orchestraTasks.reviewerStatus &&\n                           vm.enableNewTaskButtons\"\n                    ng-click=\"vm.newTask('reviewer')\"\n                    ng-class=\"{'disabled': vm.orchestraTasks.preventNew ||\n                                           vm.noTaskTimer}\"\n                    class=\"btn btn-primary btn-new-review-task\">\n              New review task\n            </button>\n            <span class=\"warning-message\"\n                  ng-show=\"vm.newTaskError && !vm.orchestraTasks.preventNew\">\n              No tasks available at the moment\n            </span>\n            <i class=\"fa fa-spinner fa-spin\" ng-show=\"vm.waiting\"></i>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row\">\n          <table ng-if=\"vm.tasktable.tasks.length > 0\"\n                 st-table=\"vm.tasktable.tasks\"\n                 class=\"table table-striped\">\n            <thead>\n              <tr>\n                <th>Priority</th>\n                <th>Project</th>\n                <th>Task</th>\n                <th>Details</th>\n                <th>Next steps</th>\n                <th>Start by</th>\n                <th>Due on</th>\n              </tr>\n            </thead>\n            <tbody>\n              <tr\n                 ng-class=\"{'task-row':true, 'danger': vm.isInDanger(task)}\"\n                 ng-repeat=\"task in vm.tasktable.tasks\"\n                 ng-click=\"vm.openTask(task)\">\n                <td>{{task.priority}}</td>\n                <td>{{task.project}}</td>\n                <td>{{task.step}}</td>\n                <td>{{task.detail|limitTo:50}}{{task.detail.length > 50 ? '...' : ''}}</td>\n                <td>{{task.next_todo_dict.description|limitTo:50}}{{task.next_todo_dict.description.length > 50 ? '...' : ''}}</td>\n                <td><datetime-display datetime=\"task.next_todo_dict.start_by_datetime\" show-time=\"false\" /></td>\n                <td><datetime-display datetime=\"task.next_todo_dict.due_datetime\" show-time=\"false\" /></td>\n              </tr>\n            </tbody>\n          </table>\n    </div>\n  </div>\n</section>\n";
+module.exports = "<section class=\"section-panel tasks-section\"\n         st-table=\"displayedTasks\"\n         st-safe-src=\"vm.tasktable.tasks\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-10\">\n        <h3>\n          {{vm.tasktable.label}} ({{ vm.tasktable.tasks.length || 0 }})\n          <button type=\"button\"\n                    ng-if=\"vm.enableNewTaskButtons\"\n                    ng-click=\"vm.newTask('entry_level')\"\n                    ng-class=\"{'disabled': vm.orchestraTasks.preventNew ||\n                                           vm.noTaskTimer}\"\n                    class=\"btn btn-primary btn-new-entry-task\">\n              New delivery task\n            </button>\n            <button type=\"button\"\n                    ng-if=\"vm.orchestraTasks.reviewerStatus &&\n                           vm.enableNewTaskButtons\"\n                    ng-click=\"vm.newTask('reviewer')\"\n                    ng-class=\"{'disabled': vm.orchestraTasks.preventNew ||\n                                           vm.noTaskTimer}\"\n                    class=\"btn btn-primary btn-new-review-task\">\n              New review task\n            </button>\n            <span class=\"warning-message\"\n                  ng-show=\"vm.newTaskError && !vm.orchestraTasks.preventNew\">\n              No tasks available at the moment\n            </span>\n            <i class=\"fa fa-spinner fa-spin\" ng-show=\"vm.waiting\"></i>\n        </h3>\n\n      </div>\n      <div class=\"tasks-search-bar-container col-lg-2\">\n        <div class=\"tasks-search-bar\">\n          <i class=\"fa fa-search\"></i>\n          <input st-search=\"\" placeholder=\"Search...\" type=\"text\"/>\n        </div>\n      </div>\n    </div>\n    <div class=\"row\">\n          <table ng-if=\"vm.tasktable.tasks.length > 0\"\n                 class=\"table table-striped\">\n            <thead>\n              <tr>\n                <th st-sort=\"project\">Project</th>\n                <th st-sort=\"step\">Task</th>\n                <th st-sort=\"detail\">Details</th>\n                <th st-sort=\"next_todo_dict.description\">Next steps</th>\n                <th st-sort=\"next_todo_dict.start_by_datetime\">Start by</th>\n                <th st-sort=\"next_todo_dict.due_datetime\">Due on</th>\n              </tr>\n            </thead>\n            <tbody>\n              \n              <tr\n                 ng-class=\"{'task-row':true, 'danger': vm.isInDanger(task)}\"\n                 ng-repeat=\"task in displayedTasks\"\n                 ng-click=\"vm.openTask(task)\">\n                <td>{{task.project}}</td>\n                <td>{{task.step}}</td>\n                <td>{{task.detail|limitTo:50}}{{task.detail.length > 50 ? '...' : ''}}</td>\n                <td>{{task.next_todo_dict.description|limitTo:50}}{{task.next_todo_dict.description.length > 50 ? '...' : ''}}</td>\n                <td><datetime-display datetime=\"task.next_todo_dict.start_by_datetime\" show-time=\"false\" /></td>\n                <td><datetime-display datetime=\"task.next_todo_dict.due_datetime\" show-time=\"false\" /></td>\n              </tr>\n            </tbody>\n          </table>\n    </div>\n  </div>\n</section>\n";
 
 /***/ }),
 /* 162 */
@@ -57270,6 +57271,592 @@ function DashboardController(orchestraTasks) {
 /* 167 */
 /***/ (function(module, exports, __webpack_require__) {
 
+__webpack_require__(168);
+module.exports = 'smart-table';
+
+/***/ }),
+/* 168 */
+/***/ (function(module, exports) {
+
+/** 
+* @version 2.1.10
+* @license MIT
+*/
+(function (ng, undefined){
+    'use strict';
+
+ng.module('smart-table', []).run(['$templateCache', function ($templateCache) {
+    $templateCache.put('template/smart-table/pagination.html',
+        '<nav ng-if="numPages && pages.length >= 2"><ul class="pagination">' +
+        '<li ng-repeat="page in pages" ng-class="{active: page==currentPage}"><a href="#" ng-click="selectPage(page); $event.preventDefault(); $event.stopPropagation();">{{page}}</a></li>' +
+        '</ul></nav>');
+}]);
+
+
+ng.module('smart-table')
+  .constant('stConfig', {
+    pagination: {
+      template: 'template/smart-table/pagination.html',
+      itemsByPage: 10,
+      displayedPages: 5
+    },
+    search: {
+      delay: 400, // ms
+      inputEvent: 'input',
+      trimSearch: false
+    },
+    select: {
+      mode: 'single',
+      selectedClass: 'st-selected'
+    },
+    sort: {
+      ascentClass: 'st-sort-ascent',
+      descentClass: 'st-sort-descent',
+      descendingFirst: false,
+      skipNatural: false,
+      delay:300
+    },
+    pipe: {
+      delay: 100 //ms
+    }
+  });
+ng.module('smart-table').controller('stTableController', [
+  '$scope',
+  '$parse',
+  '$filter',
+  '$attrs',
+  function StTableController($scope, $parse, $filter, $attrs) {
+    var propertyName = $attrs.stTable;
+    var displayGetter = $parse(propertyName);
+    var displaySetter = displayGetter.assign;
+    var safeGetter;
+    var orderBy = $filter('orderBy');
+    var filter = $filter('filter');
+    var safeCopy = copyRefs(displayGetter($scope));
+    var tableState = {
+      sort: {},
+      search: {},
+      pagination: { start: 0, totalItemCount: 0 }
+    };
+    var filtered;
+    var pipeAfterSafeCopy = true;
+    var ctrl = this;
+    var lastSelected;
+
+    function copyRefs(src) {
+      return src ? [].concat(src) : [];
+    }
+
+    function updateSafeCopy() {
+      safeCopy = copyRefs(safeGetter($scope));
+      if (pipeAfterSafeCopy === true) {
+        ctrl.pipe();
+      }
+    }
+
+    function deepDelete(object, path) {
+      if (path.indexOf('.') != -1) {
+        var partials = path.split('.');
+        var key = partials.pop();
+        var parentPath = partials.join('.');
+        var parentObject = $parse(parentPath)(object);
+        delete parentObject[key];
+        if (Object.keys(parentObject).length == 0) {
+          deepDelete(object, parentPath);
+        }
+      } else {
+        delete object[path];
+      }
+    }
+
+    if ($attrs.stSafeSrc) {
+      safeGetter = $parse($attrs.stSafeSrc);
+      $scope.$watch(
+        function() {
+          var safeSrc = safeGetter($scope);
+          return safeSrc && safeSrc.length ? safeSrc[0] : undefined;
+        },
+        function(newValue, oldValue) {
+          if (newValue !== oldValue) {
+            updateSafeCopy();
+          }
+        }
+      );
+      $scope.$watch(
+        function() {
+          var safeSrc = safeGetter($scope);
+          return safeSrc ? safeSrc.length : 0;
+        },
+        function(newValue, oldValue) {
+          if (newValue !== safeCopy.length) {
+            updateSafeCopy();
+          }
+        }
+      );
+      $scope.$watch(
+        function() {
+          return safeGetter($scope);
+        },
+        function(newValue, oldValue) {
+          if (newValue !== oldValue) {
+            tableState.pagination.start = 0;
+            updateSafeCopy();
+          }
+        }
+      );
+    }
+
+    /**
+     * sort the rows
+     * @param {Function | String} predicate - function or string which will be used as predicate for the sorting
+     * @param [reverse] - if you want to reverse the order
+     */
+    this.sortBy = function sortBy(predicate, reverse) {
+      tableState.sort.predicate = predicate;
+      tableState.sort.reverse = reverse === true;
+
+      if (ng.isFunction(predicate)) {
+        tableState.sort.functionName = predicate.name;
+      } else {
+        delete tableState.sort.functionName;
+      }
+
+      tableState.pagination.start = 0;
+      return this.pipe();
+    };
+
+    /**
+     * search matching rows
+     * @param {String} input - the input string
+     * @param {String} [predicate] - the property name against you want to check the match, otherwise it will search on all properties
+     * @param {String | Function } [comparator] - a comparator to pass to the filter for the (pass true for stric mode)
+     */
+    this.search = function search(input, predicate, comparator) {
+      var predicateObject = tableState.search.predicateObject || {};
+      var prop = predicate ? predicate : '$';
+
+      $parse(prop).assign(predicateObject, input);
+      // to avoid to filter out null value
+      if (!input) {
+        deepDelete(predicateObject, prop);
+      }
+      tableState.search.predicateObject = predicateObject;
+      tableState.pagination.start = 0;
+      return this.pipe();
+    };
+
+    /**
+     * this will chain the operations of sorting and filtering based on the current table state (sort options, filtering, ect)
+     */
+    this.pipe = function pipe() {
+      var pagination = tableState.pagination;
+      var output;
+      filtered = tableState.search.predicateObject
+        ? filter(safeCopy, tableState.search.predicateObject)
+        : safeCopy;
+      if (tableState.sort.predicate) {
+        filtered = orderBy(
+          filtered,
+          tableState.sort.predicate,
+          tableState.sort.reverse
+        );
+      }
+      pagination.totalItemCount = filtered.length;
+      if (pagination.number !== undefined) {
+        pagination.numberOfPages = filtered.length > 0
+          ? Math.ceil(filtered.length / pagination.number)
+          : 1;
+        pagination.start = pagination.start >= filtered.length
+          ? (pagination.numberOfPages - 1) * pagination.number
+          : pagination.start;
+        output = filtered.slice(
+          pagination.start,
+          pagination.start + parseInt(pagination.number)
+        );
+      }
+      displaySetter($scope, output || filtered);
+    };
+
+    /**
+     * select a dataRow (it will add the attribute isSelected to the row object)
+     * @param {Object} row - the row to select
+     * @param {String} [mode] - "single" or "multiple" (multiple by default)
+     */
+    this.select = function select(row, mode) {
+      var rows = copyRefs(displayGetter($scope));
+      var index = rows.indexOf(row);
+      if (index !== -1) {
+        if (mode === 'single') {
+          row.isSelected = row.isSelected !== true;
+          if (lastSelected) {
+            lastSelected.isSelected = false;
+          }
+          lastSelected = row.isSelected === true ? row : undefined;
+        } else {
+          rows[index].isSelected = !rows[index].isSelected;
+        }
+      }
+    };
+
+    /**
+     * take a slice of the current sorted/filtered collection (pagination)
+     *
+     * @param {Number} start - start index of the slice
+     * @param {Number} number - the number of item in the slice
+     */
+    this.slice = function splice(start, number) {
+      tableState.pagination.start = start;
+      tableState.pagination.number = number;
+      return this.pipe();
+    };
+
+    /**
+     * return the current state of the table
+     * @returns {{sort: {}, search: {}, pagination: {start: number}}}
+     */
+    this.tableState = function getTableState() {
+      return tableState;
+    };
+
+    this.getFilteredCollection = function getFilteredCollection() {
+      return filtered || safeCopy;
+    };
+
+    /**
+     * Use a different filter function than the angular FilterFilter
+     * @param filterName the name under which the custom filter is registered
+     */
+    this.setFilterFunction = function setFilterFunction(filterName) {
+      filter = $filter(filterName);
+    };
+
+    /**
+     * Use a different function than the angular orderBy
+     * @param sortFunctionName the name under which the custom order function is registered
+     */
+    this.setSortFunction = function setSortFunction(sortFunctionName) {
+      orderBy = $filter(sortFunctionName);
+    };
+
+    /**
+     * Usually when the safe copy is updated the pipe function is called.
+     * Calling this method will prevent it, which is something required when using a custom pipe function
+     */
+    this.preventPipeOnWatch = function preventPipe() {
+      pipeAfterSafeCopy = false;
+    };
+  }
+]).directive('stTable', function() {
+  return {
+    restrict: 'A',
+    controller: 'stTableController',
+    link: function(scope, element, attr, ctrl) {
+      if (attr.stSetFilter) {
+        ctrl.setFilterFunction(attr.stSetFilter);
+      }
+
+      if (attr.stSetSort) {
+        ctrl.setSortFunction(attr.stSetSort);
+      }
+    }
+  };
+});
+
+ng.module('smart-table')
+  .directive('stSearch', ['stConfig', '$timeout','$parse', function (stConfig, $timeout, $parse) {
+    return {
+      require: '^stTable',
+      link: function (scope, element, attr, ctrl) {
+        var tableCtrl = ctrl;
+        var promise = null;
+        var throttle = attr.stDelay || stConfig.search.delay;
+        var event = attr.stInputEvent || stConfig.search.inputEvent;
+        var trimSearch = attr.trimSearch || stConfig.search.trimSearch;
+
+        attr.$observe('stSearch', function (newValue, oldValue) {
+          var input = element[0].value;
+          if (newValue !== oldValue && input) {
+            ctrl.tableState().search = {};
+            input = ng.isString(input) && trimSearch ? input.trim() : input;
+            tableCtrl.search(input, newValue);
+          }
+        });
+
+        //table state -> view
+        scope.$watch(function () {
+          return ctrl.tableState().search;
+        }, function (newValue, oldValue) {
+          var predicateExpression = attr.stSearch || '$';
+          if (newValue.predicateObject && $parse(predicateExpression)(newValue.predicateObject) !== element[0].value) {
+            element[0].value = $parse(predicateExpression)(newValue.predicateObject) || '';
+          }
+        }, true);
+
+        // view -> table state
+        element.bind(event, function (evt) {
+          evt = evt.originalEvent || evt;
+          if (promise !== null) {
+            $timeout.cancel(promise);
+          }
+
+          promise = $timeout(function () {
+            var input = evt.target.value;
+            input = ng.isString(input) && trimSearch ? input.trim() : input;
+            tableCtrl.search(input, attr.stSearch || '');
+            promise = null;
+          }, throttle);
+        });
+      }
+    };
+  }]);
+
+ng.module('smart-table')
+  .directive('stSelectRow', ['stConfig', function (stConfig) {
+    return {
+      restrict: 'A',
+      require: '^stTable',
+      scope: {
+        row: '=stSelectRow'
+      },
+      link: function (scope, element, attr, ctrl) {
+        var mode = attr.stSelectMode || stConfig.select.mode;
+        element.bind('click', function () {
+          scope.$apply(function () {
+            ctrl.select(scope.row, mode);
+          });
+        });
+
+        scope.$watch('row.isSelected', function (newValue) {
+          if (newValue === true) {
+            element.addClass(stConfig.select.selectedClass);
+          } else {
+            element.removeClass(stConfig.select.selectedClass);
+          }
+        });
+      }
+    };
+  }]);
+
+ng.module('smart-table')
+  .directive('stSort', ['stConfig', '$parse', '$timeout', function (stConfig, $parse, $timeout) {
+    return {
+      restrict: 'A',
+      require: '^stTable',
+      link: function (scope, element, attr, ctrl) {
+
+        var predicate = attr.stSort;
+        var getter = $parse(predicate);
+        var index = 0;
+        var classAscent = attr.stClassAscent || stConfig.sort.ascentClass;
+        var classDescent = attr.stClassDescent || stConfig.sort.descentClass;
+        var stateClasses = [classAscent, classDescent];
+        var sortDefault;
+        var skipNatural = attr.stSkipNatural !== undefined ? attr.stSkipNatural : stConfig.sort.skipNatural;
+        var descendingFirst = attr.stDescendingFirst !== undefined ? attr.stDescendingFirst : stConfig.sort.descendingFirst;
+        var promise = null;
+        var throttle = attr.stDelay || stConfig.sort.delay;
+
+        // set aria attributes
+        var ariaSort = 'aria-sort';
+        var ariaSortNone = 'none';
+        var ariaSortAscending = 'ascending';
+        var ariaSortDescending = 'descending';
+        element
+          .attr('role', 'columnheader')
+          .attr(ariaSort, ariaSortNone);
+
+        if (attr.stSortDefault) {
+          sortDefault = scope.$eval(attr.stSortDefault) !== undefined ? scope.$eval(attr.stSortDefault) : attr.stSortDefault;
+        }
+
+        //view --> table state
+        function sort () {
+          if (descendingFirst) {
+            index = index === 0 ? 2 : index - 1;
+          } else {
+            index++;
+          }
+
+          var func;
+          predicate = ng.isFunction(getter(scope)) || ng.isArray(getter(scope)) ? getter(scope) : attr.stSort;
+          if (index % 3 === 0 && !!skipNatural !== true) {
+            //manual reset
+            index = 0;
+            ctrl.tableState().sort = {};
+            ctrl.tableState().pagination.start = 0;
+            func = ctrl.pipe.bind(ctrl);
+          } else {
+            func = ctrl.sortBy.bind(ctrl, predicate, index % 2 === 0);
+          }
+          if (promise !== null) {
+            $timeout.cancel(promise);
+          }
+          if (throttle < 0) {
+            func();
+          } else {
+            promise = $timeout(function(){
+              func();
+            }, throttle);
+          }
+        }
+
+        element.bind('click', function sortClick () {
+          if (predicate) {
+            scope.$apply(sort);
+          }
+        });
+
+        if (sortDefault) {
+          index = sortDefault === 'reverse' ? 1 : 0;
+          sort();
+        }
+
+        //table state --> view
+        scope.$watch(function () {
+          return ctrl.tableState().sort;
+        }, function (newValue) {
+          if (newValue.predicate !== predicate) {
+            index = 0;
+            element
+              .removeClass(classAscent)
+              .removeClass(classDescent)
+              .attr(ariaSort, ariaSortNone);
+          } else {
+            index = newValue.reverse === true ? 2 : 1;
+            element
+              .removeClass(stateClasses[index % 2])
+              .addClass(stateClasses[index - 1])
+              .attr(ariaSort, newValue.reverse ? ariaSortAscending : ariaSortDescending);
+          }
+        }, true);
+      }
+    };
+  }]);
+
+ng.module('smart-table')
+  .directive('stPagination', ['stConfig', function (stConfig) {
+    return {
+      restrict: 'EA',
+      require: '^stTable',
+      scope: {
+        stItemsByPage: '=?',
+        stDisplayedPages: '=?',
+        stPageChange: '&'
+      },
+      templateUrl: function (element, attrs) {
+        if (attrs.stTemplate) {
+          return attrs.stTemplate;
+        }
+        return stConfig.pagination.template;
+      },
+      link: function (scope, element, attrs, ctrl) {
+
+        scope.stItemsByPage = scope.stItemsByPage ? +(scope.stItemsByPage) : stConfig.pagination.itemsByPage;
+        scope.stDisplayedPages = scope.stDisplayedPages ? +(scope.stDisplayedPages) : stConfig.pagination.displayedPages;
+
+        scope.currentPage = 1;
+        scope.pages = [];
+
+        function redraw () {
+          var paginationState = ctrl.tableState().pagination;
+          var start = 1;
+          var end;
+          var i;
+          var prevPage = scope.currentPage;
+          scope.totalItemCount = paginationState.totalItemCount;
+          scope.currentPage = Math.floor(paginationState.start / paginationState.number) + 1;
+
+          start = Math.max(start, scope.currentPage - Math.abs(Math.floor(scope.stDisplayedPages / 2)));
+          end = start + scope.stDisplayedPages;
+
+          if (end > paginationState.numberOfPages) {
+            end = paginationState.numberOfPages + 1;
+            start = Math.max(1, end - scope.stDisplayedPages);
+          }
+
+          scope.pages = [];
+          scope.numPages = paginationState.numberOfPages;
+
+          for (i = start; i < end; i++) {
+            scope.pages.push(i);
+          }
+
+          if (prevPage !== scope.currentPage) {
+            scope.stPageChange({newPage: scope.currentPage});
+          }
+        }
+
+        //table state --> view
+        scope.$watch(function () {
+          return ctrl.tableState().pagination;
+        }, redraw, true);
+
+        //scope --> table state  (--> view)
+        scope.$watch('stItemsByPage', function (newValue, oldValue) {
+          if (newValue !== oldValue) {
+            scope.selectPage(1);
+          }
+        });
+
+        scope.$watch('stDisplayedPages', redraw);
+
+        //view -> table state
+        scope.selectPage = function (page) {
+          if (page > 0 && page <= scope.numPages) {
+            ctrl.slice((page - 1) * scope.stItemsByPage, scope.stItemsByPage);
+          }
+        };
+
+        if (!ctrl.tableState().pagination.number) {
+          ctrl.slice(0, scope.stItemsByPage);
+        }
+      }
+    };
+  }]);
+
+ng.module('smart-table')
+  .directive('stPipe', ['stConfig', '$timeout', function (config, $timeout) {
+    return {
+      require: 'stTable',
+      scope: {
+        stPipe: '='
+      },
+      link: {
+
+        pre: function (scope, element, attrs, ctrl) {
+
+          var pipePromise = null;
+
+          if (ng.isFunction(scope.stPipe)) {
+            ctrl.preventPipeOnWatch();
+            ctrl.pipe = function () {
+
+              if (pipePromise !== null) {
+                $timeout.cancel(pipePromise)
+              }
+
+              pipePromise = $timeout(function () {
+                scope.stPipe(ctrl.tableState(), ctrl);
+              }, config.pipe.delay);
+
+              return pipePromise;
+            }
+          }
+        },
+
+        post: function (scope, element, attrs, ctrl) {
+          ctrl.pipe();
+        }
+      }
+    };
+  }]);
+
+})(angular);
+
+/***/ }),
+/* 169 */
+/***/ (function(module, exports, __webpack_require__) {
+
 "use strict";
 
 
@@ -57281,43 +57868,43 @@ var _commonModuleEs = __webpack_require__(5);
 
 var _commonModuleEs2 = _interopRequireDefault(_commonModuleEs);
 
-var _assignmentsVisEs = __webpack_require__(168);
+var _assignmentsVisEs = __webpack_require__(170);
 
 var _assignmentsVisEs2 = _interopRequireDefault(_assignmentsVisEs);
 
-var _axisEs = __webpack_require__(169);
+var _axisEs = __webpack_require__(171);
 
 var _axisEs2 = _interopRequireDefault(_axisEs);
 
-var _crosshairEs = __webpack_require__(170);
+var _crosshairEs = __webpack_require__(172);
 
 var _crosshairEs2 = _interopRequireDefault(_crosshairEs);
 
-var _dataServiceEs = __webpack_require__(171);
+var _dataServiceEs = __webpack_require__(173);
 
 var _dataServiceEs2 = _interopRequireDefault(_dataServiceEs);
 
-var _iterationsVisEs = __webpack_require__(172);
+var _iterationsVisEs = __webpack_require__(174);
 
 var _iterationsVisEs2 = _interopRequireDefault(_iterationsVisEs);
 
-var _projectVisEs = __webpack_require__(173);
+var _projectVisEs = __webpack_require__(175);
 
 var _projectVisEs2 = _interopRequireDefault(_projectVisEs);
 
-var _tasksVisEs = __webpack_require__(175);
+var _tasksVisEs = __webpack_require__(177);
 
 var _tasksVisEs2 = _interopRequireDefault(_tasksVisEs);
 
-var _visUtilsEs = __webpack_require__(177);
+var _visUtilsEs = __webpack_require__(179);
 
 var _visUtilsEs2 = _interopRequireDefault(_visUtilsEs);
 
-var _projectManagementControllerEs = __webpack_require__(178);
+var _projectManagementControllerEs = __webpack_require__(180);
 
 var _projectManagementControllerEs2 = _interopRequireDefault(_projectManagementControllerEs);
 
-__webpack_require__(179);
+__webpack_require__(181);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -57328,7 +57915,7 @@ angular.module(name, ['ui.bootstrap', 'ui.select', _commonModuleEs2.default]).co
 exports.default = name;
 
 /***/ }),
-/* 168 */
+/* 170 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -57491,7 +58078,7 @@ function assignmentsVis(dataService, orchestraApi, iterationsVis, visUtils) {
 }
 
 /***/ }),
-/* 169 */
+/* 171 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -57589,7 +58176,7 @@ function axis(dataService, visUtils) {
 }
 
 /***/ }),
-/* 170 */
+/* 172 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -57664,7 +58251,7 @@ function crosshair(visUtils, axis) {
 }
 
 /***/ }),
-/* 171 */
+/* 173 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -57893,7 +58480,7 @@ function dataService($location, $rootScope, $route, orchestraApi) {
 }
 
 /***/ }),
-/* 172 */
+/* 174 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -57976,7 +58563,7 @@ function iterationsVis($uibModal, dataService, visUtils, axis) {
 }
 
 /***/ }),
-/* 173 */
+/* 175 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -57991,7 +58578,7 @@ var _dataModal = __webpack_require__(122);
 
 var _dataModal2 = _interopRequireDefault(_dataModal);
 
-var _slackModal = __webpack_require__(174);
+var _slackModal = __webpack_require__(176);
 
 var _slackModal2 = _interopRequireDefault(_slackModal);
 
@@ -58130,13 +58717,13 @@ function projectVis($uibModal, $location, dataService, orchestraApi, crosshair, 
 }
 
 /***/ }),
-/* 174 */
+/* 176 */
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"slack-modal\">\n    <h1>Edit Slack group membership</h1>\n    <input ng-model=\"slackUsername\" placeholder=\"Slack username to add/remove\">\n    <i ng-click=\"editSlackMembership('add', slackUsername)\"\n       title=\"Add user\" class=\"fa fa-plus add-user\"></i>\n    <i ng-click=\"editSlackMembership('remove', slackUsername)\"\n       title=\"Remove user\" class=\"fa fa-minus remove-user\"></i>\n</div>\n";
 
 /***/ }),
-/* 175 */
+/* 177 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -58147,7 +58734,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = tasksVis;
 
-var _revertModal = __webpack_require__(176);
+var _revertModal = __webpack_require__(178);
 
 var _revertModal2 = _interopRequireDefault(_revertModal);
 
@@ -58531,13 +59118,13 @@ function tasksVis($uibModal, dataService, orchestraApi, visUtils, assignmentsVis
 }
 
 /***/ }),
-/* 176 */
+/* 178 */
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"revert-modal\">\n  <div class=\"header-wrapper\">\n    Are you sure you want to revert the task to this point? The following changes cannot be undone:\n  </div>\n  <pre class=\"json-view\">{{audit | json}}</pre>\n  <button ng-click=\"cancel()\" class=\"btn btn-default\">Cancel</button>\n  <button ng-click=\"confirmRevert()\" class=\"btn btn-danger\">Confirm revert</button>\n</div>\n";
 
 /***/ }),
-/* 177 */
+/* 179 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -58605,7 +59192,7 @@ function visUtils(dataService) {
 }
 
 /***/ }),
-/* 178 */
+/* 180 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -58642,13 +59229,13 @@ function ProjectManagementController($route, $routeParams, $scope, projectVis, d
 } /* global angular */
 
 /***/ }),
-/* 179 */
+/* 181 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 180 */
+/* 182 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -58658,27 +59245,27 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _autosaveServiceEs = __webpack_require__(181);
+var _autosaveServiceEs = __webpack_require__(183);
 
 var _autosaveServiceEs2 = _interopRequireDefault(_autosaveServiceEs);
 
-var _dynamicLoadDirectiveEs = __webpack_require__(182);
+var _dynamicLoadDirectiveEs = __webpack_require__(184);
 
 var _dynamicLoadDirectiveEs2 = _interopRequireDefault(_dynamicLoadDirectiveEs);
 
-var _requiredFieldDirectiveEs = __webpack_require__(183);
+var _requiredFieldDirectiveEs = __webpack_require__(185);
 
 var _requiredFieldDirectiveEs2 = _interopRequireDefault(_requiredFieldDirectiveEs);
 
-var _requiredFieldsServiceEs = __webpack_require__(184);
+var _requiredFieldsServiceEs = __webpack_require__(186);
 
 var _requiredFieldsServiceEs2 = _interopRequireDefault(_requiredFieldsServiceEs);
 
-var _taskControllerEs = __webpack_require__(185);
+var _taskControllerEs = __webpack_require__(187);
 
 var _taskControllerEs2 = _interopRequireDefault(_taskControllerEs);
 
-__webpack_require__(186);
+__webpack_require__(188);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -58690,7 +59277,7 @@ angular.module(name, ['orchestra.timing']).controller('TaskController', _taskCon
 exports.default = name;
 
 /***/ }),
-/* 181 */
+/* 183 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -58786,7 +59373,7 @@ function autoSaveTask($rootScope, $timeout, $http, orchestraService) {
 }
 
 /***/ }),
-/* 182 */
+/* 184 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -58812,7 +59399,7 @@ function dynamicLoad($compile) {
 }
 
 /***/ }),
-/* 183 */
+/* 185 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -58860,7 +59447,7 @@ function orchestraRequiredField($compile, requiredFields) {
 }
 
 /***/ }),
-/* 184 */
+/* 186 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -58960,7 +59547,7 @@ function requiredFields($rootScope, orchestraService) {
 }
 
 /***/ }),
-/* 185 */
+/* 187 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -59060,13 +59647,13 @@ function TaskController($location, $scope, $routeParams, $http, $rootScope, auto
 }
 
 /***/ }),
-/* 186 */
+/* 188 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 187 */
+/* 189 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -59080,39 +59667,39 @@ var _commonModuleEs = __webpack_require__(5);
 
 var _commonModuleEs2 = _interopRequireDefault(_commonModuleEs);
 
-var _datePickerDirectiveEs = __webpack_require__(188);
+var _datePickerDirectiveEs = __webpack_require__(190);
 
 var _datePickerDirectiveEs2 = _interopRequireDefault(_datePickerDirectiveEs);
 
-var _taskSelectDirectiveEs = __webpack_require__(192);
+var _taskSelectDirectiveEs = __webpack_require__(194);
 
 var _taskSelectDirectiveEs2 = _interopRequireDefault(_taskSelectDirectiveEs);
 
-var _enforceIntegersDirectiveEs = __webpack_require__(194);
+var _enforceIntegersDirectiveEs = __webpack_require__(196);
 
 var _enforceIntegersDirectiveEs2 = _interopRequireDefault(_enforceIntegersDirectiveEs);
 
-var _timecardControllerEs = __webpack_require__(195);
+var _timecardControllerEs = __webpack_require__(197);
 
 var _timecardControllerEs2 = _interopRequireDefault(_timecardControllerEs);
 
-var _timerDirectiveEs = __webpack_require__(197);
+var _timerDirectiveEs = __webpack_require__(199);
 
 var _timerDirectiveEs2 = _interopRequireDefault(_timerDirectiveEs);
 
-var _timeEntriesServiceEs = __webpack_require__(200);
+var _timeEntriesServiceEs = __webpack_require__(202);
 
 var _timeEntriesServiceEs2 = _interopRequireDefault(_timeEntriesServiceEs);
 
-var _timeEntryServiceEs = __webpack_require__(201);
+var _timeEntryServiceEs = __webpack_require__(203);
 
 var _timeEntryServiceEs2 = _interopRequireDefault(_timeEntryServiceEs);
 
-var _timeInputDirectiveEs = __webpack_require__(202);
+var _timeInputDirectiveEs = __webpack_require__(204);
 
 var _timeInputDirectiveEs2 = _interopRequireDefault(_timeInputDirectiveEs);
 
-var _datetimeDisplayDirectiveEs = __webpack_require__(205);
+var _datetimeDisplayDirectiveEs = __webpack_require__(207);
 
 var _datetimeDisplayDirectiveEs2 = _interopRequireDefault(_datetimeDisplayDirectiveEs);
 
@@ -59125,7 +59712,7 @@ angular.module(name, ['ui.select', 'ngSanitize', _commonModuleEs2.default]).dire
 exports.default = name;
 
 /***/ }),
-/* 188 */
+/* 190 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -59136,13 +59723,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = datePicker;
 
-var _pikaday = __webpack_require__(189);
+var _pikaday = __webpack_require__(191);
 
 var _pikaday2 = _interopRequireDefault(_pikaday);
 
-__webpack_require__(190);
+__webpack_require__(192);
 
-var _datePicker = __webpack_require__(191);
+var _datePicker = __webpack_require__(193);
 
 var _datePicker2 = _interopRequireDefault(_datePicker);
 
@@ -59198,7 +59785,7 @@ function datePicker(timeEntries) {
 }
 
 /***/ }),
-/* 189 */
+/* 191 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*!
@@ -60397,19 +60984,19 @@ function datePicker(timeEntries) {
 
 
 /***/ }),
-/* 190 */
+/* 192 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 191 */
+/* 193 */
 /***/ (function(module, exports) {
 
 module.exports = "<span class=\"date-picker\">\n  <i class=\"fa fa-calendar-o\"></i>{{ date.format(' ddd, MMM D') }}\n</span>\n";
 
 /***/ }),
-/* 192 */
+/* 194 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -60420,7 +61007,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = taskSelect;
 
-var _taskSelect = __webpack_require__(193);
+var _taskSelect = __webpack_require__(195);
 
 var _taskSelect2 = _interopRequireDefault(_taskSelect);
 
@@ -60445,13 +61032,13 @@ function taskSelect(orchestraTasks) {
 }
 
 /***/ }),
-/* 193 */
+/* 195 */
 /***/ (function(module, exports) {
 
 module.exports = "<label class=\"edit-label\">Select task</label>\n<ui-select ng-model=\"taskSelect.task\">\n  <ui-select-match>\n    <span ng-bind=\"taskSelect.orchestraTasks.getDescription($select.selected)\"></span>\n  </ui-select-match>\n  <ui-select-choices repeat=\"item in (taskSelect.orchestraTasks.activeAndRecentTasks(5) | filter: $select.search) track by item.id\">\n    <span ng-bind=\"taskSelect.orchestraTasks.getDescription(item)\"></span>\n  </ui-select-choices>\n</ui-select>\n";
 
 /***/ }),
-/* 194 */
+/* 196 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -60508,7 +61095,7 @@ function enforceIntegers() {
 }
 
 /***/ }),
-/* 195 */
+/* 197 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -60523,7 +61110,7 @@ var _momentTimezone = __webpack_require__(1);
 
 var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
 
-__webpack_require__(196);
+__webpack_require__(198);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -60684,13 +61271,13 @@ function TimecardController($routeParams, $scope, orchestraTasks, timeEntries) {
 }
 
 /***/ }),
-/* 196 */
+/* 198 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 197 */
+/* 199 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -60705,11 +61292,11 @@ var _momentTimezone = __webpack_require__(1);
 
 var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
 
-var _timer = __webpack_require__(198);
+var _timer = __webpack_require__(200);
 
 var _timer2 = _interopRequireDefault(_timer);
 
-__webpack_require__(199);
+__webpack_require__(201);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -60832,19 +61419,19 @@ function workTimer($rootScope) {
 } /* global $static */
 
 /***/ }),
-/* 198 */
+/* 200 */
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"timer\" ng-if=\"!vm.dataLoading\">\n  <div class=\"popover-toggle\"\n       uib-popover-template=\"workTimer.popoverTemplate\"\n       popover-placement=\"bottom-right\">\n    <i class=\"fa fa-clock-o\"></i>\n    <span ng-if=\"workTimer.timerRunning\">\n      <span ng-if=\"workTimer.timeElapsed.get('hours') === 0\">\n        {{ workTimer.timeElapsed.roundMinute().humanizeUnits(['m']) }}\n      </span>\n      <span ng-if=\"workTimer.timeElapsed.get('hours')\">\n        {{ workTimer.timeElapsed.roundMinute().humanizeUnits() }}\n      </span>\n    </span>\n  </div>\n</div>\n";
 
 /***/ }),
-/* 199 */
+/* 201 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 200 */
+/* 202 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61016,7 +61603,7 @@ function timeEntries($http, TimeEntry) {
 }
 
 /***/ }),
-/* 201 */
+/* 203 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61188,7 +61775,7 @@ function TimeEntry($http) {
 }
 
 /***/ }),
-/* 202 */
+/* 204 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61199,11 +61786,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = timeInput;
 
-var _timeInput = __webpack_require__(203);
+var _timeInput = __webpack_require__(205);
 
 var _timeInput2 = _interopRequireDefault(_timeInput);
 
-__webpack_require__(204);
+__webpack_require__(206);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -61242,19 +61829,19 @@ function timeInput() {
 }
 
 /***/ }),
-/* 203 */
+/* 205 */
 /***/ (function(module, exports) {
 
 module.exports = "<span class=\"time-input\">\n  <input type=\"time\"\n    ng-model=\"timeDisplay\"\n    ng-change=\"onChange()\"\n    ng-disabled=\"datetime === null\"\n    />\n</span>\n";
 
 /***/ }),
-/* 204 */
+/* 206 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 205 */
+/* 207 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61265,7 +61852,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = datetimeDisplay;
 
-var _datetimeDisplay = __webpack_require__(206);
+var _datetimeDisplay = __webpack_require__(208);
 
 var _datetimeDisplay2 = _interopRequireDefault(_datetimeDisplay);
 
@@ -61306,13 +61893,13 @@ function datetimeDisplay() {
 }
 
 /***/ }),
-/* 206 */
+/* 208 */
 /***/ (function(module, exports) {
 
 module.exports = "<span>{{getDatetimeDisplay(datetime)}}</span>\n";
 
 /***/ }),
-/* 207 */
+/* 209 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61326,35 +61913,35 @@ var _commonModuleEs = __webpack_require__(5);
 
 var _commonModuleEs2 = _interopRequireDefault(_commonModuleEs);
 
-var _todoListDirectiveEs = __webpack_require__(208);
+var _todoListDirectiveEs = __webpack_require__(210);
 
 var _todoListDirectiveEs2 = _interopRequireDefault(_todoListDirectiveEs);
 
-var _todoQaDirectiveEs = __webpack_require__(211);
+var _todoQaDirectiveEs = __webpack_require__(213);
 
 var _todoQaDirectiveEs2 = _interopRequireDefault(_todoQaDirectiveEs);
 
-var _todoQaListDirectiveEs = __webpack_require__(213);
+var _todoQaListDirectiveEs = __webpack_require__(215);
 
 var _todoQaListDirectiveEs2 = _interopRequireDefault(_todoQaListDirectiveEs);
 
-var _todoChecklistDirectiveEs = __webpack_require__(216);
+var _todoChecklistDirectiveEs = __webpack_require__(218);
 
 var _todoChecklistDirectiveEs2 = _interopRequireDefault(_todoChecklistDirectiveEs);
 
-var _todosServiceEs = __webpack_require__(220);
+var _todosServiceEs = __webpack_require__(222);
 
 var _todosServiceEs2 = _interopRequireDefault(_todosServiceEs);
 
-var _todolistTemplateServiceEs = __webpack_require__(221);
+var _todolistTemplateServiceEs = __webpack_require__(223);
 
 var _todolistTemplateServiceEs2 = _interopRequireDefault(_todolistTemplateServiceEs);
 
-var _todoQasServiceEs = __webpack_require__(222);
+var _todoQasServiceEs = __webpack_require__(224);
 
 var _todoQasServiceEs2 = _interopRequireDefault(_todoQasServiceEs);
 
-__webpack_require__(223);
+__webpack_require__(225);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -61364,7 +61951,7 @@ angular.module(name, ['ui.select', 'ngSanitize', 'ui.tree', _commonModuleEs2.def
 exports.default = name;
 
 /***/ }),
-/* 208 */
+/* 210 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61377,7 +61964,7 @@ exports.default = todoList;
 
 var _lodash = __webpack_require__(4);
 
-var _todoList = __webpack_require__(209);
+var _todoList = __webpack_require__(211);
 
 var _todoList2 = _interopRequireDefault(_todoList);
 
@@ -61385,7 +61972,7 @@ var _momentTimezone = __webpack_require__(1);
 
 var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
 
-__webpack_require__(210);
+__webpack_require__(212);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -61565,19 +62152,19 @@ function todoList(orchestraApi) {
 }
 
 /***/ }),
-/* 209 */
+/* 211 */
 /***/ (function(module, exports) {
 
 module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Todo List\n        </h3>\n      </div>\n    </div>\n\n    <div class=\"row section-body new-todo\">\n      <div class=\"col-lg-2\">\n        <select class=\"form-control input-sm\" name=\"todoList\" id=\"todoList\" ng-model=\"todoList.newTodoTaskId\">\n          <option value=\"\" selected>Select owner</option>\n          <option value=\"{{task.id}}\" ng-repeat=\"task in todoList.possibleTasks\">{{todoList.steps[task.step_slug].name}}</option>\n        </select>\n      </div>\n      <div class=\"col-lg-5\">\n        <input class=\"form-control input-sm\"\n               type=\"text\"\n               ng-model=\"todoList.newTodoDescription\"\n               placeholder=\"Add a todo item\">\n        <div class=\"pull-right\">\n          <div class=\"new-todo__datetime\">\n            <label>Start</label>\n            <date-picker\n              date=\"todoList.newTodoStartDate\"\n              callback=\"todoList.setTimeOfDate\"></date-picker>\n            <time-input\n              datetime=\"todoList.newTodoStartDate\"\n              default-hour=\"8\"\n              ></time-input>\n          </div>\n          <div class=\"new-todo__datetime\">\n            <label>Due</label>\n            <date-picker\n              date=\"todoList.newTodoDueDate\"\n              callback=\"todoList.setTimeOfDate\"></date-picker>\n            <time-input\n              datetime=\"todoList.newTodoDueDate\"\n              default-hour=\"18\"\n              ></time-input>\n          </div>\n        </div>\n      </div>\n      <div class=\"col-lg-1\">\n        <button type=\"submit\"\n                 class=\"btn btn-primary btn-sm btn-block edit-save-handle\"\n                 ng-disabled=\"!todoList.canAddTodo()\"\n                 ng-click=\"todoList.addTodo()\">\n                Add todo\n        </button>\n      </div>\n      <div class=\"col-lg-2\" ng-if=\"todoList.templates.length > 0\">\n        <div class=\"btn-group\">\n          <button type=\"button\" class=\"btn btn-primary btn-sm dropdown-toggle\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"\n                  ng-disabled=\"!todoList.newTodoTaskId\">\n            Add todos from a template <span class=\"caret\"></span>\n          </button>\n          <ul class=\"dropdown-menu\">\n            <li ng-repeat=\"template in todoList.templates\" ng-click=\"todoList.updateTodoListFromTemplate(template.slug)\">\n              <a href=\"\">{{template.name}}</a>\n            </li>\n          </ul>\n        </div>\n      </div>\n    </div>\n\n    <div class=\"row section-body\" ng-if=\"todoList.ready\">\n      <div class=\"col-lg-6 col-md-6 col-sm-12\">\n        <div class=\"todolist-pane\">\n          <p class=\"todolist-pane__heading col-sm-3\">Todo items</p>\n          <todo-checklist\n              title=\"Todos\"\n              todos=\"todoList.todos\"\n              todo-qas=\"todoList.todoQas\"\n              templates=\"todoList.templates\"\n              show-skipped=\"false\"\n              update-todo=\"todoList.updateTodo\"\n              remove-todo=\"todoList.removeTodo\"\n              skip-todo=\"todoList.skipTodo\"\n              unskip-todo=\"todoList.unskipTodo\"\n              steps=\"todoList.steps\"\n              task-slugs=\"todoList.taskSlugs\"\n              on-toggle-todo=\"todoList.onToggleTodo\"\n          ></todo-checklist>\n        </div>\n      </div>\n      <div class=\"col-lg-6 col-md-6 col-sm-12\">\n        <div class=\"todolist-pane\" ng-if=\"todoList.templates.length > 0\">\n          <p class=\"todolist-pane__heading col-sm-4\">Skipped todo items</p>\n          <todo-checklist\n              title=\"Todos\"\n              todos=\"todoList.todos\"\n              todo-qas=\"todoList.todoQas\"\n              templates=\"todoList.templates\"\n              show-skipped=\"true\"\n              update-todo=\"todoList.updateTodo\"\n              remove-todo=\"todoList.removeTodo\"\n              steps=\"todoList.steps\"\n              skip-todo=\"todoList.skipTodo\"\n              unskip-todo=\"todoList.unskipTodo\"\n              task-slugs=\"todoList.taskSlugs\"\n              on-toggle-todo=\"todoList.onToggleTodo\"\n          ></todo-checklist>\n        </div>\n      </div>\n    </div>\n\n  </div>\n</section>\n";
 
 /***/ }),
-/* 210 */
+/* 212 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 211 */
+/* 213 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61590,7 +62177,7 @@ exports.default = qa;
 
 var _lodash = __webpack_require__(4);
 
-var _todoQa = __webpack_require__(212);
+var _todoQa = __webpack_require__(214);
 
 var _todoQa2 = _interopRequireDefault(_todoQa);
 
@@ -61694,13 +62281,13 @@ function qa(orchestraApi) {
 }
 
 /***/ }),
-/* 212 */
+/* 214 */
 /***/ (function(module, exports) {
 
 module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          QA\n          <button class=\"btn\" ng-if=\"todoQa.todos.length\" ng-click=\"todoQa.copyToClipboard(todoQa.qaSummary())\">\n              Copy QA summary\n          </button>\n        </h3>\n      </div>\n    </div>\n\n    <div class=\"row section-body\" ng-if=\"todoQa.ready\">\n      <div class=\"col-sm-12\">\n        <todo-qa-list\n        todos=\"todoQa.todos\"\n        approve-todo=\"todoQa.approveTodo\"\n        disapprove-todo=\"todoQa.disapproveTodo\"\n        update-todo-qa-comment=\"todoQa.updateTodoQaComment\"\n        ></todo-qa-list>\n      </div>\n    </div>\n\n  </div>\n</section>\n";
 
 /***/ }),
-/* 213 */
+/* 215 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61713,11 +62300,11 @@ exports.default = todoQaList;
 
 var _lodash = __webpack_require__(4);
 
-var _todoQaList = __webpack_require__(214);
+var _todoQaList = __webpack_require__(216);
 
 var _todoQaList2 = _interopRequireDefault(_todoQaList);
 
-__webpack_require__(215);
+__webpack_require__(217);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -61775,19 +62362,19 @@ function todoQaList() {
 }
 
 /***/ }),
-/* 214 */
+/* 216 */
 /***/ (function(module, exports) {
 
 module.exports = "<script type=\"text/ng-template\" id=\"todoQaItemTemplate\">\n  <div ui-tree-handle class=\"tree-node tree-node-content\">\n    <label ng-class=\"{\n      'todo--disapproved': isDisapproved(todo),\n      'todo--approved': isApproved(todo)\n      }\">\n      <span ng-click=\"toggle(this)\">\n        <i aria-hidden=\"true\" ng-if=\"todo.items && todo.items.length > 0\" data-nodrag\n          class=\"fa skipped-todos\"\n          ng-class=\"{\n            'fa-caret-right': collapsed,\n            'fa-caret-down': !collapsed\n          }\">&nbsp;</i>\n        <i class=\"fa fa-circle-o\" aria-hidden=\"true\" ng-if=\"(!todo.items || todo.items.length === 0)\" data-nodrag>&nbsp;</i>\n        <span ng-class=\"{'todo--skipped': todo.skipped_datetime}\" ng-if=\"todo.skipped_datetime\">(Not relevant)&nbsp;</span>\n        <span ng-class=\"{'todo--skipped': todo.skipped_datetime}\" class=\"todo__description\" ng-bind-html=\"todo.description\"></span>\n      </span>\n      <span>\n        &nbsp;&nbsp;\n        <a href=\"#\" ng-if=\"isApprovalPending(todo) || isDisapproved(todo)\" ng-click=\"approveTodo(todo)\">[approve]</a>\n        <a href=\"#\" ng-if=\"isApprovalPending(todo) || isApproved(todo)\" ng-click=\"disapproveTodo(todo)\">[disapprove]</a>\n        <a href=\"#\" ng-if=\"!isApprovalPending(todo) && !hasComment(todo)\" ng-click=\"addNewComment(todo)\">[add comment]</a>\n      </span>\n    </label>\n    <form class=\"form-inline\" ng-if=\"hasComment(todo)\" >\n      <textarea class=\"form-control input-sm\" rows=\"1\" cols=\"50\" ng-change=\"onCommentChange(todo)\" ng-model=\"todo.qa.comment\" ng-trim=\"true\"></textarea>\n      <button ng-if=\"updatedComments[todo.id]\" ng-click=\"submitComment(todo)\" class=\"btn btn-primary btn-sm\">Submit</button>\n    </form>\n\n  </div>\n  <ol ui-tree-nodes ng-model=\"todo.items\" ng-class=\"{hidden: collapsed}\">\n    <li ng-repeat=\"todo in filterTemplateTodos(todo.items)\" ui-tree-node data-collapsed=\"true\" ng-include=\"'todoQaItemTemplate'\"></li>\n  </ol>\n</script>\n\n\n<div class=\"list-by-status\" ng-if=\"todos.length > 0\">\n  <div class=\"todo\">\n    <div ui-tree data-drag-enabled=\"false\" id=\"tree-root\">\n      <ol ui-tree-nodes ng-model=\"todos\">\n        <li ng-repeat=\"todo in filterTemplateTodos(todos)\" ui-tree-node data-collapsed=\"true\" ng-include=\"'todoQaItemTemplate'\"></li>\n      </ol>\n    </div>\n  </div>\n</div>\n";
 
 /***/ }),
-/* 215 */
+/* 217 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 216 */
+/* 218 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61800,13 +62387,13 @@ exports.default = todoChecklist;
 
 var _lodash = __webpack_require__(4);
 
-var _todoChecklist = __webpack_require__(217);
+var _todoChecklist = __webpack_require__(219);
 
 var _todoChecklist2 = _interopRequireDefault(_todoChecklist);
 
-__webpack_require__(218);
+__webpack_require__(220);
 
-__webpack_require__(219);
+__webpack_require__(221);
 
 var _momentTimezone = __webpack_require__(1);
 
@@ -61880,7 +62467,7 @@ function todoChecklist() {
             return scope.hasTodoQaComment(todo, showSkipped);
           });
         }
-        return scope.todoQas[todo.description] && (showSkipped ? scope.isSkipped(todo) : scope.isNotSkipped(todo)) || items.length !== 0;
+        return scope.todoQas[todo.description] && scope.todoQas[todo.description].comment && (showSkipped ? scope.isSkipped(todo) : scope.isNotSkipped(todo)) || items.length !== 0;
       };
 
       scope.filterTodoList = function (todos, showSkipped) {
@@ -61892,25 +62479,25 @@ function todoChecklist() {
 }
 
 /***/ }),
-/* 217 */
+/* 219 */
 /***/ (function(module, exports) {
 
 module.exports = "<script type=\"text/ng-template\" id=\"todoItemTemplate\">\n  <div ui-tree-handle class=\"tree-node tree-node-content\">\n    <input type=\"checkbox\"\n           ng-hide=\"showSkipped\"\n           ng-model=\"todo.completed\"\n           ng-change=\"updateTodo(todo)\">\n    <label ng-class=\"{'text-danger': isInDanger(todo)}\">\n      <span ng-click=\"toggleTodo(todo, this)\">\n        <i aria-hidden=\"true\" ng-if=\"todo.items && todo.items.length > 0\" data-nodrag\n          class=\"fa\"\n          ng-class=\"{\n            'skipped-todos': showSkipped,\n            'fa-caret-right': collapsed,\n            'fa-caret-down': !collapsed\n          }\"></i>\n        <i class=\"fa fa-circle-o\" aria-hidden=\"true\" ng-if=\"(!todo.items || todo.items.length === 0) && showSkipped\" data-nodrag></i>\n        <span ng-hide=\"!todo.items || todo.items.length < 1 || showSkipped\">[{{ ( filterTodoList(todo.items, showSkipped) | filter: { completed: true } ).length }}/{{ filterTodoList(todo.items, showSkipped).length }}] </span>\n        <span class=\"todo__role\">{{steps[taskSlugs[todo.task]].name}}:&nbsp;</span>\n        <span class=\"todo__description\" ng-bind-html=\"todo.description\"></span>\n        <span ng-class=\"{'todo__dates': true, 'todo__dates-danger': isInDanger(todo)}\">\n          <span ng-if=\"isNonEmptyString(todo.start_by_datetime)\">\n            Start <datetime-display datetime=\"todo.start_by_datetime\" show-time=\"true\"/>\n          </span>\n          <span ng-if=\"isNonEmptyString(todo.start_by_datetime) && isNonEmptyString(todo.due_datetime)\" class=\"todo__dates-separator\">|</span>\n          <span ng-if=\"isNonEmptyString(todo.due_datetime)\">\n            Due <datetime-display datetime=\"todo.due_datetime\" show-time=\"true\"/></span>\n        </span>\n      </span>\n      <span ng-if=\"templates.length > 0\">\n        &nbsp;&nbsp;\n        <a href=\"#\" ng-hide=\"!showSkipped\" ng-click=\"unskipTodo(todo)\">[relevant]</a>\n        <a href=\"#\" ng-hide=\"showSkipped\" ng-click=\"skipTodo(todo)\">[not relevant]</a>\n        <a href=\"#\" ng-hide=\"todo.parent_todo\" ng-click=\"removeTodo(todo)\">[remove]</a>\n      </span>\n    </label>\n    <div class=\"todo-qa panel panel-default\" ng-if=\"todoQas[todo.description] && todoQas[todo.description].comment\">\n      <div class=\"panel-body\">\n        <span>{{todoQas[todo.description].todo === todo.id?\"Feedback on this project\":\"Feedback from previous project\"}}:</span>\n        <strong>{{todoQas[todo.description].comment}}</strong>\n      </div>\n    </div>\n  </div>\n  <ol ui-tree-nodes ng-model=\"todo.items\" ng-class=\"{hidden: collapsed}\">\n    <li ng-repeat=\"todo in filterTodoList(todo.items, showSkipped)\" ui-tree-node data-collapsed=\"isCollapsed(todo, showSkipped)\" ng-include=\"'todoItemTemplate'\"></li>\n  </ol>\n</script>\n\n\n<div class=\"list-by-status\" ng-if=\"todos.length > 0\">\n  <div class=\"todo\">\n    <div ui-tree data-drag-enabled=\"false\" id=\"tree-root\">\n      <ol ui-tree-nodes ng-model=\"todos\">\n        <li ng-repeat=\"todo in filterTodoList(todos, showSkipped)\" ui-tree-node data-collapsed=\"isCollapsed(todo, showSkipped)\" ng-include=\"'todoItemTemplate'\"></li>\n      </ol>\n    </div>\n  </div>\n</div>\n";
 
 /***/ }),
-/* 218 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 219 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
 /* 220 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 221 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 222 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61955,7 +62542,7 @@ function todoApi($http) {
 };
 
 /***/ }),
-/* 221 */
+/* 223 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -61991,7 +62578,7 @@ function todoListTemplateApi($http) {
 };
 
 /***/ }),
-/* 222 */
+/* 224 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -62036,15 +62623,15 @@ function todoQaApi($http) {
 };
 
 /***/ }),
-/* 223 */
+/* 225 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(224);
+__webpack_require__(226);
 module.exports = 'ui.tree';
 
 
 /***/ }),
-/* 224 */
+/* 226 */
 /***/ (function(module, exports) {
 
 /**
@@ -63905,7 +64492,7 @@ module.exports = 'ui.tree';
 })();
 
 /***/ }),
-/* 225 */
+/* 227 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -63919,7 +64506,7 @@ var _commonModuleEs = __webpack_require__(5);
 
 var _commonModuleEs2 = _interopRequireDefault(_commonModuleEs);
 
-var _teamInfoCardDirectiveEs = __webpack_require__(226);
+var _teamInfoCardDirectiveEs = __webpack_require__(228);
 
 var _teamInfoCardDirectiveEs2 = _interopRequireDefault(_teamInfoCardDirectiveEs);
 
@@ -63933,7 +64520,7 @@ angular.module(name, ['ui.select', 'ngSanitize', _commonModuleEs2.default]).dire
 exports.default = name;
 
 /***/ }),
-/* 226 */
+/* 228 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -63946,7 +64533,7 @@ exports.default = teamInfoCard;
 
 var _lodash = __webpack_require__(4);
 
-var _teamInfoCard = __webpack_require__(227);
+var _teamInfoCard = __webpack_require__(229);
 
 var _teamInfoCard2 = _interopRequireDefault(_teamInfoCard);
 
@@ -64049,13 +64636,13 @@ function teamInfoCard(orchestraApi) {
 }
 
 /***/ }),
-/* 227 */
+/* 229 */
 /***/ (function(module, exports) {
 
 module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Team info\n          <a class=\"btn\"\n             ng-if=\"teamInfoCard.isProjectAdmin\"\n             ng-href=\"project/{{teamInfoCard.projectId}}\"\n             target=\"_blank\">\n            Project Management\n          </a>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <table class=\"table table-striped\">\n          <thead>\n            <th>Role</th>\n            <th>Username</th>\n            <th>Name</th>\n            <th>Recorded time spent</th>\n            <th>Status</th>\n          </thead>\n          <tbody>\n            <tr ng-repeat=\"assignment in teamInfoCard.assignments\">\n              <td>{{assignment.role}}</td>\n              <td>{{assignment.worker.username}}</td>\n              <td>{{assignment.worker.first_name}} {{assignment.worker.last_name}}</td>\n              <td>{{assignment.recordedTime}}</td>\n              <td>\n                {{assignment.status}}\n                <button type=\"submit\"\n                        class=\"btn btn-default btn-sm\"\n                        ng-if=\"teamInfoCard.isProjectAdmin &&\n                               assignment.status == 'Processing' &&\n                               assignment.stepSlug != teamInfoCard.step.slug\"\n                        ng-click=\"teamInfoCard.submitTask(assignment.task_id)\">\n                  Submit\n                </button>\n              </td>\n            </tr>\n          </tbody>\n        </table>\n      </div>\n    </div>\n  </div>\n</section>\n";
 
 /***/ }),
-/* 228 */
+/* 230 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -64066,19 +64653,19 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = config;
 
-var _dashboard = __webpack_require__(229);
+var _dashboard = __webpack_require__(231);
 
 var _dashboard2 = _interopRequireDefault(_dashboard);
 
-var _task = __webpack_require__(230);
+var _task = __webpack_require__(232);
 
 var _task2 = _interopRequireDefault(_task);
 
-var _timecard = __webpack_require__(231);
+var _timecard = __webpack_require__(233);
 
 var _timecard2 = _interopRequireDefault(_timecard);
 
-var _projectManagement = __webpack_require__(232);
+var _projectManagement = __webpack_require__(234);
 
 var _projectManagement2 = _interopRequireDefault(_projectManagement);
 
@@ -64116,25 +64703,25 @@ function config($locationProvider, $routeProvider) {
 }
 
 /***/ }),
-/* 229 */
+/* 231 */
 /***/ (function(module, exports) {
 
 module.exports = "<section class=\"wrapper\">\n  <div tasktable=\"{label: 'Active', tasks: vm.orchestraTasks.activeTasks(), newTasks: true}\"></div>\n  <div tasktable=\"{label: 'Pending', tasks: vm.orchestraTasks.pendingTasks()}\"></div>\n  <div tasktable=\"{label: 'Completed', tasks: vm.orchestraTasks.completedTasks()}\"></div>\n</section>\n";
 
 /***/ }),
-/* 230 */
+/* 232 */
 /***/ (function(module, exports) {
 
 module.exports = "<section class=\"wrapper task-view\">\n\n\n<script type=\"text/ng-template\" id=\"submit_task_modal.html\">\n  <div class=\"modal-header\">\n    <h3 class=\"modal-title\">{{command | capitalize}} Confirmation</h3>\n  </div>\n  <div class=\"modal-body modal-confirm-body\">\n    <div class=\"modal-confirm-text\">\n      <div class=\"time-question\">\n        Approximately how much time did you spend on <strong>this iteration</strong> of the task?\n      </div>\n        <div class=\"time-summary\">\n          <span class=\"time-report form-inline input-group-sm\">\n            <span class=\"time-unit-group\">\n              <input type=\"text\"\n                     class=\"form-control\"\n                     id=\"current-time-hours\"\n                     ng-model=\"currentIterationHours\">\n                     <span class=\"time-unit\"> hours</span>\n            </span>\n            <span class=\"time-unit-group\">\n              <input type=\"text\"\n                     class=\"form-control\"\n                     id=\"current-time-minutes\"\n                     ng-model=\"currentIterationMinutes\">\n                     <span class=\"time-unit\"> mins</span>\n            </span>\n          </span>\n        </div>\n        <div class=\"time-error-message\" ng-bind=\"secondsErrorMessage\"></div>\n        <div class=\"time-summary\">\n          <span class=\"time-label\">Total time so far</span>\n          <span class=\"time-report\">\n            <span class=\"time-unit-group\">\n              <span class=\"time-value-float\">\n                <span class=\"time-value\" ng-bind=\"totalPreviousHoursMinutes()[0]\"></span>\n              </span>\n              <span class=\"time-unit\"> hours</span>\n            </span>\n            <span class=\"time-unit-group\">\n              <span class=\"time-value-float\">\n                <span class=\"time-value\" ng-bind=\"totalPreviousHoursMinutes()[1]\"></span>\n              </span>\n              <span class=\"time-unit\"> mins</span>\n            </span>\n          </span>\n        </div>\n        <hr />\n        <div class=\"time-summary\">\n          <span class=\"time-label\">Total time on task</span>\n          <span class=\"time-report\">\n            <span class=\"time-unit-group\">\n              <span class=\"time-value-float\">\n                <span class=\"time-value\" ng-bind=\"totalHoursMinutes()[0]\"></span>\n              </span>\n              <span class=\"time-unit\"> hours</span>\n            </span>\n            <span class=\"time-unit-group\">\n              <span class=\"time-value-float\">\n                <span class=\"time-value\" ng-bind=\"totalHoursMinutes()[1]\"></span>\n              </span>\n              <span class=\"time-unit\"> mins</span>\n            </span>\n          </span>\n        </div>\n    </div>\n    <div class=\"pull-center\">\n      <button class=\"btn btn-primary\" ng-disabled=\"secondsErrorMessage !== null\" ng-click=\"submit()\">{{command | capitalize}}</button>\n      <button class=\"btn btn-default\" ng-click=\"cancel()\">Cancel</button>\n    </div>\n  </div>\n</script>\n\n\n<nav class=\"topbar-overview\" ng-class=\"{'reviewer-topbar': vm.taskAssignment.is_reviewer}\">\n    <div class=\"topbar-leader\">\n      <div class=\"project-overview\">\n        <div class=\"workflow\">{{ vm.taskAssignment.workflow.name}}</div>\n        {{ vm.taskAssignment.project.details}}\n      </div>\n      <div class=\"arrow-wrapper\">\n        <div class=\"arrow-with-shadow\"></div>\n      </div>\n    </div>\n    <div class=\"topbar-follower\">\n      <div class=\"task-overview\">\n        {{ vm.taskAssignment.step.name}}\n        <span ng-if=\"vm.taskAssignment.is_reviewer\">\n              Review\n        </span>\n      </div>\n    </div>\n</nav>\n\n<div class=\"fixed-infobox-outer\" ng-if=\"vm.is_read_only\">\n  <div class=\"fixed-infobox bg-info\">\n    This task is in view-only mode. You cannot submit or review it.\n  </div>\n</div>\n\n<div class=\"fixed-infobox-outer\" ng-if=\"vm.autoSaver.saveError\">\n  <div class=\"fixed-infobox btn-danger\">\n    Error saving task. Trying again...\n  </div>\n</div>\n\n<div class=\"step-interface\">\n  <div dynamic-load=\"vm.angularDirective\"></div>\n</div>\n\n<section class=\"task-actions-wrapper\">\n  <div class=\"task-actions\">\n    <div class=\"container-fluid\">\n      <div class=\"row\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <button ng-if=\"!vm.taskAssignment.is_reviewer\"\n                  type=\"button\"\n                  class=\"btn btn-primary navbar-btn\"\n                  ng-click=\"vm.submitTask('submit')\"\n                  ng-disabled=\"vm.is_read_only || vm.autoSaver.saving || vm.submitting\">\n            Submit\n          </button>\n          <button ng-if=\"vm.taskAssignment.is_reviewer\"\n                  type=\"button\"\n                  class=\"btn btn-primary navbar-btn\"\n                  ng-click=\"vm.submitTask('accept')\"\n                  ng-disabled=\"vm.is_read_only || vm.autoSaver.saving || vm.submitting\">\n            Accept\n          </button>\n          <button ng-if=\"vm.taskAssignment.is_reviewer\"\n                  type=\"button\"\n                  class=\"btn btn-default navbar-btn\"\n                  ng-click=\"vm.submitTask('reject')\"\n                  ng-disabled=\"vm.is_read_only || vm.autoSaver.saving || vm.submitting\">\n            Reject\n          </button>\n          <button type=\"button\"\n                  class=\"btn btn-default navbar-btn\"\n                  ng-click=\"vm.autoSaver.save()\"\n                  ng-disabled=\"vm.is_read_only || vm.autoSaver.saving || vm.submitting\">\n            Save\n          </button>\n          <div class=\"save-message\">\n            <div ng-show=\"vm.autoSaver.saving\">Saving...</div>\n            <div ng-show=\"vm.autoSaver.lastSaved && !vm.autoSaver.saving\">\n              Saved at {{ vm.autoSaver.lastSaved | date:'mediumTime' }}\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n\n\n</section><!--/wrapper -->\n";
 
 /***/ }),
-/* 231 */
+/* 233 */
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"timecard-view\" ng-if=\"!vm.dataLoading\">\n  <div class=\"entries\">\n    <div class=\"container-fluid\">\n      <div class=\"row no-padding\">\n        <div class=\"col-xs-10 col-xs-offset-2\">\n          <div class=\"row\">\n            <div class=\"col-xs-12 col-md-10\">\n              <span class=\"edit-label\">\n                Date range\n              </span>\n              <date-picker date=\"vm.minDate\" max-date=\"vm.maxDate\"></date-picker>–\n              <date-picker date=\"vm.maxDate\" min-date=\"vm.minDate\"\n              max-date=\"vm.weekEnd\"></date-picker>\n            </div>\n            <div class=\"col-xs-12 col-md-2\">\n              <a href=\"//orchestra.readthedocs.org/en/stable/features.html#time-tracking\" target=\"_blank\"\n              class=\"pull-right help-icon\"><i class=\"fa fa-question-circle\"></i></a>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n    <div class=\"date-group\" ng-repeat=\"dateEntries in vm.timeEntries.entriesByDate | toArray | orderBy:vm.datetimeFromKey:'true'\">\n      <div class=\"container-fluid\">\n        <div class=\"row no-padding\">\n          <div class=\"col-xs-12 col-md-2\">\n            <span class=\"day-name\">{{ vm.dayName(dateEntries.$key) }}</span>\n          </div>\n          <div class=\"col-xs-12 col-md-10\">\n            <div class=\"date-entries\">\n              <h2>\n                <span class=\"date-label\">{{ vm.prettyDate(dateEntries.$key) }}</span>\n                <i ng-click=\"vm.addEntry(vm.datetimeFromKey(dateEntries))\" class=\"fa fa-plus btn-add-entry\"></i>\n                <span class=\"date-duration\" ng-show=\"vm.timeEntries.invalidEntriesForDate(dateEntries.$key).length\">\n                  <em class=\"incomplete\">Invalid Entries</em>\n                </span>\n                <span class=\"date-duration\" ng-hide=\"vm.timeEntries.invalidEntriesForDate(dateEntries.$key).length\">\n                  {{ vm.timeEntries.timeWorkedForDate(dateEntries.$key).humanizeUnits() }}\n                </span>\n              </h2>\n              <div class=\"entry-row\" ng-if=\"!dateEntries.length\">\n                <div class=\"row\">\n                  <div class=\"col-xs-12\">\n                    <em>No entries for this date</em>\n                  </div>\n                </div>\n              </div>\n              <div class=\"entry-row\" ng-class=\"{'gray-stripe': $index % 2}\" ng-repeat=\"entry in dateEntries | orderBy:'-id'\">\n                <form class=\"container-fluid form-inline\" novalidate name=\"entryForm\">\n                  <div class=\"row\">\n                    <div class=\"col-xs-2 edit-tools disable-select\">\n                      <i ng-click=\"vm.timeEntries.deleteEntry(entry)\" class=\"fa fa-times-circle\"></i>\n                      <i class=\"fa fa-pencil-square-o\" ng-class=\"{active: entry.editing}\" ng-click=\"vm.editEntry(entry)\"></i>\n                    </div>\n\n                    <!-- Readonly view for description and time worked -->\n                    <div class=\"col-xs-6 description\" ng-if=\"!entry.editing\">\n                      <span ng-show=\"entry.description\">\n                        {{ entry.description }}\n                      </span>\n                      <span class=\"incomplete\" ng-hide=\"entry.description\">\n                        <em>No description</em>\n                      </span>\n                    </div>\n                    <div class=\"col-xs-4 edit-time\" ng-if=\"!entry.editing\">\n                      {{ entry.time_worked.roundMinute().humanizeUnits() }}\n                    </div>\n                    <div class=\"col-xs-12\" ng-if=\"!entry.editing\">\n                      <em class=\"pull-right\" ng-show=\"vm.orchestraTasks.tasksByAssignmentId[entry.assignment]\">\n                        {{ vm.orchestraTasks.getDescription(vm.orchestraTasks.tasksByAssignmentId[entry.assignment]) }}\n                      </em>\n                      <em class=\"pull-right incomplete\" ng-hide=\"vm.orchestraTasks.tasksByAssignmentId[entry.assignment]\">\n                        Unassigned\n                      </em>\n                    </div>\n\n                    <!-- Editable view for description and time worked -->\n                    <div class=\"col-xs-6\" ng-if=\"entry.editing\">\n                      <input class=\"form-control\" type=\"text\" ng-model=\"entry.editData.description\" placeholder=\"What did you work on?\">\n                    </div>\n                    <div class=\"col-xs-4 edit-time\" ng-if=\"entry.editing\">\n                      <div class=\"time-component\">\n                        <input class=\"form-control\" type=\"number\" ng-model=\"entry.editData.timeWorked.h\"\n                        min=\"0\" max=\"23\" enforce-integers>\n                        <label>hours</label>\n                      </div>\n                      <div class=\"time-component\">\n                        <input class=\"form-control\" type=\"number\" ng-model=\"entry.editData.timeWorked.m\"\n                        min=\"0\" max=\"59\" enforce-integers>\n                        <label>minutes</label>\n                      </div>\n                    </div>\n                  </div>\n\n                  <div class=\"row\" ng-if=\"entry.editing\">\n                    <div class=\"col-xs-4\">\n                      <div class=\"edit-date\">\n                        <label class=\"edit-label\">Move to date</label>\n                        <date-picker date=\"entry.editData.date\" max-date=\"vm.weekEnd\"></date-picker>\n                      </div>\n                    </div>\n                    <div class=\"col-xs-8\">\n                      <div class=\"edit-task\">\n                        <task-select task=\"entry.editData.task\"></task-select>\n                      </div>\n                    </div>\n                  </div>\n                  <div class=\"row\" ng-if=\"entry.editing\">\n                    <div class=\"col-xs-12\">\n                      <div class=\"edit-options pull-right\">\n                        <div class=\"edit-cancel-handle\" ng-click=\"vm.cancelChanges(entry)\">\n                          Cancel\n                        </div>\n                        <div class=\"btn btn-primary btn-sm edit-save-handle\" ng-disabled=\"vm.entryUnchanged(entry)\"\n                        ng-click=\"vm.saveChanges(entry)\">\n                          Save changes\n                        </div>\n                      </div>\n                    </div>\n                  </div>\n                </form>\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n";
 
 /***/ }),
-/* 232 */
+/* 234 */
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"project-management\">\n  <div class=\"overlay\" ng-if=\"vis.dataService.loading\">\n    <div class=\"spinner\"></div>\n  </div>\n  <section class=\"section-panel\">\n    <div class=\"container-fluid\">\n      <div class=\"row padded\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <ui-select class=\"project-description\" ng-model=\"vis.dataService.currentProject\"\n              ng-change=\"vis.dataService.setSelectedProject()\"\n              ng-disabled=\"vis.dataService.loading\">\n            <ui-select-match>\n              <span ng-bind=\"projectDescription($select.selected)\"></span>\n            </ui-select-match>\n            <ui-select-choices repeat=\"item in (vis.dataService.allProjects | toArray | filter: $select.search) track by item.id\">\n              <span ng-bind=\"projectDescription(item)\"></span>\n            </ui-select-choices>\n          </ui-select>\n          <div class=\"project-actions\" ng-show=\"vis.dataService.currentProject.id\">\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.createSubsequentTasks()\" class=\"btn btn-default\">\n              Create subsequent tasks\n            </button>\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.showSlackActions()\" class=\"btn btn-default\">\n              Edit Slack users\n            </button>\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.showProjectData()\" class=\"btn btn-default\">\n              View project data\n            </button>\n            <a ng-href=\"{{vis.dataService.data.project.admin_url}}\" ng-disabled=\"vis.dataService.loading\" target=\"_blank\">\n              <button type=\"button\" class=\"btn btn-default\">View in admin</button>\n            </a>\n            <button ng-click=\"vis.endProject()\" class=\"btn btn-danger\">Abort project</button>\n          </div>\n        </div>\n      </div>\n      <div class=\"row\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <div class=\"vis-wrapper\" ng-show=\"vis.dataService.currentProject.id\">\n            <div class=\"freeze-pane-left\">\n              <div class=\"scale-buttons\">\n                <button ng-click=\"vis.axis.relativeTime = !vis.axis.relativeTime; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  Switch to {{vis.axis.relativeTime ? 'local' : 'relative'}} time\n                </button>\n                <button ng-click=\"vis.params.scaleWidth = vis.params.scaleWidth / 1.1; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  -\n                </button>\n                <button ng-click=\"vis.params.scaleWidth = vis.params.scaleWidth * 1.1; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  +\n                </button>\n              </div>\n              <div class=\"task-names\"></div>\n            </div>\n            <div class=\"svg-wrapper\"></div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n</div>\n";
