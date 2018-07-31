@@ -7,7 +7,8 @@ export default function datetimeDisplay () {
     restrict: 'E',
     scope: {
       datetime: '=',
-      showTime: '='
+      showTime: '=',
+      customFormat: '='
     },
     link: (scope, elem, attrs) => {
       const getLocalTime = (datetimeString) => {
@@ -15,7 +16,9 @@ export default function datetimeDisplay () {
       }
 
       const getPrettyDatetime = (datetime) => {
-        if (scope.showTime) {
+        if (scope.customFormat !== '') {
+          return datetime.format(scope.customFormat)
+        } else if (scope.showTime) {
           return datetime.format('ddd, MMM D h:mm a')
         } else {
           return datetime.format('ddd, MMM D')

@@ -589,7 +589,7 @@ def tasks_assigned_to_worker(worker):
                 'detail': task_assignment.task.project.short_description,
                 'priority': task_assignment.task.project.priority,
                 'state': state,
-                'start_datetime': task_assignment.task.project.start_datetime,
+                'assignment_start_datetime': task_assignment.start_datetime,
                 'next_todo_dict': next_todo_dict,
                 'should_be_active': should_be_active})
     return tasks_assigned
