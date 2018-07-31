@@ -43,7 +43,7 @@
                  class="table table-striped">
             <thead>
               <tr>
-                <th st-sort="assignment_start_datetime">Task created</th>
+                <th st-sort="assignment_start_datetime">Task assigned</th>
                 <th st-sort="project">Project</th>
                 <th st-sort="step">Task</th>
                 <th st-sort="detail">Details</th>
@@ -58,7 +58,7 @@
                  ng-class="{'task-row':true, 'danger': vm.isInDanger(task)}"
                  ng-repeat="task in displayedTasks"
                  ng-click="vm.openTask(task)">
-                <td><datetime-display datetime="task.assignment_start_datetime" custom-format="'MM/DD/YYYY'" show-time="false" /></td>
+                <td><datetime-display datetime="task.assignment_start_datetime" custom-format="'MM/DD/YYYY'" /></td>
                 <td>{{task.project}}</td>
                 <td>{{task.step}}</td>
                 <td>{{task.detail|limitTo:50}}{{task.detail.length > 50 ? '...' : ''}}</td>

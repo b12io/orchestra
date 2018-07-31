@@ -16,7 +16,7 @@ export default function datetimeDisplay () {
       }
 
       const getPrettyDatetime = (datetime) => {
-        if (scope.customFormat !== '') {
+        if (scope.customFormat) {
           return datetime.format(scope.customFormat)
         } else if (scope.showTime) {
           return datetime.format('ddd, MMM D h:mm a')
