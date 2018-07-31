@@ -71,7 +71,7 @@ export default function todoChecklist () {
             return scope.hasTodoQaComment(todo, showSkipped)
           })
         }
-        return (scope.todoQas[todo.description] && (showSkipped ? scope.isSkipped(todo) : scope.isNotSkipped(todo))) || items.length !== 0
+        return ((scope.todoQas[todo.description] && scope.todoQas[todo.description].comment) && (showSkipped ? scope.isSkipped(todo) : scope.isNotSkipped(todo))) || items.length !== 0
       }
 
       scope.filterTodoList = (todos, showSkipped) => {
