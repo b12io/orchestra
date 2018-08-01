@@ -9,6 +9,7 @@ from orchestra.models import CommunicationPreference
 from orchestra.models import Project
 from orchestra.models import StaffingRequestInquiry
 from orchestra.models import Task
+from orchestra.models import TaskAssignment
 from orchestra.models import Worker
 
 UserModel = get_user_model()
@@ -75,13 +76,13 @@ class CommunicationPreferenceLookup(FormatedItemMixin, LookupChannel):
 @register('task_assignments')
 class TaskAssignmentLookup(FormatedItemMixin, LookupChannel):
 
-    model = Task
+    model = TaskAssignment
     url_reverse = 'admin:orchestra_taskassignment_change'
 
     def get_query(self, q, request):
         return self.model.objects.filter(
-            Q(step__slug__icontains=q) |
-            Q(project__short_description__icontains=q))
+            Q(task__step__slug__icontains=q) |
+            Q(task__project__short_description__icontains=q))
 
 
 @register('tasks')
