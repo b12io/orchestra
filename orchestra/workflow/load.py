@@ -5,6 +5,7 @@ from django.db import transaction
 from orchestra.core.errors import WorkflowError
 from orchestra.models import Certification
 from orchestra.models import Step
+from orchestra.models import TodoListTemplate
 from orchestra.models import Workflow
 from orchestra.models import WorkflowVersion
 from orchestra.workflow.defaults import get_default_assignment_policy
@@ -185,6 +186,8 @@ def load_workflow_version(version_data, workflow, force=False):
         _set_step_dependencies(step, step_data, 'submission_depends_on', Step,
                                workflow_version=version)
 
+        _set_step_templates(step, step_data, 'todolist_templates_to_apply', TodoListTemplate)
+
 
 def _verify_dependencies_not_updated(step_data, dependency_attr,
                                      old_dependencies):
@@ -206,3 +209,15 @@ def _set_step_dependencies(step, step_data, dependency_attr, dependency_model,
             '{}.{} contains a non-existent slug.'
             .format(step_data['slug'], dependency_attr))
     getattr(step, dependency_attr).set(dependencies)
+
+
+def _set_step_templates(step, step_data, template_attr, template_model,
+                           **model_filters):
+    template_slugs = set(step_data.get(template_attr, []))
+    templates = list(template_model.objects.filter(
+        slug__in=template_slugs, **model_filters))
+    if len(templates) != len(template_slugs):
+        raise WorkflowError(
+            '{}.{} contains a non-existent slug.'
+            .format(step_data['slug'], template_attr))
+    getattr(step, template_attr).set(templates)
