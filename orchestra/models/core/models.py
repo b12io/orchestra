@@ -177,6 +177,7 @@ class TodoListTemplate (TodoListTemplateMixin, BaseModel):
     todos = JSONField(default={'items': []})
     conditional_property_function = JSONField(default={})
 
+
 class Step(StepMixin, models.Model):
     """
     Steps represent individual tasks in a workflow version.
@@ -249,7 +250,8 @@ class Step(StepMixin, models.Model):
     review_policy = JSONField(default={})
     creation_policy = JSONField(default={})
     user_interface = JSONField(default={})
-    todolist_templates_to_apply = models.ManyToManyField(TodoListTemplate, blank=True)
+    todolist_templates_to_apply = models.ManyToManyField(TodoListTemplate,
+        blank=True)
 
     class Meta:
         app_label = 'orchestra'
@@ -615,6 +617,7 @@ class PayRate(PayRateMixin, models.Model):
     hourly_multiplier = models.DecimalField(max_digits=6, decimal_places=4)
     start_date = models.DateField(default=timezone.now)
     end_date = models.DateField(null=True, blank=True)
+
 
 class Todo(TodoMixin, BaseModel):
     """

@@ -186,7 +186,8 @@ def load_workflow_version(version_data, workflow, force=False):
         _set_step_dependencies(step, step_data, 'submission_depends_on', Step,
                                workflow_version=version)
 
-        _set_step_templates(step, step_data, 'todolist_templates_to_apply', TodoListTemplate)
+        _set_step_templates(step, step_data, 'todolist_templates_to_apply',
+            TodoListTemplate)
 
 
 def _verify_dependencies_not_updated(step_data, dependency_attr,
@@ -212,7 +213,7 @@ def _set_step_dependencies(step, step_data, dependency_attr, dependency_model,
 
 
 def _set_step_templates(step, step_data, template_attr, template_model,
-                           **model_filters):
+                        **model_filters):
     template_slugs = set(step_data.get(template_attr, []))
     templates = list(template_model.objects.filter(
         slug__in=template_slugs, **model_filters))
