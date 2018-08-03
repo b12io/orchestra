@@ -187,7 +187,7 @@ def load_workflow_version(version_data, workflow, force=False):
                                workflow_version=version)
 
         _set_step_templates(step, step_data, 'todolist_templates_to_apply',
-            TodoListTemplate)
+                            TodoListTemplate)
 
 
 def _verify_dependencies_not_updated(step_data, dependency_attr,

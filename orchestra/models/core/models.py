@@ -251,7 +251,7 @@ class Step(StepMixin, models.Model):
     creation_policy = JSONField(default={})
     user_interface = JSONField(default={})
     todolist_templates_to_apply = models.ManyToManyField(TodoListTemplate,
-        blank=True)
+                                                         blank=True)
 
     class Meta:
         app_label = 'orchestra'
