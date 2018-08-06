@@ -15,6 +15,7 @@ export default function teamInfoCard (orchestraApi) {
     controller: ($scope) => {
       const teamInfoCard = $scope.teamInfoCard
       teamInfoCard.projectId = teamInfoCard.taskAssignment.project.id
+      teamInfoCard.projectStatus = teamInfoCard.taskAssignment.project.status
       teamInfoCard.step = teamInfoCard.taskAssignment.step
       teamInfoCard.isProjectAdmin = teamInfoCard.taskAssignment.is_project_admin
 

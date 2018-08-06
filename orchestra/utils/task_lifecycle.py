@@ -368,7 +368,7 @@ def get_task_details(task_id):
             'details': project.short_description,
             'team_messages_url': project.team_messages_url,
             'project_data': project.project_data,
-            'status': project.status
+            'status': dict(Project.STATUS_CHOICES)[project.status]
         },
         'prerequisites': prerequisites
     }
