@@ -468,6 +468,8 @@ def tasks_assigned_to_worker(worker):
         .filter(
             worker=worker,
             status=TaskAssignment.Status.PROCESSING)
+        .exclude(
+            task__project__status=Project.Status.PAUSED)
         .order_by('-task__project__priority',
                   'task__project__start_datetime'))
 
@@ -490,6 +492,8 @@ def tasks_assigned_to_worker(worker):
                     status=TaskAssignment.Status.PROCESSING,
                     task__id=task_assignment.task.id,
                     assignment_counter__lt=task_assignment.assignment_counter)
+                .exclude(
+                    task__project__status=Project.Status.PAUSED)
                 .exists()):
             inactive_processing_task_assignments.append(task_assignment)
         else:
@@ -504,6 +508,15 @@ def tasks_assigned_to_worker(worker):
         .order_by('-task__project__priority',
                   '-task__project__start_datetime')[:200])
 
+    paused_task_assignments = (
+        valid_task_assignments
+        .filter(
+            worker=worker,
+            status=TaskAssignment.Status.PROCESSING,
+            task__project__status=Project.Status.PAUSED)
+        .order_by('-task__project__priority',
+                  'task__project__start_datetime'))
+
     task_assignments_overview = {
         'returned': (
             active_task_assignments
@@ -513,6 +526,7 @@ def tasks_assigned_to_worker(worker):
             .exclude(task__status=Task.Status.POST_REVIEW_PROCESSING)),
         'pending_review': inactive_review_task_assignments,
         'pending_processing': inactive_processing_task_assignments,
+        'paused': paused_task_assignments,
         'complete': complete_task_assignments}
 
     tasks_assigned = []

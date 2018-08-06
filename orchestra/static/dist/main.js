@@ -42643,11 +42643,17 @@ function orchestraTasks($http) {
   var pendingState = function pendingState(task) {
     return ['pending_review', 'pending_processing'].indexOf(task.state) !== -1;
   };
+  var pausedState = function pausedState(task) {
+    return task.state === 'paused';
+  };
   var activeTask = function activeTask(task) {
     return activeState(task) && task.should_be_active;
   };
   var pendingTask = function pendingTask(task) {
     return activeState(task) && !task.should_be_active || pendingState(task);
+  };
+  var pausedTask = function pausedTask(task) {
+    return pausedState(task);
   };
 
   var orchestraTasks = {
@@ -42693,6 +42699,11 @@ function orchestraTasks($http) {
     pendingTasks: function pendingTasks() {
       return this.allTasks().filter(function (task) {
         return pendingTask(task);
+      });
+    },
+    pausedTasks: function pausedTasks() {
+      return this.allTasks().filter(function (task) {
+        return pausedTask(task);
       });
     },
     completedTasks: function completedTasks() {
