@@ -46,6 +46,7 @@ export default function teamInfoCard (orchestraApi) {
             }
           })
       }
+
       teamInfoCard.submitTask = (taskId) => {
         orchestraApi.completeAndSkipTask(taskId)
           .then(() => {

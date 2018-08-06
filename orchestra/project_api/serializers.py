@@ -24,6 +24,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             'project_data',
             'team_messages_url',
             'task_class',
+            'status'
         )
 
     workflow_slug = serializers.SerializerMethodField()

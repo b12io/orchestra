@@ -64621,6 +64621,7 @@ function teamInfoCard(orchestraApi) {
           }
         });
       };
+
       teamInfoCard.submitTask = function (taskId) {
         orchestraApi.completeAndSkipTask(taskId).then(function () {
           teamInfoCard.loadTeamInfo();
