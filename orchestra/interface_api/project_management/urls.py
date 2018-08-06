@@ -27,6 +27,10 @@ urlpatterns = [
         views.end_project_api,
         name='end_project'),
 
+    url(r'^set_project_status/$',
+        views.set_project_status_api,
+        name='set_project_status'),
+
     url(r'^project_information/$',
         views.project_information_api,
         name='project_information'),

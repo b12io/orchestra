@@ -7,6 +7,7 @@ from rest_framework import permissions
 
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import WorkerCertificationError
+from orchestra.core.errors import ProjectStatusError
 from orchestra.interface_api.project_management import project_management
 from orchestra.interface_api.project_management.decorators import \
     is_project_admin
@@ -24,6 +25,7 @@ from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.task_lifecycle import complete_and_skip_task
 from orchestra.utils.task_lifecycle import create_subsequent_tasks
 from orchestra.utils.task_lifecycle import end_project
+from orchestra.utils.task_lifecycle import set_project_status
 from orchestra.utils.task_lifecycle import reassign_assignment
 
 
@@ -131,3 +133,17 @@ def end_project_api(request):
         end_project(project_id)
     except Project.DoesNotExist:
         raise BadRequest('Project not found for the given id.')
+
+
+@project_management_api_view
+def set_project_status_api(request):
+    body = load_encoded_json(request.body)
+    project_id = body['project_id']
+    status = body['status']
+    try:
+        set_project_status(project_id, status)
+    except Project.DoesNotExist:
+        raise BadRequest('Project not found for the given id.')
+    except ProjectStatusError as e:
+        raise BadRequest(e)
+    return {'status': status, 'success': True}

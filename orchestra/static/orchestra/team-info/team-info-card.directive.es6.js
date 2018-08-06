@@ -61,6 +61,18 @@ export default function teamInfoCard (orchestraApi) {
           })
       }
 
+      teamInfoCard.togglePauseProject = () => {
+        const newStatus = (teamInfoCard.projectStatus === 'Paused'
+          ? 'Active' : 'Paused')
+
+        orchestraApi.setProjectStatus(teamInfoCard.projectId, newStatus)
+          .then(({data}) => {
+            if (data.success) {
+              teamInfoCard.projectStatus = data.status
+            }
+          })
+      }
+
       teamInfoCard.loadTeamInfo()
     }
   }

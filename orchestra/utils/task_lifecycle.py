@@ -23,6 +23,7 @@ from orchestra.core.errors import ReviewPolicyError
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import TaskDependencyError
 from orchestra.core.errors import TaskStatusError
+from orchestra.core.errors import ProjectStatusError
 from orchestra.core.errors import WorkerCertificationError
 from orchestra.models import Iteration
 from orchestra.models import Project
@@ -1018,6 +1019,35 @@ def end_project(project_id):
         task.status = Task.Status.ABORTED
         task.save()
         notify_status_change(task, assignment_history(task))
+
+
+def set_project_status(project_id, status):
+    """
+    Set the project to the given status. Raise an exception if the status
+    is not a valid project status.
+
+    Args:
+        project_id (int): The ID of the project
+        status (str): The new project status
+
+    Returns:
+        None
+
+    Raises:
+        orchestra.core.errors.ProjectStatusError:
+            The specified new status is not supported.
+    """
+    project = Project.objects.get(id=project_id)
+    status_choices = dict(Project.STATUS_CHOICES)
+    if status == status_choices[Project.Status.PAUSED]:
+        project.status = Project.Status.PAUSED
+    elif status == status_choices[Project.Status.ACTIVE]:
+        project.status = Project.Status.ACTIVE
+    elif status == status_choices[Project.Status.ABORTED]:
+        project.status = Project.Status.ABORTED
+    else:
+        raise ProjectStatusError('Invalid project status.')
+    project.save()
 
 
 def _check_creation_policy(step, project):

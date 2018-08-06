@@ -42539,6 +42539,13 @@ function orchestraApi($http) {
       });
     },
 
+    setProjectStatus: function setProjectStatus(projectId, status) {
+      return $http.post(getApiUrl('set_project_status'), {
+        'project_id': projectId,
+        'status': status
+      });
+    },
+
     endProject: function endProject(projectId) {
       return $http.post(getApiUrl('end_project'), {
         'project_id': projectId
@@ -64560,6 +64567,7 @@ function teamInfoCard(orchestraApi) {
     controller: function controller($scope) {
       var teamInfoCard = $scope.teamInfoCard;
       teamInfoCard.projectId = teamInfoCard.taskAssignment.project.id;
+      teamInfoCard.projectStatus = teamInfoCard.taskAssignment.project.status;
       teamInfoCard.step = teamInfoCard.taskAssignment.step;
       teamInfoCard.isProjectAdmin = teamInfoCard.taskAssignment.is_project_admin;
 
@@ -64631,6 +64639,18 @@ function teamInfoCard(orchestraApi) {
             errorMessage = response.data.message;
           }
           window.alert(errorMessage);
+        });
+      };
+
+      teamInfoCard.togglePauseProject = function () {
+        var newStatus = teamInfoCard.projectStatus === 'Paused' ? 'Active' : 'Paused';
+
+        orchestraApi.setProjectStatus(teamInfoCard.projectId, newStatus).then(function (_ref) {
+          var data = _ref.data;
+
+          if (data.success) {
+            teamInfoCard.projectStatus = data.status;
+          }
         });
       };
 
