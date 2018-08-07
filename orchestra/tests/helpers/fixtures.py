@@ -309,6 +309,7 @@ def setup_models(test_case):
         'reject_rev_proj': 'test_workflow',
         'aborted_project': 'test_workflow',
         'project_to_end': 'test_workflow',
+        'project_to_set_status': 'test_workflow',
         'assignment_policy': 'assignment_policy_workflow',
         'project_management_project': 'test_workflow',
         'staffbot_assignment_policy': 'staffbot_assignment_policy_workflow',
