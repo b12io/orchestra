@@ -100,6 +100,7 @@ class ProjectAPITestCase(OrchestraTestCase):
                 'project_data': {},
                 'team_messages_url': None,
                 'priority': 0,
+                'status': 0
             },
             'tasks': {
                 'step1': {
