@@ -56,8 +56,13 @@ class ProjectSummarySerializer(serializers.ModelSerializer):
             'id',
             'short_description',
             'start_datetime',
+            'status'
         )
 
+    status = serializers.SerializerMethodField()
+
+    def get_status(self, obj):
+        return dict(Project.STATUS_CHOICES)[obj.status]
 
 class TaskSerializer(serializers.ModelSerializer):
 
