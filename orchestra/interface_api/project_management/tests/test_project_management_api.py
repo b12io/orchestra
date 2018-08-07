@@ -275,7 +275,7 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
         response = self.api_client.post(
             reverse((
                 'orchestra:orchestra:project_management:'
-                'test_set_project_status')),
+                'set_project_status')),
             json.dumps({
                 'project_id': project.id,
                 'status': paused_status
