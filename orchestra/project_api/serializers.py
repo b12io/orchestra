@@ -64,6 +64,7 @@ class ProjectSummarySerializer(serializers.ModelSerializer):
     def get_status(self, obj):
         return dict(Project.STATUS_CHOICES)[obj.status]
 
+
 class TaskSerializer(serializers.ModelSerializer):
 
     class Meta:
