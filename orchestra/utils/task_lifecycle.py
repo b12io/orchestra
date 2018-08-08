@@ -1057,12 +1057,12 @@ def set_project_status(project_id, status):
     if status == status_choices[Project.Status.PAUSED]:
         project.status = Project.Status.PAUSED
         slack_message = (
-            'This project is paused.')
+            'This project has been paused.')
         message_experts_slack_group(project.slack_group_id, slack_message)
     elif status == status_choices[Project.Status.ACTIVE]:
         project.status = Project.Status.ACTIVE
         slack_message = (
-            'The project is now active.')
+            'The project has been reactivated.')
         message_experts_slack_group(project.slack_group_id, slack_message)
     elif status == status_choices[Project.Status.ABORTED]:
         project.status = Project.Status.ABORTED
