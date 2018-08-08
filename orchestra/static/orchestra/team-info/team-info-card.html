@@ -12,7 +12,8 @@
           </a>
           <a class="btn"
              ng-if="teamInfoCard.isProjectAdmin &&
-                    (projectStatus === 'Active' || projectStatus === 'Paused')"
+                    (teamInfoCard.projectStatus === 'Active'
+                    || teamInfoCard.projectStatus === 'Paused')"
              ng-click="teamInfoCard.togglePauseProject()">
              {{teamInfoCard.projectStatus == 'Paused' ? 'Unpause' : 'Pause'}} project
           </a>
