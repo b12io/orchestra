@@ -68,7 +68,7 @@ export default function teamInfoCard (orchestraApi) {
         orchestraApi.setProjectStatus(teamInfoCard.projectId, newStatus)
           .then(({data}) => {
             if (data.success) {
-              const changedStatus = data.status === 'Paused' ? 'paused' : 'activated'
+              const changedStatus = data.status === 'Paused' ? 'paused' : 'reactivated'
               window.alert(`The project has been ${changedStatus}.`)
               teamInfoCard.projectStatus = data.status
             }

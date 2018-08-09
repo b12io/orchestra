@@ -38,7 +38,7 @@ export default function dataService ($location, $rootScope, $route, orchestraApi
       orchestraApi.setProjectStatus(this.currentProject.id, status)
         .then(({data}) => {
           if (data.success) {
-            const changedStatus = data.status === 'Paused' ? 'paused' : 'activated'
+            const changedStatus = data.status === 'Paused' ? 'paused' : 'reactivated'
             window.alert(`The project has been ${changedStatus}.`)
             this.currentProject.status = data.status
           }
