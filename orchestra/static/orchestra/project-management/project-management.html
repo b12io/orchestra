@@ -6,38 +6,16 @@
     <div class="container-fluid">
       <div class="row padded">
         <div class="col-lg-12 col-md-12 col-sm-12">
-          <div>
-            <ui-select class="project-description" ng-model="vis.dataService.currentProject"
-                ng-change="vis.dataService.setSelectedProject()"
-                ng-disabled="vis.dataService.loading">
-              <ui-select-match>
-                <span ng-bind="projectDescription($select.selected)"></span>
-              </ui-select-match>
-              <ui-select-choices repeat="item in (vis.dataService.allProjects | toArray | filter: $select.search) track by item.id">
-                <span ng-bind="projectDescription(item)"></span>
-              </ui-select-choices>
-            </ui-select>
-            <div class="btn-group"
-              ng-show="vis.dataService.currentProject.id">
-              <button type="button" class="btn btn-lg dropdown-toggle" data-toggle="dropdown"
-                aria-haspopup="true" aria-expanded="false">
-                {{vis.dataService.currentProject.status}} <span class="caret"></span>
-              </button>
-              <ul class="dropdown-menu">
-                <li>
-                  <a ng-click="vis.dataService.setCurrentProjectStatus('Active')">
-                    Activate project
-                  </a>
-                </li>
-                <li>
-                  <a ng-click="vis.dataService.setCurrentProjectStatus('Paused')">
-                    Pause project
-                  </a>
-                </li>
-                <li><a class="btn-danger" ng-click="vis.endProject()">Abort project</a></li>
-              </ul>
-            </div>
-          </div>
+          <ui-select class="project-description" ng-model="vis.dataService.currentProject"
+              ng-change="vis.dataService.setSelectedProject()"
+              ng-disabled="vis.dataService.loading">
+            <ui-select-match>
+              <span ng-bind="projectDescription($select.selected)"></span>
+            </ui-select-match>
+            <ui-select-choices repeat="item in (vis.dataService.allProjects | toArray | filter: $select.search) track by item.id">
+              <span ng-bind="projectDescription(item)"></span>
+            </ui-select-choices>
+          </ui-select>
           <div class="project-actions" ng-show="vis.dataService.currentProject.id">
             <button type="button" ng-disabled="vis.dataService.loading" ng-click="vis.createSubsequentTasks()" class="btn btn-default">
               Create subsequent tasks
@@ -51,7 +29,14 @@
             <a ng-href="{{vis.dataService.data.project.admin_url}}" ng-disabled="vis.dataService.loading" target="_blank">
               <button type="button" class="btn btn-default">View in admin</button>
             </a>
-
+            <button type="button" class="btn btn-default"
+              ng-show="vis.dataService.currentProject.status === 'Paused'
+                || vis.dataService.currentProject.status === 'Active'"
+              ng-click="vis.dataService.setCurrentProjectStatus(
+                vis.dataService.currentProject.status === 'Paused' ? 'Active' : 'Paused')">
+              {{vis.dataService.currentProject.status === 'Paused' ? 'Activate' : 'Pause'}} project
+            </button>
+            <button ng-click="vis.endProject()" class="btn btn-danger">Abort project</button>
           </div>
         </div>
       </div>
