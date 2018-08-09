@@ -70,10 +70,9 @@ export function orchestraTasks ($http) {
   'ngAnnotate'
   const activeState = (task) => ['just_added', 'in_progress', 'returned'].indexOf(task.state) !== -1
   const pendingState = (task) => ['pending_review', 'pending_processing'].indexOf(task.state) !== -1
-  const pausedState = (task) => task.state === 'paused'
   const activeTask = (task) => activeState(task) && task.should_be_active
   const pendingTask = (task) => (activeState(task) && !task.should_be_active) || pendingState(task)
-  const pausedTask = (task) => pausedState(task)
+  const pausedTask = (task) => task.state === 'paused'
 
   var orchestraTasks = {
     data: null,
