@@ -480,7 +480,10 @@ def tasks_assigned_to_worker(worker):
             worker=worker,
             status=TaskAssignment.Status.SUBMITTED
         )
-        .exclude(task__status=Task.Status.COMPLETE)
+        .exclude(
+            task__status=Task.Status.COMPLETE)
+        .exclude(
+            task__project__status=Project.Status.PAUSED)
         .order_by('-task__project__priority',
                   'task__project__start_datetime'))
 
@@ -493,8 +496,6 @@ def tasks_assigned_to_worker(worker):
                     status=TaskAssignment.Status.PROCESSING,
                     task__id=task_assignment.task.id,
                     assignment_counter__lt=task_assignment.assignment_counter)
-                .exclude(
-                    task__project__status=Project.Status.PAUSED)
                 .exists()):
             inactive_processing_task_assignments.append(task_assignment)
         else:
