@@ -1,4 +1,5 @@
 import template from './tasktable.html'
+import './tasktable.scss'
 import moment from 'moment-timezone'
 
 export default function tasktable () {
@@ -8,7 +9,8 @@ export default function tasktable () {
     template,
     restrict: 'A',
     scope: {
-      tasktable: '='
+      tasktable: '=',
+      collapsed: '=?'
     },
     controllerAs: 'vm',
     bindToController: true,
@@ -26,6 +28,10 @@ export default function tasktable () {
 
       vm.isInDanger = (task) => {
         return moment.isBeforeNowBy(task.next_todo_dict.due_datetime, 0, 'days')
+      }
+
+      vm.toggleCollapsed = () => {
+        vm.collapsed = !vm.collapsed
       }
 
       vm.newTask = function (taskType) {

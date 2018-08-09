@@ -55718,6 +55718,8 @@ var _tasktable = __webpack_require__(161);
 
 var _tasktable2 = _interopRequireDefault(_tasktable);
 
+__webpack_require__(255);
+
 var _momentTimezone = __webpack_require__(1);
 
 var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
@@ -55731,7 +55733,8 @@ function tasktable() {
     template: _tasktable2.default,
     restrict: 'A',
     scope: {
-      tasktable: '='
+      tasktable: '=',
+      collapsed: '=?'
     },
     controllerAs: 'vm',
     bindToController: true,
@@ -55751,6 +55754,10 @@ function tasktable() {
 
       vm.isInDanger = function (task) {
         return _momentTimezone2.default.isBeforeNowBy(task.next_todo_dict.due_datetime, 0, 'days');
+      };
+
+      vm.toggleCollapsed = function () {
+        vm.collapsed = !vm.collapsed;
       };
 
       vm.newTask = function (taskType) {
@@ -55784,7 +55791,7 @@ function tasktable() {
 /* 161 */
 /***/ (function(module, exports) {
 
-module.exports = "<section class=\"section-panel tasks-section\"\n         st-table=\"displayedTasks\"\n         st-safe-src=\"vm.tasktable.tasks\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-10\">\n        <h3>\n          {{vm.tasktable.label}} ({{ vm.tasktable.tasks.length || 0 }})\n          <button type=\"button\"\n                    ng-if=\"vm.enableNewTaskButtons\"\n                    ng-click=\"vm.newTask('entry_level')\"\n                    ng-class=\"{'disabled': vm.orchestraTasks.preventNew ||\n                                           vm.noTaskTimer}\"\n                    class=\"btn btn-primary btn-new-entry-task\">\n              New delivery task\n            </button>\n            <button type=\"button\"\n                    ng-if=\"vm.orchestraTasks.reviewerStatus &&\n                           vm.enableNewTaskButtons\"\n                    ng-click=\"vm.newTask('reviewer')\"\n                    ng-class=\"{'disabled': vm.orchestraTasks.preventNew ||\n                                           vm.noTaskTimer}\"\n                    class=\"btn btn-primary btn-new-review-task\">\n              New review task\n            </button>\n            <span class=\"warning-message\"\n                  ng-show=\"vm.newTaskError && !vm.orchestraTasks.preventNew\">\n              No tasks available at the moment\n            </span>\n            <i class=\"fa fa-spinner fa-spin\" ng-show=\"vm.waiting\"></i>\n        </h3>\n\n      </div>\n      <div class=\"tasks-search-bar-container col-lg-2\">\n        <div class=\"tasks-search-bar\">\n          <i class=\"fa fa-search\"></i>\n          <input st-search=\"\" placeholder=\"Search...\" type=\"text\"/>\n        </div>\n      </div>\n    </div>\n    <div class=\"row\">\n          <table ng-if=\"vm.tasktable.tasks.length > 0\"\n                 class=\"table table-striped\">\n            <thead>\n              <tr>\n                <th st-sort=\"assignment_start_datetime\">Task assigned</th>\n                <th st-sort=\"project\">Project</th>\n                <th st-sort=\"step\">Task</th>\n                <th st-sort=\"detail\">Details</th>\n                <th st-sort=\"next_todo_dict.description\">Next steps</th>\n                <th st-sort=\"next_todo_dict.start_by_datetime\">Start by</th>\n                <th st-sort=\"next_todo_dict.due_datetime\">Due on</th>\n              </tr>\n            </thead>\n            <tbody>\n              \n              <tr\n                 ng-class=\"{'task-row':true, 'danger': vm.isInDanger(task)}\"\n                 ng-repeat=\"task in displayedTasks\"\n                 ng-click=\"vm.openTask(task)\">\n                <td><datetime-display datetime=\"task.assignment_start_datetime\" custom-format=\"'MM/DD/YYYY'\" /></td>\n                <td>{{task.project}}</td>\n                <td>{{task.step}}</td>\n                <td>{{task.detail|limitTo:50}}{{task.detail.length > 50 ? '...' : ''}}</td>\n                <td>{{task.next_todo_dict.description|limitTo:50}}{{task.next_todo_dict.description.length > 50 ? '...' : ''}}</td>\n                <td><datetime-display datetime=\"task.next_todo_dict.start_by_datetime\" show-time=\"false\" /></td>\n                <td><datetime-display datetime=\"task.next_todo_dict.due_datetime\" show-time=\"false\" /></td>\n              </tr>\n            </tbody>\n          </table>\n    </div>\n  </div>\n</section>\n";
+module.exports = "<section class=\"section-panel tasks-section\"\n         st-table=\"displayedTasks\"\n         st-safe-src=\"vm.tasktable.tasks\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-10\">\n        <h3>\n          <span class=\"collapsed-toggle\" ng-click=\"vm.toggleCollapsed()\">\n            <i ng-show=\"!vm.collapsed\" class=\"fa fa-angle-up\"></i>\n            <i ng-show=\"vm.collapsed\" class=\"fa fa-angle-down\"></i>\n          </span>\n          {{vm.tasktable.label}} ({{ vm.tasktable.tasks.length || 0 }})\n          <button type=\"button\"\n                    ng-if=\"vm.enableNewTaskButtons\"\n                    ng-click=\"vm.newTask('entry_level')\"\n                    ng-class=\"{'disabled': vm.orchestraTasks.preventNew ||\n                                           vm.noTaskTimer}\"\n                    class=\"btn btn-primary btn-new-entry-task\">\n              New delivery task\n            </button>\n            <button type=\"button\"\n                    ng-if=\"vm.orchestraTasks.reviewerStatus &&\n                           vm.enableNewTaskButtons\"\n                    ng-click=\"vm.newTask('reviewer')\"\n                    ng-class=\"{'disabled': vm.orchestraTasks.preventNew ||\n                                           vm.noTaskTimer}\"\n                    class=\"btn btn-primary btn-new-review-task\">\n              New review task\n            </button>\n            <span class=\"warning-message\"\n                  ng-show=\"vm.newTaskError && !vm.orchestraTasks.preventNew\">\n              No tasks available at the moment\n            </span>\n            <i class=\"fa fa-spinner fa-spin\" ng-show=\"vm.waiting\"></i>\n        </h3>\n\n      </div>\n      <div class=\"tasks-search-bar-container col-lg-2\">\n        <div class=\"tasks-search-bar\">\n          <i class=\"fa fa-search\"></i>\n          <input st-search=\"\" placeholder=\"Search...\" type=\"text\"/>\n        </div>\n      </div>\n    </div>\n    <div class=\"row\" ng-show=\"!vm.collapsed\">\n          <table ng-if=\"vm.tasktable.tasks.length > 0\"\n                 class=\"table table-striped\">\n            <thead>\n              <tr>\n                <th st-sort=\"assignment_start_datetime\">Task assigned</th>\n                <th st-sort=\"project\">Project</th>\n                <th st-sort=\"step\">Task</th>\n                <th st-sort=\"detail\">Details</th>\n                <th st-sort=\"next_todo_dict.description\">Next steps</th>\n                <th st-sort=\"next_todo_dict.start_by_datetime\">Start by</th>\n                <th st-sort=\"next_todo_dict.due_datetime\">Due on</th>\n              </tr>\n            </thead>\n            <tbody>\n\n              <tr\n                 ng-class=\"{'task-row':true, 'danger': vm.isInDanger(task)}\"\n                 ng-repeat=\"task in displayedTasks\"\n                 ng-click=\"vm.openTask(task)\">\n                <td><datetime-display datetime=\"task.assignment_start_datetime\" custom-format=\"'MM/DD/YYYY'\" /></td>\n                <td>{{task.project}}</td>\n                <td>{{task.step}}</td>\n                <td>{{task.detail|limitTo:50}}{{task.detail.length > 50 ? '...' : ''}}</td>\n                <td>{{task.next_todo_dict.description|limitTo:50}}{{task.next_todo_dict.description.length > 50 ? '...' : ''}}</td>\n                <td><datetime-display datetime=\"task.next_todo_dict.start_by_datetime\" show-time=\"false\" /></td>\n                <td><datetime-display datetime=\"task.next_todo_dict.due_datetime\" show-time=\"false\" /></td>\n              </tr>\n            </tbody>\n          </table>\n    </div>\n  </div>\n</section>\n";
 
 /***/ }),
 /* 162 */
@@ -64754,7 +64761,7 @@ function config($locationProvider, $routeProvider) {
 /* 231 */
 /***/ (function(module, exports) {
 
-module.exports = "<section class=\"wrapper\">\n  <div tasktable=\"{label: 'Active', tasks: vm.orchestraTasks.activeTasks(), newTasks: true}\"></div>\n  <div tasktable=\"{label: 'Pending', tasks: vm.orchestraTasks.pendingTasks()}\"></div>\n  <div tasktable=\"{label: 'Paused', tasks: vm.orchestraTasks.pausedTasks()}\"></div>\n  <div tasktable=\"{label: 'Completed', tasks: vm.orchestraTasks.completedTasks()}\"></div>\n</section>\n";
+module.exports = "<section class=\"wrapper\">\n  <div tasktable=\"{label: 'Active', tasks: vm.orchestraTasks.activeTasks(), newTasks: true}\"></div>\n  <div tasktable=\"{label: 'Pending', tasks: vm.orchestraTasks.pendingTasks()}\"></div>\n  <div tasktable=\"{label: 'Paused', tasks: vm.orchestraTasks.pausedTasks()}\"\n    collapsed=\"true\"></div>\n  <div tasktable=\"{label: 'Completed', tasks: vm.orchestraTasks.completedTasks()}\" collapsed=\"true\"></div>\n</section>\n";
 
 /***/ }),
 /* 232 */
@@ -64773,6 +64780,32 @@ module.exports = "<div class=\"timecard-view\" ng-if=\"!vm.dataLoading\">\n  <di
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"project-management\">\n  <div class=\"overlay\" ng-if=\"vis.dataService.loading\">\n    <div class=\"spinner\"></div>\n  </div>\n  <section class=\"section-panel\">\n    <div class=\"container-fluid\">\n      <div class=\"row padded\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <ui-select class=\"project-description\" ng-model=\"vis.dataService.currentProject\"\n              ng-change=\"vis.dataService.setSelectedProject()\"\n              ng-disabled=\"vis.dataService.loading\">\n            <ui-select-match>\n              <span ng-bind=\"projectDescription($select.selected)\"></span>\n            </ui-select-match>\n            <ui-select-choices repeat=\"item in (vis.dataService.allProjects | toArray | filter: $select.search) track by item.id\">\n              <span ng-bind=\"projectDescription(item)\"></span>\n            </ui-select-choices>\n          </ui-select>\n          <div class=\"project-actions\" ng-show=\"vis.dataService.currentProject.id\">\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.createSubsequentTasks()\" class=\"btn btn-default\">\n              Create subsequent tasks\n            </button>\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.showSlackActions()\" class=\"btn btn-default\">\n              Edit Slack users\n            </button>\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.showProjectData()\" class=\"btn btn-default\">\n              View project data\n            </button>\n            <a ng-href=\"{{vis.dataService.data.project.admin_url}}\" ng-disabled=\"vis.dataService.loading\" target=\"_blank\">\n              <button type=\"button\" class=\"btn btn-default\">View in admin</button>\n            </a>\n            <button type=\"button\" class=\"btn btn-default\"\n              ng-show=\"vis.dataService.currentProject.status === 'Paused'\n                || vis.dataService.currentProject.status === 'Active'\"\n              ng-click=\"vis.dataService.setCurrentProjectStatus(\n                vis.dataService.currentProject.status === 'Paused' ? 'Active' : 'Paused')\">\n              {{vis.dataService.currentProject.status === 'Paused' ? 'Unpause' : 'Pause'}} project\n            </button>\n            <button ng-click=\"vis.endProject()\" class=\"btn btn-danger\">Abort project</button>\n          </div>\n        </div>\n      </div>\n      <div class=\"row\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <div class=\"vis-wrapper\" ng-show=\"vis.dataService.currentProject.id\">\n            <div class=\"freeze-pane-left\">\n              <div class=\"scale-buttons\">\n                <button ng-click=\"vis.axis.relativeTime = !vis.axis.relativeTime; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  Switch to {{vis.axis.relativeTime ? 'local' : 'relative'}} time\n                </button>\n                <button ng-click=\"vis.params.scaleWidth = vis.params.scaleWidth / 1.1; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  -\n                </button>\n                <button ng-click=\"vis.params.scaleWidth = vis.params.scaleWidth * 1.1; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  +\n                </button>\n              </div>\n              <div class=\"task-names\"></div>\n            </div>\n            <div class=\"svg-wrapper\"></div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n</div>\n";
+
+/***/ }),
+/* 235 */,
+/* 236 */,
+/* 237 */,
+/* 238 */,
+/* 239 */,
+/* 240 */,
+/* 241 */,
+/* 242 */,
+/* 243 */,
+/* 244 */,
+/* 245 */,
+/* 246 */,
+/* 247 */,
+/* 248 */,
+/* 249 */,
+/* 250 */,
+/* 251 */,
+/* 252 */,
+/* 253 */,
+/* 254 */,
+/* 255 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
 
 /***/ })
 /******/ ]);

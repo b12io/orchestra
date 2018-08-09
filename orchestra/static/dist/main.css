@@ -1381,6 +1381,8 @@ li.checklist-item, .new-item {
 .website-iframe {
   width: 100%;
   border: 1px solid #cccccc; }
+.collapsed-toggle {
+  cursor: pointer; }
 /**
  * Common stylesheet for Orchestra.
  *
