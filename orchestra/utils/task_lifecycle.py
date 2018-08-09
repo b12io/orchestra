@@ -32,7 +32,7 @@ from orchestra.models import TaskAssignment
 from orchestra.models import Worker
 from orchestra.models import WorkerCertification
 from orchestra.utils.notifications import notify_status_change
-from orchestra.utils.notifications import message_experts_slack_group
+from orchestra.utils.notifications import notify_project_status_change
 from orchestra.utils.task_properties import assignment_history
 from orchestra.utils.task_properties import current_assignment
 from orchestra.utils.task_properties import get_latest_iteration
@@ -1059,12 +1059,12 @@ def set_project_status(project_id, status):
         project.status = Project.Status.PAUSED
         slack_message = (
             'This project has been paused.')
-        message_experts_slack_group(project.slack_group_id, slack_message)
+        notify_project_status_change(project)
     elif status == status_choices[Project.Status.ACTIVE]:
         project.status = Project.Status.ACTIVE
         slack_message = (
             'The project has been reactivated.')
-        message_experts_slack_group(project.slack_group_id, slack_message)
+        notify_project_status_change(project)
     elif status == status_choices[Project.Status.ABORTED]:
         raise ProjectStatusError('Try aborting the project with set_project_status. Use end_project instead.')
     else:

@@ -7,6 +7,7 @@ from orchestra.communication.mail import send_mail
 from orchestra.communication.slack import OrchestraSlackService
 from orchestra.models import CommunicationPreference
 from orchestra.models import Task
+from orchestra.models import Project
 from orchestra.utils.decorators import run_if
 from orchestra.utils.task_properties import assignment_history
 from orchestra.utils.task_properties import current_assignment
@@ -96,6 +97,32 @@ def notify_status_change(task, previous_status=None):
                   communication_type=comm_type,
                   fail_silently=True,
                   **message_info)
+
+
+def notify_project_status_change(project, previous_status=None):
+    extra_explanation = ''
+    if project.status == Project.Status.PAUSED:
+        status_text = 'paused'
+        extra_explanation = (
+            'All activities will be put on hold until '
+            'the project is reactivated.')
+    elif project.status == Project.Status.ACTIVE:
+        status_text = 'reactivated'
+    elif project.status == Project.Status.ABORTED:
+        status_text = 'aborted'
+    else:
+        return
+    slack_message = (
+        '*Project {} | {} has been {}.*\n'
+        '{}'
+        ).format(
+            project.workflow_version.slug,
+            project.short_description,
+            status_text,
+            extra_explanation)
+    message_internal_slack_group(
+        settings.SLACK_INTERNAL_NOTIFICATION_CHANNEL, slack_message)
+    message_experts_slack_group(project.slack_group_id, slack_message)
 
 
 def _task_information(task, with_slack_link=True):
