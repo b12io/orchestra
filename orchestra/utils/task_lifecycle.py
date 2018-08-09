@@ -1057,16 +1057,14 @@ def set_project_status(project_id, status):
     status_choices = dict(Project.STATUS_CHOICES)
     if status == status_choices[Project.Status.PAUSED]:
         project.status = Project.Status.PAUSED
-        slack_message = (
-            'This project has been paused.')
         notify_project_status_change(project)
     elif status == status_choices[Project.Status.ACTIVE]:
         project.status = Project.Status.ACTIVE
-        slack_message = (
-            'The project has been reactivated.')
         notify_project_status_change(project)
     elif status == status_choices[Project.Status.ABORTED]:
-        raise ProjectStatusError('Try aborting the project with set_project_status. Use end_project instead.')
+        raise ProjectStatusError((
+            'Try aborting the project with set_project_status. '
+            'Use end_project instead.'))
     else:
         raise ProjectStatusError('Invalid project status.')
     project.save()
