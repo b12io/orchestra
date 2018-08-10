@@ -3,9 +3,9 @@
          st-safe-src="vm.tasktable.tasks">
   <div class="container-fluid">
     <div class="row section-header">
-      <div class="col-lg-10">
+      <div class="col-lg-10 collapsed-toggle" ng-click="vm.toggleCollapsed()">
         <h3>
-          <span class="collapsed-toggle" ng-click="vm.toggleCollapsed()">
+          <span>
             <i ng-show="!vm.collapsed" class="fa fa-angle-up"></i>
             <i ng-show="vm.collapsed" class="fa fa-angle-down"></i>
           </span>
