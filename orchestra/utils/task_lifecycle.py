@@ -1035,7 +1035,7 @@ def end_project(project_id):
         task.status = Task.Status.ABORTED
         task.save()
         notify_status_change(task, assignment_history(task))
-
+        notify_project_status_change(project)
 
 def set_project_status(project_id, status):
     """

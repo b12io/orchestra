@@ -122,7 +122,8 @@ def notify_project_status_change(project):
             extra_explanation)
     message_internal_slack_group(
         settings.SLACK_INTERNAL_NOTIFICATION_CHANNEL, slack_message)
-    message_experts_slack_group(project.slack_group_id, slack_message)
+    if project.slack_group_id:
+        message_experts_slack_group(project.slack_group_id, slack_message)
 
 
 def _task_information(task, with_slack_link=True):
