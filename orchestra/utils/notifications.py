@@ -99,7 +99,7 @@ def notify_status_change(task, previous_status=None):
                   **message_info)
 
 
-def notify_project_status_change(project, previous_status=None):
+def notify_project_status_change(project):
     extra_explanation = ''
     if project.status == Project.Status.PAUSED:
         status_text = 'paused'
