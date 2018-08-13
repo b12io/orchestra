@@ -4,6 +4,7 @@ from django.test import override_settings
 
 from orchestra.models import Step
 from orchestra.models import Task
+from orchestra.models import Project
 from orchestra.models import TaskAssignment
 from orchestra.tests.helpers import OrchestraTransactionTestCase
 from orchestra.tests.helpers.fixtures import setup_models
@@ -507,6 +508,8 @@ class DashboardTestCase(OrchestraTransactionTestCase):
             'project': {'details': project_description,
                         'id': task.project.id,
                         'project_data': {},
+                        'status': dict(
+                            Project.STATUS_CHOICES)[task.project.status],
                         'team_messages_url': None},
             'status': assignment_status,
             'task': {'data': task_data, 'status': task_status},

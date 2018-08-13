@@ -10,6 +10,13 @@
              target="_blank">
             Project Management
           </a>
+          <a class="btn"
+             ng-if="teamInfoCard.isProjectAdmin &&
+                    (teamInfoCard.projectStatus === 'Active'
+                    || teamInfoCard.projectStatus === 'Paused')"
+             ng-click="teamInfoCard.togglePauseProject()">
+             {{teamInfoCard.projectStatus == 'Paused' ? 'Unpause' : 'Pause'}} project
+          </a>
         </h3>
       </div>
     </div>

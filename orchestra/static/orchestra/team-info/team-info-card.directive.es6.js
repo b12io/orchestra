@@ -15,6 +15,7 @@ export default function teamInfoCard (orchestraApi) {
     controller: ($scope) => {
       const teamInfoCard = $scope.teamInfoCard
       teamInfoCard.projectId = teamInfoCard.taskAssignment.project.id
+      teamInfoCard.projectStatus = teamInfoCard.taskAssignment.project.status
       teamInfoCard.step = teamInfoCard.taskAssignment.step
       teamInfoCard.isProjectAdmin = teamInfoCard.taskAssignment.is_project_admin
 
@@ -46,6 +47,7 @@ export default function teamInfoCard (orchestraApi) {
             }
           })
       }
+
       teamInfoCard.submitTask = (taskId) => {
         orchestraApi.completeAndSkipTask(taskId)
           .then(() => {
@@ -56,6 +58,20 @@ export default function teamInfoCard (orchestraApi) {
               errorMessage = response.data.message
             }
             window.alert(errorMessage)
+          })
+      }
+
+      teamInfoCard.togglePauseProject = () => {
+        const newStatus = (teamInfoCard.projectStatus === 'Paused'
+          ? 'Active' : 'Paused')
+
+        orchestraApi.setProjectStatus(teamInfoCard.projectId, newStatus)
+          .then(({data}) => {
+            if (data.success) {
+              const changedStatus = data.status === 'Paused' ? 'paused' : 'reactivated'
+              window.alert(`The project has been ${changedStatus}.`)
+              teamInfoCard.projectStatus = data.status
+            }
           })
       }
 

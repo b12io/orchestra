@@ -29,6 +29,13 @@
             <a ng-href="{{vis.dataService.data.project.admin_url}}" ng-disabled="vis.dataService.loading" target="_blank">
               <button type="button" class="btn btn-default">View in admin</button>
             </a>
+            <button type="button" class="btn btn-default"
+              ng-show="vis.dataService.currentProject.status === 'Paused'
+                || vis.dataService.currentProject.status === 'Active'"
+              ng-click="vis.dataService.setCurrentProjectStatus(
+                vis.dataService.currentProject.status === 'Paused' ? 'Active' : 'Paused')">
+              {{vis.dataService.currentProject.status === 'Paused' ? 'Unpause' : 'Pause'}} project
+            </button>
             <button ng-click="vis.endProject()" class="btn btn-danger">Abort project</button>
           </div>
         </div>

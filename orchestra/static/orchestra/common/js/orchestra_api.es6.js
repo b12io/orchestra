@@ -59,6 +59,13 @@ export default function orchestraApi ($http) {
       })
     },
 
+    setProjectStatus: function (projectId, status) {
+      return $http.post(getApiUrl('set_project_status'), {
+        'project_id': projectId,
+        'status': status
+      })
+    },
+
     endProject: function (projectId) {
       return $http.post(getApiUrl('end_project'), {
         'project_id': projectId

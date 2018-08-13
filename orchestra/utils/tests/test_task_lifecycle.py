@@ -321,6 +321,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
             'project': {'details': task.project.short_description,
                         'id': task.project.id,
                         'project_data': {},
+                        'status': 'Active',
                         'team_messages_url': None},
             'workflow': {'slug': 'w1',
                          'name': 'Workflow One'},

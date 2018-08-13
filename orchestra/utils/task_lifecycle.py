@@ -23,6 +23,7 @@ from orchestra.core.errors import ReviewPolicyError
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import TaskDependencyError
 from orchestra.core.errors import TaskStatusError
+from orchestra.core.errors import ProjectStatusError
 from orchestra.core.errors import WorkerCertificationError
 from orchestra.models import Iteration
 from orchestra.models import Project
@@ -31,6 +32,7 @@ from orchestra.models import TaskAssignment
 from orchestra.models import Worker
 from orchestra.models import WorkerCertification
 from orchestra.utils.notifications import notify_status_change
+from orchestra.utils.notifications import notify_project_status_change
 from orchestra.utils.task_properties import assignment_history
 from orchestra.utils.task_properties import current_assignment
 from orchestra.utils.task_properties import get_latest_iteration
@@ -367,7 +369,8 @@ def get_task_details(task_id):
             'id': project.id,
             'details': project.short_description,
             'team_messages_url': project.team_messages_url,
-            'project_data': project.project_data
+            'project_data': project.project_data,
+            'status': dict(Project.STATUS_CHOICES)[project.status]
         },
         'prerequisites': prerequisites
     }
@@ -466,6 +469,8 @@ def tasks_assigned_to_worker(worker):
         .filter(
             worker=worker,
             status=TaskAssignment.Status.PROCESSING)
+        .exclude(
+            task__project__status=Project.Status.PAUSED)
         .order_by('-task__project__priority',
                   'task__project__start_datetime'))
 
@@ -475,7 +480,10 @@ def tasks_assigned_to_worker(worker):
             worker=worker,
             status=TaskAssignment.Status.SUBMITTED
         )
-        .exclude(task__status=Task.Status.COMPLETE)
+        .exclude(
+            task__status=Task.Status.COMPLETE)
+        .exclude(
+            task__project__status=Project.Status.PAUSED)
         .order_by('-task__project__priority',
                   'task__project__start_datetime'))
 
@@ -502,6 +510,15 @@ def tasks_assigned_to_worker(worker):
         .order_by('-task__project__priority',
                   '-task__project__start_datetime')[:200])
 
+    paused_task_assignments = (
+        valid_task_assignments
+        .filter(
+            worker=worker,
+            status=TaskAssignment.Status.PROCESSING,
+            task__project__status=Project.Status.PAUSED)
+        .order_by('-task__project__priority',
+                  'task__project__start_datetime'))
+
     task_assignments_overview = {
         'returned': (
             active_task_assignments
@@ -511,6 +528,7 @@ def tasks_assigned_to_worker(worker):
             .exclude(task__status=Task.Status.POST_REVIEW_PROCESSING)),
         'pending_review': inactive_review_task_assignments,
         'pending_processing': inactive_processing_task_assignments,
+        'paused': paused_task_assignments,
         'complete': complete_task_assignments}
 
     tasks_assigned = []
@@ -1017,6 +1035,40 @@ def end_project(project_id):
         task.status = Task.Status.ABORTED
         task.save()
         notify_status_change(task, assignment_history(task))
+        notify_project_status_change(project)
+
+
+def set_project_status(project_id, status):
+    """
+    Set the project to the given status. Raise an exception if the status
+    is not a valid project status.
+
+    Args:
+        project_id (int): The ID of the project
+        status (str): The new project status
+
+    Returns:
+        None
+
+    Raises:
+        orchestra.core.errors.ProjectStatusError:
+            The specified new status is not supported.
+    """
+    project = Project.objects.get(id=project_id)
+    status_choices = dict(Project.STATUS_CHOICES)
+    if status == status_choices[Project.Status.PAUSED]:
+        project.status = Project.Status.PAUSED
+        notify_project_status_change(project)
+    elif status == status_choices[Project.Status.ACTIVE]:
+        project.status = Project.Status.ACTIVE
+        notify_project_status_change(project)
+    elif status == status_choices[Project.Status.ABORTED]:
+        raise ProjectStatusError((
+            'Try aborting the project with set_project_status. '
+            'Use end_project instead.'))
+    else:
+        raise ProjectStatusError('Invalid project status.')
+    project.save()
 
 
 def _check_creation_policy(step, project):

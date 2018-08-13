@@ -24,6 +24,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             'project_data',
             'team_messages_url',
             'task_class',
+            'status'
         )
 
     workflow_slug = serializers.SerializerMethodField()
@@ -55,7 +56,13 @@ class ProjectSummarySerializer(serializers.ModelSerializer):
             'id',
             'short_description',
             'start_datetime',
+            'status'
         )
+
+    status = serializers.SerializerMethodField()
+
+    def get_status(self, obj):
+        return dict(Project.STATUS_CHOICES)[obj.status]
 
 
 class TaskSerializer(serializers.ModelSerializer):

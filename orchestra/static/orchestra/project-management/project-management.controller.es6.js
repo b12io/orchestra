@@ -17,5 +17,6 @@ export default function ProjectManagementController ($route, $routeParams, $scop
     }
     return project.short_description + ' (' + moment(project.start_datetime).format('YYYY-MM-DD HH:mm') + ')'
   }
+
   $scope.activate()
 }

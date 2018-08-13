@@ -10,7 +10,7 @@ export default function dataService ($location, $rootScope, $route, orchestraApi
   var _now = new Date()
 
   var service = {
-    currentProject: {short_description: 'Select project to display', id: null},
+    currentProject: {short_description: 'Select project to display', id: null, status: null},
     dataReady: null,
     allProjects: {},
     resetData: function (projectId) {
@@ -33,6 +33,16 @@ export default function dataService ($location, $rootScope, $route, orchestraApi
       $route.updateParams({projectId: this.currentProject.id})
       this.resetData()
       return this.updateData()
+    },
+    setCurrentProjectStatus: function (status) {
+      orchestraApi.setProjectStatus(this.currentProject.id, status)
+        .then(({data}) => {
+          if (data.success) {
+            const changedStatus = data.status === 'Paused' ? 'paused' : 'reactivated'
+            window.alert(`The project has been ${changedStatus}.`)
+            this.currentProject.status = data.status
+          }
+        })
     },
     changeProject: function (projectId) {
       this.ready.then(function () {

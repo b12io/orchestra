@@ -6,11 +6,13 @@ from django.test import override_settings
 from orchestra.communication.slack import _project_slack_group_name
 from orchestra.models import Iteration
 from orchestra.models import Task
+from orchestra.models import Project
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import TaskFactory
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.task_lifecycle import end_project
+from orchestra.utils.task_lifecycle import set_project_status
 from orchestra.utils.task_lifecycle import submit_task
 
 
@@ -205,6 +207,28 @@ class BasicNotificationsTestCase(OrchestraTestCase):
         self.assertEqual(len(internal_slack_messages), 0)
         self.assertEqual(len(experts_slack_messages), 0)
 
+        # Pause the project
+        status_choices = dict(Project.STATUS_CHOICES)
+        paused_status = status_choices[Project.Status.PAUSED]
+
+        set_project_status(task.project.id, paused_status)
+        task.project.refresh_from_db()
+        _validate_slack_messages('has been paused.')
+        self.assertEqual(len(internal_slack_messages), 0)
+        self.assertEqual(len(experts_slack_messages), 0)
+
+        self.assertEqual(task.project.status, Project.Status.PAUSED)
+
+        # Unpause the project
+        active_status = status_choices[Project.Status.ACTIVE]
+        set_project_status(task.project.id, active_status)
+        task.project.refresh_from_db()
+        _validate_slack_messages('has been reactivated.')
+        self.assertEqual(len(internal_slack_messages), 0)
+        self.assertEqual(len(experts_slack_messages), 0)
+
+        self.assertEqual(task.project.status, Project.Status.ACTIVE)
+
         # End project
         end_project(task.project.id)
         task = Task.objects.get(id=task.id)
@@ -221,6 +245,11 @@ class BasicNotificationsTestCase(OrchestraTestCase):
         self.mail.clear()
 
         for task in project.tasks.all():
+            _validate_slack_messages((
+                '*Project {} | {} has been aborted.*\n'
+                ).format(
+                    task.project.workflow_version.slug,
+                    task.project.short_description))
             _validate_slack_messages('Task has been aborted.')
         self.assertEqual(len(internal_slack_messages), 0)
         self.assertEqual(len(experts_slack_messages), 0)
