@@ -245,6 +245,11 @@ class BasicNotificationsTestCase(OrchestraTestCase):
         self.mail.clear()
 
         for task in project.tasks.all():
+            _validate_slack_messages((
+                '*Project {} | {} has been aborted.*\n'
+                ).format(
+                    task.project.workflow_version.slug,
+                    task.project.short_description))
             _validate_slack_messages('Task has been aborted.')
         self.assertEqual(len(internal_slack_messages), 0)
         self.assertEqual(len(experts_slack_messages), 0)
