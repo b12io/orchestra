@@ -268,6 +268,37 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
         for task in Task.objects.filter(project=project):
             self.assertEqual(task.status, Task.Status.ABORTED)
 
+    def test_set_project_status_api(self):
+        project = self.projects['project_to_set_status']
+        status_choices = dict(Project.STATUS_CHOICES)
+        paused_status = status_choices[Project.Status.PAUSED]
+        active_status = status_choices[Project.Status.ACTIVE]
+        response = self.api_client.post(
+            reverse((
+                'orchestra:orchestra:project_management:'
+                'set_project_status')),
+            json.dumps({
+                'project_id': project.id,
+                'status': paused_status
+            }),
+            content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        project.refresh_from_db()
+        self.assertEqual(project.status, Project.Status.PAUSED)
+
+        response = self.api_client.post(
+            reverse((
+                'orchestra:orchestra:project_management:'
+                'set_project_status')),
+            json.dumps({
+                'project_id': project.id,
+                'status': active_status
+            }),
+            content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        project.refresh_from_db()
+        self.assertEqual(project.status, Project.Status.ACTIVE)
+
     def test_invalid_revert_aborted_task(self):
         task = setup_complete_task(self)
         task.status = Task.Status.ABORTED
