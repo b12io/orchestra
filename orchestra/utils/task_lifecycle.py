@@ -1037,6 +1037,7 @@ def end_project(project_id):
         notify_status_change(task, assignment_history(task))
         notify_project_status_change(project)
 
+
 def set_project_status(project_id, status):
     """
     Set the project to the given status. Raise an exception if the status
