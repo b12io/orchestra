@@ -1150,6 +1150,9 @@ def schedule_machine_tasks(project, steps):
         machine_step_scheduler.schedule(project.id, step.slug)
 
 
+def archive_slack_channel(project):
+    pass
+
 # TODO(kkamalov): make a periodic job that runs this function periodically
 @transaction.atomic
 def create_subsequent_tasks(project):
@@ -1173,6 +1176,12 @@ def create_subsequent_tasks(project):
                                           project=project)
     completed_step_slugs = set(completed_tasks.values_list('step__slug',
                                                            flat=True))
+
+    if len(completed_step_slugs) == len(all_steps):
+        if project.status != Project.Status.COMPLETED:
+            set_project_status(project.id, Project.Status.COMPLETED)
+            archive_slack_channel(project)
+        return
 
     machine_tasks_to_schedule = []
     for step in all_steps:
