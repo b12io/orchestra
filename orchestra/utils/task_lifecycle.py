@@ -13,6 +13,7 @@ from django.utils import timezone
 
 
 from orchestra.communication.slack import add_worker_to_project_team
+from orchestra.communication.slack import archive_project_slack_group
 from orchestra.communication.utils import mark_worker_as_winner
 from orchestra.core.errors import AssignmentPolicyError
 from orchestra.core.errors import CreationPolicyError
@@ -1150,9 +1151,6 @@ def schedule_machine_tasks(project, steps):
         machine_step_scheduler.schedule(project.id, step.slug)
 
 
-def archive_slack_channel(project):
-    pass
-
 # TODO(kkamalov): make a periodic job that runs this function periodically
 @transaction.atomic
 def create_subsequent_tasks(project):
@@ -1180,7 +1178,7 @@ def create_subsequent_tasks(project):
     if len(completed_step_slugs) == len(all_steps):
         if project.status != Project.Status.COMPLETED:
             set_project_status(project.id, Project.Status.COMPLETED)
-            archive_slack_channel(project)
+            archive_project_slack_group(project)
         return
 
     machine_tasks_to_schedule = []

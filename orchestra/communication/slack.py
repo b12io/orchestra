@@ -95,6 +95,21 @@ def create_project_slack_group(project):
     return project.slack_group_id
 
 
+@run_if('ORCHESTRA_SLACK_EXPERTS_ENABLED')
+def archive_project_slack_group(project):
+    """
+    Archive a slack channel of a project
+    """
+    slack = OrchestraSlackService()
+    try:
+        response = slack.channels.archive(project.slack_group_id)
+        is_archived = response.body['ok']
+        if not is_archived:
+            logger.exception(response.body['error'])
+    except SlackError:
+        logger.exception('Slack API Error')
+
+
 def _random_string():
     return ''.join(
         random.choice(string.ascii_lowercase + string.digits)
