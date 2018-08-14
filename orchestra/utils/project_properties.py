@@ -14,14 +14,8 @@ def completed_projects(projects):
     will be easier after @thisisdhaas implements workflows-near-the-db.  It
     would be cleaner to just add a Complete state to Projects at that point.
     """
-    projects = projects.filter(status=Project.Status.ACTIVE)
-    in_progress_projects = (
-        Task.objects.exclude(status=Task.Status.COMPLETE)
-        .values_list('project', flat=True))
-    return (
-        projects.annotate(num_tasks=Count('tasks'))
-        .filter(num_tasks__gt=0)
-        .exclude(id__in=in_progress_projects))
+    projects = projects.filter(status=Project.Status.COMPLETED)
+    return projects
 
 
 def incomplete_projects(projects):
