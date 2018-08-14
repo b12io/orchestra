@@ -43,7 +43,7 @@ class OrchestraSlackService(object):
         if not api_key:
             api_key = settings.SLACK_EXPERTS_API_KEY
         self._service = Slacker(api_key)
-        for attr_name in ('chat', 'groups', 'users', 'channels'):
+        for attr_name in ('chat', 'groups', 'users'):
             setattr(self, attr_name, getattr(self._service, attr_name))
 
 
@@ -102,7 +102,7 @@ def archive_project_slack_group(project):
     """
     slack = OrchestraSlackService()
     try:
-        response = slack.channels.archive(project.slack_group_id)
+        response = slack.groups.archive(project.slack_group_id)
         is_archived = response.body['ok']
         if not is_archived:
             logger.exception(response.body['error'])
