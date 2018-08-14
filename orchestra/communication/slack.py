@@ -43,7 +43,7 @@ class OrchestraSlackService(object):
         if not api_key:
             api_key = settings.SLACK_EXPERTS_API_KEY
         self._service = Slacker(api_key)
-        for attr_name in ('chat', 'groups', 'users'):
+        for attr_name in ('chat', 'groups', 'users', 'channels'):
             setattr(self, attr_name, getattr(self._service, attr_name))
 
 
