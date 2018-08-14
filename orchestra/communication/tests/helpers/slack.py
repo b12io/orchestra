@@ -131,6 +131,11 @@ class Groups(BaseAPI):
             'groups': list(MOCK_SLACK_API_DATA['groups'].values())
         })
 
+    def archive(self, group_id):
+        self._validate_group(group_id=group_id)
+        return self.Response({
+            'ok': True
+        })
 
 class Chat(BaseAPI):
     def post_message(self, group_identifier, text, parse='none'):
