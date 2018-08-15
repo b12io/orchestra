@@ -137,6 +137,7 @@ class Groups(BaseAPI):
             'ok': True
         })
 
+
 class Chat(BaseAPI):
     def post_message(self, group_identifier, text, parse='none'):
         if group_identifier.startswith('#'):
