@@ -14,7 +14,7 @@ def mark_completed_projects(apps, schema_editor):
     Project = apps.get_model('orchestra', 'Project')
     Task = apps.get_model('orchestra', 'Task')
 
-    projects = Project.objects.filter(status=Project.Status.ACTIVE):
+    projects = Project.objects.filter(status=PROJECT_STATUS_ACTIVE)
     in_progress_projects = (
         Task.objects.exclude(status=TASK_STATUS_COMPLETED)
         .values_list('project', flat=True))
@@ -24,7 +24,7 @@ def mark_completed_projects(apps, schema_editor):
         .exclude(id__in=in_progress_projects))
 
     for project in completed_projects:
-        if (project.status == PROJET_STATUS_ACTIVE):
+        if (project.status == PROJECT_STATUS_ACTIVE):
             project.status = PROJECT_STATUS_COMPLETED
             project.save()
 

@@ -1203,7 +1203,10 @@ def create_subsequent_tasks(project):
         connection.on_commit(lambda: schedule_machine_tasks(
             project, machine_tasks_to_schedule))
 
-    if len(completed_step_slugs) == all_steps.count():
+    incomplete_tasks = (Task.objects.filter(project=project)
+                        .exclude(Task.Status.COMPLETE))
+
+    if incomplete_tasks.count() == 0:
         if project.status != Project.Status.COMPLETED:
             set_project_status(project.id, 'Completed')
             archive_project_slack_group(project)

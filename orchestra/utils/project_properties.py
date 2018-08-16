@@ -13,8 +13,6 @@ def completed_projects(projects):
 
 
 def incomplete_projects(projects):
-    incomplete_project_ids = (
-        Task.objects.exclude(Q(status=Task.Status.COMPLETE) |
-                             Q(status=Task.Status.ABORTED))
-        .values_list('project', flat=True))
-    return projects.filter(id__in=incomplete_project_ids)
+    projects = projects.filter(Q(status=Project.Status.ACTIVE ) |
+                               Q(status=Project.Status.PAUSED))
+    return projects
