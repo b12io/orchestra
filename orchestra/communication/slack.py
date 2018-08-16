@@ -111,6 +111,22 @@ def archive_project_slack_group(project):
         logger.exception('Slack API Error')
 
 
+@run_if('ORCHESTRA_SLACK_EXPERTS_ENABLED')
+def unarchive_project_slack_group(project):
+    """
+    Unarchive a slack channel of a project
+    """
+    slack = OrchestraSlackService()
+    try:
+        response = slack.groups.unarchive(project.slack_group_id)
+        is_unarchived = response.body.get('ok')
+        if not is_unarchived:
+            logger.error('Unarchive project error: %s',
+                         response.body.get('error'))
+    except SlackError:
+        logger.exception('Slack API Error')
+
+
 def _random_string():
     return ''.join(
         random.choice(string.ascii_lowercase + string.digits)
