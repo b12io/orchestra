@@ -1,7 +1,6 @@
 from django.db.models import Q
 
 from orchestra.models import Project
-from orchestra.models import Task
 
 
 def completed_projects(projects):
@@ -13,6 +12,6 @@ def completed_projects(projects):
 
 
 def incomplete_projects(projects):
-    projects = projects.filter(Q(status=Project.Status.ACTIVE ) |
+    projects = projects.filter(Q(status=Project.Status.ACTIVE) |
                                Q(status=Project.Status.PAUSED))
     return projects
