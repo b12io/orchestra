@@ -1066,6 +1066,7 @@ def set_project_status(project_id, status):
         notify_project_status_change(project)
     elif status == status_choices[Project.Status.COMPLETED]:
         project.status = Project.Status.COMPLETED
+        notify_project_status_change(project)
     elif status == status_choices[Project.Status.ABORTED]:
         raise ProjectStatusError((
             'Try aborting the project with set_project_status. '
