@@ -1179,12 +1179,6 @@ def create_subsequent_tasks(project):
     completed_step_slugs = set(completed_tasks.values_list('step__slug',
                                                            flat=True))
 
-    if len(completed_step_slugs) == all_steps.count():
-        if project.status != Project.Status.COMPLETED:
-            set_project_status(project.id, 'Completed')
-            archive_project_slack_group(project)
-        return
-
     machine_tasks_to_schedule = []
     for step in all_steps:
         if step.slug in completed_step_slugs or Task.objects.filter(
@@ -1208,3 +1202,8 @@ def create_subsequent_tasks(project):
     if len(machine_tasks_to_schedule) > 0:
         connection.on_commit(lambda: schedule_machine_tasks(
             project, machine_tasks_to_schedule))
+
+    if len(completed_step_slugs) == all_steps.count():
+        if project.status != Project.Status.COMPLETED:
+            set_project_status(project.id, 'Completed')
+            archive_project_slack_group(project)
