@@ -3,26 +3,28 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
+from django.db.models import Count
 
+PROJECT_STATUS_ACTIVE = 0
 PROJECT_STATUS_COMPLETED = 4
-PROJECT_STATUS_ABORTED = 2
 
 TASK_STATUS_COMPLETED = 5
 
 def mark_completed_projects(apps, schema_editor):
     Project = apps.get_model('orchestra', 'Project')
     Task = apps.get_model('orchestra', 'Task')
-    for project in Project.objects.all():
-        workflow_version = project.workflow_version
-        all_steps = workflow_version.steps.all()
-        completed_tasks = Task.objects.filter(
-            status=TASK_STATUS_COMPLETED,
-            project=project)
-        completed_step_slugs = set(
-            completed_tasks.values_list('step__slug', flat=True))
 
-        if (all_steps.count() == len(completed_step_slugs) and
-                project.status != PROJECT_STATUS_ABORTED):
+    projects = Project.objects.filter(status=Project.Status.ACTIVE):
+    in_progress_projects = (
+        Task.objects.exclude(status=TASK_STATUS_COMPLETED)
+        .values_list('project', flat=True))
+    completed_projects = (
+        projects.annotate(num_tasks=Count('tasks'))
+        .filter(num_tasks__gt=0)
+        .exclude(id__in=in_progress_projects))
+
+    for project in completed_projects:
+        if (project.status == PROJET_STATUS_ACTIVE):
             project.status = PROJECT_STATUS_COMPLETED
             project.save()
 
