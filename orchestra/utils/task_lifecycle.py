@@ -1178,7 +1178,7 @@ def create_subsequent_tasks(project):
     completed_step_slugs = set(completed_tasks.values_list('step__slug',
                                                            flat=True))
 
-    if len(completed_step_slugs) == len(all_steps):
+    if len(completed_step_slugs) == all_steps.count():
         if project.status != Project.Status.COMPLETED:
             set_project_status(project.id, 'Completed')
             archive_project_slack_group(project)
