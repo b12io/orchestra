@@ -55,9 +55,11 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         create_subsequent_tasks(project)
         task = Task.objects.get(project=project)
         assign_task(self.workers[1].id, task.id)
+        self.assertEqual(project.status, Project.Status.ACTIVE)
+        self.assertFalse(mock_slack_archive.called)
+
         complete_and_skip_task(task.id)
         create_subsequent_tasks(project)
-
         project.refresh_from_db()
         self.assertEqual(project.status, Project.Status.COMPLETED)
         self.assertTrue(mock_slack_archive.called)

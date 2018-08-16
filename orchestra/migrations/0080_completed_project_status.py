@@ -21,7 +21,7 @@ def mark_completed_projects(apps, schema_editor):
         completed_step_slugs = set(
             completed_tasks.values_list('step__slug', flat=True))
 
-        if (len(all_steps) == len(completed_step_slugs) and
+        if (all_steps.count() == len(completed_step_slugs) and
                 project.status != PROJECT_STATUS_ABORTED):
             project.status = PROJECT_STATUS_COMPLETED
             project.save()

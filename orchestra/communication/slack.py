@@ -103,9 +103,10 @@ def archive_project_slack_group(project):
     slack = OrchestraSlackService()
     try:
         response = slack.groups.archive(project.slack_group_id)
-        is_archived = response.body['ok']
+        is_archived = response.body.get('ok')
         if not is_archived:
-            logger.exception(response.body['error'])
+            logger.error('Archive project error: %s',
+                         response.body.get('error'))
     except SlackError:
         logger.exception('Slack API Error')
 
