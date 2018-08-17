@@ -72,9 +72,9 @@ def _handle_sanity_checks(project, sanity_checks, check_configurations):
 def create_and_handle_sanity_checks():
     workflow_versions = WorkflowVersion.objects.all()
     incomplete_projects = (Project.objects
-                            .filter(workflow_version__in=workflow_versions)
-                            .filter(Q(status=Project.Status.ACTIVE) |
-                                    Q(status=Project.Status.PAUSED)))
+                           .filter(workflow_version__in=workflow_versions)
+                           .filter(Q(status=Project.Status.ACTIVE) |
+                                   Q(status=Project.Status.PAUSED)))
 
     for project in incomplete_projects:
         sanity_checks = project.workflow_version.sanity_checks
