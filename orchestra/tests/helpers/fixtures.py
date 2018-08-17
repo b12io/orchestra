@@ -394,6 +394,7 @@ def setup_models(test_case):
     _setup_projects(test_case, projects)
     _setup_tasks(test_case, tasks)
 
+
 def _setup_todolist_templates(test_case, templates):
     test_case.todolist_templates = {}
     for template_idx, template_key in enumerate(templates):
@@ -478,8 +479,9 @@ def _setup_workflows(test_case, workflows):
                     execution_function=step_details.get('execution_function',
                                                         {}),
                 )
-                _set_step_relations(step, step_details, 'todolist_templates_to_apply',
-                            TodoListTemplate)
+                _set_step_relations(step, step_details, 
+                                    'todolist_templates_to_apply',
+                                    TodoListTemplate)
                 workflow_steps[step.slug] = step
 
                 # Add required certifications
@@ -520,6 +522,7 @@ def _add_step_dependencies(step_dict, existing_workflow_steps, attr):
         getattr(step, attr).add(dependent_step)
     return backrefs
 
+
 def _set_step_relations(step, step_data, relation_attr, relation_model,
                         **model_filters):
     relation_slugs = set(step_data.get(relation_attr, []))
@@ -530,6 +533,7 @@ def _set_step_relations(step, step_data, relation_attr, relation_model,
                             '{}.{} contains a non-existent slug.'
                             .format(step_data['slug'], relation_attr))
     getattr(step, relation_attr).set(relations)
+
 
 def _create_backrefs(workflow_steps, backrefs):
     for backref in backrefs:

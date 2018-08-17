@@ -25,7 +25,6 @@ from orchestra.tests.helpers.fixtures import StepFactory
 from orchestra.tests.helpers.fixtures import TaskAssignmentFactory
 from orchestra.tests.helpers.fixtures import TaskFactory
 from orchestra.tests.helpers.fixtures import TodoFactory
-from orchestra.tests.helpers.fixtures import TodoListTemplateFactory
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.utils.task_lifecycle import AssignmentPolicyType
 from orchestra.utils.task_lifecycle import assign_task
@@ -183,7 +182,8 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
         self.assertTrue(assignments.exists())
         self.assertTrue(worker_assigned_to_rejected_task(self.workers[4]))
         with patch('orchestra.utils.task_lifecycle.settings.'
-            + 'ORCHESTRA_ENFORCE_NO_NEW_TASKS_DURING_REVIEW', return_value=True): 
+                    + 'ORCHESTRA_ENFORCE_NO_NEW_TASKS_DURING_REVIEW', 
+                    return_value=True):
             with self.assertRaises(TaskAssignmentError):
                 get_new_task_assignment(self.workers[4],
                                         Task.Status.AWAITING_PROCESSING)
@@ -324,7 +324,6 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
             'project': {'details': task.project.short_description,
                         'id': task.project.id,
                         'project_data': {},
-                        'status': 'Active',
                         'team_messages_url': None},
             'workflow': {'slug': 'w1',
                          'name': 'Workflow One'},
@@ -579,7 +578,8 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
         todoListTemplateSlug = 'launch-design-checklist'
 
         mock = MagicMock(return_value=True)
-        with patch('orchestra.utils.task_lifecycle.add_todolist_template', new=mock):
+        with patch('orchestra.utils.task_lifecycle.add_todolist_template', 
+                    new=mock):
             # Create first task in test project
             create_subsequent_tasks(project)
             assert mock.called_once
