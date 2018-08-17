@@ -7,6 +7,7 @@ from django.db import connection
 from django.db import transaction
 from django.db.models import Case
 from django.db.models import When
+from django.db.models import Q
 from django.db.models import Value
 from django.db.models import IntegerField
 from django.utils import timezone
@@ -1204,7 +1205,8 @@ def create_subsequent_tasks(project):
             project, machine_tasks_to_schedule))
 
     incomplete_tasks = (Task.objects.filter(project=project)
-                        .exclude(Task.Status.COMPLETE))
+                        .exclude(Q(Task.Status.COMPLETE) |
+                                 Q(Task.Status.ABORTED)))
 
     if incomplete_tasks.count() == 0:
         if project.status != Project.Status.COMPLETED:
