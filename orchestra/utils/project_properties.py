@@ -1,5 +1,3 @@
-from django.db.models import Q
-
 from orchestra.models import Project
 
 
