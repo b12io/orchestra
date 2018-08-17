@@ -20,7 +20,7 @@
             <button type="button" ng-disabled="vis.dataService.loading" ng-click="vis.createSubsequentTasks()" class="btn btn-default">
               Create subsequent tasks
             </button>
-            <button type="button" ng-disabled="vis.dataService.loading || vis.dataService.currentProject.status === 'Completed'" ng-click="vis.showSlackActions()" class="btn btn-default">
+            <button type="button" ng-disabled="vis.dataService.loading" ng-click="vis.showSlackActions()" class="btn btn-default">
               Edit Slack users
             </button>
             <button type="button" ng-disabled="vis.dataService.loading" ng-click="vis.showProjectData()" class="btn btn-default">
