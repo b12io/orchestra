@@ -8,7 +8,6 @@ from orchestra.models import Project
 from orchestra.models import SanityCheck
 from orchestra.models import WorkflowVersion
 from orchestra.utils.notifications import message_experts_slack_group
-from orchestra.utils.project_properties import incomplete_projects
 
 
 def _handle(project, sanity_check, handler):
