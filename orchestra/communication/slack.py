@@ -128,7 +128,7 @@ def unarchive_project_slack_group(project):
                 if not is_unarchived:
                     logger.error('Unarchive project error: %s',
                                  response.body.get('error'))
-    except:
+    except SlackError:
         logger.exception('Slack API Error')
 
 
