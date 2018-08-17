@@ -105,6 +105,16 @@ class Groups(BaseAPI):
             already_in_group = False
         return self.Response({'already_in_group': already_in_group})
 
+    def info(self, group_id):
+        self._validate_group(group_id=group_id)
+        return self.Response({
+            'ok': True,
+            'group': {
+                'id': group_id,
+                'is_archived': True
+            }
+        })
+
     def kick(self, group_id, user_id):
         self._validate_group(group_id=group_id)
         self._validate_user(user_id=user_id)
@@ -132,6 +142,12 @@ class Groups(BaseAPI):
         })
 
     def archive(self, group_id):
+        self._validate_group(group_id=group_id)
+        return self.Response({
+            'ok': True
+        })
+
+    def unarchive(self, group_id):
         self._validate_group(group_id=group_id)
         return self.Response({
             'ok': True

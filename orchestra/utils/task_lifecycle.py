@@ -1205,8 +1205,8 @@ def create_subsequent_tasks(project):
             project, machine_tasks_to_schedule))
 
     incomplete_tasks = (Task.objects.filter(project=project)
-                        .exclude(Q(Task.Status.COMPLETE) |
-                                 Q(Task.Status.ABORTED)))
+                        .exclude(Q(status=Task.Status.COMPLETE) |
+                                 Q(status=Task.Status.ABORTED)))
 
     if incomplete_tasks.count() == 0:
         if project.status != Project.Status.COMPLETED:
