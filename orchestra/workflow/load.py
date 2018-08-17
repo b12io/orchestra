@@ -163,8 +163,8 @@ def load_workflow_version(version_data, workflow, force=False):
 
         # Don't prevent updates to these, because we want to allow
         # certifications to evolve over the lifetime of a workflow.
-        _set_step_dependencies(step, step_data, 'required_certifications',
-                               Certification, workflow=workflow)
+        _set_step_relations(step, step_data, 'required_certifications',
+                            Certification, workflow=workflow)
 
     # Set up step dependencies once the steps objects are in the DB.
     for step_data in version_data['steps']:
@@ -180,13 +180,13 @@ def load_workflow_version(version_data, workflow, force=False):
             'creation_depends_on',
             old_creation_dependencies.get(step_slug)
         )
-        _set_step_dependencies(step, step_data, 'creation_depends_on', Step,
-                               workflow_version=version)
+        _set_step_relations(step, step_data, 'creation_depends_on', Step,
+                            workflow_version=version)
 
-        _set_step_dependencies(step, step_data, 'submission_depends_on', Step,
-                               workflow_version=version)
+        _set_step_relations(step, step_data, 'submission_depends_on', Step,
+                            workflow_version=version)
 
-        _set_step_templates(step, step_data, 'todolist_templates_to_apply',
+        _set_step_relations(step, step_data, 'todolist_templates_to_apply',
                             TodoListTemplate)
 
 
@@ -195,30 +195,18 @@ def _verify_dependencies_not_updated(step_data, dependency_attr,
     new_dependencies = set(step_data.get(dependency_attr, []))
     if old_dependencies is not None and old_dependencies != new_dependencies:
         raise WorkflowError(
-            'Even with --force, cannot change the topology of a workflow. '
+            'Even with --force, you cannot change the topology of a workflow. '
             'Drop and recreate the database to reset, or create a new '
             'version for your workflow.')
 
 
-def _set_step_dependencies(step, step_data, dependency_attr, dependency_model,
-                           **model_filters):
-    dependency_slugs = set(step_data.get(dependency_attr, []))
-    dependencies = list(dependency_model.objects.filter(
-        slug__in=dependency_slugs, **model_filters))
-    if len(dependencies) != len(dependency_slugs):
-        raise WorkflowError(
-            '{}.{} contains a non-existent slug.'
-            .format(step_data['slug'], dependency_attr))
-    getattr(step, dependency_attr).set(dependencies)
-
-
-def _set_step_templates(step, step_data, template_attr, template_model,
+def _set_step_relations(step, step_data, relation_attr, relation_model,
                         **model_filters):
-    template_slugs = set(step_data.get(template_attr, []))
-    templates = list(template_model.objects.filter(
-        slug__in=template_slugs, **model_filters))
-    if len(templates) != len(template_slugs):
+    relation_slugs = set(step_data.get(relation_attr, []))
+    relations = list(relation_model.objects.filter(
+        slug__in=relation_slugs, **model_filters))
+    if len(relations) != len(relation_slugs):
         raise WorkflowError(
-            '{}.{} contains a non-existent slug.'
-            .format(step_data['slug'], template_attr))
-    getattr(step, template_attr).set(templates)
+                            '{}.{} contains a non-existent slug.'
+                            .format(step_data['slug'], relation_attr))
+    getattr(step, relation_attr).set(relations)
