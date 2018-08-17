@@ -23,6 +23,10 @@ urlpatterns = [
         views.edit_slack_membership_api,
         name='edit_slack_membership'),
 
+    url(r'^unarchive_slack_channel/$',
+        views.unarchive_slack_channel_api,
+        name='unarchive_slack_channel'),
+
     url(r'^end_project/$',
         views.end_project_api,
         name='end_project'),

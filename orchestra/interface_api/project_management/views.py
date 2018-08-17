@@ -5,6 +5,7 @@ from jsonview.exceptions import BadRequest
 from rest_framework import generics
 from rest_framework import permissions
 
+from orchestra.communication.slack import unarchive_project_slack_group
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import WorkerCertificationError
 from orchestra.core.errors import ProjectStatusError
@@ -122,6 +123,19 @@ def edit_slack_membership_api(request):
     try:
         project_management.edit_slack_membership(
             body['project_id'], body['username'], body['action'])
+    except slacker.Error as e:
+        raise BadRequest(e)
+
+
+@project_management_api_view
+def unarchive_slack_channel_api(request):
+    body = load_encoded_json(request.body)
+    try:
+        project_id = body.get('project_id')
+        project = Project.objects.get(id=project_id)
+        unarchive_project_slack_group(project)
+    except Project.DoesNotExist:
+        raise BadRequest('Project not found for the given id.')
     except slacker.Error as e:
         raise BadRequest(e)
 

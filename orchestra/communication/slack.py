@@ -103,10 +103,11 @@ def archive_project_slack_group(project):
     slack = OrchestraSlackService()
     try:
         response = slack.groups.archive(project.slack_group_id)
-        is_archived = response.body.get('ok')
-        if not is_archived:
-            logger.error('Archive project error: %s',
-                         response.body.get('error'))
+        if response:
+            is_archived = response.body.get('ok')
+            if not is_archived:
+                logger.error('Archive project error: %s',
+                             response.body.get('error'))
     except SlackError:
         logger.exception('Slack API Error')
 
@@ -118,12 +119,16 @@ def unarchive_project_slack_group(project):
     """
     slack = OrchestraSlackService()
     try:
-        response = slack.groups.unarchive(project.slack_group_id)
-        is_unarchived = response.body.get('ok')
-        if not is_unarchived:
-            logger.error('Unarchive project error: %s',
-                         response.body.get('error'))
-    except SlackError:
+        group_info = slack.groups.info(project.slack_group_id)
+        is_archived = group_info.body.get('group', {}).get('is_archived')
+        if is_archived:
+            response = slack.groups.unarchive(project.slack_group_id)
+            if response:
+                is_unarchived = response.body.get('ok')
+                if not is_unarchived:
+                    logger.error('Unarchive project error: %s',
+                                 response.body.get('error'))
+    except:
         logger.exception('Slack API Error')
 
 

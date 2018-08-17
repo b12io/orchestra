@@ -118,6 +118,13 @@ export default function projectVis (
                 window.alert(errorMessage)
               })
           }
+
+          $scope.unarchiveSlackChannel = function () {
+            orchestraApi.unarchiveSlackChannel(dataService.currentProject.id)
+            .then(function () {
+              modalInstance.close()
+            })
+          }
         }
       })
     },
