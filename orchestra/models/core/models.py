@@ -312,11 +312,13 @@ class Project(ProjectMixin, models.Model):
         ACTIVE = 0
         ABORTED = 2
         PAUSED = 3
+        COMPLETED = 4
 
     STATUS_CHOICES = (
         (Status.ACTIVE, 'Active'),
         (Status.ABORTED, 'Aborted'),
-        (Status.PAUSED, 'Paused'))
+        (Status.PAUSED, 'Paused'),
+        (Status.COMPLETED, 'Completed'))
 
     start_datetime = models.DateTimeField(default=timezone.now)
     status = models.IntegerField(choices=STATUS_CHOICES,

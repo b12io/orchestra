@@ -7,12 +7,14 @@ from django.db import connection
 from django.db import transaction
 from django.db.models import Case
 from django.db.models import When
+from django.db.models import Q
 from django.db.models import Value
 from django.db.models import IntegerField
 from django.utils import timezone
 
 
 from orchestra.communication.slack import add_worker_to_project_team
+from orchestra.communication.slack import archive_project_slack_group
 from orchestra.communication.utils import mark_worker_as_winner
 from orchestra.core.errors import AssignmentPolicyError
 from orchestra.core.errors import CreationPolicyError
@@ -1036,6 +1038,7 @@ def end_project(project_id):
         task.save()
         notify_status_change(task, assignment_history(task))
         notify_project_status_change(project)
+    archive_project_slack_group(project)
 
 
 def set_project_status(project_id, status):
@@ -1061,6 +1064,9 @@ def set_project_status(project_id, status):
         notify_project_status_change(project)
     elif status == status_choices[Project.Status.ACTIVE]:
         project.status = Project.Status.ACTIVE
+        notify_project_status_change(project)
+    elif status == status_choices[Project.Status.COMPLETED]:
+        project.status = Project.Status.COMPLETED
         notify_project_status_change(project)
     elif status == status_choices[Project.Status.ABORTED]:
         raise ProjectStatusError((
@@ -1197,3 +1203,12 @@ def create_subsequent_tasks(project):
     if len(machine_tasks_to_schedule) > 0:
         connection.on_commit(lambda: schedule_machine_tasks(
             project, machine_tasks_to_schedule))
+
+    incomplete_tasks = (Task.objects.filter(project=project)
+                        .exclude(Q(status=Task.Status.COMPLETE) |
+                                 Q(status=Task.Status.ABORTED)))
+
+    if incomplete_tasks.count() == 0:
+        if project.status != Project.Status.COMPLETED:
+            set_project_status(project.id, 'Completed')
+            archive_project_slack_group(project)

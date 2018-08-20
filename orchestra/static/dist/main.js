@@ -42539,6 +42539,12 @@ function orchestraApi($http) {
       });
     },
 
+    unarchiveSlackChannel: function unarchiveSlackChannel(projectId) {
+      return $http.post(getApiUrl('unarchive_slack_channel'), {
+        'project_id': projectId
+      });
+    },
+
     setProjectStatus: function setProjectStatus(projectId, status) {
       return $http.post(getApiUrl('set_project_status'), {
         'project_id': projectId,
@@ -58734,6 +58740,12 @@ function projectVis($uibModal, $location, dataService, orchestraApi, crosshair, 
               window.alert(errorMessage);
             });
           };
+
+          $scope.unarchiveSlackChannel = function () {
+            orchestraApi.unarchiveSlackChannel(dataService.currentProject.id).then(function () {
+              modalInstance.close();
+            });
+          };
         }
       });
     },
@@ -58761,7 +58773,7 @@ function projectVis($uibModal, $location, dataService, orchestraApi, crosshair, 
 /* 177 */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"slack-modal\">\n    <h1>Edit Slack group membership</h1>\n    <input ng-model=\"slackUsername\" placeholder=\"Slack username to add/remove\">\n    <i ng-click=\"editSlackMembership('add', slackUsername)\"\n       title=\"Add user\" class=\"fa fa-plus add-user\"></i>\n    <i ng-click=\"editSlackMembership('remove', slackUsername)\"\n       title=\"Remove user\" class=\"fa fa-minus remove-user\"></i>\n</div>\n";
+module.exports = "<div class=\"slack-modal\">\n    <h1>Edit Slack group membership</h1>\n    <input ng-model=\"slackUsername\" placeholder=\"Slack username to add/remove\">\n    <i ng-click=\"editSlackMembership('add', slackUsername)\"\n       title=\"Add user\" class=\"fa fa-plus add-user\"></i>\n    <i ng-click=\"editSlackMembership('remove', slackUsername)\"\n       title=\"Remove user\" class=\"fa fa-minus remove-user\"></i>\n    <hr/>\n    <button type=\"button\" class=\"btn btn-default\"\n      ng-click=\"unarchiveSlackChannel()\">Unarchive slack channel</button>\n</div>\n";
 
 /***/ }),
 /* 178 */

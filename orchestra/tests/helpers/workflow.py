@@ -561,6 +561,31 @@ workflow_fixtures = [
             },
         ],
     },
+    # A workflow with a single human step with no review
+    {
+        'slug': 'single_step_human_workflow',
+        'name': 'Single step human workflow',
+        'versions': [
+            {
+                'slug': 'single_step_no_review',
+                'name': 'Single step no-review workflow',
+                'description': 'A workflow with a single step with no review',
+                'steps': [
+                    {
+                        'slug': 'step1',
+                        'name': 'Step 1',
+                        'description': 'Step 1',
+                        'is_human': True,
+                        'creation_depends_on': [],
+                        "review_policy": {
+                            "policy": "no_review"
+                        },
+                    }
+                ],
+            },
+        ],
+    },
+
     {
         'slug': 'sanitybot',
         'name': 'SanityBot workflow',
