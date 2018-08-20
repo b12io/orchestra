@@ -316,6 +316,7 @@ def setup_models(test_case):
         'creation_policy': 'creation_policy_workflow',
         'next_todo_proj': 'test_workflow',
         'sanitybot': 'sanitybot_workflow',
+        'single_human_step': 'single_step_no_review',
     }
 
     # Task generation data

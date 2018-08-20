@@ -65,10 +65,10 @@ def add_worker_to_project_team(worker, project):
                 '<@{}|{}> has been added to the team. '
                 'Welcome aboard!').format(user_id, worker.slack_username)
             slack.chat.post_message(project.slack_group_id, welcome_message)
-    except Exception:
+    except SlackError:
+        logger.exception('Slack API Error')
         # TODO(jrbotros): for now, using slack on a per-worker basis is
         # optional; we'll want to rethink this in the future
-        pass
 
 
 @run_if('ORCHESTRA_SLACK_EXPERTS_ENABLED')
@@ -93,6 +93,43 @@ def create_project_slack_group(project):
         ).format(project.project_data['project_folder_id'])
         slack.chat.post_message(project.slack_group_id, message)
     return project.slack_group_id
+
+
+@run_if('ORCHESTRA_SLACK_EXPERTS_ENABLED')
+def archive_project_slack_group(project):
+    """
+    Archive a slack channel of a project
+    """
+    slack = OrchestraSlackService()
+    try:
+        response = slack.groups.archive(project.slack_group_id)
+        if response:
+            is_archived = response.body.get('ok')
+            if not is_archived:
+                logger.error('Archive project error: %s',
+                             response.body.get('error'))
+    except SlackError:
+        logger.exception('Slack API Error')
+
+
+@run_if('ORCHESTRA_SLACK_EXPERTS_ENABLED')
+def unarchive_project_slack_group(project):
+    """
+    Unarchive a slack channel of a project
+    """
+    slack = OrchestraSlackService()
+    try:
+        group_info = slack.groups.info(project.slack_group_id)
+        is_archived = group_info.body.get('group', {}).get('is_archived')
+        if is_archived:
+            response = slack.groups.unarchive(project.slack_group_id)
+            if response:
+                is_unarchived = response.body.get('ok')
+                if not is_unarchived:
+                    logger.error('Unarchive project error: %s',
+                                 response.body.get('error'))
+    except SlackError:
+        logger.exception('Slack API Error')
 
 
 def _random_string():

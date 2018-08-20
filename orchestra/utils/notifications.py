@@ -108,6 +108,8 @@ def notify_project_status_change(project):
             'the project is reactivated.')
     elif project.status == Project.Status.ACTIVE:
         status_text = 'reactivated'
+    elif project.status == Project.Status.COMPLETED:
+        status_text = 'completed'
     elif project.status == Project.Status.ABORTED:
         status_text = 'aborted'
     else:

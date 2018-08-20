@@ -59,6 +59,12 @@ export default function orchestraApi ($http) {
       })
     },
 
+    unarchiveSlackChannel: function (projectId) {
+      return $http.post(getApiUrl('unarchive_slack_channel'), {
+        'project_id': projectId
+      })
+    },
+
     setProjectStatus: function (projectId, status) {
       return $http.post(getApiUrl('set_project_status'), {
         'project_id': projectId,

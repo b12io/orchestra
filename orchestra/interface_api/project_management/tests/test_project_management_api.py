@@ -1,9 +1,11 @@
 import json
+from unittest.mock import patch
 
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
 from django.test import Client
+from django.test import override_settings
 
 from orchestra.core.errors import InvalidRevertError
 from orchestra.models import Project
@@ -21,6 +23,8 @@ from orchestra.tests.helpers.iterations import verify_iterations
 from orchestra.utils.load_json import load_encoded_json
 from orchestra.utils.revert import RevertChange
 from orchestra.utils.task_lifecycle import create_subsequent_tasks
+from orchestra.utils.task_lifecycle import assign_task
+from orchestra.utils.task_lifecycle import complete_and_skip_task
 from orchestra.utils.task_properties import assignment_history
 from orchestra.utils.task_properties import current_assignment
 from orchestra.utils.task_properties import get_iteration_history
@@ -253,6 +257,28 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
         self.assertEqual(response.status_code, 200)
         task.refresh_from_db()
         self.assertEqual(task.status, Task.Status.COMPLETE)
+
+    @override_settings(ORCHESTRA_SLACK_EXPERTS_ENABLED=True)
+    @patch('orchestra.communication.tests.helpers.slack.Groups.unarchive')
+    @patch('orchestra.communication.tests.helpers.slack.Groups.archive')
+    def test_unarchive_slack_channel_api(self, mock_archive, mock_unarchive):
+        project = self.projects['single_human_step']
+        create_subsequent_tasks(project)
+        task = Task.objects.get(project=project)
+        assign_task(self.workers[1].id, task.id)
+        complete_and_skip_task(task.id)
+        create_subsequent_tasks(project)
+        self.assertTrue(mock_archive.called)
+
+        response = self.api_client.post(
+            reverse(('orchestra:orchestra:project_management'
+                     ':unarchive_slack_channel')),
+            json.dumps({
+                'project_id': project.id,
+            }),
+            content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(mock_unarchive.called)
 
     def test_end_project_api(self):
         project = self.projects['project_to_end']
