@@ -479,7 +479,7 @@ def _setup_workflows(test_case, workflows):
                     execution_function=step_details.get('execution_function',
                                                         {}),
                 )
-                _set_step_relations(step, step_details, 
+                _set_step_relations(step, step_details,
                                     'todolist_templates_to_apply',
                                     TodoListTemplate)
                 workflow_steps[step.slug] = step
