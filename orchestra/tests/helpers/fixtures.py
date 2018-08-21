@@ -380,10 +380,12 @@ def setup_models(test_case):
         },
     }
 
+    todolist_template_slug = 'project-checklist'
+
     todolist_templates = {
-        'launch-design-checklist': {
-            'name': 'Launch design checklist',
-            'slug': 'launch-design-checklist'
+        todolist_template_slug: {
+            'name': 'Project checklist',
+            'slug': todolist_template_slug
         }
     }
 
@@ -399,8 +401,6 @@ def _setup_todolist_templates(test_case, templates):
     test_case.todolist_templates = {}
     for template_idx, template_key in enumerate(templates):
         template_details = templates[template_key]
-        print(template_details)
-        print(template_idx)
         template = TodoListTemplateFactory(
             slug=template_details['slug'],
             name=template_details['name'],

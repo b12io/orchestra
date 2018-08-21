@@ -574,16 +574,13 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
 
     def test_todolist_templates_to_apply(self):
         project = self.projects['assignment_policy']
-
-        todoListTemplateSlug = 'launch-design-checklist'
-
         mock = MagicMock(return_value=True)
         with patch('orchestra.utils.task_lifecycle.add_todolist_template',
                    new=mock):
             # Create first task in test project
             create_subsequent_tasks(project)
             assert mock.called_once
-            assert mock.call_args[0][0] == todoListTemplateSlug
+            assert mock.call_args[0][0] == 'project-checklist'
 
     def test_malformed_assignment_policy(self):
         project = self.projects['assignment_policy']
