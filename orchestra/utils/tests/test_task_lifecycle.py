@@ -181,9 +181,12 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
             task__status=Task.Status.POST_REVIEW_PROCESSING)
         self.assertTrue(assignments.exists())
         self.assertTrue(worker_assigned_to_rejected_task(self.workers[4]))
-        with self.assertRaises(TaskAssignmentError):
-            get_new_task_assignment(self.workers[4],
-                                    Task.Status.AWAITING_PROCESSING)
+        with patch('orchestra.utils.task_lifecycle.settings.'
+                   + 'ORCHESTRA_ENFORCE_NO_NEW_TASKS_DURING_REVIEW',
+                   return_value=True):
+            with self.assertRaises(TaskAssignmentError):
+                get_new_task_assignment(self.workers[4],
+                                        Task.Status.AWAITING_PROCESSING)
 
     def test_worker_has_reviewer_status(self):
         self.assertFalse(worker_has_reviewer_status(self.workers[0]))
@@ -569,6 +572,16 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
         self.assertEqual(related_task.status, Task.Status.PROCESSING)
         self.assertTrue(
             related_task.is_worker_assigned(self.workers[4]))
+
+    def test_todolist_templates_to_apply(self):
+        project = self.projects['assignment_policy']
+        mock = MagicMock(return_value=True)
+        with patch('orchestra.utils.task_lifecycle.add_todolist_template',
+                   new=mock):
+            # Create first task in test project
+            create_subsequent_tasks(project)
+            assert mock.called_once
+            assert mock.call_args[0][0] == 'project-checklist'
 
     def test_malformed_assignment_policy(self):
         project = self.projects['assignment_policy']

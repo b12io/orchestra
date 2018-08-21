@@ -380,9 +380,10 @@ class TodoTemplateEndpointTests(EndpointTestCase):
     def _verify_todolist_template_list(self, expected_todolist_templates):
         resp = self.request_client.get(self.todolist_template_list_url)
         self.assertEqual(resp.status_code, 200)
+        length = len(expected_todolist_templates)
         data = load_encoded_json(resp.content)
         for todolist_template, expected_todolist_template in \
-                zip(data, expected_todolist_templates):
+                zip(data[-length:], expected_todolist_templates):
             self._verify_todolist_template_content(
                 todolist_template, expected_todolist_template)
 

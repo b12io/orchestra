@@ -33,6 +33,7 @@ from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import Worker
 from orchestra.models import WorkerCertification
+from orchestra.todos.api import add_todolist_template
 from orchestra.utils.notifications import notify_status_change
 from orchestra.utils.notifications import notify_project_status_change
 from orchestra.utils.task_properties import assignment_history
@@ -1194,6 +1195,10 @@ def create_subsequent_tasks(project):
                             project=project,
                             status=Task.Status.AWAITING_PROCESSING)
                 task.save()
+
+                # Apply todolist templates to Task
+                for template in task.step.todolist_templates_to_apply.all():
+                    add_todolist_template(template.slug, task.id)
 
                 _preassign_workers(task, AssignmentPolicyType.ENTRY_LEVEL)
 
