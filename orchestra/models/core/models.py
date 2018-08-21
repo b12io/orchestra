@@ -157,6 +157,9 @@ class Step(StepMixin, models.Model):
         user_interface (str):
             A JSON blob used to describe the files used in the user interface
             for this step (only valid for human steps).
+        todolist_templates_to_apply ([orchestra.models.TodoListTemplate]):
+            TodoListTemplates to automatically apply to the todolist of this
+            step (only valid for human steps).
     """
     # General fields
     created_at = models.DateTimeField(default=timezone.now)
@@ -187,6 +190,8 @@ class Step(StepMixin, models.Model):
     review_policy = JSONField(default={})
     creation_policy = JSONField(default={})
     user_interface = JSONField(default={})
+    todolist_templates_to_apply = models.ManyToManyField('TodoListTemplate',
+                                                         blank=True)
 
     class Meta:
         app_label = 'orchestra'

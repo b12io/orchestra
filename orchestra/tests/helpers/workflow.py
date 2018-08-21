@@ -195,6 +195,9 @@ workflow_fixtures = [
                             'angular_module': 'step1',
                             'angular_directive': 'step1_directive',
                         },
+                        'todolist_templates_to_apply': [
+                            'project-checklist'
+                        ]
                     },
                     {
                         'slug': 'step_1',
@@ -227,6 +230,9 @@ workflow_fixtures = [
                             'angular_module': 'step2',
                             'angular_directive': 'step2_directive',
                         },
+                        'todolist_templates_to_apply': [
+                            'project-checklist'
+                        ]
                     },
                 ],
             },

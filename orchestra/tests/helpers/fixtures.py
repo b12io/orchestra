@@ -9,6 +9,7 @@ from django.test import override_settings
 from django.utils import timezone
 
 from orchestra.communication.slack import create_project_slack_group
+from orchestra.core.errors import WorkflowError
 from orchestra.models import CommunicationPreference
 from orchestra.models import Iteration
 from orchestra.models import StaffBotRequest
@@ -17,6 +18,7 @@ from orchestra.models import StaffingResponse
 from orchestra.models import Step
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
+from orchestra.models import TodoListTemplate
 from orchestra.models import WorkerCertification
 from orchestra.models import Workflow
 from orchestra.models import WorkflowVersion
@@ -378,11 +380,32 @@ def setup_models(test_case):
         },
     }
 
+    todolist_template_slug = 'project-checklist'
+
+    todolist_templates = {
+        todolist_template_slug: {
+            'name': 'Project checklist',
+            'slug': todolist_template_slug
+        }
+    }
+
     # Create the objects
+    _setup_todolist_templates(test_case, todolist_templates)
     _setup_workflows(test_case, workflows)
     _setup_workers(test_case, workers)
     _setup_projects(test_case, projects)
     _setup_tasks(test_case, tasks)
+
+
+def _setup_todolist_templates(test_case, templates):
+    test_case.todolist_templates = {}
+    for template_idx, template_key in enumerate(templates):
+        template_details = templates[template_key]
+        template = TodoListTemplateFactory(
+            slug=template_details['slug'],
+            name=template_details['name'],
+        )
+        test_case.todolist_templates[template_details['slug']] = template
 
 
 def _setup_workflows(test_case, workflows):
@@ -456,6 +479,9 @@ def _setup_workflows(test_case, workflows):
                     execution_function=step_details.get('execution_function',
                                                         {}),
                 )
+                _set_step_relations(step, step_details,
+                                    'todolist_templates_to_apply',
+                                    TodoListTemplate)
                 workflow_steps[step.slug] = step
 
                 # Add required certifications
@@ -495,6 +521,18 @@ def _add_step_dependencies(step_dict, existing_workflow_steps, attr):
 
         getattr(step, attr).add(dependent_step)
     return backrefs
+
+
+def _set_step_relations(step, step_data, relation_attr, relation_model,
+                        **model_filters):
+    relation_slugs = set(step_data.get(relation_attr, []))
+    relations = list(relation_model.objects.filter(
+        slug__in=relation_slugs, **model_filters))
+    if len(relations) != len(relation_slugs):
+        raise WorkflowError(
+                            '{}.{} contains a non-existent slug.'
+                            .format(step_data['slug'], relation_attr))
+    getattr(step, relation_attr).set(relations)
 
 
 def _create_backrefs(workflow_steps, backrefs):
