@@ -125,8 +125,10 @@ class LoadWorkflowTestCase(OrchestraTestCase):
 
         # Even with --force, can't overwrite a version with a new step
         v1_data['steps'].append({'slug': 'invalid_new_step'})
-        step_change_err_msg = ('Even with --force, cannot change the steps of '
-                               'a workflow.')
+        step_change_err_msg = ('Even with --force, you cannot change the steps of '
+                               'a workflow. Drop and recreate the '
+                               'database to reset, or create a new version '
+                               'for your workflow.')
         with self.assertRaisesMessage(WorkflowError, step_change_err_msg):
             with transaction.atomic():
                 load_workflow_version(v1_data, workflow, force=True)
@@ -135,8 +137,10 @@ class LoadWorkflowTestCase(OrchestraTestCase):
         # Even with --force, can't change a step's creation dependencies.
         step_2_create_dependencies = v1_data['steps'][1]['creation_depends_on']
         step_2_create_dependencies.append('s3')
-        topology_change_err_msg = ('Even with --force, cannot change the '
-                                   'topology of a workflow.')
+        topology_change_err_msg = ('Even with --force, you cannot change the '
+                                   'topology of a workflow. Drop and recreate the '
+                                   'database to reset, or create a new version '
+                                   'for your workflow.')
         with self.assertRaisesMessage(WorkflowError, topology_change_err_msg):
             with transaction.atomic():
                 load_workflow_version(v1_data, workflow, force=True)

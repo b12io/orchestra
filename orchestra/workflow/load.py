@@ -123,7 +123,7 @@ def load_workflow_version(version_data, workflow, force=False):
             .values_list('slug', flat=True)
         )
         if new_step_slugs != old_step_slugs:
-            raise WorkflowError('Even with --force, cannot change the steps '
+            raise WorkflowError('Even with --force, you cannot change the steps '
                                 'of a workflow. Drop and recreate the '
                                 'database to reset, or create a new version '
                                 'for your workflow.')
