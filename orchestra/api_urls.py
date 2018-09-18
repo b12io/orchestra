@@ -6,6 +6,7 @@ from orchestra.project_api.views import create_project
 from orchestra.project_api.views import project_details_url
 from orchestra.project_api.views import project_information
 from orchestra.project_api.views import workflow_types
+from orchestra.project_api.views import message_project_team
 from orchestra.views import TimeEntryDetail
 from orchestra.views import TimeEntryList
 from orchestra.views import dashboard_tasks
@@ -79,4 +80,7 @@ urlpatterns = [
     url(r'^status/$',
         status,
         name='status'),
+    url(r'^project/message-team',
+        message_project_team,
+        name='message-project-team'),
 ]

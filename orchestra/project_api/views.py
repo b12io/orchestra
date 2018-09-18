@@ -17,6 +17,7 @@ from orchestra.utils.load_json import load_encoded_json
 from orchestra.utils.task_lifecycle import assign_task
 from orchestra.project_api.auth import OrchestraProjectAPIAuthentication
 from orchestra.project_api.auth import IsSignedUser
+from orchestra.communication.slack import OrchestraSlackService
 
 logger = logging.getLogger(__name__)
 
@@ -124,3 +125,29 @@ def assign_worker_to_task(request):
         'success': success,
         'errors': errors,
     }
+
+
+@api_endpoint(methods=['POST'],
+              permissions=(IsSignedUser,),
+              logger=logger,
+              auths=(OrchestraProjectAPIAuthentication,))
+def message_project_team(request):
+    """
+    Endpoint for sending arbitrary message to a project team.
+    Payload example:
+    {'data': {'message': 'Chat message', 'project_id': 'some-id-123'}}
+    """
+    try:
+        data = request.data.get('data', {})
+        message = data['message']
+        project_id = data['project_id']
+        project = Project.objects.get(id=project_id)
+    except KeyError:
+        text = ('`data` object with `message` and `project_id` attributes'
+                ' should be supplied')
+        raise BadRequest(text)
+    except Project.DoesNotExist:
+        raise BadRequest('No project for given id')
+    slack = OrchestraSlackService()
+    slack.chat.post_message(project.slack_group_id, message)
+    return {'success': True}
