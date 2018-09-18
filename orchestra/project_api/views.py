@@ -135,15 +135,15 @@ def message_project_team(request):
     """
     Endpoint for sending arbitrary message to a project team.
     Payload example:
-    {'data': {'message': 'Chat message', 'project_id': 'some-id-123'}}
+    {'message': 'Chat message', 'project_id': 'some-id-123'}
     """
+    data = load_encoded_json(request.body)
     try:
-        data = request.data.get('data', {})
         message = data['message']
         project_id = data['project_id']
         project = Project.objects.get(id=project_id)
     except KeyError:
-        text = ('`data` object with `message` and `project_id` attributes'
+        text = ('An object with `message` and `project_id` attributes'
                 ' should be supplied')
         raise BadRequest(text)
     except Project.DoesNotExist:

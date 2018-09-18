@@ -80,7 +80,7 @@ urlpatterns = [
     url(r'^status/$',
         status,
         name='status'),
-    url(r'^project/message-team',
+    url(r'^project/message_project_team',
         message_project_team,
-        name='message-project-team'),
+        name='message_project_team'),
 ]
