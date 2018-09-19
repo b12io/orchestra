@@ -1,6 +1,5 @@
 import datetime
 from unittest.mock import patch
-from unittest.mock import MagicMock
 
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
@@ -386,37 +385,33 @@ class ProjectAPITestCase(OrchestraTestCase):
         url = '/orchestra/api/project/message_project_team/'
         test_message = 'this is a test message'
         response = self.api_client.post(
-                url,
-                {'message': test_message, 'project_id': project.id},
+            url,
+            {'message': test_message, 'project_id': project.id},
             format='json')
         self.assertEqual(response.status_code, 200)
         self.assertTrue(mock_slack.called)
         # No project id provided
         response = self.api_client.post(
-            url,
-            {'message': test_message},
-            format='json')
+            url, {'message': test_message}, format='json')
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()['message'],
+        self.assertEqual(
+            response.json()['message'],
             ('An object with `message` and `project_id` attributes'
-            ' should be supplied'))
+             ' should be supplied'))
         # No message provided
         response = self.api_client.post(
-            url,
-            {'project_id': project.id},
-            format='json')
+            url, {'project_id': project.id}, format='json')
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()['message'],
+        self.assertEqual(
+            response.json()['message'],
             ('An object with `message` and `project_id` attributes'
-            ' should be supplied'))
+             ' should be supplied'))
         # Non-existent project_id provided
         response = self.api_client.post(
-            url,
-            {'message': 'text', 'project_id': 123},
-            format='json')
+            url, {'message': 'text', 'project_id': 123}, format='json')
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['message'],
-            'No project for given id')
+                         'No project for given id')
 
     def test_permissions(self):
         self.api_client.force_authenticate(user=AnonymousUser())
