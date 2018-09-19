@@ -148,6 +148,12 @@ def message_project_team(request):
         raise BadRequest(text)
     except Project.DoesNotExist:
         raise BadRequest('No project for given id')
-    slack = OrchestraSlackService()
-    slack.chat.post_message(project.slack_group_id, message)
+    if project.slack_group_id:
+        slack = OrchestraSlackService()
+        slack.chat.post_message(project.slack_group_id, message)
+    else:
+        error_message = (
+            "The following project doesn't have slack_group_id: {}"
+        ).format(project)
+        raise BadRequest(error_message)
     return {'success': True}
