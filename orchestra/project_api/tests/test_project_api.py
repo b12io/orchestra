@@ -379,8 +379,8 @@ class ProjectAPITestCase(OrchestraTestCase):
         self.assertTrue('task_assignment_error' in data['errors'])
         self.assertFalse(query.exists())
 
-    @patch('orchestra.project_api.views.OrchestraSlackService')
-    def test_message_project_team(self, mock_slack):
+    @patch('orchestra.project_api.views.message_experts_slack_group')
+    def test_message_project_team(self, mock_message_slack_group):
         project = ProjectFactory(slack_group_id='test-project-1')
         url = '/orchestra/api/project/message_project_team/'
         test_message = 'this is a test message'
@@ -389,7 +389,7 @@ class ProjectAPITestCase(OrchestraTestCase):
             {'message': test_message, 'project_id': project.id},
             format='json')
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(mock_slack.called)
+        self.assertTrue(mock_message_slack_group.called)
         # No project id provided
         response = self.api_client.post(
             url, {'message': test_message}, format='json')

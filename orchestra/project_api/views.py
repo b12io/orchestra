@@ -15,9 +15,9 @@ from orchestra.project_api.api import get_project_information
 from orchestra.utils.decorators import api_endpoint
 from orchestra.utils.load_json import load_encoded_json
 from orchestra.utils.task_lifecycle import assign_task
+from orchestra.utils.notifications import message_experts_slack_group
 from orchestra.project_api.auth import OrchestraProjectAPIAuthentication
 from orchestra.project_api.auth import IsSignedUser
-from orchestra.communication.slack import OrchestraSlackService
 
 logger = logging.getLogger(__name__)
 
@@ -149,8 +149,7 @@ def message_project_team(request):
     except Project.DoesNotExist:
         raise BadRequest('No project for given id')
     if project.slack_group_id:
-        slack = OrchestraSlackService()
-        slack.chat.post_message(project.slack_group_id, message)
+        message_experts_slack_group(project.slack_group_id, message)
     else:
         error_message = (
             "The following project doesn't have slack_group_id: {}"
