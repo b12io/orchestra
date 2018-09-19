@@ -20,6 +20,7 @@ from orchestra.project_api.auth import OrchestraProjectAPIAuthentication
 from orchestra.project_api.auth import SignedUser
 from orchestra.tests.helpers import OrchestraTestCase
 from orchestra.tests.helpers.fixtures import setup_models
+from orchestra.tests.helpers.fixtures import ProjectFactory
 from orchestra.tests.helpers.google_apps import mock_create_drive_service
 from orchestra.utils.load_json import load_encoded_json
 from orchestra.utils.task_lifecycle import get_new_task_assignment
@@ -377,6 +378,40 @@ class ProjectAPITestCase(OrchestraTestCase):
             worker.id, task.id, success=False)
         self.assertTrue('task_assignment_error' in data['errors'])
         self.assertFalse(query.exists())
+
+    @patch('orchestra.project_api.views.message_experts_slack_group')
+    def test_message_project_team(self, mock_message_slack_group):
+        project = ProjectFactory(slack_group_id='test-project-1')
+        url = '/orchestra/api/project/message_project_team/'
+        test_message = 'this is a test message'
+        response = self.api_client.post(
+            url,
+            {'message': test_message, 'project_id': project.id},
+            format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(mock_message_slack_group.called)
+        # No project id provided
+        response = self.api_client.post(
+            url, {'message': test_message}, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            response.json()['message'],
+            ('An object with `message` and `project_id` attributes'
+             ' should be supplied'))
+        # No message provided
+        response = self.api_client.post(
+            url, {'project_id': project.id}, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            response.json()['message'],
+            ('An object with `message` and `project_id` attributes'
+             ' should be supplied'))
+        # Non-existent project_id provided
+        response = self.api_client.post(
+            url, {'message': 'text', 'project_id': 123}, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['message'],
+                         'No project for given id')
 
     def test_permissions(self):
         self.api_client.force_authenticate(user=AnonymousUser())

@@ -15,6 +15,7 @@ from orchestra.project_api.api import get_project_information
 from orchestra.utils.decorators import api_endpoint
 from orchestra.utils.load_json import load_encoded_json
 from orchestra.utils.task_lifecycle import assign_task
+from orchestra.utils.notifications import message_experts_slack_group
 from orchestra.project_api.auth import OrchestraProjectAPIAuthentication
 from orchestra.project_api.auth import IsSignedUser
 
@@ -124,3 +125,34 @@ def assign_worker_to_task(request):
         'success': success,
         'errors': errors,
     }
+
+
+@api_endpoint(methods=['POST'],
+              permissions=(IsSignedUser,),
+              logger=logger,
+              auths=(OrchestraProjectAPIAuthentication,))
+def message_project_team(request):
+    """
+    Endpoint for sending arbitrary message to a project team.
+    Payload example:
+    {'message': 'Chat message', 'project_id': 'some-id-123'}
+    """
+    data = load_encoded_json(request.body)
+    try:
+        message = data['message']
+        project_id = data['project_id']
+        project = Project.objects.get(id=project_id)
+    except KeyError:
+        text = ('An object with `message` and `project_id` attributes'
+                ' should be supplied')
+        raise BadRequest(text)
+    except Project.DoesNotExist:
+        raise BadRequest('No project for given id')
+    if project.slack_group_id:
+        message_experts_slack_group(project.slack_group_id, message)
+    else:
+        error_message = (
+            "The following project doesn't have slack_group_id: {}"
+        ).format(project)
+        raise BadRequest(error_message)
+    return {'success': True}

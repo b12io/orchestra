@@ -94,3 +94,13 @@ def assign_worker_to_task(worker_id, task_id):
     response = _make_api_request('post', 'assign_worker_to_task',
                                  data=json.dumps(data))
     return json.loads(response.text)
+
+
+def message_project_team(project_id, message):
+    data = {
+        'project_id': project_id,
+        'message': message
+    }
+    response = _make_api_request('post', 'message_project_team',
+                                 data=json.dumps(data))
+    return json.loads(response.text)
