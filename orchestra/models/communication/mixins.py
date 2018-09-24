@@ -38,11 +38,14 @@ class StaffBotRequestMixin(object):
     def get_request_cause_description(self):
         return self.RequestCause(self.request_cause).description
 
+    def get_request_status_description(self):
+        return self.Status(self.status).description
+
     def __str__(self):
         return '{} - {} - {}'.format(
-            self.task.id,
+            self.task,
             self.get_request_cause_description(),
-            self.required_role_counter
+            self.get_request_status_description()
         )
 
 
