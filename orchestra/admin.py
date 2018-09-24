@@ -300,6 +300,7 @@ class StaffingRequestInquiryAdmin(RelatedFieldAdmin, AjaxSelectAdmin):
     })
     list_display = (
         'id', 'communication_preference__worker', 'communication_method',
+        'request__task',
         'created_at',
     )
     search_fields = (
