@@ -612,7 +612,9 @@ def tasks_assigned_to_worker(worker):
                 'state': state,
                 'assignment_start_datetime': task_assignment.start_datetime,
                 'next_todo_dict': next_todo_dict,
-                'should_be_active': should_be_active})
+                'should_be_active': should_be_active,
+                'tags': task_assignment.get_assignment_tags()
+            })
     return tasks_assigned
 
 

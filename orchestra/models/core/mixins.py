@@ -174,6 +174,11 @@ class TaskAssignmentMixin(object):
     def is_reviewer(self):
         return self.assignment_counter > 0
 
+    def get_assignment_tags(self):
+        tags = self.task.project.project_data.get('tags', [])
+        # PAOTODO: filter only tasks that is related to this assignment
+        return tags
+
     def __str__(self):
         return '{} - {} - {}'.format(
             str(self.task), self.assignment_counter, str(self.worker))
