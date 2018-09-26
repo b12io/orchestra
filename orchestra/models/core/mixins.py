@@ -174,10 +174,22 @@ class TaskAssignmentMixin(object):
     def is_reviewer(self):
         return self.assignment_counter > 0
 
+    def _can_view_tag(self, tag, certifications):
+        for tag_certification in tag.get('certificates', []):
+            for worker_certification in certifications:
+                certification = worker_certification.certification
+                if (certification.slug == tag_certification['slug'] and
+                    certification.workflow.slug == tag_certification['workflow']):
+                    return True
+        return False
+
     def get_assignment_tags(self):
         tags = self.task.project.project_data.get('tags', [])
-        # PAOTODO: filter only tasks that is related to this assignment
-        return tags
+        certifications = self.worker.certifications.all()
+        displayed_tags = [tag for tag in tags
+                          if self._can_view_tag(tag, certifications)]
+
+        return displayed_tags
 
     def __str__(self):
         return '{} - {} - {}'.format(
