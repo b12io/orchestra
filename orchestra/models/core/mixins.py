@@ -177,9 +177,9 @@ class TaskAssignmentMixin(object):
     def _can_view_tag(self, tag, certifications):
         for tag_certification in tag.get('certificates', []):
             for worker_certification in certifications:
-                certification = worker_certification.certification
-                if (certification.slug == tag_certification['slug'] and
-                    certification.workflow.slug == tag_certification['workflow']):
+                cert = worker_certification.certification
+                if (cert.slug == tag_certification['slug'] and
+                    cert.workflow.slug == tag_certification['workflow']):
                     return True
         return False
 
