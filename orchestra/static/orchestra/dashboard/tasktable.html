@@ -51,7 +51,7 @@
                 <th st-sort="project">Project</th>
                 <th st-sort="step">Task</th>
                 <th st-sort="detail">Details</th>
-                <th class="tag-col" st-sort="tag">Tags</th>
+                <th class="tags-col" st-sort="tag" ng-if="vm.showTagsCol">Tags</th>
                 <th st-sort="next_todo_dict.description">Next steps</th>
                 <th st-sort="next_todo_dict.start_by_datetime">Start by</th>
                 <th st-sort="next_todo_dict.due_datetime">Due on</th>
@@ -67,7 +67,7 @@
                 <td>{{task.project}}</td>
                 <td>{{task.step}}</td>
                 <td>{{task.detail|limitTo:50}}{{task.detail.length > 50 ? '...' : ''}}</td>
-                <td class="tag-col">
+                <td class="tags-col" ng-if="vm.showTagsCol">
                   <span ng-repeat="tag in task.tags"
                         class="label label-{{tag.status}}">
                     {{tag.label}}

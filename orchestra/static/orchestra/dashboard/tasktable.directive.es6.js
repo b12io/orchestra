@@ -24,8 +24,10 @@ export default function tasktable () {
       vm.enableNewTaskButtons = vm.tasktable.newTasks && window.orchestra.enable_new_task_buttons
 
       vm.waiting = true
-      orchestraTasks.data.finally(() => { vm.waiting = false })
-
+      orchestraTasks.data.finally(() => {
+        vm.waiting = false
+        vm.showTagsCol = vm.tasktable.tasks.some(task => task.tags.length > 0)
+      })
       vm.isInDanger = (task) => {
         return moment.isBeforeNowBy(task.next_todo_dict.due_datetime, 0, 'days')
       }
