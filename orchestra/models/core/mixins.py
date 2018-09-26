@@ -179,7 +179,7 @@ class TaskAssignmentMixin(object):
             for worker_certification in certifications:
                 cert = worker_certification.certification
                 if (cert.slug == tag_certification['slug'] and
-                    cert.workflow.slug == tag_certification['workflow']):
+                        cert.workflow.slug == tag_certification['workflow']):
                     return True
         return False
 
