@@ -104,6 +104,9 @@
                 </a>
               </li>
 
+              {% block additional_menu_items %}
+              {% endblock %}
+
               <li>
                 <a href="{% url 'logout_then_login' %}" target="_self">
                   <i class="fa fa-sign-out"></i>
