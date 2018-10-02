@@ -3,6 +3,8 @@ from pydoc import locate
 from django.db.models import Q
 
 from orchestra.core.errors import ModelSaveError
+from orchestra.json_schemas.validation import validate_json
+from orchestra.json_schemas.tags import TagListSchema
 
 
 class WorkflowMixin(object):
@@ -149,6 +151,12 @@ class TaskMixin(object):
             return function(get_task_details(self.id), **kwargs)
         except Exception:
             return ''
+
+    def save(self, *args, **kwargs):
+        validate_json('tags', TagListSchema,
+                      getattr(self, 'tags', None))
+        super().save(*args, **kwargs)
+
 
     def __str__(self):
         return '{} - {}'.format(str(self.project), str(self.step.slug))
