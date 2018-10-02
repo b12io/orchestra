@@ -1,6 +1,5 @@
 import jsl
 
-
 TAG_STATUS = [
     'default',
     'primary',
@@ -9,6 +8,7 @@ TAG_STATUS = [
     'warning',
     'danger',
 ]
+
 
 class TagSchema(jsl.Document):
     """
