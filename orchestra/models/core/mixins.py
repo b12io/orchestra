@@ -157,7 +157,6 @@ class TaskMixin(object):
                       getattr(self, 'tags', None))
         super().save(*args, **kwargs)
 
-
     def __str__(self):
         return '{} - {}'.format(str(self.project), str(self.step.slug))
 
