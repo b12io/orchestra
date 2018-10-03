@@ -80,7 +80,8 @@ class DashboardTestCase(OrchestraTransactionTestCase):
         self._check_client_dashboard_state(self.clients[0], 'pending_review')
 
     def test_dashboard_tasks_tags(self):
-        response = self.clients[0].get('/orchestra/api/interface/dashboard_tasks/')
+        url = '/orchestra/api/interface/dashboard_tasks/'
+        response = self.clients[0].get(url)
         returned = load_encoded_json(response.content)
         self.assertEqual(len(returned['tasks'][0]['tags']), 0)
 
@@ -95,7 +96,7 @@ class DashboardTestCase(OrchestraTransactionTestCase):
 
         task.tags = valid_tags
         task.save()
-        response2 = self.clients[0].get('/orchestra/api/interface/dashboard_tasks/')
+        response2 = self.clients[0].get(url)
         returned2 = load_encoded_json(response2.content)
         self.assertEqual(len(returned2['tasks'][0]['tags']), 1)
 
