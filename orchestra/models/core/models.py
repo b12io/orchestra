@@ -383,6 +383,7 @@ class Task(TaskMixin, models.Model):
     project = models.ForeignKey(
         Project, related_name='tasks', on_delete=models.CASCADE)
     status = models.IntegerField(choices=STATUS_CHOICES)
+    tags = JSONField(default={'tags': []})
 
     class Meta:
         app_label = 'orchestra'

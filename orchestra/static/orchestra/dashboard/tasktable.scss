@@ -1,3 +1,11 @@
 .collapsed-toggle {
   cursor: pointer;
 }
+
+.tags-col {
+  max-width: 150px;
+  span {
+    display: inline-block;
+    margin-right: 3px;
+  }
+}
