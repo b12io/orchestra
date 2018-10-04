@@ -79,6 +79,30 @@ class DashboardTestCase(OrchestraTransactionTestCase):
     def test_dashboard_tasks(self):
         self._check_client_dashboard_state(self.clients[0], 'pending_review')
 
+    def test_dashboard_tasks_tags(self):
+        url = '/orchestra/api/interface/dashboard_tasks/'
+        response = self.clients[0].get(url)
+        returned = load_encoded_json(response.content)
+        self.assertEqual(len(returned['tasks'][0]['tags']), 0)
+
+        # set tags for this task
+        bad_formatted_tags = {'tags': [{'foo': 'bar'}]}
+        valid_tags = {'tags': [{'label': 'foo', 'status': 'default'}]}
+        task = TaskAssignment.objects.filter(
+            worker=self.workers[0])[0].task
+        with self.assertRaises(AttributeError):
+            task.tags = bad_formatted_tags
+            task.tags.save()
+
+        task.tags = valid_tags
+        task.save()
+        response2 = self.clients[0].get(url)
+        returned2 = load_encoded_json(response2.content)
+        tags = returned2['tasks'][0]['tags']
+        self.assertEqual(len(tags), 1)
+        self.assertEqual(tags[0]['label'], 'foo')
+        self.assertEqual(tags[0]['status'], 'default')
+
     def test_entry_level_task_assignment(self):
         response = (self.clients[2].get(
             '/orchestra/api/interface/new_task_assignment/entry_level/'))
