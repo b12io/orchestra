@@ -98,7 +98,10 @@ class DashboardTestCase(OrchestraTransactionTestCase):
         task.save()
         response2 = self.clients[0].get(url)
         returned2 = load_encoded_json(response2.content)
-        self.assertEqual(len(returned2['tasks'][0]['tags']), 1)
+        tags = returned2['tasks'][0]['tags']
+        self.assertEqual(len(tags), 1)
+        self.assertEqual(tags[0]['label'], 'foo')
+        self.assertEqual(tags[0]['status'], 'default')
 
     def test_entry_level_task_assignment(self):
         response = (self.clients[2].get(
