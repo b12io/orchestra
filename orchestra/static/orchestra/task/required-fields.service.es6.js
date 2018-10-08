@@ -15,6 +15,11 @@ export default function requiredFields ($rootScope, orchestraService) {
         function (elem) {
           return elem.value && elem.value.length > 0
         }
+      ],
+      'input-radio': [
+        function (elems) {
+          return Array.from(elems).some(function(elem) { return elem.checked })
+        }
       ]
     },
     setup: function (data) {
