@@ -7,18 +7,18 @@ export default function requiredFields ($rootScope, orchestraService) {
   var requiredFields = {
     validators: {
       'input-checkbox': [
-        function (elem) {
-          return elem.checked
+        function (elems) {
+          return elems[0].checked
         }
       ],
       'input-text': [
-        function (elem) {
-          return elem.value && elem.value.length > 0
+        function (elems) {
+          return elems[0].value && elems[0].value.length > 0
         }
       ],
       'input-radio': [
         function (elems) {
-          return Array.from(elems).some(function(elem) { return elem.checked })
+          return Array.from(elems).some(function (elem) { return elem.checked })
         }
       ]
     },

@@ -11,26 +11,22 @@ export default function orchestraRequiredField ($compile, requiredFields) {
   return {
     restrict: 'EA',
     link: function (scope, elem, attrs) {
-      var fieldElements = elem.find('input')
-      var firstField = fieldElements[0]
-      var fieldType = firstField.getAttribute('type')
+      var fields = elem.find('input')
+      var fieldType = fields[0].getAttribute('type')
       var errorClass = elem.attr('data-error-class')
       if (!errorClass) {
         errorClass = fieldType + '-error'
       }
-      if (firstField &&
+      if (fields[0] &&
           fieldType !== 'radio' &&
           fieldType !== 'checkbox' &&
           fieldType !== 'text') {
         console.error('Unsupported required field type.')
         return
       }
-      var fieldsToValidate = (fieldType === 'radio')
-        ? fieldElements
-        : firstField
-      requiredFields.require('input-' + fieldType, fieldsToValidate)
+      requiredFields.require('input-' + fieldType, fields)
       var toggleError = function () {
-        if (requiredFields.invalid.indexOf(firstField) >= 0) {
+        if (requiredFields.invalid.indexOf(fields) >= 0) {
           elem.addClass('required-field-error ' + errorClass)
         } else {
           elem.removeClass('required-field-error ' + errorClass)
