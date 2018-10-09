@@ -59479,18 +59479,19 @@ function orchestraRequiredField($compile, requiredFields) {
   return {
     restrict: 'EA',
     link: function link(scope, elem, attrs) {
-      var field = elem.find('input')[0];
+      var fields = elem.find('input');
+      var fieldType = fields[0].getAttribute('type');
       var errorClass = elem.attr('data-error-class');
       if (!errorClass) {
-        errorClass = field.getAttribute('type') + '-error';
+        errorClass = fieldType + '-error';
       }
-      if (field && field.getAttribute('type') !== 'checkbox' && field.getAttribute('type') !== 'text') {
+      if (fields[0] && fieldType !== 'radio' && fieldType !== 'checkbox' && fieldType !== 'text') {
         console.error('Unsupported required field type.');
         return;
       }
-      requiredFields.require('input-' + field.getAttribute('type'), field);
+      requiredFields.require('input-' + fieldType, fields);
       var toggleError = function toggleError() {
-        if (requiredFields.invalid.indexOf(field) >= 0) {
+        if (requiredFields.invalid.indexOf(fields) >= 0) {
           elem.addClass('required-field-error ' + errorClass);
         } else {
           elem.removeClass('required-field-error ' + errorClass);
@@ -59522,11 +59523,16 @@ function requiredFields($rootScope, orchestraService) {
 
   var requiredFields = {
     validators: {
-      'input-checkbox': [function (elem) {
-        return elem.checked;
+      'input-checkbox': [function (elems) {
+        return elems[0].checked;
       }],
-      'input-text': [function (elem) {
-        return elem.value && elem.value.length > 0;
+      'input-text': [function (elems) {
+        return elems[0].value && elems[0].value.length > 0;
+      }],
+      'input-radio': [function (elems) {
+        return Array.from(elems).some(function (elem) {
+          return elem.checked;
+        });
       }]
     },
     setup: function setup(data) {
