@@ -1912,6 +1912,10 @@ a.logo {
   .task-view .required-field-error.text-error input {
     border: 1px solid red;
     box-shadow: 0px 0px 1px red inset; }
+  .task-view .required-field-error.radio-error {
+    border-left: 2px solid red;
+    padding-left: 10px;
+    display: inline-block; }
 @charset "UTF-8";
 /*!
  * Pikaday
