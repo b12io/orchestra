@@ -64653,11 +64653,14 @@ function teamInfoCard(orchestraApi) {
               var task = tasks[stepSlug];
               if (task) {
                 teamInfoCard.assignments = teamInfoCard.assignments.concat(task.assignments.map(function (a) {
+                  var workTime = _momentTimezone2.default.duration(a.recorded_work_time, 'seconds');
+                  var workDayDisplay = workTime.days() > 0 ? workTime.days() + 'd ' : '';
+                  var workTimeString = '' + workDayDisplay + workTime.hours() + 'h ' + workTime.minutes() + 'm';
                   return {
                     stepSlug: stepSlug,
                     role: teamInfoCard.steps[stepSlug].name,
                     worker: a.worker,
-                    recordedTime: _momentTimezone2.default.duration(a.recorded_work_time, 'seconds').roundMinute().humanizeUnits(),
+                    recordedTime: workTimeString,
                     status: task.status,
                     task_id: a.task
                   };
