@@ -34,11 +34,14 @@ export default function teamInfoCard (orchestraApi) {
               const task = tasks[stepSlug]
               if (task) {
                 teamInfoCard.assignments = teamInfoCard.assignments.concat(task.assignments.map(a => {
+                  const workTime = moment.duration(a.recorded_work_time, 'seconds')
+                  const workDayDisplay = workTime.days() > 0 ? `${workTime.days()}d ` : ''
+                  const workTimeString = `${workDayDisplay}${workTime.hours()}h ${workTime.minutes()}m`
                   return {
                     stepSlug,
                     role: teamInfoCard.steps[stepSlug].name,
                     worker: a.worker,
-                    recordedTime: moment.duration(a.recorded_work_time, 'seconds').roundMinute().humanizeUnits(),
+                    recordedTime: workTimeString,
                     status: task.status,
                     task_id: a.task
                   }
