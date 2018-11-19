@@ -322,6 +322,8 @@ def complete_and_skip_task(task_id):
     task = Task.objects.get(id=task_id)
     assignment = current_assignment(task)
     if assignment and assignment.worker:
+        if assignment.status != TaskAssignment.Status.PROCESSING:
+            return task
         task_data = assignment.in_progress_task_data or {}
         task_data.update(_orchestra_internal={'complete_and_skip_task': True})
         submit_task(
