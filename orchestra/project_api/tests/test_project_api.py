@@ -16,6 +16,8 @@ from orchestra.models import TimeEntry
 from orchestra.models import WorkerCertification
 from orchestra.project_api.api import MalformedDependencyException
 from orchestra.project_api.api import get_workflow_steps
+from orchestra.project_api.api import get_projects_information
+from orchestra.project_api.api import get_projects_tasks_data
 from orchestra.project_api.auth import OrchestraProjectAPIAuthentication
 from orchestra.project_api.auth import SignedUser
 from orchestra.tests.helpers import OrchestraTestCase
@@ -241,6 +243,29 @@ class ProjectAPITestCase(OrchestraTestCase):
 
         with self.assertRaises(MalformedDependencyException):
             steps = get_workflow_steps('w5', 'erroneous_workflow_2')
+
+    def test_get_projects_information(self):
+        projects = Project.objects.all()[:2]
+        projects_info = get_projects_information(
+            [p.pk for p in projects])
+        keys = ['projects', 'tasks', 'steps']
+        for key in keys:
+            self.assertTrue(key in projects_info)
+            self.assertTrue(isinstance(projects_info['tasks'], dict))
+            self.assertTrue(isinstance(projects_info['steps'], dict))
+            self.assertTrue(isinstance(projects_info['projects'], list))
+
+    def test_get_projects_tasks_data(self):
+        projects = Project.objects.all()
+        project_ids = [p.pk for p in projects]
+        tasks = get_projects_tasks_data(project_ids)
+        keys = ['id', 'step_slug', 'project', 'status', 'latest_data',
+            'assignments', 'start_datetime']
+        tasks_keys = list(tasks.keys())
+        a_dict_key = tasks_keys[0]
+        task_instance = tasks[a_dict_key]
+        for key in keys:
+            self.assertTrue(key in task_instance.keys())
 
     @patch.object(Service, '_create_drive_service',
                   new=mock_create_drive_service)

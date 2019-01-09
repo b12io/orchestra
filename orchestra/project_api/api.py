@@ -29,6 +29,40 @@ def get_project_information(project_id):
     }
 
 
+def get_projects_information(project_ids):
+    projects = Project.objects.select_related(
+        'workflow_version__workflow').filter(id__in=project_ids)
+    projects_data = ProjectSerializer(projects, many=True).data
+    tasks = get_projects_tasks_data([p.id for p in projects])
+    steps = {}
+    for project in projects:
+        workflow_version = project.workflow_version
+        workflow = workflow_version.workflow
+        steps[project.id] = get_workflow_steps(
+            workflow.slug, workflow_version.slug)
+    return {
+        'projects': projects_data,
+        'tasks': tasks,
+        'steps': steps
+    }
+
+
+def get_projects_tasks_data(project_ids):
+    """
+    @params:
+    :project_ids: a list of project ids
+    @returns:
+    :tasks: a dictionary where key is a parent project id
+    """
+    projects = Project.objects.prefetch_related(
+        'tasks').filter(id__in=project_ids)
+    tasks = {}
+    for project in projects:
+        for task in project.tasks.all():
+            tasks[project.id] = TaskSerializer(task).data
+    return tasks
+
+
 def get_project_task_data(project_id):
     project = Project.objects.get(id=project_id)
 
