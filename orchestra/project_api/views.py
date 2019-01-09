@@ -32,9 +32,9 @@ def project_information(request):
         data = load_encoded_json(request.body)
         project_id = data.get('project_id')
         project_ids = data.get('project_ids')
-        if not project_id and not project_ids:
-            raise BadRequest(
-                'Either project_id or project_ids should be supplied')
+        error_msg = 'Either project_id or project_ids should be supplied'
+        if project_id and project_ids or (not project_id and not project_ids):
+            raise BadRequest(error_msg)
         if project_id:
             return get_project_information(project_id)
         if project_ids:

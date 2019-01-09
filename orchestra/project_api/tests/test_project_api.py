@@ -180,6 +180,13 @@ class ProjectAPITestCase(OrchestraTestCase):
         self.ensure_response(response,
                              {'error': 400, 'message': msg}, 400)
 
+        # When two parameters were passed at once, it should fail
+        response = self.api_client.post(
+            '/orchestra/api/project/project_information/',
+            {'project_id': 123, 'project_ids': [123, 1234]},
+            format='json')
+        self.ensure_response(response,
+                             {'error': 400, 'message': msg}, 400)
         # Retrieve the third project, which has no task assignments.
         response = self.api_client.post(
             '/orchestra/api/project/project_information/',
