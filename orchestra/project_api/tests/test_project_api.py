@@ -159,15 +159,14 @@ class ProjectAPITestCase(OrchestraTestCase):
                               'message': 'No project for given id'},
                              400)
 
-        # Getting project info without a project_id should fail.
+        # Getting project info without a project_id and project_ids should fail.
         response = self.api_client.post(
             '/orchestra/api/project/project_information/',
             {'projetc_id': project.id},  # Typo.
             format='json')
+        msg = 'Either project_id or project_ids should be supplied'
         self.ensure_response(response,
-                             {'error': 400,
-                              'message': 'project_id is required'},
-                             400)
+                             {'error': 400, 'message': msg}, 400)
 
         # Retrieve the third project, which has no task assignments.
         response = self.api_client.post(
