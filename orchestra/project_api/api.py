@@ -63,7 +63,7 @@ def get_projects_information(project_ids):
             project).data
         projects_dict[project_id]['steps'] = get_workflow_steps(
             workflow.slug, workflow_version.slug)
-        projects_dict[project_id]['tasks'] = tasks.get(project_id, [])
+        projects_dict[project_id]['tasks'] = tasks.get(project_id, {})
     return projects_dict
 
 
