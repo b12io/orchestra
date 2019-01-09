@@ -248,12 +248,11 @@ class ProjectAPITestCase(OrchestraTestCase):
         projects = Project.objects.all()[:2]
         projects_info = get_projects_information(
             [p.pk for p in projects])
-        keys = ['projects', 'tasks', 'steps']
-        for key in keys:
-            self.assertTrue(key in projects_info)
-            self.assertTrue(isinstance(projects_info['tasks'], dict))
-            self.assertTrue(isinstance(projects_info['steps'], dict))
-            self.assertTrue(isinstance(projects_info['projects'], list))
+        a_project_info_key = list(projects_info.keys())[0]
+        a_project_info = projects_info[a_project_info_key]
+        self.assertTrue(isinstance(a_project_info['project'], dict))
+        self.assertTrue(isinstance(a_project_info['tasks'], dict))
+        self.assertTrue(isinstance(a_project_info['steps'], list))
 
     def test_get_projects_tasks_data(self):
         projects = Project.objects.all()
@@ -265,7 +264,8 @@ class ProjectAPITestCase(OrchestraTestCase):
         a_dict_key = tasks_keys[0]
         task_instance = tasks[a_dict_key]
         for key in keys:
-            self.assertTrue(key in task_instance.keys())
+            for inner_key in task_instance.keys():
+                self.assertTrue(inner_key in task_instance.keys())
 
     @patch.object(Service, '_create_drive_service',
                   new=mock_create_drive_service)

@@ -1,4 +1,5 @@
 import logging
+from collections import defaultdict
 
 from orchestra.models import Project
 from orchestra.models import Step
@@ -30,25 +31,46 @@ def get_project_information(project_id):
 
 
 def get_projects_information(project_ids):
+    """
+    output format:
+    { project_id: {
+        'project': serialized_project_data,
+        'tasks': project_tasks_list,
+        'steps': project_workflow_steps
+        },
+        ...
+    }
+    Example:
+    {
+        123: {
+            'project': {},
+            'tasks': [],
+            'steps': []
+        },
+        ...
+    }
+    """
     projects = Project.objects.select_related(
         'workflow_version__workflow').filter(id__in=project_ids)
-    projects_data = ProjectSerializer(projects, many=True).data
     tasks = get_projects_tasks_data([p.id for p in projects])
-    steps = {}
+    projects_dict = defaultdict(dict)
     for project in projects:
+        project_id = project.id
         workflow_version = project.workflow_version
         workflow = workflow_version.workflow
-        steps[project.id] = get_workflow_steps(
+
+        projects_dict[project_id]['project'] = ProjectSerializer(
+            project).data
+        projects_dict[project_id]['steps'] = get_workflow_steps(
             workflow.slug, workflow_version.slug)
-    return {
-        'projects': projects_data,
-        'tasks': tasks,
-        'steps': steps
-    }
+        projects_dict[project_id]['tasks'] = tasks.get(project_id, [])
+    return projects_dict
 
 
 def get_projects_tasks_data(project_ids):
     """
+    Here we use prefetch_related method in order to make
+    less requests to DB.
     @params:
     :project_ids: a list of project ids
     @returns:
@@ -56,10 +78,10 @@ def get_projects_tasks_data(project_ids):
     """
     projects = Project.objects.prefetch_related(
         'tasks').filter(id__in=project_ids)
-    tasks = {}
+    tasks = defaultdict(dict)
     for project in projects:
         for task in project.tasks.all():
-            tasks[project.id] = TaskSerializer(task).data
+            tasks[project.id][task.step.slug] = TaskSerializer(task).data
     return tasks
 
 
