@@ -65,8 +65,14 @@ class ProjectAPITestCase(OrchestraTestCase):
             '/orchestra/api/project/project_information/',
             {'project_id': project.id},
             format='json')
+        project_ids_response = self.api_client.post(
+            '/orchestra/api/project/project_information/',
+            {'project_ids': [project.id]},
+            format='json')
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(project_ids_response.status_code, 200)
         returned = load_encoded_json(response.content)
+        project_ids_returned = load_encoded_json(project_ids_response.content)
 
         unimportant_keys = (
             'id',
@@ -91,6 +97,11 @@ class ProjectAPITestCase(OrchestraTestCase):
                     delete_keys(value)
 
         delete_keys(returned)
+        delete_keys(project_ids_returned[str(project.id)])
+        for item in project_ids_returned.values():
+            del item['tasks']['step1']['project']
+            del (item['tasks']['step1']['assignments'][0]
+                     ['iterations'][0]['assignment'])
         del returned['tasks']['step1']['project']
         del (returned['tasks']['step1']['assignments'][0]
                      ['iterations'][0]['assignment'])
@@ -149,6 +160,7 @@ class ProjectAPITestCase(OrchestraTestCase):
         }
 
         self.assertEqual(returned, expected)
+        self.assertEqual(project_ids_returned[str(project.id)], expected)
 
         response = self.api_client.post(
             '/orchestra/api/project/project_information/',
