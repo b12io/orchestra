@@ -77,9 +77,10 @@ def create_orchestra_project(client,
     return project_id
 
 
-def get_project_information(project_id):
+def get_project_information(project_id, project_ids=[]):
     data = {
-        'project_id': project_id
+        'project_id': project_id,
+        'project_ids': project_ids
     }
     response = _make_api_request('post', 'project_information',
                                  data=json.dumps(data))
