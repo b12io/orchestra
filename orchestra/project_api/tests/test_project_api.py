@@ -68,14 +68,6 @@ class ProjectAPITestCase(OrchestraTestCase):
         self.assertEqual(response.status_code, 200)
         returned = load_encoded_json(response.content)
 
-        unimportant_keys = (
-            'id',
-            'task',
-            'short_description',
-            'start_datetime',
-            'end_datetime'
-        )
-
         self._delete_keys(returned[str(project.id)])
         for item in returned.values():
             del item['tasks']['step1']['project']
@@ -251,8 +243,9 @@ class ProjectAPITestCase(OrchestraTestCase):
             for inner_key in task_instance.keys():
                 self.assertTrue(inner_key in task_instance.keys())
 
-    @patch.object(Service, '_create_drive_service',
-                  new=mock_create_drive_service)
+    @patch.object(
+        Service, '_create_drive_service',
+        new=mock_create_drive_service)
     def test_create_project(self):
         tasks_awaiting_processing = (
             Task.objects
@@ -436,6 +429,13 @@ class ProjectAPITestCase(OrchestraTestCase):
             {'detail': 'You do not have permission to perform this action.'})
 
     def _delete_keys(self, obj):
+        unimportant_keys = (
+            'id',
+            'task',
+            'short_description',
+            'start_datetime',
+            'end_datetime'
+        )
         if isinstance(obj, list):
             for item in obj:
                 self._delete_keys(item)
