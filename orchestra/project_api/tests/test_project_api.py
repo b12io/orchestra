@@ -76,21 +76,7 @@ class ProjectAPITestCase(OrchestraTestCase):
             'end_datetime'
         )
 
-        def delete_keys(obj):
-            if isinstance(obj, list):
-                for item in obj:
-                    delete_keys(item)
-
-            elif isinstance(obj, dict):
-                for key in unimportant_keys:
-                    try:
-                        del obj[key]
-                    except KeyError:
-                        pass
-                for value in obj.values():
-                    delete_keys(value)
-
-        delete_keys(returned[str(project.id)])
+        self._delete_keys(returned[str(project.id)])
         for item in returned.values():
             del item['tasks']['step1']['project']
             del (item['tasks']['step1']['assignments'][0]
@@ -448,6 +434,20 @@ class ProjectAPITestCase(OrchestraTestCase):
         self.assertEqual(
             returned,
             {'detail': 'You do not have permission to perform this action.'})
+
+    def _delete_keys(self, obj):
+        if isinstance(obj, list):
+            for item in obj:
+                self._delete_keys(item)
+
+        elif isinstance(obj, dict):
+            for key in unimportant_keys:
+                try:
+                    del obj[key]
+                except KeyError:
+                    pass
+            for value in obj.values():
+                self._delete_keys(value)
 
 
 @override_settings(ORCHESTRA_PROJECT_API_CREDENTIALS={'a': 'b'})
