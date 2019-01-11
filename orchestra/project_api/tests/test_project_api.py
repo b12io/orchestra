@@ -235,7 +235,7 @@ class ProjectAPITestCase(OrchestraTestCase):
         project_ids = [p.pk for p in projects]
         tasks = get_projects_tasks_data(project_ids)
         keys = ['id', 'step_slug', 'project', 'status', 'latest_data',
-            'assignments', 'start_datetime']
+                'assignments', 'start_datetime']
         tasks_keys = list(tasks.keys())
         a_dict_key = tasks_keys[0]
         task_instance = tasks[a_dict_key]
