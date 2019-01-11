@@ -121,13 +121,13 @@ create_orchestra_project(
         self.pause(2)
         print('The API call looks like this:')
         print('')
-        print('get_project_information(project_id)')
+        print('get_project_information(project_ids)')
         print('')
         self.pause(2)
         input('Press enter when you are ready to make the API call and print '
               'out the JSON data received in response. ')
 
-        project_info = get_project_information(project_id)
+        project_info = get_project_information([project_id])
         print("Information received! Here's what we got:")
         print('')
         self.pause(2)
@@ -165,9 +165,10 @@ create_orchestra_project(
 
     def get_rating_info(self, msg, project_id):
         input(msg)
-        project_info = get_project_information(project_id)
-        complete = project_info['tasks']['rate']['status'] == 'Complete'
-        rating = (project_info['tasks']['rate']['latest_data'].get('rating')
+        project_info = get_project_information([project_id])
+        tasks = project_info[str(project_id)]['tasks']
+        complete = tasks['rate']['status'] == 'Complete'
+        rating = (tasks['rate']['latest_data'].get('rating')
                   if complete else None)
         print('')
         print("Information received! Here's what we got:")
@@ -188,7 +189,7 @@ create_orchestra_project(
         self.pause(2)
         print('As a reminder, the API call looks like this:')
         print('')
-        print('get_project_information(project_id)')
+        print('get_project_information(project_ids)')
         print('')
         self.pause(2)
 

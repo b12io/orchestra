@@ -37,10 +37,12 @@ class Command(BaseCommand):
             self.project_info(options['project_id'])
 
         elif options['final']:
-            p_info = self.project_info(options['project_id'], verbose=False)
+            project_id = options['project_id']
+            p_info = self.project_info(project_id, verbose=False)
             try:
-                assert p_info['tasks']['copy_editing']['status'] == 'Complete'
-                pprint(p_info['tasks']['copy_editing']['latest_data'])
+                tasks = p_info[str(project_id)]['tasks']
+                assert tasks['copy_editing']['status'] == 'Complete'
+                pprint(tasks['copy_editing']['latest_data'])
             except Exception:
                 print("The '--final' option must be used with a completed "
                       "project")
@@ -61,7 +63,7 @@ class Command(BaseCommand):
         return project_id
 
     def project_info(self, project_id, verbose=True):
-        p_info = get_project_information(project_id)
+        p_info = get_project_information([project_id])
         if verbose:
             print("Information received! Here's what we got:")
             print('')
