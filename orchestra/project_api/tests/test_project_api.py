@@ -16,7 +16,7 @@ from orchestra.models import TimeEntry
 from orchestra.models import WorkerCertification
 from orchestra.project_api.api import MalformedDependencyException
 from orchestra.project_api.api import get_workflow_steps
-from orchestra.project_api.api import get_projects_information
+from orchestra.project_api.api import get_project_information
 from orchestra.project_api.api import get_projects_tasks_data
 from orchestra.project_api.auth import OrchestraProjectAPIAuthentication
 from orchestra.project_api.auth import SignedUser
@@ -63,16 +63,10 @@ class ProjectAPITestCase(OrchestraTestCase):
         project = self.projects['base_test_project']
         response = self.api_client.post(
             '/orchestra/api/project/project_information/',
-            {'project_id': project.id},
-            format='json')
-        project_ids_response = self.api_client.post(
-            '/orchestra/api/project/project_information/',
             {'project_ids': [project.id]},
             format='json')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(project_ids_response.status_code, 200)
         returned = load_encoded_json(response.content)
-        project_ids_returned = load_encoded_json(project_ids_response.content)
 
         unimportant_keys = (
             'id',
@@ -96,14 +90,10 @@ class ProjectAPITestCase(OrchestraTestCase):
                 for value in obj.values():
                     delete_keys(value)
 
-        delete_keys(returned)
-        delete_keys(project_ids_returned[str(project.id)])
-        for item in project_ids_returned.values():
+        delete_keys(returned[str(project.id)])
+        for item in returned.values():
             del item['tasks']['step1']['project']
             del (item['tasks']['step1']['assignments'][0]
-                     ['iterations'][0]['assignment'])
-        del returned['tasks']['step1']['project']
-        del (returned['tasks']['step1']['assignments'][0]
                      ['iterations'][0]['assignment'])
 
         expected = {
@@ -159,44 +149,34 @@ class ProjectAPITestCase(OrchestraTestCase):
             ]
         }
 
-        self.assertEqual(returned, expected)
-        self.assertEqual(project_ids_returned[str(project.id)], expected)
+        self.assertEqual(returned[str(project.id)], expected)
 
         response = self.api_client.post(
             '/orchestra/api/project/project_information/',
-            {'project_id': -1},
+            {'project_ids': [-1]},
             format='json')
-        self.ensure_response(response,
-                             {'error': 400,
-                              'message': 'No project for given id'},
-                             400)
+        self.assertEqual(load_encoded_json(response.content), {})
 
-        # Getting project info without a project_id and project_ids should fail.
+        # Getting project info without a project_ids should fail.
         response = self.api_client.post(
             '/orchestra/api/project/project_information/',
-            {'projetc_id': project.id},  # Typo.
+            {'project_id': [project.id]},  # Typo.
             format='json')
-        msg = 'Either project_id or project_ids should be supplied'
+        msg = 'project_ids is required'
         self.ensure_response(response,
                              {'error': 400, 'message': msg}, 400)
 
-        # When two parameters were passed at once, it should fail
-        response = self.api_client.post(
-            '/orchestra/api/project/project_information/',
-            {'project_id': 123, 'project_ids': [123, 1234]},
-            format='json')
-        self.ensure_response(response,
-                             {'error': 400, 'message': msg}, 400)
         # Retrieve the third project, which has no task assignments.
+        project_id = self.projects['no_task_assignments'].id
         response = self.api_client.post(
             '/orchestra/api/project/project_information/',
-            {'project_id': self.projects['no_task_assignments'].id},
+            {'project_ids': [project_id]},
             format='json')
         returned = load_encoded_json(response.content)
         for key in ('id', 'project', 'start_datetime'):
-            del returned['tasks']['step1'][key]
+            del returned[str(project_id)]['tasks']['step1'][key]
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(returned['tasks'], {
+        self.assertEqual(returned[str(project_id)]['tasks'], {
             'step1': {
                 'assignments': [],
                 'latest_data': None,
@@ -234,10 +214,10 @@ class ProjectAPITestCase(OrchestraTestCase):
 
         response = self.api_client.post(
             '/orchestra/api/project/project_information/',
-            {'project_id': project.id},
+            {'project_ids': [project.id]},
             format='json')
         returned = load_encoded_json(response.content)
-        returned_task = returned['tasks']
+        returned_task = returned[str(project.id)]['tasks']
         returned_assignment = returned_task['step1']['assignments'][0]
         recorded_time = returned_assignment['recorded_work_time']
         self.assertEqual(recorded_time, 105*60)  # 1:15 + 0:30
@@ -262,9 +242,9 @@ class ProjectAPITestCase(OrchestraTestCase):
         with self.assertRaises(MalformedDependencyException):
             steps = get_workflow_steps('w5', 'erroneous_workflow_2')
 
-    def test_get_projects_information(self):
+    def test_get_project_information(self):
         projects = Project.objects.all()[:2]
-        projects_info = get_projects_information(
+        projects_info = get_project_information(
             [p.pk for p in projects])
         a_project_info_key = list(projects_info.keys())[0]
         a_project_info = projects_info[a_project_info_key]

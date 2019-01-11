@@ -14,23 +14,7 @@ class MalformedDependencyException(Exception):
     pass
 
 
-def get_project_information(project_id):
-    project = Project.objects.select_related(
-        'workflow_version__workflow').get(pk=project_id)
-    workflow_version = project.workflow_version
-    workflow = workflow_version.workflow
-    project_data = ProjectSerializer(project).data
-    tasks = get_project_task_data(project_id)
-    steps = get_workflow_steps(workflow.slug, workflow_version.slug)
-
-    return {
-        'project': project_data,
-        'tasks': tasks,
-        'steps': steps
-    }
-
-
-def get_projects_information(project_ids):
+def get_project_information(project_ids):
     """
     output format:
     { project_id: {
@@ -82,16 +66,6 @@ def get_projects_tasks_data(project_ids):
     for project in projects:
         for task in project.tasks.all():
             tasks[project.id][task.step.slug] = TaskSerializer(task).data
-    return tasks
-
-
-def get_project_task_data(project_id):
-    project = Project.objects.get(id=project_id)
-
-    tasks = {}
-    for task in project.tasks.all():
-        tasks[task.step.slug] = TaskSerializer(task).data
-
     return tasks
 
 

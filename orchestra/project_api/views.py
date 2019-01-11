@@ -12,7 +12,6 @@ from orchestra.models import WorkerCertification
 from orchestra.models import Workflow
 from orchestra.project import create_project_with_tasks
 from orchestra.project_api.api import get_project_information
-from orchestra.project_api.api import get_projects_information
 from orchestra.utils.decorators import api_endpoint
 from orchestra.utils.load_json import load_encoded_json
 from orchestra.utils.task_lifecycle import assign_task
@@ -30,19 +29,10 @@ logger = logging.getLogger(__name__)
 def project_information(request):
     try:
         data = load_encoded_json(request.body)
-        project_id = data.get('project_id')
-        project_ids = data.get('project_ids')
-        error_msg = 'Either project_id or project_ids should be supplied'
-        if project_id and project_ids or (not project_id and not project_ids):
-            raise BadRequest(error_msg)
-        if project_id:
-            return get_project_information(project_id)
-        if project_ids:
-            return get_projects_information(project_ids)
-    except Project.DoesNotExist:
-        raise BadRequest('No project for given id')
-    except BadRequest:
-        raise
+        project_ids = data['project_ids']
+        return get_project_information(project_ids)
+    except KeyError:
+        raise BadRequest('project_ids is required')
 
 
 @api_endpoint(methods=['POST'],
