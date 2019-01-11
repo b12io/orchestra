@@ -40,7 +40,7 @@ class Command(BaseCommand):
             project_id = options['project_id']
             p_info = self.project_info(project_id, verbose=False)
             try:
-                tasks = p_info[str(project_id)]['tasks']
+                tasks = p_info[project_id]['tasks']
                 assert tasks['copy_editing']['status'] == 'Complete'
                 pprint(tasks['copy_editing']['latest_data'])
             except Exception:

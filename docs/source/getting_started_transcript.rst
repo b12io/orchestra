@@ -39,7 +39,7 @@ The call looks like this (note that project_ids should be a list)::
 Press enter when you are ready to make the call.
 Information received! Here's what we got::
 
-  {'5': {
+  {5: {
     'project': {'id': 5,
                  'priority': 10,
                  'project_data': {'url': 'http://www.josephbotros.com/'},
@@ -90,7 +90,7 @@ Press enter when you are ready to make the call.
 
 Information received! Here's what we got::
 
-  {'5': {
+  {5: {
     'project': {'id': 5,
                  'priority': 10,
                  'project_data': {'url': 'http://www.josephbotros.com/'},

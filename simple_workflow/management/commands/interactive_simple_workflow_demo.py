@@ -166,7 +166,7 @@ create_orchestra_project(
     def get_rating_info(self, msg, project_id):
         input(msg)
         project_info = get_project_information([project_id])
-        tasks = project_info[str(project_id)]['tasks']
+        tasks = project_info[project_id]['tasks']
         complete = tasks['rate']['status'] == 'Complete'
         rating = (tasks['rate']['latest_data'].get('rating')
                   if complete else None)
