@@ -64,7 +64,7 @@ export default function dataService ($location, $rootScope, $route, orchestraApi
       dataService.ready = orchestraApi.projectInformation(this.currentProject.id)
         .then(function (response) {
           dataService.setData(response.data)
-          if (dataService.data.project.status === 'Aborted') {
+          if (dataService.data[this.currentProject.id].project.status === 'Aborted') {
             window.alert('Project is aborted.')
             $location.path('/')
           } else {
@@ -87,17 +87,17 @@ export default function dataService ($location, $rootScope, $route, orchestraApi
       this.data = data
 
       var steps = {}
-      this.data.steps.forEach(function (step) {
+      this.data[this.currentProject.id].steps.forEach(function (step) {
         steps[step.slug] = step
       })
 
-      this.data.steps = steps
+      this.data[this.currentProject.id].steps = steps
 
       /* jshint -W083 */
       // Hide error for creating a function in a loop
-      for (var stepSlug in this.data.tasks) {
-        var task = this.data.tasks[stepSlug]
-        task.is_human = this.data.steps[task.step_slug].is_human
+      for (var stepSlug in this.data[this.currentProject.id].tasks) {
+        var task = this.data[this.currentProject.id].tasks[stepSlug]
+        task.is_human = this.data[this.currentProject.id].steps[task.step_slug].is_human
         if (this.awaitingAssignment(task)) {
           // TODO(jrbotros): create the empty assignment in a saner way
           task.assignments.push({
@@ -116,9 +116,9 @@ export default function dataService ($location, $rootScope, $route, orchestraApi
       }
 
       var dataService = this
-      this.timeSortedSlugs = Object.keys(this.data.tasks).sort(function (a, b) {
-        var previousTask = dataService.data.tasks[a]
-        var nextTask = dataService.data.tasks[b]
+      this.timeSortedSlugs = Object.keys(this.data[this.currentProject.id].tasks).sort(function (a, b) {
+        var previousTask = dataService.data[this.currentProject.id].tasks[a]
+        var nextTask = dataService.data[this.currentProject.id].tasks[b]
         return d3.ascending(new Date(previousTask.start_datetime),
           new Date(nextTask.start_datetime))
       })
@@ -127,7 +127,7 @@ export default function dataService ($location, $rootScope, $route, orchestraApi
       /**
        * Returns the task for a given key.
        */
-      return this.data.tasks[key]
+      return this.data[this.currentProject.id].tasks[key]
     },
     keyFromTask: function (task) {
       /**
