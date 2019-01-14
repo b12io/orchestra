@@ -58819,9 +58819,9 @@ function dataService($location, $rootScope, $route, orchestraApi) {
       }
 
       var dataService = this;
-      this.timeSortedSlugs = Object.keys(this.data[this.currentProject.id].tasks).sort(function (a, b) {
-        var previousTask = dataService.data[this.currentProject.id].tasks[a];
-        var nextTask = dataService.data[this.currentProject.id].tasks[b];
+      this.timeSortedSlugs = Object.keys(this.data[dataService.currentProject.id].tasks).sort(function (a, b) {
+        var previousTask = dataService.data[dataService.currentProject.id].tasks[a];
+        var nextTask = dataService.data[dataService.currentProject.id].tasks[b];
         return d3.ascending(new Date(previousTask.start_datetime), new Date(nextTask.start_datetime));
       });
     },
