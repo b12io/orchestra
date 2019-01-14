@@ -58548,7 +58548,8 @@ function axis(dataService, visUtils) {
       if (!dataService.timeSortedSlugs.length) {
         return;
       }
-      var firstTask = dataService.data.tasks[dataService.timeSortedSlugs[0]];
+      var projectId = dataService.currentProject.id;
+      var firstTask = dataService.data[projectId].tasks[dataService.timeSortedSlugs[0]];
       var minDatetime = new Date(firstTask.start_datetime);
       var taskEndTimes = dataService.timeSortedSlugs.map(function (slug) {
         return dataService.taskEnd(dataService.taskFromKey(slug));
