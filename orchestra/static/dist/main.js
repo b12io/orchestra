@@ -58766,7 +58766,7 @@ function dataService($location, $rootScope, $route, orchestraApi) {
       dataService.loading = true;
       dataService.ready = orchestraApi.projectInformation(this.currentProject.id).then(function (response) {
         dataService.setData(response.data);
-        if (dataService.data[this.currentProject.id].project.status === 'Aborted') {
+        if (dataService.data[dataService.currentProject.id].project.status === 'Aborted') {
           window.alert('Project is aborted.');
           $location.path('/');
         } else {
