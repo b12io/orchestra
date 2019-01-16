@@ -35,8 +35,8 @@ def get_project_information(project_ids):
     }
     """
     projects = Project.objects.select_related(
-        'workflow_version__workflow').filter(id__in=project_ids)
-    tasks = get_projects_tasks_data([p.id for p in projects])
+        'workflow_version__workflow'
+        ).filter(id__in=project_ids).prefetch_related('tasks')
     projects_dict = defaultdict(dict)
     for project in projects:
         project_id = project.id
@@ -47,26 +47,11 @@ def get_project_information(project_ids):
             project).data
         projects_dict[project_id]['steps'] = get_workflow_steps(
             workflow.slug, workflow_version.slug)
-        projects_dict[project_id]['tasks'] = tasks.get(project_id, {})
-    return projects_dict
-
-
-def get_projects_tasks_data(project_ids):
-    """
-    Here we use prefetch_related method in order to make
-    less requests to DB.
-    @params:
-    :project_ids: a list of project ids
-    @returns:
-    :tasks: a dictionary where key is a parent project id
-    """
-    projects = Project.objects.prefetch_related(
-        'tasks').filter(id__in=project_ids)
-    tasks = defaultdict(dict)
-    for project in projects:
+        tasks = defaultdict(dict)
         for task in project.tasks.all():
             tasks[project.id][task.step.slug] = TaskSerializer(task).data
-    return tasks
+        projects_dict[project_id]['tasks'] = tasks.get(project_id, {})
+    return projects_dict
 
 
 def get_workflow_steps(workflow_slug, version_slug):

@@ -17,7 +17,6 @@ from orchestra.models import WorkerCertification
 from orchestra.project_api.api import MalformedDependencyException
 from orchestra.project_api.api import get_workflow_steps
 from orchestra.project_api.api import get_project_information
-from orchestra.project_api.api import get_projects_tasks_data
 from orchestra.project_api.auth import OrchestraProjectAPIAuthentication
 from orchestra.project_api.auth import SignedUser
 from orchestra.tests.helpers import OrchestraTestCase
@@ -229,19 +228,6 @@ class ProjectAPITestCase(OrchestraTestCase):
         self.assertTrue(isinstance(a_project_info['project'], dict))
         self.assertTrue(isinstance(a_project_info['tasks'], dict))
         self.assertTrue(isinstance(a_project_info['steps'], list))
-
-    def test_get_projects_tasks_data(self):
-        projects = Project.objects.all()
-        project_ids = [p.pk for p in projects]
-        tasks = get_projects_tasks_data(project_ids)
-        keys = ['id', 'step_slug', 'project', 'status', 'latest_data',
-                'assignments', 'start_datetime']
-        tasks_keys = list(tasks.keys())
-        a_dict_key = tasks_keys[0]
-        task_instance = tasks[a_dict_key]
-        for key in keys:
-            for inner_key in task_instance.keys():
-                self.assertTrue(inner_key in task_instance.keys())
 
     @patch.object(
         Service, '_create_drive_service',
