@@ -149,18 +149,20 @@ export default function todoList (orchestraApi) {
 
       orchestraApi.projectInformation(todoList.projectId)
         .then((response) => {
-          const humanSteps = new Set(response.data.steps.filter(step => step.is_human).map(step => step.slug))
+          const data = response.data[todoList.projectId]
+          const {steps, tasks} = data
+          const humanSteps = new Set(steps.filter(step => step.is_human).map(step => step.slug))
           todoList.steps = reduce(
-            Object.values(response.data.steps), (result, step) => {
+            Object.values(steps), (result, step) => {
               result[step.slug] = step
               return result
             }, {})
           todoList.taskSlugs = reduce(
-            Object.values(response.data.tasks), (result, task) => {
+            Object.values(tasks), (result, task) => {
               result[task.id] = task.step_slug
               return result
             }, {})
-          todoList.possibleTasks = Object.values(response.data.tasks).filter(task => task.status !== 'Complete' && humanSteps.has(task.step_slug))
+          todoList.possibleTasks = Object.values(tasks).filter(task => task.status !== 'Complete' && humanSteps.has(task.step_slug))
 
           // TODO(marcua): parallelize requests rather than chaining `then`s.
           todoApi.list(todoList.projectId).then((todos) => {

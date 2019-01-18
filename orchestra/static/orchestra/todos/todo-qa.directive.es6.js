@@ -89,7 +89,8 @@ export default function qa (orchestraApi) {
       }
       orchestraApi.projectInformation(todoQa.projectId)
         .then((response) => {
-          todoQa.project = response.data.project
+          const { project } = response.data[todoQa.projectId]
+          todoQa.project = project
           todoApi.list(todoQa.projectId).then((todos) => {
             todoQa.todos = todoQa.transformToTree(todos)
             todoQa.ready = true

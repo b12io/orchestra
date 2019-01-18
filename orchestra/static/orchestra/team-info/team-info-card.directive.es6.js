@@ -22,7 +22,8 @@ export default function teamInfoCard (orchestraApi) {
       teamInfoCard.loadTeamInfo = () => {
         orchestraApi.projectInformation(teamInfoCard.projectId)
           .then(response => {
-            const {steps, tasks} = response.data
+            const data = response.data[teamInfoCard.projectId]
+            const {steps, tasks} = data
             const humanSteps = new Set(steps.filter(step => step.is_human).map(step => step.slug))
             teamInfoCard.steps = reduce(
               Object.values(response.data.steps), (result, step) => {

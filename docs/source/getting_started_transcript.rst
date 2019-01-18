@@ -32,43 +32,44 @@ Project with id 5 created!
 
 When we created our project, it immediately ran the first step of the workflow: scraping an image from the website we passed in.
 Let's verify that this worked successfully by using Orchestra's API to check the project info.
-The call looks like this::
+The call looks like this (note that project_ids should be a list)::
 
-  get_project_information(project_id)
+  get_project_information(project_ids)
 
 Press enter when you are ready to make the call.
 Information received! Here's what we got::
 
-  {'project': {'id': 5,
-               'priority': 10,
-               'project_data': {'url': 'http://www.josephbotros.com/'},
-               'team_messages_url': 'https://docs.google.com/document/d/1s0IJycNAwHtZfsUwyo6lCJ7kI9pTOZddcaiRDdZUSAs',
-               'short_description': 'A test run of our simple workflow',
-               'start_datetime': '2015-09-25T17:51:14.784739Z',
-               'task_class': 0,
-               'workflow_slug': 'simple_workflow'},
-   'steps': [['crawl', 'Find an awesome image on a website'],
-             ['rate', 'Rate the image that we found']],
-   'tasks': {'crawl': {'assignments': [{'id': 9,
-                                        'in_progress_task_data': {'image': 'http://www.josephbotros.com/img/me.jpg',
-                                                                  'status': 'success'},
-                                        'iterations': [],
-                                        'start_datetime': '2015-09-25T17:51:14.852160Z',
-                                        'status': 'Submitted',
-                                        'task': 9,
-                                        'worker': None}],
-                       'id': 9,
-                       'latest_data': {'image': 'http://www.josephbotros.com/img/me.jpg',
-                                       'status': 'success'},
-                       'project': 5,
-                       'status': 'Complete',
-                       'step_slug': 'crawl'},
-             'rate': {'assignments': [],
-                      'id': 10,
-                      'latest_data': None,
-                      'project': 5,
-                      'status': 'Awaiting Processing',
-                      'step_slug': 'rate'}}}
+  {5: {
+    'project': {'id': 5,
+                 'priority': 10,
+                 'project_data': {'url': 'http://www.josephbotros.com/'},
+                 'team_messages_url': 'https://docs.google.com/document/d/1s0IJycNAwHtZfsUwyo6lCJ7kI9pTOZddcaiRDdZUSAs',
+                 'short_description': 'A test run of our simple workflow',
+                 'start_datetime': '2015-09-25T17:51:14.784739Z',
+                 'task_class': 0,
+                 'workflow_slug': 'simple_workflow'},
+     'steps': [['crawl', 'Find an awesome image on a website'],
+               ['rate', 'Rate the image that we found']],
+     'tasks': {'crawl': {'assignments': [{'id': 9,
+                                          'in_progress_task_data': {'image': 'http://www.josephbotros.com/img/me.jpg',
+                                                                    'status': 'success'},
+                                          'iterations': [],
+                                          'start_datetime': '2015-09-25T17:51:14.852160Z',
+                                          'status': 'Submitted',
+                                          'task': 9,
+                                          'worker': None}],
+                         'id': 9,
+                         'latest_data': {'image': 'http://www.josephbotros.com/img/me.jpg',
+                                         'status': 'success'},
+                         'project': 5,
+                         'status': 'Complete',
+                         'step_slug': 'crawl'},
+               'rate': {'assignments': [],
+                        'id': 10,
+                        'latest_data': None,
+                        'project': 5,
+                        'status': 'Awaiting Processing',
+                        'step_slug': 'rate'}}}}
 
 Note that ``tasks.crawl.status`` is ``Complete``, and ``tasks.crawl.latest_data.image`` is set to an image URL scraped from our site. Paste the URL into a browser and you should see Joseph's smiling face!
 Also, check out ``tasks.rate``. That's the human step we'll need to do next. Observe that it's status is ``Awaiting Processing`` and that ``latest_data`` is ``None`` because no work has been done yet.
@@ -83,54 +84,55 @@ Well done. You have completed your first Orchestra project!
 Let's verify that your rating was stored successfully by using Orchestra's API to check the project info again.
 As a reminder, the call looks like this::
 
-  get_project_information(project_id)
+  get_project_information(project_ids)
 
 Press enter when you are ready to make the call.
 
 Information received! Here's what we got::
 
-  {'project': {'id': 5,
-               'priority': 10,
-               'project_data': {'url': 'http://www.josephbotros.com/'},
-               'team_messages_url': 'https://docs.google.com/document/d/1s0IJycNAwHtZfsUwyo6lCJ7kI9pTOZddcaiRDdZUSAs',
-               'short_description': 'A test run of our simple workflow',
-               'start_datetime': '2015-09-25T17:51:14.784739Z',
-               'task_class': 0,
-               'workflow_slug': 'simple_workflow'},
-   'steps': [['crawl', 'Find an awesome image on a website'],
-             ['rate', 'Rate the image that we found']],
-   'tasks': {'crawl': {'assignments': [{'id': 9,
-                                        'in_progress_task_data': {'image': 'http://www.josephbotros.com/img/me.jpg',
-                                                                  'status': 'success'},
-                                        'iterations': [],
-                                        'start_datetime': '2015-09-25T17:51:14.852160Z',
-                                        'status': 'Submitted',
-                                        'task': 9,
-                                        'worker': None}],
-                       'id': 9,
-                       'latest_data': {'image': 'http://www.josephbotros.com/img/me.jpg',
-                                       'status': 'success'},
-                       'project': 5,
-                       'status': 'Complete',
-                       'step_slug': 'crawl'},
-             'rate': {'assignments': [{'id': 10,
-                                       'in_progress_task_data': {'rating': '5'},
-                                       'iterations': [{
-                                           'assignment': 9,
-                                           'status': 'Requested Review'
-                                           'start_datetime': '2015-09-25T17:51:14.852160Z',
-                                           'end_datetime': '2015-09-25T17:52:03.575369Z',
-                                           'submitted_data': {'rating': '5'},
-                                                                    'type': 0}]},
-                                       'start_datetime': '2015-09-25T17:51:48.647159Z',
-                                       'status': 'Submitted',
-                                       'task': 10,
-                                       'worker': 'demo'}],
-                      'id': 10,
-                      'latest_data': {'rating': '5'},
-                      'project': 5,
-                      'status': 'Complete',
-                      'step_slug': 'rate'}}}
+  {5: {
+    'project': {'id': 5,
+                 'priority': 10,
+                 'project_data': {'url': 'http://www.josephbotros.com/'},
+                 'team_messages_url': 'https://docs.google.com/document/d/1s0IJycNAwHtZfsUwyo6lCJ7kI9pTOZddcaiRDdZUSAs',
+                 'short_description': 'A test run of our simple workflow',
+                 'start_datetime': '2015-09-25T17:51:14.784739Z',
+                 'task_class': 0,
+                 'workflow_slug': 'simple_workflow'},
+     'steps': [['crawl', 'Find an awesome image on a website'],
+               ['rate', 'Rate the image that we found']],
+     'tasks': {'crawl': {'assignments': [{'id': 9,
+                                          'in_progress_task_data': {'image': 'http://www.josephbotros.com/img/me.jpg',
+                                                                    'status': 'success'},
+                                          'iterations': [],
+                                          'start_datetime': '2015-09-25T17:51:14.852160Z',
+                                          'status': 'Submitted',
+                                          'task': 9,
+                                          'worker': None}],
+                         'id': 9,
+                         'latest_data': {'image': 'http://www.josephbotros.com/img/me.jpg',
+                                         'status': 'success'},
+                         'project': 5,
+                         'status': 'Complete',
+                         'step_slug': 'crawl'},
+               'rate': {'assignments': [{'id': 10,
+                                         'in_progress_task_data': {'rating': '5'},
+                                         'iterations': [{
+                                             'assignment': 9,
+                                             'status': 'Requested Review'
+                                             'start_datetime': '2015-09-25T17:51:14.852160Z',
+                                             'end_datetime': '2015-09-25T17:52:03.575369Z',
+                                             'submitted_data': {'rating': '5'},
+                                                                      'type': 0}]},
+                                         'start_datetime': '2015-09-25T17:51:48.647159Z',
+                                         'status': 'Submitted',
+                                         'task': 10,
+                                         'worker': 'demo'}],
+                        'id': 10,
+                        'latest_data': {'rating': '5'},
+                        'project': 5,
+                        'status': 'Complete',
+                        'step_slug': 'rate'}}}}
 
 Task complete! Note that ``tasks.rate.status`` is ``Complete`` in the output above.
 Note that ``tasks.rate.latest_data.rating`` is set to ``5``, the rating you selected.
