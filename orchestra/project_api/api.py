@@ -1,4 +1,5 @@
 import logging
+from collections import defaultdict
 
 from orchestra.models import Project
 from orchestra.models import Step
@@ -13,30 +14,44 @@ class MalformedDependencyException(Exception):
     pass
 
 
-def get_project_information(project_id):
-    project = Project.objects.select_related(
-        'workflow_version__workflow').get(pk=project_id)
-    workflow_version = project.workflow_version
-    workflow = workflow_version.workflow
-    project_data = ProjectSerializer(project).data
-    tasks = get_project_task_data(project_id)
-    steps = get_workflow_steps(workflow.slug, workflow_version.slug)
-
-    return {
-        'project': project_data,
-        'tasks': tasks,
-        'steps': steps
+def get_project_information(project_ids):
+    """
+    output format:
+    { project_id: {
+        'project': serialized_project_data,
+        'tasks': project_tasks_list,
+        'steps': project_workflow_steps
+        },
+        ...
     }
+    Example:
+    {
+        123: {
+            'project': {},
+            'tasks': [],
+            'steps': []
+        },
+        ...
+    }
+    """
+    projects = Project.objects.select_related(
+        'workflow_version__workflow'
+        ).filter(id__in=project_ids).prefetch_related('tasks')
+    projects_dict = defaultdict(dict)
+    for project in projects:
+        project_id = project.id
+        workflow_version = project.workflow_version
+        workflow = workflow_version.workflow
 
-
-def get_project_task_data(project_id):
-    project = Project.objects.get(id=project_id)
-
-    tasks = {}
-    for task in project.tasks.all():
-        tasks[task.step.slug] = TaskSerializer(task).data
-
-    return tasks
+        projects_dict[project_id]['project'] = ProjectSerializer(
+            project).data
+        projects_dict[project_id]['steps'] = get_workflow_steps(
+            workflow.slug, workflow_version.slug)
+        tasks = defaultdict(dict)
+        for task in project.tasks.all():
+            tasks[project.id][task.step.slug] = TaskSerializer(task).data
+        projects_dict[project_id]['tasks'] = tasks.get(project_id, {})
+    return projects_dict
 
 
 def get_workflow_steps(workflow_slug, version_slug):

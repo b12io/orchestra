@@ -76,11 +76,12 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
             'id': project.id,
             'workflow_slug': project.workflow_version.workflow.slug
         }
+        returned_project = returned[str(project.id)]['project']
         self.assertEqual(
             expected_project,
-            {k: returned['project'][k] for k in expected_project.keys()})
+            {k: returned_project[k] for k in expected_project.keys()})
 
-        sample_task = returned['tasks']['step1']
+        sample_task = returned[str(project.id)]['tasks']['step1']
         task = project.tasks.get(step__slug='step1')
         expected_task = {
             'status': 'Post-review Processing',

@@ -16,6 +16,7 @@ from orchestra.models import TimeEntry
 from orchestra.models import WorkerCertification
 from orchestra.project_api.api import MalformedDependencyException
 from orchestra.project_api.api import get_workflow_steps
+from orchestra.project_api.api import get_project_information
 from orchestra.project_api.auth import OrchestraProjectAPIAuthentication
 from orchestra.project_api.auth import SignedUser
 from orchestra.tests.helpers import OrchestraTestCase
@@ -61,36 +62,15 @@ class ProjectAPITestCase(OrchestraTestCase):
         project = self.projects['base_test_project']
         response = self.api_client.post(
             '/orchestra/api/project/project_information/',
-            {'project_id': project.id},
+            {'project_ids': [project.id]},
             format='json')
         self.assertEqual(response.status_code, 200)
         returned = load_encoded_json(response.content)
 
-        unimportant_keys = (
-            'id',
-            'task',
-            'short_description',
-            'start_datetime',
-            'end_datetime'
-        )
-
-        def delete_keys(obj):
-            if isinstance(obj, list):
-                for item in obj:
-                    delete_keys(item)
-
-            elif isinstance(obj, dict):
-                for key in unimportant_keys:
-                    try:
-                        del obj[key]
-                    except KeyError:
-                        pass
-                for value in obj.values():
-                    delete_keys(value)
-
-        delete_keys(returned)
-        del returned['tasks']['step1']['project']
-        del (returned['tasks']['step1']['assignments'][0]
+        self._delete_keys(returned[str(project.id)])
+        for item in returned.values():
+            del item['tasks']['step1']['project']
+            del (item['tasks']['step1']['assignments'][0]
                      ['iterations'][0]['assignment'])
 
         expected = {
@@ -146,37 +126,34 @@ class ProjectAPITestCase(OrchestraTestCase):
             ]
         }
 
-        self.assertEqual(returned, expected)
+        self.assertEqual(returned[str(project.id)], expected)
 
         response = self.api_client.post(
             '/orchestra/api/project/project_information/',
-            {'project_id': -1},
+            {'project_ids': [-1]},
             format='json')
-        self.ensure_response(response,
-                             {'error': 400,
-                              'message': 'No project for given id'},
-                             400)
+        self.assertEqual(load_encoded_json(response.content), {})
 
-        # Getting project info without a project_id should fail.
+        # Getting project info without a project_ids should fail.
         response = self.api_client.post(
             '/orchestra/api/project/project_information/',
-            {'projetc_id': project.id},  # Typo.
+            {'project_id': [project.id]},  # Typo.
             format='json')
+        msg = 'project_ids is required'
         self.ensure_response(response,
-                             {'error': 400,
-                              'message': 'project_id is required'},
-                             400)
+                             {'error': 400, 'message': msg}, 400)
 
         # Retrieve the third project, which has no task assignments.
+        project_id = self.projects['no_task_assignments'].id
         response = self.api_client.post(
             '/orchestra/api/project/project_information/',
-            {'project_id': self.projects['no_task_assignments'].id},
+            {'project_ids': [project_id]},
             format='json')
         returned = load_encoded_json(response.content)
         for key in ('id', 'project', 'start_datetime'):
-            del returned['tasks']['step1'][key]
+            del returned[str(project_id)]['tasks']['step1'][key]
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(returned['tasks'], {
+        self.assertEqual(returned[str(project_id)]['tasks'], {
             'step1': {
                 'assignments': [],
                 'latest_data': None,
@@ -214,10 +191,10 @@ class ProjectAPITestCase(OrchestraTestCase):
 
         response = self.api_client.post(
             '/orchestra/api/project/project_information/',
-            {'project_id': project.id},
+            {'project_ids': [project.id]},
             format='json')
         returned = load_encoded_json(response.content)
-        returned_task = returned['tasks']
+        returned_task = returned[str(project.id)]['tasks']
         returned_assignment = returned_task['step1']['assignments'][0]
         recorded_time = returned_assignment['recorded_work_time']
         self.assertEqual(recorded_time, 105*60)  # 1:15 + 0:30
@@ -242,8 +219,19 @@ class ProjectAPITestCase(OrchestraTestCase):
         with self.assertRaises(MalformedDependencyException):
             steps = get_workflow_steps('w5', 'erroneous_workflow_2')
 
-    @patch.object(Service, '_create_drive_service',
-                  new=mock_create_drive_service)
+    def test_get_project_information(self):
+        projects = Project.objects.all()[:2]
+        projects_info = get_project_information(
+            [p.pk for p in projects])
+        a_project_info_key = list(projects_info.keys())[0]
+        a_project_info = projects_info[a_project_info_key]
+        self.assertTrue(isinstance(a_project_info['project'], dict))
+        self.assertTrue(isinstance(a_project_info['tasks'], dict))
+        self.assertTrue(isinstance(a_project_info['steps'], list))
+
+    @patch.object(
+        Service, '_create_drive_service',
+        new=mock_create_drive_service)
     def test_create_project(self):
         tasks_awaiting_processing = (
             Task.objects
@@ -425,6 +413,27 @@ class ProjectAPITestCase(OrchestraTestCase):
         self.assertEqual(
             returned,
             {'detail': 'You do not have permission to perform this action.'})
+
+    def _delete_keys(self, obj):
+        unimportant_keys = (
+            'id',
+            'task',
+            'short_description',
+            'start_datetime',
+            'end_datetime'
+        )
+        if isinstance(obj, list):
+            for item in obj:
+                self._delete_keys(item)
+
+        elif isinstance(obj, dict):
+            for key in unimportant_keys:
+                try:
+                    del obj[key]
+                except KeyError:
+                    pass
+            for value in obj.values():
+                self._delete_keys(value)
 
 
 @override_settings(ORCHESTRA_PROJECT_API_CREDENTIALS={'a': 'b'})

@@ -29,12 +29,10 @@ logger = logging.getLogger(__name__)
 def project_information(request):
     try:
         data = load_encoded_json(request.body)
-        project_id = data['project_id']
-        return get_project_information(project_id)
+        project_ids = data['project_ids']
+        return get_project_information(project_ids)
     except KeyError:
-        raise BadRequest('project_id is required')
-    except Project.DoesNotExist:
-        raise BadRequest('No project for given id')
+        raise BadRequest('project_ids is required')
 
 
 @api_endpoint(methods=['POST'],

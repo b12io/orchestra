@@ -13,6 +13,7 @@ from wsgiref.handlers import format_date_time
 import requests
 from django.conf import settings
 from httpsig.requests_auth import HTTPSignatureAuth
+from orchestra.utils.convert_key_to_int import convert_key_to_int
 
 logger = logging.getLogger(__name__)
 
@@ -77,13 +78,13 @@ def create_orchestra_project(client,
     return project_id
 
 
-def get_project_information(project_id):
+def get_project_information(project_ids):
     data = {
-        'project_id': project_id
+        'project_ids': project_ids
     }
     response = _make_api_request('post', 'project_information',
                                  data=json.dumps(data))
-    return json.loads(response.text)
+    return json.loads(response.text, object_hook=convert_key_to_int)
 
 
 def assign_worker_to_task(worker_id, task_id):

@@ -14,16 +14,16 @@ logger = logging.getLogger(__name__)
 
 def project_management_information(project_id):
     project = Project.objects.get(id=project_id)
-    project_information = get_project_information(project.id)
-    project_information['project']['status'] = dict(
+    project_information = get_project_information([project.id])
+    project_information[project.id]['project']['status'] = dict(
         Project.STATUS_CHOICES).get(project.status, None)
-    project_information['project']['admin_url'] = urljoin(
+    project_information[project.id]['project']['admin_url'] = urljoin(
         settings.ORCHESTRA_URL,
         urlresolvers.reverse(
             'admin:orchestra_project_change',
             args=(project_id,)))
 
-    for slug, task in project_information['tasks'].items():
+    for slug, task in project_information[project.id]['tasks'].items():
         task['admin_url'] = urljoin(
             settings.ORCHESTRA_URL,
             urlresolvers.reverse(
