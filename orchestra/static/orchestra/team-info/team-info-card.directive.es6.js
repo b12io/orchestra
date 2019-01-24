@@ -26,7 +26,7 @@ export default function teamInfoCard (orchestraApi) {
             const {steps, tasks} = data
             const humanSteps = new Set(steps.filter(step => step.is_human).map(step => step.slug))
             teamInfoCard.steps = reduce(
-              Object.values(response.data.steps), (result, step) => {
+              Object.values(steps), (result, step) => {
                 result[step.slug] = step
                 return result
               }, {})
