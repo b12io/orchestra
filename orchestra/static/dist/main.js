@@ -65107,7 +65107,7 @@ function teamInfoCard(orchestraApi) {
           }).map(function (step) {
             return step.slug;
           }));
-          teamInfoCard.steps = (0, _lodash.reduce)(Object.values(response.data.steps), function (result, step) {
+          teamInfoCard.steps = (0, _lodash.reduce)(Object.values(steps), function (result, step) {
             result[step.slug] = step;
             return result;
           }, {});
