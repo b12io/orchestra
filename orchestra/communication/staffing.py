@@ -214,7 +214,7 @@ def get_available_requests(worker):
         request_ids.add(inquiry.request.id)
         metadata = staffbot.get_staffing_request_metadata(inquiry)
         metadata['detailed_description'] = markdown(
-            metadata['detailed_description'])
+            metadata['detailed_description'], extras=['target-blank-links'])
         metadata['reject_url'] += '?next={}'.format(
             reverse('orchestra:communication:available_staffing_requests'))
         contexts.append(metadata)
