@@ -2,6 +2,7 @@ import logging
 from collections import defaultdict
 
 from orchestra.models import Project
+from orchestra.models import Task
 from orchestra.models import Step
 from orchestra.models import WorkflowVersion
 from orchestra.project_api.serializers import ProjectSerializer
@@ -35,8 +36,14 @@ def get_project_information(project_ids):
     }
     """
     projects = Project.objects.select_related(
+        'workflow_version',
         'workflow_version__workflow'
-        ).filter(id__in=project_ids).prefetch_related('tasks')
+        ).filter(id__in=project_ids)
+    tasks = Task.objects.select_related(
+        'project', 'step').filter(project__in=projects)
+    tasks_dict = defaultdict(dict)
+    for task in tasks:
+        tasks_dict[task.project.id][task.step.slug] = TaskSerializer(task).data
     projects_dict = defaultdict(dict)
     for project in projects:
         project_id = project.id
@@ -47,10 +54,7 @@ def get_project_information(project_ids):
             project).data
         projects_dict[project_id]['steps'] = get_workflow_steps(
             workflow.slug, workflow_version.slug)
-        tasks = defaultdict(dict)
-        for task in project.tasks.all():
-            tasks[project.id][task.step.slug] = TaskSerializer(task).data
-        projects_dict[project_id]['tasks'] = tasks.get(project_id, {})
+        projects_dict[project_id]['tasks'] = tasks_dict.get(project_id, {})
     return projects_dict
 
 
@@ -71,13 +75,16 @@ def get_workflow_steps(workflow_slug, version_slug):
     workflow_version = WorkflowVersion.objects.get(
         slug=version_slug,
         workflow__slug=workflow_slug)
+    steps = Step.objects.prefetch_related(
+            'creation_depends_on'
+        ).filter(workflow_version=workflow_version)
+
+    graph = {}
+    for step in steps:
+       graph[step.slug] = [dependency.slug for dependency
+                           in step.creation_depends_on.all()]
 
     # Build a directed graph of the step dependencies
-    # TODO(dhaas): make DB access more efficient.
-    graph = {}
-    for step in workflow_version.steps.all():
-        graph[step.slug] = [dependency.slug for dependency
-                            in step.creation_depends_on.all()]
     return _traverse_step_graph(graph, workflow_version)
 
 
