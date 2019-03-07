@@ -81,7 +81,7 @@ def get_workflow_steps(workflow_slug, version_slug):
 
     graph = {}
     for step in steps:
-       graph[step.slug] = [dependency.slug for dependency
+        graph[step.slug] = [dependency.slug for dependency
                            in step.creation_depends_on.all()]
 
     # Build a directed graph of the step dependencies
