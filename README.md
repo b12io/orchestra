@@ -8,7 +8,7 @@
 [![Apache License](https://img.shields.io/pypi/l/orchestra.svg?maxAge=2592000)](https://github.com/b12io/orchestra/blob/master/LICENSE)
 [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg?maxAge=2592000)](https://gitter.im/b12io/orchestra)
 
-Orchestra is a system for orchestrating project teams of experts and machines.
+Orchestra is a Robotic Process Automation system for orchestrating project teams of experts and machines.
 Projects can include everything from design teams working on a client's project
 to newsrooms bringing together reporters, photographers, and editors for a
 story. In Orchestra workflows, you can assign senior experts to review other
