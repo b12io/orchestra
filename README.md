@@ -4,7 +4,6 @@
 [![Documentation Status](https://readthedocs.org/projects/orchestra/badge/?version=latest)](http://orchestra.readthedocs.org/en/stable/?badge=latest)
 [![Circle CI](https://circleci.com/gh/b12io/orchestra.svg?maxAge=2592000&style=shield)](https://circleci.com/gh/b12io/orchestra)
 [![Coverage Status](https://coveralls.io/repos/github/b12io/orchestra/badge.svg?maxAge=2592000&branch=master)](https://coveralls.io/github/b12io/orchestra?branch=master)
-[![Requirements Status](https://requires.io/github/b12io/orchestra/requirements.svg?maxAge=2592000)](https://requires.io/github/b12io/orchestra/requirements/)
 [![Apache License](https://img.shields.io/pypi/l/orchestra.svg?maxAge=2592000)](https://github.com/b12io/orchestra/blob/master/LICENSE)
 [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg?maxAge=2592000)](https://gitter.im/b12io/orchestra)
 
