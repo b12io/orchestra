@@ -1,3 +1,5 @@
+import logging
+
 from django.apps import apps as django_apps
 from django.conf import settings
 from django.db import transaction
@@ -12,6 +14,8 @@ from orchestra.workflow.defaults import get_default_assignment_policy
 from orchestra.workflow.defaults import get_default_creation_policy
 from orchestra.workflow.defaults import get_default_review_policy
 from orchestra.workflow.directory import parse_workflow_directory
+
+logger = logging.getLogger(__name__)
 
 
 def get_workflow_version_slugs():
@@ -193,11 +197,19 @@ def load_workflow_version(version_data, workflow, force=False):
 def _verify_dependencies_not_updated(step_data, dependency_attr,
                                      old_dependencies):
     new_dependencies = set(step_data.get(dependency_attr, []))
-    if old_dependencies is not None and old_dependencies != new_dependencies:
+    old_set = set(old_dependencies or [])
+    new_set = set(new_dependencies)
+    if old_dependencies is not None and (new_set - old_set):
         raise WorkflowError(
             'Even with --force, you cannot change the topology of a workflow. '
             'Drop and recreate the database to reset, or create a new '
             'version for your workflow.')
+    if new_set != old_set:
+        logger.warn(
+            ('Step `%s` changed dependencies from %s to %s. You '
+             'will manually have to re-run task creation logic if you '
+             'want existing projects to receive new tasks.'),
+            step_data['slug'], old_set, new_set)
 
 
 def _set_step_relations(step, step_data, relation_attr, relation_model,

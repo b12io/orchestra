@@ -91,6 +91,11 @@ amdefine@>=0.0.4:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
 
+angular-smart-table@2.1.11:
+  version "2.1.11"
+  resolved "https://registry.yarnpkg.com/angular-smart-table/-/angular-smart-table-2.1.11.tgz#d0ca625f5bfb873bf3748ab861c82892e42ddfa2"
+  integrity sha512-8ZSGygQqVBkpPDzb0382ujK1eOr8fnePXpzq+sUBkUsvRaEgMeY6VoFpWmg106472mD6oMNXIW9+VDQKllXa0w==
+
 angular-ui-tree@2.22.6:
   version "2.22.6"
   resolved "https://registry.yarnpkg.com/angular-ui-tree/-/angular-ui-tree-2.22.6.tgz#849727fdd1d13d84c1a590bb08934cc224e5a407"
