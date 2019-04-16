@@ -199,7 +199,7 @@ def _verify_dependencies_not_updated(step_data, dependency_attr,
     new_dependencies = set(step_data.get(dependency_attr, []))
     old_set = set(old_dependencies or [])
     new_set = set(new_dependencies)
-    if new_set - old_set:
+    if old_dependencies is not None and (new_set - old_set):
         raise WorkflowError(
             'Even with --force, you cannot change the topology of a workflow. '
             'Drop and recreate the database to reset, or create a new '
