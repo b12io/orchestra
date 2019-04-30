@@ -61,9 +61,9 @@ export default function TaskController (
     })
   }
 
-  vm.confirmSubmission = function (command) {
+  vm.confirmSubmission = async function (command) {
     vm.submitting = true
-    if (orchestraService.signals.fireSignal('submit.before') === false) {
+    if (await orchestraService.signals.fireSignal('submit.before') === false) {
       // If any of the registered signal handlers returns false, prevent
       // submit.
       vm.submitting = false
@@ -74,20 +74,20 @@ export default function TaskController (
       'task_data': vm.taskAssignment.task.data,
       'command_type': command
     })
-      .success(function (data, status, headers, config) {
+      .success(async function (data, status, headers, config) {
         // Prevent additional confirmation dialog on leaving the page; data
         // will be saved by submission
         vm.autoSaver.cancel()
-        orchestraService.signals.fireSignal('submit.success')
+        await orchestraService.signals.fireSignal('submit.success')
         orchestraTasks.updateTasks()
         $location.path('/')
       })
-      .error(function (data, status, headers, config) {
-        orchestraService.signals.fireSignal('submit.error')
+      .error(async function (data, status, headers, config) {
+        await orchestraService.signals.fireSignal('submit.error')
         window.alert(data.message)
       })
-      .finally(function () {
-        orchestraService.signals.fireSignal('submit.finally')
+      .finally(async function () {
+        await orchestraService.signals.fireSignal('submit.finally')
         vm.submitting = false
       })
   }
