@@ -45,16 +45,15 @@ export function orchestraService () {
       registered[signalType].push(callback)
     },
     fireSignal: function (signalType) {
-      var success = true
       registered[signalType] = registered[signalType] || []
-      registered[signalType].forEach(function (callback) {
-        // Explicitly check for falsiness in case callback returns
-        // undefined.
-        if (callback() === false) {
-          success = false
-        }
-      })
-      return success
+      const callbacks = registered[signalType]
+      // Callbacks can be both functions and promises
+      const calledOnes = callbacks.map(callback => callback())
+      return Promise.all(calledOnes)
+        .then(values => {
+          const isFailure = new Set(values).has(false)
+          return !isFailure
+        })
     }
   }
 

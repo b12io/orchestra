@@ -46,7 +46,7 @@ export default function autoSaveTask ($rootScope, $timeout, $http, orchestraServ
       $timeout.cancel(service.autoSaveTimer)
       service.autoSaveTimer = undefined
     },
-    save: function () {
+    save: async function () {
       var service = this
       if (service.scope.is_read_only) {
         return
@@ -54,7 +54,7 @@ export default function autoSaveTask ($rootScope, $timeout, $http, orchestraServ
       service.saving = true
       service.saveError = false
       service.cancel()
-      if (orchestraService.signals.fireSignal('save.before') === false) {
+      if (await orchestraService.signals.fireSignal('save.before') === false) {
           // If any of the registered signal handlers returns false, prevent
           // save.
         service.saving = false
@@ -64,18 +64,18 @@ export default function autoSaveTask ($rootScope, $timeout, $http, orchestraServ
         'task_id': service.taskId,
         'task_data': service.data
       })
-          .success(function (data, status, headers, config) {
+          .success(async function (data, status, headers, config) {
             service.lastSaved = Date.now()
             // Reset timeout counter on save success
             service.timeout = 10000
-            orchestraService.signals.fireSignal('save.success')
+            await orchestraService.signals.fireSignal('save.success')
           })
-          .error(function (data, status, headers, config) {
+          .error(async function (data, status, headers, config) {
             service.saveError = true
-            orchestraService.signals.fireSignal('save.error')
+            await orchestraService.signals.fireSignal('save.error')
           })
-          .finally(function () {
-            orchestraService.signals.fireSignal('save.finally')
+          .finally(async function () {
+            await orchestraService.signals.fireSignal('save.finally')
             service.saving = false
             if (service.saveError) {
               // Retry save with exp backoff
