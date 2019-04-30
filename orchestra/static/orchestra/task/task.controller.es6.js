@@ -63,9 +63,7 @@ export default function TaskController (
 
   vm.confirmSubmission = async function (command) {
     vm.submitting = true
-    const submitBefore = await orchestraService.signals.fireSignal(
-      'submit.before')
-    if (submitBefore === false) {
+    if (await orchestraService.signals.fireSignal('submit.before') === false) {
       // If any of the registered signal handlers returns false, prevent
       // submit.
       vm.submitting = false
