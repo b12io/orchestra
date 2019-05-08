@@ -157,7 +157,7 @@ with proper certifications. To load them, run::
 
     python manage.py loadworkflowsampledata <WORKFLOW_SLUG>/<WORKFLOW_VERSION>
 
-To load sample data for both of these workflows run:
+To load sample data for both of these workflows, run::
 
     python manage.py loadworkflowsampledata simple_workflow/v1
     python manage.py loadworkflowsampledata journalism/v1
