@@ -93,7 +93,7 @@ route users when they view Orchestra in the browser. If you don't have any URLs
 of your own yet, you can just download our barebones example file with
 ``wget https://raw.githubusercontent.com/b12io/orchestra/stable/example_project/example_project/urls.py``.
 
-Alternatively, just make sure to add the following code inside the
+Alternatively, make sure to add the following code inside the
 ``urlpatterns`` variable in ``your_project/your_project/urls.py``::
 
     # Admin Views
@@ -123,6 +123,13 @@ Alternatively, just make sure to add the following code inside the
     url(r'^beanstalk_dispatch/',
         include('beanstalk_dispatch.urls')),
 
+And ensure the following imports are at the top of your
+``your_project/your_project/urls.py``::
+
+    from django.conf.urls import include
+    from django.conf.urls import url
+    from django.contrib import admin
+    from django.contrib.auth import views as auth_views
 
 Finally, you'll need to get the database set up. Create your database
 with ``python manage.py migrate``. You'll also want to make sure you have
@@ -130,12 +137,6 @@ loaded our example workflows and set up some user accounts to try them out.
 To load the workflows, run::
 
     python manage.py loadworkflow <APP_LABEL> <WORKFLOW_VERSION>
-
-Each of our example workflows provides a set of sample users already configured
-with proper certifications. To load them, run::
-
-    python manage.py loadworkflowsampledata <WORKFLOW_SLUG>/<WORKFLOW_VERSION>
-
 
 If you would like to load all of the workflows, then run::
 
@@ -151,11 +152,26 @@ The example workflows we currently release with Orchestra are:
   is ``journalism_workflow``, its workflow slug is ``journalism``, and the
   latest version is ``v1``.
 
+Each of our example workflows provides a set of sample users already configured
+with proper certifications. To load them, run::
+
+    python manage.py loadworkflowsampledata <WORKFLOW_SLUG>/<WORKFLOW_VERSION>
+
+To load sample data for both of these workflows run:
+
+    python manage.py loadworkflowsampledata simple_workflow/v1
+    python manage.py loadworkflowsampledata journalism/v1
+
 In addition, you can use the Orchestra admin
-(http://127.0.0.1:8000/orchestra/admin) to create new users and certifications
-of your own at any time once Orchestra is running. If you haven't created an
-admin account for your Django project, you can load a sample one (username:
-``admin``, password: ``admin``) with ``python manage.py loaddata demo_admin``.
+(http://127.0.0.1:8000/orchestra/admin) to create new users and
+certifications of your own at any time once Orchestra is running. If
+you haven't created an admin account for your Django project, you can
+load a sample one (username: ``admin``, password: ``admin``) with
+``python manage.py loaddata demo_admin``.  Note that when you log into
+Django with the ``admin`` account, you will see errors related to the
+:doc:`Orchesta timer <features>`. This is because the admin
+user is not a Worker on the platform, and thus has no time-tracking
+information.
 
 We provide the option to use the third-party package `django-hijack
 <https://github.com/arteria/django-hijack>`_ to act on behalf of users. To
