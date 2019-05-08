@@ -308,6 +308,7 @@ class StaffingRequestInquiryAdmin(RelatedFieldAdmin, AjaxSelectAdmin):
         'communication_method', 'request__project_description',
         'request__task__id'
     )
+    raw_id_fields = ('request',)
 
 
 @admin.register(StaffingResponse)
