@@ -4,6 +4,6 @@
     "description": "Crawl a web page for an image and rate it.",
     "certifications": [],
     "sample_data_load_function": {
-        "path": "simple_workflow.load_sample_data.name"
+        "path": "simple_workflow.load_sample_data.load"
     }
 }
