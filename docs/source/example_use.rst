@@ -51,12 +51,31 @@ set up Orchestra yet, you should do that now. Also, make sure that
 have loaded the workflow into the database (``python manage.py loadworkflow
 journalism_workflow v1``).
 
-The journalism workflow requires Google Apps integration to run,
-so make sure in ``orchestra_settings.py`` you set ``settings.GOOGLE_APPS`` to
-``True``, and fill in values for ``settings.GOOGLE_SERVICE_EMAIL``,
-``settings.GOOGLE_P12_PATH``, and ``settings.GOOGLE_PROJECT_ROOT_ID``. Set up
-and correct values for those settings are described in `the Google Apps
-documentation <https://developers.google.com/drive/web/delegation>`_.
+The journalism workflow requires Google Apps integration to run, so
+make sure in ``orchestra_settings.py`` you set
+``settings.GOOGLE_APPS`` to ``True``, and fill in values for
+``settings.GOOGLE_SERVICE_EMAIL``, ``settings.GOOGLE_P12_PATH``, and
+``settings.GOOGLE_PROJECT_ROOT_ID``. Set up and correct values for
+those settings are described in `the Google Apps documentation
+<https://developers.google.com/drive/web/delegation>`_. Pay particular
+attention to the ``Authorizing requests with OAuth 2.0`` section. As a
+summary, the variables do the following:
+
+* ``settings.GOOGLE_SERVICE_EMAIL`` is the ID that Google will grant
+  you when you sign up for a `Google API console
+  account <https://console.developers.google.com/>`_.
+
+* ``settings.GOOGLE_P12_PATH`` is a path on the filesystem to a `.p12
+  key
+  file <https://webapps.stackexchange.com/questions/58411/how-where-to-obtain-a-p12-key-file-from-the-google-developers-console>`_
+  you will receive when you sign up for the Google API account.
+
+* ``settings.GOOGLE_PROJECT_ROOT_ID`` is the ID of the parent folder
+  in Google Drive in which Orchestra will create project-specific
+  subfolders. For example, if you create a parent folder in Google
+  Drive and its URL is
+  ``https://drive.google.com/drive/u/0/folders/XYZ``, you should set
+  ``settings.GOOGLE_PROJECT_ROOT_ID = 'XYZ'``.
 
 Next, make sure you have the journalism workflow sample data installed by
 running (if you haven't already) ``python manage.py loadworkflowsampledata
