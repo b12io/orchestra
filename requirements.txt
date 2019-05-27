@@ -22,7 +22,7 @@ slacker==0.9.60
 python-dateutil==2.6.1
 django-hijack==2.1.6
 django-hijack-admin==2.1.6
-django-money==0.12.3
+django-money==0.14.4
 django-filter==1.0.4
 django-widget-tweaks==1.4.1
 django-bitfield==1.9.3
