@@ -13,7 +13,7 @@ def load(workflow_version):
             'is_active': True,
             'is_superuser': False,
             'is_staff': False,
-            'email': 'noreply@example.org'
+            'email': 'noreply-simple1@example.org'
         }
     )
     user.set_password('demo')
