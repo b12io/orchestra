@@ -39,7 +39,7 @@ USERS = [
         'is_active': True,
         'is_superuser': False,
         'is_staff': False,
-        'email': 'noreply@example.org',
+        'email': 'noreply-journalism1@example.org',
         'password': 'editor',
         'certifications': [
             ('editor', WorkerCertification.Role.ENTRY_LEVEL),
@@ -53,7 +53,7 @@ USERS = [
         'is_superuser': False,
         'is_staff': False,
         'password': 'reporter',
-        'email': 'noreply@example.org',
+        'email': 'noreply-journalism2@example.org',
         'certifications': [
             ('reporter', WorkerCertification.Role.ENTRY_LEVEL),
         ]
@@ -66,7 +66,7 @@ USERS = [
         'is_superuser': False,
         'is_staff': False,
         'password': 'reporter',
-        'email': 'noreply@example.org',
+        'email': 'noreply-journalism3@example.org',
         'certifications': [
             ('reporter', WorkerCertification.Role.ENTRY_LEVEL),
             ('reporter', WorkerCertification.Role.REVIEWER),
@@ -80,7 +80,7 @@ USERS = [
         'is_superuser': False,
         'is_staff': False,
         'password': 'photographer',
-        'email': 'noreply@example.org',
+        'email': 'noreply-journalism4@example.org',
         'certifications': [
             ('photographer', WorkerCertification.Role.ENTRY_LEVEL),
         ]
@@ -93,7 +93,7 @@ USERS = [
         'is_superuser': False,
         'is_staff': False,
         'password': 'photographer',
-        'email': 'noreply@example.org',
+        'email': 'noreply-journalism5@example.org',
         'certifications': [
             ('photographer', WorkerCertification.Role.ENTRY_LEVEL),
             ('photographer', WorkerCertification.Role.REVIEWER),
@@ -107,7 +107,7 @@ USERS = [
         'is_superuser': False,
         'is_staff': False,
         'password': 'copy-editor',
-        'email': 'noreply@example.org',
+        'email': 'noreply-journalism6@example.org',
         'certifications': [
             ('copy_editor', WorkerCertification.Role.ENTRY_LEVEL),
         ]
