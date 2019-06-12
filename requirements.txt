@@ -18,7 +18,7 @@ lxml==3.8.0
 beautifulsoup4==4.6.0
 pyOpenSSL==17.5.0
 google-api-python-client==1.6.5
-slacker==0.9.60
+slacker==0.13.0
 python-dateutil==2.6.1
 django-hijack==2.1.6
 django-hijack-admin==2.1.6
