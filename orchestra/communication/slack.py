@@ -4,6 +4,9 @@ import string
 
 from django.conf import settings
 from django.utils.text import slugify
+
+from requests.exceptions import HTTPError
+
 from slacker import Error as SlackError
 from slacker import BaseAPI
 from slacker import Slacker
@@ -29,6 +32,12 @@ def _silent_request(*args, **kwargs):
         return _request(*args, **kwargs)
     except SlackError:
         logger.exception('Slack API Error')
+    except HTTPError as e:
+        status_code = e.response.status_code
+        if status_code == 429:
+            logger.exception('HTTPError: {}'.format(e))
+        else:
+            raise(e)
 
 
 BaseAPI._request = _silent_request
