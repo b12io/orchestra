@@ -1,4 +1,5 @@
 from annoying.functions import get_object_or_None
+from collections import defaultdict
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import transaction
@@ -237,6 +238,7 @@ def warn_staffing_team_about_unstaffed_tasks():
         .order_by('-start_datetime')
         .values('staffing_requests__required_role_counter', 'id'))
 
+    requests_to_notify = defaultdict(list)
     for task_value in task_values:
         required_role_counter = task_value[
             'staffing_requests__required_role_counter']
@@ -247,11 +249,15 @@ def warn_staffing_team_about_unstaffed_tasks():
             .order_by('-created_at'))[0]
 
         if request.created_at < max_unstaffed_datetime:
-            message_internal_slack_group(
-                settings.ORCHESTRA_STAFFBOT_STAFFING_GROUP_ID,
-                ('No winner request for task {} - {}! Created at {}.'
-                 .format(request.task.id, request.task, request.created_at)))
+            requests_to_notify[request.task.step].append(request)
 
+    for step, requests in requests_to_notify.items():
+        message = '\n'.join([
+            ('No winner request for task {} - {}! Created at {}.'
+                .format(request.task.id, request.task, request.created_at))
+            for request in requests])
+        message_internal_slack_group(
+            settings.ORCHESTRA_STAFFBOT_STAFFING_GROUP_ID, message)
 
 def remind_workers_about_available_tasks():
     staffbot = StaffBot()
