@@ -36,6 +36,14 @@ export default function tasktable () {
         vm.collapsed = !vm.collapsed
       }
 
+      vm.getDatetimeFormat = (datetimeString) => {
+        const localTime = datetimeString ? moment.utc(datetimeString).tz(moment.tz.guess()) : null
+        if (localTime && localTime.isSame(new Date(), 'day')) {
+          return '[Today], h:mm a'
+        }
+        return null
+      }
+
       vm.newTask = function (taskType) {
         // To allow users to read the "no tasks left" message while debouncing
         // further clicks, we leave the message up for 15 seconds before removing

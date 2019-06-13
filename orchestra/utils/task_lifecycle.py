@@ -548,8 +548,10 @@ def tasks_assigned_to_worker(worker):
             if state in ('returned', 'in_progress'):
                 next_todo = (
                     task_assignment.task.todos
-                    .filter(completed=False)
-                    .annotate(
+                    .filter(
+                        completed=False,
+                        template=None
+                    ).annotate(
                         todo_order=Case(
                             When(
                                 start_by_datetime__gt=time_now,
