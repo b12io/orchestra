@@ -74,8 +74,8 @@
                   </span>
                 </td>
                 <td>{{task.next_todo_dict.description|limitTo:50}}{{task.next_todo_dict.description.length > 50 ? '...' : ''}}</td>
-                <td><datetime-display datetime="task.next_todo_dict.start_by_datetime" show-time="false" /></td>
-                <td><datetime-display datetime="task.next_todo_dict.due_datetime" show-time="false" /></td>
+                <td><datetime-display datetime="task.next_todo_dict.start_by_datetime" show-time="false" custom-format="vm.getDatetimeFormat(task.next_todo_dict.start_by_datetime)" /></td>
+                <td><datetime-display datetime="task.next_todo_dict.due_datetime" show-time="false" custom-format="vm.getDatetimeFormat(task.next_todo_dict.due_datetime)" /></td>
               </tr>
             </tbody>
           </table>
