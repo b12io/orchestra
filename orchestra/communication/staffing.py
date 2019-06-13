@@ -259,6 +259,7 @@ def warn_staffing_team_about_unstaffed_tasks():
         message_internal_slack_group(
             settings.ORCHESTRA_STAFFBOT_STAFFING_GROUP_ID, message)
 
+
 def remind_workers_about_available_tasks():
     staffbot = StaffBot()
     workers = Worker.objects.all()
