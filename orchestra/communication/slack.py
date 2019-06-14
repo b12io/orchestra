@@ -34,10 +34,11 @@ def _silent_request(*args, **kwargs):
         logger.exception('Slack API Error')
     except HTTPError as e:
         status_code = e.response.status_code
+        # If we're being rate-limited, log the exception but don't fail.
         if status_code == 429:
-            logger.exception('HTTPError: {}'.format(e))
+            logger.exception('Slack API rate limit')
         else:
-            raise(e)
+            raise
 
 
 BaseAPI._request = _silent_request
