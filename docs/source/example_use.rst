@@ -316,7 +316,7 @@ layout::
   }
 
 The basic arguments are similar, but we specify the step type as not human
-(``"is_human": false``), and insead of a user interface, we pass a python
+(``"is_human": false``), and instead of a user interface, we pass a python
 function to execute (``autoadjust_photos`` here).
 
 
