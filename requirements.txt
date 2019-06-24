@@ -36,7 +36,7 @@ django-kronos==1.0
 httpsig==1.2.0
 markdown2==2.3.5
 timeout-decorator==0.4.0
-phonenumbers==8.9.0
+phonenumbers==8.10.14
 isort==4.2.15
 beanstalk-dispatch==0.0.5
 jsl==0.2.4
