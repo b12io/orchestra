@@ -112,10 +112,10 @@ export function orchestraTasks ($http) {
     pendingTasks: function () { return this.allTasks().filter(task => pendingTask(task)) },
     pausedTasks: function () { return this.allTasks().filter(task => pausedTask(task)) },
     completedTasks: function () { return this.allTasks().filter(task => task.state === 'complete') },
-    activeAndRecentTasks: function (numRecent) {
-      // Return all active tasks, as well as `numRecent` of the most
+    activePendingAndRecentTasks: function (numRecent) {
+      // Return all active tasks, pending tasks, as well as `numRecent` of the most
       // recently completed tasks.
-      var tasks = this.activeTasks()
+      var tasks = this.activeTasks().concat(this.pendingTasks())
       return tasks.concat(this.completedTasks().slice(0, numRecent))
     },
     getDescription: function (task) {
