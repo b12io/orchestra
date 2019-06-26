@@ -590,7 +590,7 @@ def tasks_assigned_to_worker(worker):
                     }
                 num_non_template_todos = (
                     task_assignment.task.todos
-                        .filter(template=None).count())
+                    .filter(template=None).count())
                 # If a task has no todos (complete or incomplete)
                 # assigned to it, then by default the task would be
                 # marked as pending. When a task is first created and
