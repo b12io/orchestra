@@ -588,7 +588,8 @@ def tasks_assigned_to_worker(worker):
                         'start_by_datetime': start_str,
                         'due_datetime': due_str
                     }
-                num_todos = task_assignment.task.todos.count()
+                num_non_template_todos = (task_assignment.task.todos
+                    .filter(template=None).count())
                 # If a task has no todos (complete or incomplete)
                 # assigned to it, then by default the task would be
                 # marked as pending. When a task is first created and
@@ -605,7 +606,7 @@ def tasks_assigned_to_worker(worker):
                         or next_todo.start_by_datetime <= time_now
                     )
                 )
-                should_be_active = (num_todos == 0) or task_started
+                should_be_active = (num_non_template_todos == 0) or task_started
             tasks_assigned.append({
                 'id': task_assignment.task.id,
                 'assignment_id': task_assignment.id,
