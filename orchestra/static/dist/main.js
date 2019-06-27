@@ -42714,10 +42714,10 @@ function orchestraTasks($http) {
         return task.state === 'complete';
       });
     },
-    activeAndRecentTasks: function activeAndRecentTasks(numRecent) {
-      // Return all active tasks, as well as `numRecent` of the most
+    activePendingAndRecentTasks: function activePendingAndRecentTasks(numRecent) {
+      // Return all active tasks, pending tasks, as well as `numRecent` of the most
       // recently completed tasks.
-      var tasks = this.activeTasks();
+      var tasks = this.activeTasks().concat(this.pendingTasks());
       return tasks.concat(this.completedTasks().slice(0, numRecent));
     },
     getDescription: function getDescription(task) {
@@ -61106,7 +61106,7 @@ function taskSelect(orchestraTasks) {
 /* 196 */
 /***/ (function(module, exports) {
 
-module.exports = "<label class=\"edit-label\">Select task</label>\n<ui-select ng-model=\"taskSelect.task\">\n  <ui-select-match>\n    <span ng-bind=\"taskSelect.orchestraTasks.getDescription($select.selected)\"></span>\n  </ui-select-match>\n  <ui-select-choices repeat=\"item in (taskSelect.orchestraTasks.activeAndRecentTasks(5) | filter: $select.search) track by item.id\">\n    <span ng-bind=\"taskSelect.orchestraTasks.getDescription(item)\"></span>\n  </ui-select-choices>\n</ui-select>\n";
+module.exports = "<label class=\"edit-label\">Select task</label>\n<ui-select ng-model=\"taskSelect.task\">\n  <ui-select-match>\n    <span ng-bind=\"taskSelect.orchestraTasks.getDescription($select.selected)\"></span>\n  </ui-select-match>\n  <ui-select-choices repeat=\"item in (taskSelect.orchestraTasks.activePendingAndRecentTasks(5) | filter: $select.search) track by item.id\">\n    <span ng-bind=\"taskSelect.orchestraTasks.getDescription(item)\"></span>\n  </ui-select-choices>\n</ui-select>\n";
 
 /***/ }),
 /* 197 */
