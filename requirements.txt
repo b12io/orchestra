@@ -29,7 +29,7 @@ django-bitfield==1.9.3
 django-phonenumber-field==2.0.0
 django-nose==1.4.4
 django-annoying==0.10.3
-django-gulp==2.5.1
+django-gulp==4.1.0
 django-related-admin==0.5.0
 django-ajax-selects==1.7.0
 django-kronos==1.0
