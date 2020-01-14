@@ -49,7 +49,7 @@
     "quill": "^0.20.0",
     "sass-loader": "^6.0.5",
     "style-loader": "^0.17.0",
-    "webpack": "3.3.0",
+    "webpack": "3.12.0",
     "yargs": "^4.3.2"
   },
   "scripts": {
