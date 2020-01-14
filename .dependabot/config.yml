@@ -1,0 +1,12 @@
+version: 1
+update_configs:
+  - package_manager: "python"
+    directory: "/"
+    update_schedule: monthly
+    default_reviewers:
+      - dastanko
+  - package_manager: "javascript"
+    directory: "/"
+    update_schedule: monthly
+    default_reviewers:
+      - dastanko
