@@ -2,7 +2,7 @@
 set -e
 
 branches=("$@")
-branch="upgrading-dependecies-$(date -I)"
+branch="upgrading-dependencies-$(date -I)"
 
 git checkout -b ${branch} > /dev/null
 
