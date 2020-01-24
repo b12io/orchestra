@@ -2,7 +2,7 @@ import logging
 from urllib.parse import urljoin
 
 from django.conf import settings
-from django.core import urlresolvers
+from django import urls
 from django.utils import timezone
 
 from orchestra.communication.slack import OrchestraSlackService
@@ -19,28 +19,28 @@ def project_management_information(project_id):
         Project.STATUS_CHOICES).get(project.status, None)
     project_information[project.id]['project']['admin_url'] = urljoin(
         settings.ORCHESTRA_URL,
-        urlresolvers.reverse(
+        urls.reverse(
             'admin:orchestra_project_change',
             args=(project_id,)))
 
     for slug, task in project_information[project.id]['tasks'].items():
         task['admin_url'] = urljoin(
             settings.ORCHESTRA_URL,
-            urlresolvers.reverse(
+            urls.reverse(
                 'admin:orchestra_task_change',
                 args=(task['id'],)))
 
         for assignment in task['assignments']:
             assignment['admin_url'] = urljoin(
                 settings.ORCHESTRA_URL,
-                urlresolvers.reverse(
+                urls.reverse(
                     'admin:orchestra_taskassignment_change',
                     args=(assignment['id'],)))
 
             for iteration in assignment['iterations']:
                 iteration['admin_url'] = urljoin(
                     settings.ORCHESTRA_URL,
-                    urlresolvers.reverse(
+                    urls.reverse(
                         'admin:orchestra_iteration_change',
                         args=(iteration['id'],)))
                 if not iteration['end_datetime']:

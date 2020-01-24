@@ -21,6 +21,8 @@ from orchestra.views import task_assignment_information
 from orchestra.views import update_timer
 from orchestra.views import upload_image
 
+app_name = 'api'
+
 urlpatterns = [
     # Interface API
     url(r'^interface/dashboard_tasks/$',

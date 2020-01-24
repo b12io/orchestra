@@ -2,6 +2,8 @@ from django.conf.urls import url
 
 from orchestra.interface_api.project_management import views
 
+app_name = 'project_management'
+
 urlpatterns = [
     url(r'^projects/$',
         views.ProjectList.as_view(),
