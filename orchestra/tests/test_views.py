@@ -5,6 +5,8 @@ from unittest.mock import patch
 
 from django.urls import reverse
 from django.utils import timezone
+from django.test import RequestFactory
+from django.contrib.sessions.middleware import SessionMiddleware
 
 from orchestra.core.errors import TimerError
 from orchestra.models import Task
@@ -238,19 +240,26 @@ class TimerEndpointTests(EndpointTestCase):
 
 class TestErrorViews(OrchestraTestCase):
 
-    def assert_error_view(self, handler, status_code):
-        request = MagicMock()
-        response = handler(request)
+    def assert_error_view(self, handler, status_code, exception=None):
+        request = RequestFactory().get(reverse('orchestra:orchestra:get_timer'))
+        middleware = SessionMiddleware()
+        middleware.process_request(request)
+        request.session.save()
+
+        if exception:
+            response = handler(request, exception)
+        else:
+            response = handler(request)
         self.assertEqual(response.status_code, status_code)
 
     def test_bad_request(self):
-        self.assert_error_view(bad_request, 400)
+        self.assert_error_view(bad_request, 400, exception=Exception())
 
     def test_forbidden(self):
-        self.assert_error_view(forbidden, 403)
+        self.assert_error_view(forbidden, 403, exception=Exception())
 
     def test_not_found(self):
-        self.assert_error_view(not_found, 404)
+        self.assert_error_view(not_found, 404, exception=Exception())
 
     def test_internal_server_error(self):
         self.assert_error_view(internal_server_error, 500)
