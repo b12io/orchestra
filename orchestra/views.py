@@ -301,7 +301,7 @@ def error_handler(request, error_code, context):
 
 
 @requires_csrf_token
-def bad_request(request):
+def bad_request(request, exception):
     error_code = http_status.HTTP_400_BAD_REQUEST
     return error_handler(request, error_code, context={
         'page_title': '400 Bad Request',
@@ -309,7 +309,7 @@ def bad_request(request):
 
 
 @requires_csrf_token
-def forbidden(request):
+def forbidden(request, exception):
     error_code = http_status.HTTP_403_FORBIDDEN
     return error_handler(request, error_code, context={
         'page_title': '403 Forbidden',
@@ -317,7 +317,7 @@ def forbidden(request):
 
 
 @requires_csrf_token
-def not_found(request):
+def not_found(request, exception):
     error_code = http_status.HTTP_404_NOT_FOUND
     return error_handler(request, error_code, context={
         'page_title': '404 Not Found',
