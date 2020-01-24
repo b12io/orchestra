@@ -336,7 +336,7 @@ class TimeEntryList(generics.ListCreateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = TimeEntrySerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_class = TimeEntryFilter
+    filterset_class = TimeEntryFilter
 
     def get_queryset(self):
         """
