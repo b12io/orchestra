@@ -1,6 +1,6 @@
 import datetime
 import json
-from unittest.mock import MagicMock
+
 from unittest.mock import patch
 
 from django.urls import reverse
@@ -241,7 +241,7 @@ class TimerEndpointTests(EndpointTestCase):
 class TestErrorViews(OrchestraTestCase):
 
     def assert_error_view(self, handler, status_code, exception=None):
-        request = RequestFactory().get(reverse('orchestra:orchestra:get_timer'))
+        request = RequestFactory().get('/')
         middleware = SessionMiddleware()
         middleware.process_request(request)
         request.session.save()
