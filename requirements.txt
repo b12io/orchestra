@@ -1,7 +1,7 @@
 Django==1.11.10
 jsonfield==2.0.2
 django-jsonview==1.1.0
-requests==2.18.4
+requests==2.22.0
 factory_boy==2.10.0
 coverage==4.5.1
 psycopg2==2.7.4
@@ -34,7 +34,7 @@ django-related-admin==0.5.0
 django-ajax-selects==1.7.0
 django-kronos==1.0
 httpsig==1.2.0
-markdown2==2.3.5
+markdown2==2.3.6
 timeout-decorator==0.4.0
 phonenumbers==8.9.0
 isort==4.2.15
@@ -43,4 +43,4 @@ jsl==0.2.4
 jsonschema==2.6.0
 
 # Journalism Workflow requirements
-Pillow==4.2.1
+Pillow==7.0.0
