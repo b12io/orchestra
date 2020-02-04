@@ -58067,6 +58067,12 @@ function assignmentsVis(dataService, orchestraApi, iterationsVis, visUtils) {
         var assignment = dataService.assignmentFromKey(assignmentKey);
         this.value = assignment.task.is_human ? assignment.worker.username : 'Machine';
       });
+
+      assignmentsMetaEnter.append('button').attr({
+        'class': 'btn btn-default btn-xs pull-right'
+      }).text('Staffbot').on('click', function () {
+        window.alert('staffbot!');
+      });
     },
     assign_task: function assign_task(task, inputEl) {
       /**
