@@ -43,4 +43,4 @@ jsl==0.2.4
 jsonschema==2.6.0
 
 # Journalism Workflow requirements
-Pillow==6.2.0
+Pillow==7.0.0
