@@ -2,7 +2,7 @@ Django==1.11.10
 jsonfield==2.0.2
 django-jsonview==1.1.0
 requests==2.22.0
-factory_boy==2.10.0
+factory_boy==2.12.0
 coverage==4.5.1
 psycopg2==2.7.4
 django-registration-redux==2.2
