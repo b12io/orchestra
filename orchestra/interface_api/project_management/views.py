@@ -174,9 +174,12 @@ def staffbot_task(request):
         task = Task.objects.get(id=data.get('task_id'))
         request_cause = StaffBotRequest.RequestCause.USER.value
         bot = StaffBot()
-        is_restaff = current_assignment(task) is not None
+        assignment = current_assignment(task)
+        is_restaff = assignment is not None
         if is_restaff:
-            bot.restaff(task.id, request=request_cause)
+            username = assignment.worker.user.username
+            bot.restaff(task.id, username,
+                        request_cause=request_cause)
         else:
             bot.staff(task.id, request_cause=request_cause)
     except Exception as e:

@@ -118,7 +118,7 @@ export default function assignmentsVis (dataService, orchestraApi, iterationsVis
         .text('Staffbot')
         .on('click', function (assignmentKey) {
           var assignment = dataService.assignmentFromKey(assignmentKey)
-          assignmentsVis.staffbotTask(assignment.task)
+          assignmentsVis.staffbotTask(assignment.task, d3.select(this))
         })
     },
     assign_task: function (task, inputEl) {
@@ -175,8 +175,18 @@ export default function assignmentsVis (dataService, orchestraApi, iterationsVis
           assignment.reassigning = false
         })
     },
-    staffbotTask: function (task) {
+    staffbotTask: function (task, buttonEl) {
+      buttonEl.text('Sending request ...')
       orchestraApi.staffbotTask(task)
+        .then(function (response) {
+          buttonEl.text('Staffbot request sent')
+        }, function (response) {
+          var errorMessage = 'Error creating a staffbot request.'
+          if (response.status === 400) {
+            errorMessage = response.data.message
+          }
+          window.alert(errorMessage)
+        })
     }
   }
 }

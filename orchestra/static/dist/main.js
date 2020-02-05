@@ -42517,7 +42517,6 @@ function orchestraApi($http) {
     },
 
     staffbotTask: function staffbotTask(task) {
-      console.log('staffbotTask');
       return $http.post(getApiUrl('staffbot_task'), {
         'task_id': task.id
       });
@@ -58079,7 +58078,7 @@ function assignmentsVis(dataService, orchestraApi, iterationsVis, visUtils) {
         'class': 'btn btn-default btn-xs pull-right'
       }).text('Staffbot').on('click', function (assignmentKey) {
         var assignment = dataService.assignmentFromKey(assignmentKey);
-        assignmentsVis.staffbotTask(assignment.task);
+        assignmentsVis.staffbotTask(assignment.task, d3.select(this));
       });
     },
     assign_task: function assign_task(task, inputEl) {
@@ -58132,8 +58131,17 @@ function assignmentsVis(dataService, orchestraApi, iterationsVis, visUtils) {
         assignment.reassigning = false;
       });
     },
-    staffbotTask: function staffbotTask(task) {
-      orchestraApi.staffbotTask(task);
+    staffbotTask: function staffbotTask(task, buttonEl) {
+      buttonEl.text('Sending request ...');
+      orchestraApi.staffbotTask(task).then(function (response) {
+        buttonEl.text('Staffbot request sent');
+      }, function (response) {
+        var errorMessage = 'Error creating a staffbot request.';
+        if (response.status === 400) {
+          errorMessage = response.data.message;
+        }
+        window.alert(errorMessage);
+      });
     }
   };
 }
