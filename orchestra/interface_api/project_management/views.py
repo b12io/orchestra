@@ -166,6 +166,7 @@ def set_project_status_api(request):
         raise BadRequest(e)
     return {'status': status, 'success': True}
 
+
 @project_management_api_view
 def staffbot_task(request):
     data = load_encoded_json(request.body)
