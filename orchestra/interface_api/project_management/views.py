@@ -5,6 +5,8 @@ from jsonview.exceptions import BadRequest
 from rest_framework import generics
 from rest_framework import permissions
 
+from orchestra.bots.staffbot import StaffBot
+
 from orchestra.communication.slack import unarchive_project_slack_group
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import WorkerCertificationError
@@ -17,6 +19,7 @@ from orchestra.interface_api.project_management.decorators import \
 from orchestra.interface_api.project_management.decorators import \
     project_management_api_view_base
 from orchestra.models import Project
+from orchestra.models import StaffBotRequest
 from orchestra.models import Task
 from orchestra.models import Worker
 from orchestra.project_api.serializers import ProjectSummarySerializer
@@ -28,6 +31,7 @@ from orchestra.utils.task_lifecycle import create_subsequent_tasks
 from orchestra.utils.task_lifecycle import end_project
 from orchestra.utils.task_lifecycle import set_project_status
 from orchestra.utils.task_lifecycle import reassign_assignment
+from orchestra.utils.task_properties import current_assignment
 
 
 class IsProjectAdmin(permissions.BasePermission):
@@ -161,3 +165,25 @@ def set_project_status_api(request):
     except ProjectStatusError as e:
         raise BadRequest(e)
     return {'status': status, 'success': True}
+
+@project_management_api_view
+def staffbot_task(request):
+    data = load_encoded_json(request.body)
+    errors = {}
+    try:
+        task = Task.objects.get(id=data.get('task_id'))
+        request_cause = StaffBotRequest.RequestCause.USER.value
+        bot = StaffBot()
+        is_restaff = current_assignment(task) is not None
+        if is_restaff:
+            bot.restaff(task.id, request=request_cause)
+        else:
+            bot.staff(task.id, request_cause=request_cause)
+    except Exception as e:
+        errors['error'] = str(e)
+    success = len(errors) == 0
+    return {
+        'success': success,
+        'errors': errors,
+        'is_restaff': is_restaff
+    }

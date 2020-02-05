@@ -116,8 +116,9 @@ export default function assignmentsVis (dataService, orchestraApi, iterationsVis
           'class': 'btn btn-default btn-xs pull-right'
         })
         .text('Staffbot')
-        .on('click', function () {
-          window.alert('staffbot!')
+        .on('click', function (assignmentKey) {
+          var assignment = dataService.assignmentFromKey(assignmentKey)
+          assignmentsVis.staffbotTask(assignment.task)
         })
     },
     assign_task: function (task, inputEl) {
@@ -173,6 +174,9 @@ export default function assignmentsVis (dataService, orchestraApi, iterationsVis
           inputEl.node().value = assignment.worker.username
           assignment.reassigning = false
         })
+    },
+    staffbotTask: function (task) {
+      orchestraApi.staffbotTask(task)
     }
   }
 }

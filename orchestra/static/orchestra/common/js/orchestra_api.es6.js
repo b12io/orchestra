@@ -36,6 +36,13 @@ export default function orchestraApi ($http) {
       })
     },
 
+    staffbotTask: function (task) {
+      console.log('staffbotTask')
+      return $http.post(getApiUrl('staffbot_task'), {
+        'task_id': task.id
+      })
+    },
+
     revertTask: function (taskId, iterationId, revertBefore, commit) {
       return $http.post(getApiUrl('revert_task'), {
         'task_id': taskId,

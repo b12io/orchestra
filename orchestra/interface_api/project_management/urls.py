@@ -46,4 +46,8 @@ urlpatterns = [
     url(r'^revert_task/$',
         views.revert_task_api,
         name='revert_task'),
+
+    url(r'^staffbot_task/$',
+        views.staffbot_task,
+        name='staffbot_task'),
 ]

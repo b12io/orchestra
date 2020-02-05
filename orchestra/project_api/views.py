@@ -10,7 +10,6 @@ from orchestra.core.errors import WorkerCertificationError
 from orchestra.models import Project
 from orchestra.models import WorkerCertification
 from orchestra.models import Workflow
-from orchestra.models import Task
 from orchestra.project import create_project_with_tasks
 from orchestra.project_api.api import get_project_information
 from orchestra.utils.decorators import api_endpoint
@@ -19,7 +18,6 @@ from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.notifications import message_experts_slack_group
 from orchestra.project_api.auth import OrchestraProjectAPIAuthentication
 from orchestra.project_api.auth import IsSignedUser
-from orchestra.bots.assignment_policies import staffbot_autoassign
 
 logger = logging.getLogger(__name__)
 
@@ -156,23 +154,3 @@ def message_project_team(request):
         ).format(project)
         raise BadRequest(error_message)
     return {'success': True}
-
-
-@api_endpoint(methods=['POST'],
-              permissions=(IsSignedUser,),
-              logger=logger,
-              auths=(OrchestraProjectAPIAuthentication,))
-def staffbot_assign_worker(request):
-    data = load_encoded_json(request.body)
-    errors = {}
-    try:
-        # PAOTODO: might need to manually take staff off the task
-        task = Task.objects.get(id=data.get('task_id'))
-        staffbot_autoassign(task)
-    except Exception as e:
-        errors['error'] = str(e)
-    success = len(errors) == 0
-    return {
-        'success': success,
-        'errors': errors,
-    }

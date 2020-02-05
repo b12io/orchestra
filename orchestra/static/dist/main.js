@@ -42516,6 +42516,13 @@ function orchestraApi($http) {
       });
     },
 
+    staffbotTask: function staffbotTask(task) {
+      console.log('staffbotTask');
+      return $http.post(getApiUrl('staffbot_task'), {
+        'task_id': task.id
+      });
+    },
+
     revertTask: function revertTask(taskId, iterationId, revertBefore, commit) {
       return $http.post(getApiUrl('revert_task'), {
         'task_id': taskId,
@@ -58070,8 +58077,9 @@ function assignmentsVis(dataService, orchestraApi, iterationsVis, visUtils) {
 
       assignmentsMetaEnter.append('button').attr({
         'class': 'btn btn-default btn-xs pull-right'
-      }).text('Staffbot').on('click', function () {
-        window.alert('staffbot!');
+      }).text('Staffbot').on('click', function (assignmentKey) {
+        var assignment = dataService.assignmentFromKey(assignmentKey);
+        assignmentsVis.staffbotTask(assignment.task);
       });
     },
     assign_task: function assign_task(task, inputEl) {
@@ -58123,6 +58131,9 @@ function assignmentsVis(dataService, orchestraApi, iterationsVis, visUtils) {
         inputEl.node().value = assignment.worker.username;
         assignment.reassigning = false;
       });
+    },
+    staffbotTask: function staffbotTask(task) {
+      orchestraApi.staffbotTask(task);
     }
   };
 }
