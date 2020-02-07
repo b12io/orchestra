@@ -42516,6 +42516,12 @@ function orchestraApi($http) {
       });
     },
 
+    staffTask: function staffTask(task) {
+      return $http.post(getApiUrl('staff_task'), {
+        'task_id': task.id
+      });
+    },
+
     revertTask: function revertTask(taskId, iterationId, revertBefore, commit) {
       return $http.post(getApiUrl('revert_task'), {
         'task_id': taskId,
@@ -58067,6 +58073,16 @@ function assignmentsVis(dataService, orchestraApi, iterationsVis, visUtils) {
         var assignment = dataService.assignmentFromKey(assignmentKey);
         this.value = assignment.task.is_human ? assignment.worker.username : 'Machine';
       });
+
+      assignmentsMetaEnter.filter(function (data) {
+        var assignment = dataService.assignmentFromKey(data);
+        return assignment.task.is_human && assignment.task.status !== 'Complete';
+      }).append('button').attr({
+        'class': 'btn btn-default btn-xs pull-right'
+      }).text(assignmentsVis.getStaffButtonLabel).on('click', function (assignmentKey) {
+        var assignment = dataService.assignmentFromKey(assignmentKey);
+        assignmentsVis.staffTask(assignment.task, d3.select(this));
+      });
     },
     assign_task: function assign_task(task, inputEl) {
       /**
@@ -58117,6 +58133,20 @@ function assignmentsVis(dataService, orchestraApi, iterationsVis, visUtils) {
         inputEl.node().value = assignment.worker.username;
         assignment.reassigning = false;
       });
+    },
+    getStaffButtonLabel: function getStaffButtonLabel(data) {
+      var assignment = dataService.assignmentFromKey(data);
+      return assignment.worker.id ? 'Restaff' : 'Staff';
+    },
+    staffTask: function staffTask(task, buttonEl) {
+      buttonEl.text('Sending request ...');
+      orchestraApi.staffTask(task).then(function () {
+        buttonEl.text('StaffBot request sent');
+      }, function () {
+        var errorMessage = 'Error creating a StaffBot request.';
+        window.alert(errorMessage);
+        buttonEl.text(this.getStaffButtonLabel);
+      }.bind(this));
     }
   };
 }

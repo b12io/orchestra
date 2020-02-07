@@ -603,3 +603,34 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
                     audit['assignments'][i][
                         'iterations'][j]['change'] = iteration_change
         return audit
+
+    @patch('orchestra.interface_api.project_management.views.StaffBot.restaff')
+    @patch('orchestra.interface_api.project_management.views.StaffBot.staff')
+    def test_staff_task(self, mock_staff, mock_restaff):
+        # Staff a task with no assignment
+        unassigned_task = self.tasks['awaiting_processing']
+        response = self.api_client.post(
+            reverse(
+                'orchestra:orchestra:project_management:staff_task'),
+            json.dumps({
+                'task_id': unassigned_task.id
+            }),
+            content_type='application/json')
+        self.assertTrue(mock_staff.called)
+        self.assertEqual(response.status_code, 200)
+        is_restaff = load_encoded_json(response.content)['is_restaff']
+        self.assertFalse(is_restaff)
+
+        # Restaff a task with an assignment
+        assigned_task = self.tasks['review_task']
+        response2 = self.api_client.post(
+            reverse(
+                'orchestra:orchestra:project_management:staff_task'),
+            json.dumps({
+                'task_id': assigned_task.id
+            }),
+            content_type='application/json')
+        self.assertTrue(mock_restaff.called)
+        self.assertEqual(response2.status_code, 200)
+        is_restaff2 = load_encoded_json(response2.content)['is_restaff']
+        self.assertTrue(is_restaff2)
