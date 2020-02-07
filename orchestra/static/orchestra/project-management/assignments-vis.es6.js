@@ -115,7 +115,10 @@ export default function assignmentsVis (dataService, orchestraApi, iterationsVis
         .attr({
           'class': 'btn btn-default btn-xs pull-right'
         })
-        .text('Staffbot')
+        .text(function (data) {
+          var assignment = dataService.assignmentFromKey(data)
+          return assignment.worker.id ? 'Restaff' : 'Staff'
+        })
         .on('click', function (assignmentKey) {
           var assignment = dataService.assignmentFromKey(assignmentKey)
           assignmentsVis.staffTask(assignment.task, d3.select(this))

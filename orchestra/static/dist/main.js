@@ -58076,7 +58076,10 @@ function assignmentsVis(dataService, orchestraApi, iterationsVis, visUtils) {
 
       assignmentsMetaEnter.append('button').attr({
         'class': 'btn btn-default btn-xs pull-right'
-      }).text('Staffbot').on('click', function (assignmentKey) {
+      }).text(function (data) {
+        var assignment = dataService.assignmentFromKey(data);
+        return assignment.worker.id ? 'Restaff' : 'Staff';
+      }).on('click', function (assignmentKey) {
         var assignment = dataService.assignmentFromKey(assignmentKey);
         assignmentsVis.staffTask(assignment.task, d3.select(this));
       });
