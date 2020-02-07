@@ -184,10 +184,9 @@ def staff_task(request):
         else:
             bot.staff(task.id, request_cause=request_cause)
     except Exception as e:
-        errors['error'] = str(e)
+        raise BadRequest(e)
     success = len(errors) == 0
     return {
         'success': success,
-        'errors': errors,
         'is_restaff': is_restaff
     }
