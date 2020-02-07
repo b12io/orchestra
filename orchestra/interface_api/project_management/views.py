@@ -168,7 +168,7 @@ def set_project_status_api(request):
 
 
 @project_management_api_view
-def staffbot_task(request):
+def staff_task(request):
     data = load_encoded_json(request.body)
     errors = {}
     try:
