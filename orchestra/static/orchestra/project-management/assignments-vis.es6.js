@@ -179,7 +179,7 @@ export default function assignmentsVis (dataService, orchestraApi, iterationsVis
       buttonEl.text('Sending request ...')
       orchestraApi.staffbotTask(task)
         .then(function (response) {
-          buttonEl.text('Staffbot request sent')
+          buttonEl.text('StaffBot request sent')
         }, function (response) {
           var errorMessage = 'Error creating a StaffBot request.'
           if (response.status === 400) {
