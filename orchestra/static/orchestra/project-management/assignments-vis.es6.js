@@ -111,7 +111,10 @@ export default function assignmentsVis (dataService, orchestraApi, iterationsVis
           this.value = assignment.task.is_human ? assignment.worker.username : 'Machine'
         })
 
-      assignmentsMetaEnter.append('button')
+      assignmentsMetaEnter.filter(function (data) {
+        var assignment = dataService.assignmentFromKey(data)
+        return assignment.task.is_human && assignment.task.status !== 'Complete'
+      }).append('button')
         .attr({
           'class': 'btn btn-default btn-xs pull-right'
         })
