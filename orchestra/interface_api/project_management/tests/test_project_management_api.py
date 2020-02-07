@@ -609,7 +609,7 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
     def test_staff_task(self, mock_staff, mock_restaff):
         # Staff a task with no assignment
         unassigned_task = self.tasks['awaiting_processing']
-        response = self.api_client.post(
+        self.api_client.post(
             reverse(
                 'orchestra:orchestra:project_management:staff_task'),
             json.dumps({
@@ -620,7 +620,7 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
 
         # Restaff a task with an assignment
         assigned_task = self.tasks['review_task']
-        response = self.api_client.post(
+        self.api_client.post(
             reverse(
                 'orchestra:orchestra:project_management:staff_task'),
             json.dumps({
