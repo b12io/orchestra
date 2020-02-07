@@ -118,10 +118,7 @@ export default function assignmentsVis (dataService, orchestraApi, iterationsVis
         .attr({
           'class': 'btn btn-default btn-xs pull-right'
         })
-        .text(function (data) {
-          var assignment = dataService.assignmentFromKey(data)
-          return assignment.worker.id ? 'Restaff' : 'Staff'
-        })
+        .text(assignmentsVis.getStaffButtonLabel)
         .on('click', function (assignmentKey) {
           var assignment = dataService.assignmentFromKey(assignmentKey)
           assignmentsVis.staffTask(assignment.task, d3.select(this))
@@ -181,18 +178,21 @@ export default function assignmentsVis (dataService, orchestraApi, iterationsVis
           assignment.reassigning = false
         })
     },
+    getStaffButtonLabel: function (data) {
+      var assignment = dataService.assignmentFromKey(data)
+      return assignment.worker.id ? 'Restaff' : 'Staff'
+    },
     staffTask: function (task, buttonEl) {
       buttonEl.text('Sending request ...')
-      orchestraApi.staffbotTask(task)
-        .then(function (response) {
+      orchestraApi.staffTask(task)
+        .then(function () {
           buttonEl.text('StaffBot request sent')
-        }, function (response) {
+        }, function () {
           var errorMessage = 'Error creating a StaffBot request.'
-          if (response.status === 400) {
-            errorMessage = response.data.message
-          }
           window.alert(errorMessage)
-        })
+          buttonEl.text(this.getStaffButtonLabel)
+        }.bind(this)
+      )
     }
   }
 }
