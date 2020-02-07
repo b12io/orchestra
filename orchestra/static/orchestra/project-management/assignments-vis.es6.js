@@ -110,6 +110,19 @@ export default function assignmentsVis (dataService, orchestraApi, iterationsVis
           var assignment = dataService.assignmentFromKey(assignmentKey)
           this.value = assignment.task.is_human ? assignment.worker.username : 'Machine'
         })
+
+      assignmentsMetaEnter.filter(function (data) {
+        var assignment = dataService.assignmentFromKey(data)
+        return assignment.task.is_human && assignment.task.status !== 'Complete'
+      }).append('button')
+        .attr({
+          'class': 'btn btn-default btn-xs pull-right'
+        })
+        .text(assignmentsVis.getStaffButtonLabel)
+        .on('click', function (assignmentKey) {
+          var assignment = dataService.assignmentFromKey(assignmentKey)
+          assignmentsVis.staffTask(assignment.task, d3.select(this))
+        })
     },
     assign_task: function (task, inputEl) {
       /**
@@ -164,6 +177,22 @@ export default function assignmentsVis (dataService, orchestraApi, iterationsVis
           inputEl.node().value = assignment.worker.username
           assignment.reassigning = false
         })
+    },
+    getStaffButtonLabel: function (data) {
+      var assignment = dataService.assignmentFromKey(data)
+      return assignment.worker.id ? 'Restaff' : 'Staff'
+    },
+    staffTask: function (task, buttonEl) {
+      buttonEl.text('Sending request ...')
+      orchestraApi.staffTask(task)
+        .then(function () {
+          buttonEl.text('StaffBot request sent')
+        }, function () {
+          var errorMessage = 'Error creating a StaffBot request.'
+          window.alert(errorMessage)
+          buttonEl.text(this.getStaffButtonLabel)
+        }.bind(this)
+      )
     }
   }
 }
