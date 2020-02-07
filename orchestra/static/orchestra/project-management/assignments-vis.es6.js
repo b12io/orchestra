@@ -181,7 +181,7 @@ export default function assignmentsVis (dataService, orchestraApi, iterationsVis
         .then(function (response) {
           buttonEl.text('Staffbot request sent')
         }, function (response) {
-          var errorMessage = 'Error creating a staffbot request.'
+          var errorMessage = 'Error creating a StaffBot request.'
           if (response.status === 400) {
             errorMessage = response.data.message
           }
