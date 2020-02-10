@@ -1,7 +1,7 @@
 from ajax_select import LookupChannel
 from ajax_select import register
 from django.contrib.auth import get_user_model
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Q
 from django.utils.html import escape
 

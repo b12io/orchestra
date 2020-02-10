@@ -8,6 +8,8 @@ from orchestra.todos.views import TodoListTemplateDetail
 from orchestra.todos.views import TodoListTemplateList
 import orchestra.todos.views as views
 
+app_name = 'todos'
+
 urlpatterns = [
     url(r'^todo/$',
         TodoList.as_view(), name='todos'),

@@ -4,6 +4,8 @@ from orchestra.communication.views import accept_staffing_request_inquiry
 from orchestra.communication.views import available_staffing_requests
 from orchestra.communication.views import reject_staffing_request_inquiry
 
+app_name = 'communication'
+
 urlpatterns = [
     # Interface API
     url(r'^accept_staffing_request_inquiry/(?P<staffing_request_inquiry_id>[0-9]+)/$',  # noqa

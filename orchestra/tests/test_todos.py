@@ -2,7 +2,7 @@ import json
 
 from django.utils import timezone
 from dateutil.parser import parse
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from orchestra.models import Task
 from orchestra.models import Todo

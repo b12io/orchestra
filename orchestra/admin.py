@@ -4,7 +4,7 @@ from bitfield import BitField
 from bitfield.admin import BitFieldListFilter
 from bitfield.forms import BitFieldCheckboxSelectMultiple
 from django.contrib import admin
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.html import format_html
 from phonenumber_field.modelfields import PhoneNumberField
 from phonenumber_field.widgets import PhoneNumberPrefixWidget
