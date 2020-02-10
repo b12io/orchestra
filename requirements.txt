@@ -20,7 +20,7 @@ pyOpenSSL==17.5.0
 google-api-python-client==1.6.5
 slacker==0.13.0
 python-dateutil==2.6.1
-django-hijack==2.1.6
+django-hijack==2.1.10
 django-hijack-admin==2.1.6
 django-money==0.12.3
 django-filter==2.2.0
