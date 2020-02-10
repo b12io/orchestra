@@ -26,7 +26,7 @@ class CheckboxSelectMultipleP(CheckboxSelectMultiple):
 
 class BitFieldCheckboxSelectMultiple(CheckboxSelectMultipleP):
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         if isinstance(value, BitHandler):
             value = [k for k, v in value if v]
         return super().render(name, value, attrs=attrs)

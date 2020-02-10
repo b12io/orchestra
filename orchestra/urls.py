@@ -4,6 +4,8 @@ from django.conf.urls import url
 from orchestra.views import index
 from orchestra.views import status
 
+app_name = 'orchestra'
+
 urlpatterns = [
     url(r'^api/',
         include('orchestra.api_urls', namespace='orchestra')),

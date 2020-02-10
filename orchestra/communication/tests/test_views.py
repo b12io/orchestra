@@ -1,4 +1,4 @@
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from orchestra.tests.helpers import OrchestraAuthenticatedTestCase
 from orchestra.tests.helpers.fixtures import StaffingResponseFactory

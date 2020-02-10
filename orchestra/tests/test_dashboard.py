@@ -304,13 +304,13 @@ class DashboardTestCase(OrchestraTransactionTestCase):
         # user 0 can't submit a task if its submission prerequisites aren't
         # complete
         step = task.step
-        step.submission_depends_on = [
+        step.submission_depends_on.set([
             Step.objects.create(
                 workflow_version=step.workflow_version,
                 slug='imaginary_test_step',
                 is_human=True,
             )
-        ]
+        ])
         step.save()
         response = self._submit_assignment(
             self.clients[0], task.id)

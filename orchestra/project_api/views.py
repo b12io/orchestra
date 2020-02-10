@@ -2,7 +2,7 @@ import logging
 from urllib.parse import urlparse
 from urllib.parse import urlunsplit
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from jsonview.exceptions import BadRequest
 
 from orchestra.core.errors import TaskAssignmentError
