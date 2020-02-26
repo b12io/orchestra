@@ -158,12 +158,13 @@ class TaskMixin(object):
             has_open_staffing_request (bool):
                 Whethere there is staffing request with no conclusion
         """
-        staffbot_requests = self.staffing_requests
+        staffbot_requests = self.staffing_requests.all()
         for request in staffbot_requests:
             has_winner = False
-            inquiries = request.inquiries
+            inquiries = request.inquiries.all()
             for inquiry in inquiries:
-                if inquiry.responses.filter(is_winner=True).exists():
+                if inquiry.responses.all().filter(
+                        is_winner=True).exists():
                     has_winner = True
             if not has_winner:
                 return True
