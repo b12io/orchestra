@@ -289,7 +289,7 @@ class StaffBotRequestAdmin(RelatedFieldAdmin, AjaxSelectAdmin):
         'id', 'task', 'created_at', 'project_description',
     )
     search_fields = (
-        'project_description', 'task__id'
+        'project_description', 'task__id', 'task__project__short_description'
     )
 
 
@@ -306,7 +306,8 @@ class StaffingRequestInquiryAdmin(RelatedFieldAdmin, AjaxSelectAdmin):
     search_fields = (
         'communication_preference__worker__user__username',
         'communication_method', 'request__project_description',
-        'request__task__id'
+        'request__task__id',
+        'request__task__project__short_description'
     )
     raw_id_fields = ('request',)
 
@@ -318,7 +319,7 @@ class StaffingResponseAdmin(RelatedFieldAdmin, AjaxSelectAdmin):
     })
     list_display = (
         'id',
-        'request_inquiry__request__task__id',
+        'request_inquiry__request__task',
         'request_inquiry__communication_preference__worker__user',
         'created_at',
     )
@@ -326,7 +327,8 @@ class StaffingResponseAdmin(RelatedFieldAdmin, AjaxSelectAdmin):
         'request_inquiry__communication_preference__worker__user__username',
         'request_inquiry__communication_method',
         'request_inquiry__request__project_description',
-        'request_inquiry__request__task__id'
+        'request_inquiry__request__task__id',
+        'request_inquiry__request__task__project__short_description'
     )
 
 
