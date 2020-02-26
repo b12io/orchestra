@@ -54,6 +54,7 @@ class StaffBot(BaseBot):
     not_authorized_error = 'You are not authorized to staff projects!'
     staffing_success = 'Got it! I will start staffing task {}!'
     restaffing_success = 'Got it! I will start restaffing task {}!'
+    open_request_exists = 'An open staffbot request for task {} already exists.'
 
     def __init__(self, **kwargs):
         default_config = getattr(settings, 'STAFFBOT_CONFIG', {})
@@ -106,19 +107,26 @@ class StaffBot(BaseBot):
                     'title': 'Error',
                     'text': error_msg
                 }])
+        slack_msg_title = ''
+        slack_message = ''
+        # if there is a request with no winner, don't create it
+        if not task.has_open_staffing_request():
+            StaffBotRequest.objects.create(
+                task=task,
+                required_role_counter=required_role_counter,
+                request_cause=request_cause)
+            slack_msg_title = 'Success'
+            slack_message = self.staffing_success.format(task_id)
+        else:
+            slack_msg_title = 'No-op'
+            slack_message = self.open_request_exists.format(task_id)
 
-        StaffBotRequest.objects.create(
-            task=task,
-            required_role_counter=required_role_counter,
-            request_cause=request_cause)
-
-        slack_message = self.staffing_success.format(task_id)
         message_experts_slack_group(task.project.slack_group_id, slack_message)
         return format_slack_message(
             command,
             attachments=[{
                 'color': 'good',
-                'title': 'Success',
+                'title': slack_msg_title,
                 'text': slack_message
             }])
 
@@ -170,18 +178,26 @@ class StaffBot(BaseBot):
                     'text': error_msg
                 }])
 
-        StaffBotRequest.objects.create(
-            task=task,
-            required_role_counter=required_role_counter,
-            request_cause=request_cause)
-        slack_message = self.restaffing_success.format(task_id)
+        slack_msg_title = ''
+        slack_message = ''
+        # if there is a request with no winner, don't create it
+        if not task.has_open_staffing_request():
+            StaffBotRequest.objects.create(
+                task=task,
+                required_role_counter=required_role_counter,
+                request_cause=request_cause)
+            slack_msg_title = 'Success'
+            slack_message = self.restaffing_success.format(task_id)
+        else:
+            slack_msg_title = 'No-op'
+            slack_message = self.open_request_exists.format(task_id)
 
         message_experts_slack_group(task.project.slack_group_id, slack_message)
         return format_slack_message(
             command,
             attachments=[{
                 'color': 'good',
-                'title': 'Success',
+                'title': slack_msg_title,
                 'text': slack_message
             }])
 
