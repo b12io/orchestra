@@ -152,6 +152,23 @@ class TaskMixin(object):
         except Exception:
             return ''
 
+    def has_open_staffing_request(self):
+        """
+        Returns:
+            has_open_staffing_request (bool):
+                Whethere there is staffing request with no conclusion
+        """
+        staffbot_requests = self.staffing_requests
+        for request in staffbot_requests:
+            has_winner = False
+            inquiries = request.inquiries
+            for inquiry in inquiries:
+                if inquiry.responses.filter(is_winner=True).exists():
+                    has_winner = True
+            if not has_winner:
+                return True
+        return False
+
     def save(self, *args, **kwargs):
         validate_json('tags', TagListSchema,
                       getattr(self, 'tags', None))
