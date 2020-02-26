@@ -54,7 +54,8 @@ class StaffBot(BaseBot):
     not_authorized_error = 'You are not authorized to staff projects!'
     staffing_success = 'Got it! I will start staffing task {}!'
     restaffing_success = 'Got it! I will start restaffing task {}!'
-    open_request_exists = 'An open staffbot request for task {} already exists.'
+    open_request_exists = (
+        'An open staffbot request for task {} already exists.')
 
     def __init__(self, **kwargs):
         default_config = getattr(settings, 'STAFFBOT_CONFIG', {})
