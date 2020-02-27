@@ -73,3 +73,13 @@ def mark_worker_as_winner(worker, task, required_role_counter,
             request_inquiry=staffing_request_inquiry,
             is_available=True,
             is_winner=True)
+
+@transaction.atomic
+def close_open_staffbot_request(request):
+    if request.is_open():
+        inquiries = request.inquiries.all()
+        for inquiry in inquiries:
+            StaffingResponse.objects.create(
+                request_inquiry=inquiry,
+                is_available=False,
+                is_winner=False)
