@@ -160,13 +160,7 @@ class TaskMixin(object):
         """
         staffbot_requests = self.staffing_requests.all()
         for request in staffbot_requests:
-            has_winner = False
-            inquiries = request.inquiries.all()
-            for inquiry in inquiries:
-                if inquiry.responses.all().filter(
-                        is_winner=True).exists():
-                    has_winner = True
-            if not has_winner:
+            if request.is_open():
                 return True
         return False
 

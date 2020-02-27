@@ -211,7 +211,7 @@ class TaskTestCase(OrchestraModelTestCase):
         # No inquiry created yet
         self.assertEqual(task.has_open_staffing_request(), False)
 
-        # Created one inquiry no response
+        # Create one inquiry no response
         staffbot_request_1 = StaffBotRequestFactory(task=task)
         staffing_inquiry_1 = StaffingRequestInquiryFactory(
             request=staffbot_request_1)
@@ -221,7 +221,7 @@ class TaskTestCase(OrchestraModelTestCase):
         StaffingResponseFactory(
             request_inquiry=staffing_inquiry_1,
             is_winner=False)
-        self.assertEqual(task.has_open_staffing_request(), True)
+        self.assertEqual(task.has_open_staffing_request(), False)
 
         # When there is a response that is a winer
         staffing_inquiry_2 = StaffingRequestInquiryFactory(
@@ -232,7 +232,9 @@ class TaskTestCase(OrchestraModelTestCase):
         self.assertEqual(task.has_open_staffing_request(), False)
 
         # When there is another request with no winner
-        StaffBotRequestFactory(task=task)
+        staffbot_request_2 = StaffBotRequestFactory(task=task)
+        StaffingRequestInquiryFactory(
+            request=staffbot_request_2)
         self.assertEqual(task.has_open_staffing_request(), True)
 
 
