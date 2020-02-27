@@ -206,37 +206,6 @@ class TaskTestCase(OrchestraModelTestCase):
             'extra text stepslug'
         )
 
-    def test_has_open_staffing_request(self):
-        task = TaskFactory()
-        # No inquiry created yet
-        self.assertEqual(task.has_open_staffing_request(), False)
-
-        # Create one inquiry no response
-        staffbot_request_1 = StaffBotRequestFactory(task=task)
-        staffing_inquiry_1 = StaffingRequestInquiryFactory(
-            request=staffbot_request_1)
-        self.assertEqual(task.has_open_staffing_request(), True)
-
-        # When there is a response that is not a winner
-        StaffingResponseFactory(
-            request_inquiry=staffing_inquiry_1,
-            is_winner=False)
-        self.assertEqual(task.has_open_staffing_request(), False)
-
-        # When there is a response that is a winer
-        staffing_inquiry_2 = StaffingRequestInquiryFactory(
-            request=staffbot_request_1)
-        StaffingResponseFactory(
-            request_inquiry=staffing_inquiry_2,
-            is_winner=True)
-        self.assertEqual(task.has_open_staffing_request(), False)
-
-        # When there is another request with no winner
-        staffbot_request_2 = StaffBotRequestFactory(task=task)
-        StaffingRequestInquiryFactory(
-            request=staffbot_request_2)
-        self.assertEqual(task.has_open_staffing_request(), True)
-
 
 class TaskAssignmentTestCase(OrchestraModelTestCase):
     __test__ = True

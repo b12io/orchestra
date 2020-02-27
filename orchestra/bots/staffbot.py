@@ -12,7 +12,7 @@ from orchestra.communication.errors import SlackError
 from orchestra.communication.mail import html_from_plaintext
 from orchestra.communication.mail import send_mail
 from orchestra.communication.slack import format_slack_message
-from orchestra.communication.utils import close_open_staffbot_request
+from orchestra.communication.utils import close_task_open_staffbot_requests
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import TaskStatusError
 from orchestra.models import CommunicationPreference
@@ -107,11 +107,9 @@ class StaffBot(BaseBot):
                     'title': 'Error',
                     'text': error_msg
                 }])
+
         # Close open staffbot request
-        if task.has_open_staffing_request():
-            requests = task.staffing_requests.all()
-            for request in requests:
-                close_open_staffbot_request(request)
+        close_task_open_staffbot_requests(task)
 
         StaffBotRequest.objects.create(
                 task=task,
@@ -177,10 +175,7 @@ class StaffBot(BaseBot):
                 }])
 
         # Close open staffbot request
-        if task.has_open_staffing_request():
-            requests = task.staffing_requests.all()
-            for request in requests:
-                close_open_staffbot_request(request)
+        close_task_open_staffbot_requests(task)
 
         StaffBotRequest.objects.create(
             task=task,
