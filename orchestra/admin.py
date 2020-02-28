@@ -319,6 +319,7 @@ class StaffingResponseAdmin(RelatedFieldAdmin, AjaxSelectAdmin):
     })
     list_display = (
         'id',
+        'request_inquiry__request__task__id',
         'request_inquiry__request__task',
         'request_inquiry__communication_preference__worker__user',
         'created_at',
