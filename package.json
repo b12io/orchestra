@@ -8,7 +8,7 @@
     "angular-smart-table": "2.1.11",
     "angular-ui-tree": "2.22.6",
     "babel-core": "^6.14.0",
-    "babel-loader": "7.1.1",
+    "babel-loader": "7.1.5",
     "babel-plugin-angularjs-annotate": "0.8.0",
     "babel-plugin-transform-builtin-extend": "^1.1.0",
     "babel-plugin-transform-object-rest-spread": "^6.8.0",
