@@ -33,7 +33,7 @@ django-gulp==2.5.1
 django-related-admin==0.5.0
 django-ajax-selects==1.9.0
 django-kronos==1.0
-httpsig==1.2.0
+httpsig==1.3.0
 markdown2==2.3.6
 timeout-decorator==0.4.0
 phonenumbers==8.9.0
