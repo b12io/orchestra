@@ -86,7 +86,8 @@ def close_staffbot_request(request):
     if request.is_open():
         inquiries = request.inquiries.all()
         for inquiry in inquiries:
-            StaffingResponse.objects.create(
-                request_inquiry=inquiry,
-                is_available=False,
-                is_winner=False)
+            if inquiry.responses.count() == 0:
+                StaffingResponse.objects.create(
+                    request_inquiry=inquiry,
+                    is_available=False,
+                    is_winner=False)
