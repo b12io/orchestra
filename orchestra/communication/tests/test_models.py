@@ -1,5 +1,6 @@
 from orchestra.accounts.signals import orchestra_user_registered
 from orchestra.models import CommunicationPreference
+from orchestra.models import StaffBotRequest
 from orchestra.tests.helpers import OrchestraModelTestCase
 from orchestra.tests.helpers.fixtures import CommunicationPreferenceFactory
 from orchestra.tests.helpers.fixtures import StaffBotRequestFactory
@@ -88,6 +89,9 @@ class StaffBotRequestTestCase(OrchestraModelTestCase):
         # If there is a winner, the request is close.
         staffing_response_1.is_winner = True
         staffing_response_1.save()
+        staffbot_request.status = (
+            StaffBotRequest.Status.COMPLETE.value)
+        staffbot_request.save()
         self.assertEqual(staffbot_request.is_open(), False)
 
         # If there is no winner after all've replied,
