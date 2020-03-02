@@ -74,7 +74,7 @@ def mark_worker_as_winner(worker, task, required_role_counter,
             is_available=True,
             is_winner=True)
 
-def close_task_open_staffbot_requests(task):
+def close_open_staffbot_requests(task):
     requests = task.staffing_requests.all()
     for request in requests:
         close_staffbot_request(request)
