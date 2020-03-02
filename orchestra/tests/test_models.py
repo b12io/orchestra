@@ -21,9 +21,6 @@ from orchestra.tests.helpers.fixtures import WorkerFactory
 from orchestra.tests.helpers.fixtures import WorkflowFactory
 from orchestra.tests.helpers.fixtures import WorkflowVersionFactory
 from orchestra.tests.helpers.fixtures import setup_models
-from orchestra.tests.helpers.fixtures import StaffBotRequestFactory
-from orchestra.tests.helpers.fixtures import StaffingRequestInquiryFactory
-from orchestra.tests.helpers.fixtures import StaffingResponseFactory
 
 
 class ModelsTestCase(OrchestraTestCase):
