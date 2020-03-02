@@ -12,6 +12,7 @@ from orchestra.communication.staffing import send_staffing_requests
 from orchestra.models import CommunicationPreference
 from orchestra.models import StaffBotRequest
 from orchestra.models import StaffingRequestInquiry
+from orchestra.models import StaffingResponse
 from orchestra.models import Task
 from orchestra.models import Worker
 from orchestra.models import WorkerCertification
@@ -171,6 +172,59 @@ class StaffBotTest(OrchestraTestCase):
                          bot.task_assignment_error
                          .format(task.id,
                                  'Status incompatible with new assignment'))
+
+    @patch('orchestra.bots.staffbot.send_mail')
+    @patch('orchestra.bots.staffbot.message_experts_slack_group')
+    @patch('orchestra.bots.staffbot.StaffBot._send_staffing_request_by_slack')
+    def test_staff_close_request(self, mock_slack, mock_experts_slack, mock_mail):
+        """
+        Test that existing staffbot requests for a task is close when
+        a staff function is called.
+        """
+        bot = StaffBot()
+        task = TaskFactory()
+        init_num_request = StaffBotRequest.objects.filter(task=task).count()
+        self.assertEqual(init_num_request, 0)
+
+        bot.staff(task.id)
+        requests = StaffBotRequest.objects.filter(task=task)
+        num_request = requests.count()
+        self.assertEqual(num_request, init_num_request + 1)
+        self.assertEqual(requests.last().is_open(), True)
+
+        # Calling staff on the same task should close the previous request
+        # and create a new one.
+        bot.staff(task.id)
+        requests = list(StaffBotRequest.objects.filter(task=task))
+        num_request = len(requests)
+        self.assertEqual(num_request, init_num_request + 2)
+        self.assertEqual(requests[-2].is_open(), False)
+        self.assertEqual(requests[-1].is_open(), True)
+
+        # Closing a request with unresponsed inquiries should create
+        # a response for those inquiries
+        init_num_responses = (
+            StaffingResponse.objects.filter(
+                request_inquiry__request__task=task)
+        ).count()
+        inquiry_1 =StaffingRequestInquiryFactory(request=requests[-1])
+        inquiry_2 = StaffingRequestInquiryFactory(request=requests[-1])
+        bot.staff(task.id)
+        requests = list(StaffBotRequest.objects.filter(task=task))
+        num_request = len(requests)
+        self.assertEqual(num_request, init_num_request + 3)
+        self.assertEqual(requests[-2].is_open(), False)
+        self.assertEqual(requests[-1].is_open(), True)
+        responses = list(StaffingResponse.objects.filter(
+            request_inquiry__request__task=task))
+        self.assertEqual(len(responses), init_num_responses + 2)
+        self.assertEqual(responses[-2].request_inquiry.id, inquiry_1.id)
+        self.assertEqual(responses[-2].is_winner, False)
+        self.assertEqual(responses[-2].is_available, False)
+        self.assertEqual(responses[-1].request_inquiry.id, inquiry_2.id)
+        self.assertEqual(responses[-1].is_winner, False)
+        self.assertEqual(responses[-1].is_available, False)
+
 
     @patch('orchestra.bots.staffbot.send_mail')
     @patch('orchestra.bots.staffbot.message_experts_slack_group')

@@ -91,3 +91,5 @@ def close_staffbot_request(request):
                     request_inquiry=inquiry,
                     is_available=False,
                     is_winner=False)
+        request.status = StaffBotRequest.Status.COMPLETE.value
+        request.save()

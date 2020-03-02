@@ -42,6 +42,8 @@ class StaffBotRequestMixin(object):
         return self.Status(self.status).description
 
     def is_open(self):
+        if self.status == self.Status.PROCESSING.value:
+            return True
         inquiries = self.inquiries.all()
         num_responses = 0
         for inquiry in inquiries:
