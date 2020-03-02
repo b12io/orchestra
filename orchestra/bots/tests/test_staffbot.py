@@ -176,7 +176,8 @@ class StaffBotTest(OrchestraTestCase):
     @patch('orchestra.bots.staffbot.send_mail')
     @patch('orchestra.bots.staffbot.message_experts_slack_group')
     @patch('orchestra.bots.staffbot.StaffBot._send_staffing_request_by_slack')
-    def test_staff_close_requests(self, mock_slack, mock_experts_slack, mock_mail):
+    def test_staff_close_requests(self, mock_slack,
+                                  mock_experts_slack, mock_mail):
         """
         Test that existing staffbot requests for a task is close when
         a staff function is called.
