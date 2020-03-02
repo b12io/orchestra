@@ -85,21 +85,22 @@ class StaffBotRequestTestCase(OrchestraModelTestCase):
             is_winner=False)
         self.assertEqual(staffbot_request.is_open(), True)
 
-        # If there is a winner, the request is close
+        # If there is a winner, the request is close.
         staffing_response_1.is_winner = True
         staffing_response_1.save()
         self.assertEqual(staffbot_request.is_open(), False)
 
-         # If there is no winner after all reply, the request is close
+        # If there is no winner after all've replied,
+        # the request is close.
         staffing_response_1.is_winner = False
         staffing_response_1.save()
-        staffing_response_2 = StaffingResponseFactory(
+        StaffingResponseFactory(
             request_inquiry=staffing_inquiry_2,
             is_winner=False)
         self.assertEqual(staffbot_request.is_open(), False)
 
-        # Only count one response per one inquiry
-        staffing_response_3 = StaffingResponseFactory(
+        # Only count one response per one inquiry.
+        StaffingResponseFactory(
             request_inquiry=staffing_inquiry_2,
             is_winner=False)
         self.assertEqual(staffbot_request.is_open(), False)
