@@ -176,7 +176,7 @@ class StaffBotTest(OrchestraTestCase):
     @patch('orchestra.bots.staffbot.send_mail')
     @patch('orchestra.bots.staffbot.message_experts_slack_group')
     @patch('orchestra.bots.staffbot.StaffBot._send_staffing_request_by_slack')
-    def test_staff_close_request(self, mock_slack, mock_experts_slack, mock_mail):
+    def test_staff_close_requests(self, mock_slack, mock_experts_slack, mock_mail):
         """
         Test that existing staffbot requests for a task is close when
         a staff function is called.
@@ -293,6 +293,64 @@ class StaffBotTest(OrchestraTestCase):
         self.assertEqual(response['attachments'][0]['text'],
                          (bot.task_assignment_does_not_exist_error
                           .format(worker.user.username, task.id)))
+
+    
+    @patch('orchestra.bots.staffbot.send_mail')
+    @patch('orchestra.bots.staffbot.message_experts_slack_group')
+    @patch('orchestra.bots.staffbot.StaffBot._send_staffing_request_by_slack')
+    def test_restaff_close_requests(self, mock_slack, mock_experts_slack, mock_mail):
+        """
+        Test that existing staffbot requests for a task is close when
+        a staff function is called.
+        """
+        bot = StaffBot()
+        task = (Task.objects
+                .filter(status=Task.Status.AWAITING_PROCESSING)
+                .first())
+        task = assign_task(self.worker.id, task.id)
+    
+        init_num_request = StaffBotRequest.objects.filter(task=task).count()
+        self.assertEqual(init_num_request, 0)
+
+        bot.restaff(task.id, self.worker.user.username)
+        requests = StaffBotRequest.objects.filter(task=task)
+        num_request = requests.count()
+        self.assertEqual(num_request, init_num_request + 1)
+        self.assertEqual(requests.last().is_open(), True)
+
+        # Calling staff on the same task should close the previous request
+        # and create a new one.
+        bot.restaff(task.id, self.worker.user.username)
+        requests = list(StaffBotRequest.objects.filter(task=task))
+        num_request = len(requests)
+        self.assertEqual(num_request, init_num_request + 2)
+        self.assertEqual(requests[-2].is_open(), False)
+        self.assertEqual(requests[-1].is_open(), True)
+
+        # Closing a request with unresponsed inquiries should create
+        # a response for those inquiries
+        init_num_responses = (
+            StaffingResponse.objects.filter(
+                request_inquiry__request__task=task)
+        ).count()
+        inquiry_1 =StaffingRequestInquiryFactory(request=requests[-1])
+        inquiry_2 = StaffingRequestInquiryFactory(request=requests[-1])
+        bot.restaff(task.id, self.worker.user.username)
+        requests = list(StaffBotRequest.objects.filter(task=task))
+        num_request = len(requests)
+        self.assertEqual(num_request, init_num_request + 3)
+        self.assertEqual(requests[-2].is_open(), False)
+        self.assertEqual(requests[-1].is_open(), True)
+        responses = list(StaffingResponse.objects.filter(
+            request_inquiry__request__task=task))
+        self.assertEqual(len(responses), init_num_responses + 2)
+        self.assertEqual(responses[-2].request_inquiry.id, inquiry_1.id)
+        self.assertEqual(responses[-2].is_winner, False)
+        self.assertEqual(responses[-2].is_available, False)
+        self.assertEqual(responses[-1].request_inquiry.id, inquiry_2.id)
+        self.assertEqual(responses[-1].is_winner, False)
+        self.assertEqual(responses[-1].is_available, False)
+
 
     @override_settings(ORCHESTRA_MOCK_EMAILS=True)
     @patch('orchestra.bots.staffbot.send_mail')
