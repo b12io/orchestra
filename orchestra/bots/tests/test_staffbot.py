@@ -308,7 +308,7 @@ class StaffBotTest(OrchestraTestCase):
                 .filter(status=Task.Status.AWAITING_PROCESSING)
                 .first())
         task = assign_task(self.worker.id, task.id)
-    
+
         init_num_request = StaffBotRequest.objects.filter(task=task).count()
         self.assertEqual(init_num_request, 0)
 
