@@ -12,7 +12,6 @@ from orchestra.communication.errors import SlackError
 from orchestra.communication.mail import html_from_plaintext
 from orchestra.communication.mail import send_mail
 from orchestra.communication.slack import format_slack_message
-from orchestra.communication.utils import close_open_staffbot_requests
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import TaskStatusError
 from orchestra.models import CommunicationPreference
@@ -108,15 +107,12 @@ class StaffBot(BaseBot):
                     'text': error_msg
                 }])
 
-        # Close open staffbot requests
-        close_open_staffbot_requests(task)
-
         StaffBotRequest.objects.create(
-                task=task,
-                required_role_counter=required_role_counter,
-                request_cause=request_cause)
-        slack_message = self.staffing_success.format(task_id)
+            task=task,
+            required_role_counter=required_role_counter,
+            request_cause=request_cause)
 
+        slack_message = self.staffing_success.format(task_id)
         message_experts_slack_group(task.project.slack_group_id, slack_message)
         return format_slack_message(
             command,
@@ -174,14 +170,12 @@ class StaffBot(BaseBot):
                     'text': error_msg
                 }])
 
-        # Close open staffbot requests
-        close_open_staffbot_requests(task)
-
         StaffBotRequest.objects.create(
             task=task,
             required_role_counter=required_role_counter,
             request_cause=request_cause)
         slack_message = self.restaffing_success.format(task_id)
+
         message_experts_slack_group(task.project.slack_group_id, slack_message)
         return format_slack_message(
             command,
