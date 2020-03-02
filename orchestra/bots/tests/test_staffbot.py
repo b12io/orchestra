@@ -208,7 +208,7 @@ class StaffBotTest(OrchestraTestCase):
             StaffingResponse.objects.filter(
                 request_inquiry__request__task=task)
         ).count()
-        inquiry_1 =StaffingRequestInquiryFactory(request=requests[-1])
+        inquiry_1 = StaffingRequestInquiryFactory(request=requests[-1])
         inquiry_2 = StaffingRequestInquiryFactory(request=requests[-1])
         bot.staff(task.id)
         requests = list(StaffBotRequest.objects.filter(task=task))
@@ -225,7 +225,6 @@ class StaffBotTest(OrchestraTestCase):
         self.assertEqual(responses[-1].request_inquiry.id, inquiry_2.id)
         self.assertEqual(responses[-1].is_winner, False)
         self.assertEqual(responses[-1].is_available, False)
-
 
     @patch('orchestra.bots.staffbot.send_mail')
     @patch('orchestra.bots.staffbot.message_experts_slack_group')
@@ -295,11 +294,11 @@ class StaffBotTest(OrchestraTestCase):
                          (bot.task_assignment_does_not_exist_error
                           .format(worker.user.username, task.id)))
 
-    
     @patch('orchestra.bots.staffbot.send_mail')
     @patch('orchestra.bots.staffbot.message_experts_slack_group')
     @patch('orchestra.bots.staffbot.StaffBot._send_staffing_request_by_slack')
-    def test_restaff_close_requests(self, mock_slack, mock_experts_slack, mock_mail):
+    def test_restaff_close_requests(self, mock_slack,
+                                    mock_experts_slack, mock_mail):
         """
         Test that existing staffbot requests for a task is close when
         a staff function is called.
@@ -334,7 +333,7 @@ class StaffBotTest(OrchestraTestCase):
             StaffingResponse.objects.filter(
                 request_inquiry__request__task=task)
         ).count()
-        inquiry_1 =StaffingRequestInquiryFactory(request=requests[-1])
+        inquiry_1 = StaffingRequestInquiryFactory(request=requests[-1])
         inquiry_2 = StaffingRequestInquiryFactory(request=requests[-1])
         bot.restaff(task.id, self.worker.user.username)
         requests = list(StaffBotRequest.objects.filter(task=task))
@@ -351,7 +350,6 @@ class StaffBotTest(OrchestraTestCase):
         self.assertEqual(responses[-1].request_inquiry.id, inquiry_2.id)
         self.assertEqual(responses[-1].is_winner, False)
         self.assertEqual(responses[-1].is_available, False)
-
 
     @override_settings(ORCHESTRA_MOCK_EMAILS=True)
     @patch('orchestra.bots.staffbot.send_mail')
