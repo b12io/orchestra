@@ -27,7 +27,7 @@ def mark_worker_as_winner(worker, task, required_role_counter,
     else:
         staffbot_request = staffbot_request.first()
 
-    staffbot_request.status = StaffBotRequest.Status.COMPLETE.value
+    staffbot_request.status = StaffBotRequest.Status.WAITING_FOR_RESPONSES.value
     staffbot_request.save()
 
     # Mark everyone else as non-winner

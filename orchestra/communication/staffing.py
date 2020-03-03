@@ -114,7 +114,7 @@ def send_staffing_requests(
     cutoff_datetime = timezone.now() - frequency
     requests = (
         StaffBotRequest.objects
-        .filter(status=StaffBotRequest.Status.PROCESSING.value)
+        .filter(status=StaffBotRequest.Status.SENDING_INQUIRIES.value)
         .filter(Q(last_inquiry_sent__isnull=True) |
                 Q(last_inquiry_sent__lte=cutoff_datetime)))
 
@@ -156,7 +156,7 @@ def _send_request_inquiries(staffbot, request, worker_batch_size,
             request.task.project.slack_group_id,
             ('All staffing requests for task {} have been sent!'
              .format(request.task)))
-        request.status = StaffBotRequest.Status.COMPLETE.value
+        request.status = StaffBotRequest.Status.WAITING_FOR_RESPONSES.value
     request.last_inquiry_sent = timezone.now()
     request.save()
 
