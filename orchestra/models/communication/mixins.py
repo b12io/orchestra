@@ -81,8 +81,8 @@ class StaffingResponseMixin(object):
             self._mark_staffbot_request_complete(request)
         else:
             inquiries = (
-                StaffingRequestInquiry.objects
-                    .filter(request=request)).distinct()
+                StaffingRequestInquiry.objects.filter(request=request)
+            ).distinct()
             responded_inquiries = inquiries.filter(
                 responses__isnull=False).distinct()
             if responded_inquiries.count() >= inquiries.count():
