@@ -172,7 +172,7 @@ class StaffBot(BaseBot):
                     'text': error_msg
                 }])
 
-        close_open_staffbot_requests(tasks)
+        close_open_staffbot_requests(task)
         StaffBotRequest.objects.create(
             task=task,
             required_role_counter=required_role_counter,

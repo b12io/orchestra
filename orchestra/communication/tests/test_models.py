@@ -93,7 +93,7 @@ class StaffingResponseTestCase(OrchestraModelTestCase):
 
         # The staff bot request status should be complete when one
         # of its responses is a winner.
-        response = StaffingResponseFactory(
+        StaffingResponseFactory(
             request_inquiry=inquiry,
             is_available=True,
             is_winner=True)
@@ -111,7 +111,7 @@ class StaffingResponseTestCase(OrchestraModelTestCase):
 
         # The request is still open when there is no winner
         # and no response is declared a winner.
-        response1 = StaffingResponseFactory(
+        StaffingResponseFactory(
             request_inquiry=inquiry1,
             is_available=False,
             is_winner=False)
@@ -121,7 +121,7 @@ class StaffingResponseTestCase(OrchestraModelTestCase):
 
         # The request is close when all responses were created
         # but there is no winner.
-        response2 = StaffingResponseFactory(
+        StaffingResponseFactory(
             request_inquiry=inquiry2,
             is_available=False,
             is_winner=False)

@@ -27,7 +27,8 @@ def mark_worker_as_winner(worker, task, required_role_counter,
     else:
         staffbot_request = staffbot_request.first()
 
-    staffbot_request.status = StaffBotRequest.Status.WAITING_FOR_RESPONSES.value
+    staffbot_request.status = (
+        StaffBotRequest.Status.WAITING_FOR_RESPONSES.value)
     staffbot_request.save()
 
     # Mark everyone else as non-winner
@@ -74,11 +75,11 @@ def mark_worker_as_winner(worker, task, required_role_counter,
             is_available=True,
             is_winner=True)
 
+
 @transaction.atomic
 def close_open_staffbot_requests(task):
     requests = task.staffing_requestss.all()
     COMPLETE = StaffingResponse.Status.COMPLETE.value
     for request in requests:
-        if request.status != complete_status:
-            request.status = complete_status
+        request.status = COMPLETE
     StaffingResponse.objects.bulk_update(requests, COMPLETE)
