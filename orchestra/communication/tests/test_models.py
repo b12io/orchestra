@@ -105,6 +105,7 @@ class StaffingResponseTestCase(OrchestraModelTestCase):
         request = StaffBotRequestFactory()
         inquiry1 = StaffingRequestInquiryFactory(request=request)
         inquiry2 = StaffingRequestInquiryFactory(request=request)
+        inquiry3 = StaffingRequestInquiryFactory(request=request)
         self.assertEqual(
             request.status,
             StaffBotRequest.Status.SENDING_INQUIRIES.value)
@@ -115,6 +116,14 @@ class StaffingResponseTestCase(OrchestraModelTestCase):
             request_inquiry=inquiry1,
             is_available=False,
             is_winner=False)
+        StaffingResponseFactory(
+            request_inquiry=inquiry2,
+            is_available=False,
+            is_winner=False)
+        StaffingResponseFactory(
+            request_inquiry=inquiry2,
+            is_available=True,
+            is_winner=False)
         self.assertNotEqual(
             request.status,
             StaffBotRequest.Status.COMPLETE.value)
@@ -122,7 +131,7 @@ class StaffingResponseTestCase(OrchestraModelTestCase):
         # The request is close when all responses were created
         # but there is no winner.
         StaffingResponseFactory(
-            request_inquiry=inquiry2,
+            request_inquiry=inquiry3,
             is_available=False,
             is_winner=False)
         self.assertEqual(
