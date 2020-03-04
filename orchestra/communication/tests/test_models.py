@@ -1,5 +1,6 @@
 from orchestra.accounts.signals import orchestra_user_registered
 from orchestra.models import CommunicationPreference
+from orchestra.models import StaffBotRequest
 from orchestra.tests.helpers import OrchestraModelTestCase
 from orchestra.tests.helpers.fixtures import CommunicationPreferenceFactory
 from orchestra.tests.helpers.fixtures import StaffBotRequestFactory
@@ -82,3 +83,48 @@ class StaffingRequestInquiryTestCase(OrchestraModelTestCase):
 class StaffingResponseTestCase(OrchestraModelTestCase):
     __test__ = True
     model = StaffingResponseFactory
+
+    def test_mark_winner(self):
+        request = StaffBotRequestFactory()
+        inquiry = StaffingRequestInquiryFactory(request=request)
+        self.assertEqual(
+            request.status,
+            StaffBotRequest.Status.SENDING_INQUIRIES.value)
+
+        # The staff bot request status should be complete when one
+        # of its responses is a winner.
+        response = StaffingResponseFactory(
+            request_inquiry=inquiry,
+            is_available=True,
+            is_winner=True)
+        self.assertEqual(
+            request.status,
+            StaffBotRequest.Status.COMPLETE.value)
+
+    def test_no_winner(self):
+        request = StaffBotRequestFactory()
+        inquiry1 = StaffingRequestInquiryFactory(request=request)
+        inquiry2 = StaffingRequestInquiryFactory(request=request)
+        self.assertEqual(
+            request.status,
+            StaffBotRequest.Status.SENDING_INQUIRIES.value)
+
+        # The request is still open when there is no winner
+        # and no response is declared a winner.
+        response1 = StaffingResponseFactory(
+            request_inquiry=inquiry1,
+            is_available=False,
+            is_winner=False)
+        self.assertNotEqual(
+            request.status,
+            StaffBotRequest.Status.COMPLETE.value)
+
+        # The request is close when all responses were created
+        # but there is no winner.
+        response2 = StaffingResponseFactory(
+            request_inquiry=inquiry2,
+            is_available=False,
+            is_winner=False)
+        self.assertEqual(
+            request.status,
+            StaffBotRequest.Status.COMPLETE.value)
