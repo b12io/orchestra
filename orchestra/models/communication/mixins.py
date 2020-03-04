@@ -66,3 +66,22 @@ class StaffingResponseMixin(object):
             self.is_available,
             self.is_winner
         )
+
+    def _mark_staffbot_request_complete(self, request):
+        from orchestra.models import StaffBotRequest
+        request.status = StaffBotRequest.Status.COMPLETE.value
+        request.save()
+
+    def save(self, *args, **kwargs):
+        from orchestra.models import StaffingRequestInquiry
+        request = self.request_inquiry.request
+        if self.is_winner:
+            self._mark_staffbot_request_complete(request)
+        else:
+            inquiries = StaffingRequestInquiry.objects.filter(
+                request=request)
+            responded_inquiries = inquiries.filter(
+                responses__isnull=False)
+            if responded_inquiries.count() >= inquiries.count():
+                self._mark_staffbot_request_complete(request)
+        super().save(*args, **kwargs)

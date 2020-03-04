@@ -69,7 +69,7 @@ def mark_worker_as_winner(worker, task, required_role_counter,
                         communication_preference=comm_pref,
                         communication_method=comm_method))
 
-        StaffingResponse.objects.create(
+        staffing_response = StaffingResponse.objects.create(
             request_inquiry=staffing_request_inquiry,
             is_available=True,
             is_winner=True)
