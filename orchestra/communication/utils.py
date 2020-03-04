@@ -78,8 +78,8 @@ def mark_worker_as_winner(worker, task, required_role_counter,
 
 @transaction.atomic
 def close_open_staffbot_requests(task):
-    requests = task.staffing_requestss.all()
-    COMPLETE = StaffingResponse.Status.COMPLETE.value
+    COMPLETE = StaffBotRequest.Status.COMPLETE.value
+    requests = task.staffing_requests.all()
     for request in requests:
         request.status = COMPLETE
-    StaffingResponse.objects.bulk_update(requests, COMPLETE)
+    StaffBotRequest.objects.bulk_update(requests, ['status'])
