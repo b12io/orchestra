@@ -73,3 +73,12 @@ def mark_worker_as_winner(worker, task, required_role_counter,
             request_inquiry=staffing_request_inquiry,
             is_available=True,
             is_winner=True)
+
+@transaction.atomic
+def close_open_staffbot_requests(task):
+    requests = task.staffing_requestss.all()
+    COMPLETE = StaffingResponse.Status.COMPLETE.value
+    for request in requests:
+        if request.status != complete_status:
+            request.status = complete_status
+    StaffingResponse.objects.bulk_update(requests, COMPLETE)
