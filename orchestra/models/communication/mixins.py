@@ -80,8 +80,9 @@ class StaffingResponseMixin(object):
         if self.is_winner:
             self._mark_staffbot_request_complete(request)
         else:
-            inquiries = (StaffingRequestInquiry.objects
-                .filter(request=request)).distinct()
+            inquiries = (
+                StaffingRequestInquiry.objects
+                    .filter(request=request)).distinct()
             responded_inquiries = inquiries.filter(
                 responses__isnull=False).distinct()
             if responded_inquiries.count() >= inquiries.count():
