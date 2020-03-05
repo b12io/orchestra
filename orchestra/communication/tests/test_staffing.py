@@ -75,7 +75,7 @@ class StaffingTestCase(OrchestraTestCase):
         self.assertTrue(response.is_winner)
         self.staffing_request_inquiry.refresh_from_db()
         self.assertEqual(response.request_inquiry.request.status,
-                         StaffBotRequest.Status.WAITING_FOR_RESPONSES.value)
+                         StaffBotRequest.Status.COMPLETE.value)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
 
         task_assignment = (
@@ -287,7 +287,7 @@ class StaffingTestCase(OrchestraTestCase):
             is_available=False)
         self.assertFalse(response.is_winner)
         self.assertEqual(response.request_inquiry.request.status,
-                         StaffBotRequest.Status.SENDING_INQUIRIES.value)
+                         StaffBotRequest.Status.COMPLETE.value)
         self.assertEqual(mock_slack.call_count, 1)
         mock_slack.reset()
 
@@ -433,7 +433,7 @@ class StaffingTestCase(OrchestraTestCase):
         staffbot_request.refresh_from_db()
 
         self.assertEqual(staffbot_request.status,
-                         StaffBotRequest.Status.WAITING_FOR_RESPONSES.value)
+                         StaffBotRequest.Status.COMPLETE.value)
         self.assertEqual(
             self.staffing_request_inquiry.responses.all().count(), 1)
 

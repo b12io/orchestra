@@ -192,6 +192,7 @@ def get_available_requests(worker):
     remaining_requests = (
         StaffBotRequest.objects
         .filter(inquiries__communication_preference__worker=worker)
+        .exclude(status=StaffBotRequest.Status.COMPLETE.value)
         .exclude(task__status=Task.Status.COMPLETE)
         .exclude(task__status=Task.Status.ABORTED)
         .exclude(inquiries__responses__in=won_responses)
