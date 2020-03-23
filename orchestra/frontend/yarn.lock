@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@b12/metronome@false1.0.0":
+"@b12/metronome@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@b12/metronome/-/metronome-1.0.0.tgz#272cbf647159ffc8c2b590ca2f717f0c0ebae302"
   integrity sha512-NYMJl067i0wlLT/aP89RdoTkRdgwJF5HOVrq0q46dYW9H0SDO4hR5qKCh1KI9Vtv3AWdS7FKQ8NwrBfaAtQf8Q==

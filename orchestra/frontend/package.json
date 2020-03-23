@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@b12/metronome": "false1.0.0",
+    "@b12/metronome": "^1.0.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
@@ -32,5 +32,5 @@
       "last 1 safari version"
     ]
   },
-  "homepage": "../static/dist2"
+  "homepage": "/static/dist2/"
 }

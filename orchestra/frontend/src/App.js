@@ -1,6 +1,6 @@
 import React from 'react';
 import logo from './logo.svg';
-import Button from '@b12/metronome/components/form/button/Button.es6.js'
+// import Button from '@b12/metronome/components/form/button/Button.es6.js'
 import './App.css';
 
 function App() {
@@ -19,7 +19,7 @@ function App() {
         >
           Learn React
         </a>
-        <Button label="ORCHESTRA" />
+        Hello world!!!
       </header>
     </div>
   );
