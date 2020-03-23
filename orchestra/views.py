@@ -91,12 +91,16 @@ def index(request):
                 step.workflow_version.workflow.slug][
                     step.workflow_version.slug][step.slug] = (
                         step.user_interface['angular_directive'])
-
+    print('index')
     return render(request, 'orchestra/index.html', {
         'javascript_includes': javascript_includes,
         'stylesheet_includes': stylesheet_includes,
         'orchestra_arguments': json.dumps(orchestra_arguments)})
 
+@login_required
+def index2(request):
+    print('index2')
+    return render(request, 'orchestra/static/dist2/index.html')
 
 @json_view
 @login_required

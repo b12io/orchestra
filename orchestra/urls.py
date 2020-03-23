@@ -2,6 +2,7 @@ from django.conf.urls import include
 from django.conf.urls import url
 
 from orchestra.views import index
+from orchestra.views import index2
 from orchestra.views import status
 
 app_name = 'orchestra'
@@ -13,6 +14,7 @@ urlpatterns = [
         include('orchestra.communication.urls',
                 namespace='communication')),
     url(r'^app/?', index, name='index'),
+    url(r'^app2/?', index2, name='index2'),
     url(r'', include('orchestra.accounts.urls')),
     url(r'^bots/', include('orchestra.bots.urls', namespace='bots')),
     url(r'^todos/', include('orchestra.todos.urls', namespace='todos')),
