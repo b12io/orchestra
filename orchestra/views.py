@@ -98,6 +98,11 @@ def index(request):
         'orchestra_arguments': json.dumps(orchestra_arguments)})
 
 
+@login_required
+def newindex(request):
+    return render(request, 'orchestra/newindex.html')
+
+
 @json_view
 @login_required
 def dashboard_tasks(request):
