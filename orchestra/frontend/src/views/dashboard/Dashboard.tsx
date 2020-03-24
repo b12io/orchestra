@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 
-import ProjectsList from '../../components/ProjectsList/ProjectsList'
+import TasksList from '../../components/TasksList/TasksList'
 import { fetchDashboardTasks } from '../../state/dashboardTasks'
 import {
     getActiveTasksSelector,
@@ -26,10 +26,10 @@ const Dashboard = () => {
 
   return (
     <div>
-      <ProjectsList status='success' projects={activeTasks} isLoading={isLoading} />
-      <ProjectsList status='warning' projects={pendingTasks} isLoading={isLoading} />
-      <ProjectsList status='error' projects={pausedTasks} isLoading={isLoading} />
-      <ProjectsList status='default' projects={completedTasks} isLoading={isLoading} />
+      <TasksList status='success' tasks={activeTasks} isLoading={isLoading} />
+      <TasksList status='warning' tasks={pendingTasks} isLoading={isLoading} />
+      <TasksList status='error' tasks={pausedTasks} isLoading={isLoading} />
+      <TasksList status='default' tasks={completedTasks} isLoading={isLoading} />
     </div>
   )
 }

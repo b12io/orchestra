@@ -3,7 +3,7 @@ import {
   useHistory
 } from "react-router-dom"
 
-import './ProjectsList.scss'
+import './TasksList.scss'
 
 import Table from '@b12/metronome/components/layout/table/Table.es6'
 import TableHead from '@b12/metronome/components/layout/table/TableHead.es6'
@@ -17,14 +17,14 @@ import AnimatedCircle from '../../assets/AnimatedCircle'
 
 type ProjectListProps = {
   status: any,
-  projects: any,
+  tasks: any,
   isLoading?: boolean
 }
 
-const ProjectList = ({ status, projects, isLoading = false }: ProjectListProps) => {
+const TaskList = ({ status, tasks, isLoading = false }: ProjectListProps) => {
   const rowsLabels = [
     'Status',
-    'Project and task',
+    'Project / Task',
     'Next steps',
     'Assigned',
     'Start by',
@@ -32,8 +32,8 @@ const ProjectList = ({ status, projects, isLoading = false }: ProjectListProps) 
   ]
   const history = useHistory()
 
-  const renderProjects = () => {
-    return projects.map(row => (
+  const renderTasks = () => {
+    return tasks.map(row => (
       <TableRow key={row.id} onClick={() => history.push(`/task/${row.id}`)}>
         <TableCell>
           <h4>{row.detail}</h4>
@@ -57,26 +57,26 @@ const ProjectList = ({ status, projects, isLoading = false }: ProjectListProps) 
     <TableRow>
       <TableCell/>
       <TableCell/>
-      <TableCell><p>No projects</p></TableCell>
+      <TableCell><p>No tasks</p></TableCell>
       <TableCell/>
       <TableCell/>
       <TableCell/>
     </TableRow>
   )
 
-  const numberOfTasksText = `${projects.length} task${projects.length > 1 && 's'}`
+  const numberOfTasksText = `${tasks.length} task${tasks.length > 1 ? 's' : ''}`
 
   return (
-    <div className='projects-list__wrapper'>
+    <div className='tasks-list__wrapper'>
       <Table
         padding='compact'
         verticalAlign='middle'
-        className='projects-list'
+        className='tasks-list'
         cardLike
       >
         <TableHead padding="compact">
           <TableRow>
-            <TableCell className='projects-list__status-row'>
+            <TableCell className='tasks-list__status-row'>
               <b><StatusIndicator
                 status={status}
                 className='dsu-mr-xxxsm'
@@ -89,6 +89,11 @@ const ProjectList = ({ status, projects, isLoading = false }: ProjectListProps) 
               /></b>
               {isLoading ? <AnimatedCircle /> : <p>{numberOfTasksText}</p>}
             </TableCell>
+            <TableCell/>
+            <TableCell/>
+            <TableCell/>
+            <TableCell/>
+            <TableCell/>
           </TableRow>
         </TableHead>
         <TableHead>
@@ -102,8 +107,8 @@ const ProjectList = ({ status, projects, isLoading = false }: ProjectListProps) 
           </TableRow>
         </TableHead>
         <TableBody>
-          {projects.length !== 0 || isLoading
-            ? renderProjects()
+          {tasks.length !== 0 || isLoading
+            ? renderTasks()
             : renderEmptyList()}
         </TableBody>
       </Table>
@@ -112,4 +117,4 @@ const ProjectList = ({ status, projects, isLoading = false }: ProjectListProps) 
   )
 }
 
-export default ProjectList
+export default TaskList
