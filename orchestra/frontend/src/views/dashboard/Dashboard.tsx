@@ -18,10 +18,10 @@ const Dashboard = () => {
   return (
         <div>
             <Navbar />
-            <ProjectsList status='success'/>
-            <ProjectsList status='warning'/>
-            <ProjectsList status='error'/>
-            <ProjectsList status='default'/>
+            <ProjectsList status='success' projects={[]}/>
+            <ProjectsList status='warning' projects={[]}/>
+            <ProjectsList status='error' projects={[]}/>
+            <ProjectsList status='default' projects={[]}/>
         </div>
     )
 }
