@@ -11,6 +11,7 @@ import TableBody from '@b12/metronome/components/layout/table/TableBody.es6'
 import TableRow from '@b12/metronome/components/layout/table/TableRow.es6'
 import TableCell from '@b12/metronome/components/layout/table/TableCell.es6'
 import Badge from '@b12/metronome/components/layout/badge/Badge.es6.js'
+import StatusIndicator from '@b12/metronome/components/layout/status-indicator/StatusIndicator.es6.js'
 
 type Props = {
 
@@ -78,12 +79,24 @@ const ProjectList = ({}: Props) => {
       >
         <TableHead>
           <TableRow>
-          {rowsLabels.map(rowLabel => (
+            <TableCell className='projects-list__status-row'>
+              <b><StatusIndicator status='success' className='dsu-mr-xxxsm'/></b><p>{data.length} project{data.length !== 1 && 's'}</p>
+            </TableCell>
+            <TableCell/>
+            <TableCell/>
+            <TableCell/>
+            <TableCell/>
+            <TableCell/>
+          </TableRow>
+        </TableHead>
+        <TableHead>
+          <TableRow>
+            {rowsLabels.map(rowLabel => (
               <TableCell
-              key={rowLabel}
-              align='left'
+                key={rowLabel}
+                align='left'
               ><p>{rowLabel}</p></TableCell>
-          ))}
+            ))}
           </TableRow>
         </TableHead>
         <TableBody>

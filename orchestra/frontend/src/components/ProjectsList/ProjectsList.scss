@@ -5,11 +5,20 @@
     &__wrapper {
         margin: 25px;
     }
+    &__status-row {
+        display: flex;
+        align-items: center;
+    }
     @include ds-typography;
     th p {
         margin: 0;
     }
+    tbody {
+        tr:nth-child(even) {
+            background: $ds-ui-light-color;
+        }
+    }
     .ds-badge--filled.ds-badge--primary {
-        background-color: #695FF6;
+        background-color: $ds-brand-light-color;
     }
 }
