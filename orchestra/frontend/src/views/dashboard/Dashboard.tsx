@@ -7,7 +7,8 @@ import {
     getActiveTasksSelector,
     getPendingTasksSelector,
     getPausedTasksSelector,
-    getCompletedTasksSelector
+    getCompletedTasksSelector,
+    taskLoadingStateSelector
 } from '../../state/selectors/taskSelectors'
 
 const Dashboard = () => {
@@ -21,15 +22,16 @@ const Dashboard = () => {
   const pendingTasks = useSelector(getPendingTasksSelector)
   const pausedTasks = useSelector(getPausedTasksSelector)
   const completedTasks = useSelector(getCompletedTasksSelector)
+  const isLoading = useSelector(taskLoadingStateSelector)
 
   return (
-        <div>
-            <ProjectsList status='success' projects={activeTasks}/>
-            <ProjectsList status='warning' projects={pendingTasks}/>
-            <ProjectsList status='error' projects={pausedTasks}/>
-            <ProjectsList status='default' projects={completedTasks}/>
-        </div>
-    )
+    <div>
+      <ProjectsList status='success' projects={activeTasks} isLoading={isLoading} />
+      <ProjectsList status='warning' projects={pendingTasks} isLoading={isLoading} />
+      <ProjectsList status='error' projects={pausedTasks} isLoading={isLoading} />
+      <ProjectsList status='default' projects={completedTasks} isLoading={isLoading} />
+    </div>
+  )
 }
 
 export default Dashboard;

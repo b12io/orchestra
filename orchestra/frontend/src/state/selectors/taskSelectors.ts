@@ -39,3 +39,5 @@ export const getCompletedTasksSelector = createSelector(
   tasksSelector,
   tasks => tasks.filter(task => task.state === 'complete')
 )
+
+export const taskLoadingStateSelector = (state: RootState) => state.dashboardTasks.loading

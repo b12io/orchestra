@@ -13,7 +13,15 @@ import TableCell from '@b12/metronome/components/layout/table/TableCell.es6'
 import Badge from '@b12/metronome/components/layout/badge/Badge.es6.js'
 import StatusIndicator from '@b12/metronome/components/layout/status-indicator/StatusIndicator.es6.js'
 
-const ProjectList = (props) => {
+import AnimatedCircle from '../../assets/AnimatedCircle'
+
+type ProjectListProps = {
+  status: any,
+  projects: any,
+  isLoading?: boolean
+}
+
+const ProjectList = ({ status, projects, isLoading = false }: ProjectListProps) => {
   const rowsLabels = [
     'Status',
     'Project and task',
@@ -23,10 +31,7 @@ const ProjectList = (props) => {
     'Due by'
   ]
   const history = useHistory()
-  const {
-    status,
-    projects
-  } = props
+
   const renderProjects = () => {
     return projects.map(row => (
       <TableRow key={row.id} onClick={() => history.push(`/task/${row.id}`)}>
@@ -47,6 +52,7 @@ const ProjectList = (props) => {
       </TableRow>
     ))
   }
+
   const renderEmptyList = () => (
     <TableRow>
       <TableCell/>
@@ -57,6 +63,9 @@ const ProjectList = (props) => {
       <TableCell/>
     </TableRow>
   )
+
+  const numberOfTasksText = `${projects.length} task${projects.length > 1 && 's'}`
+
   return (
     <div className='projects-list__wrapper'>
       <Table
@@ -78,13 +87,8 @@ const ProjectList = (props) => {
                   warning: 'Pending'
                 }}
               /></b>
-              <p>{projects.length} project{projects.length !== 1 && 's'}</p>
+              {isLoading ? <AnimatedCircle /> : <p>{numberOfTasksText}</p>}
             </TableCell>
-            <TableCell/>
-            <TableCell/>
-            <TableCell/>
-            <TableCell/>
-            <TableCell/>
           </TableRow>
         </TableHead>
         <TableHead>
@@ -98,7 +102,7 @@ const ProjectList = (props) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {projects.length !== 0
+          {projects.length !== 0 || isLoading
             ? renderProjects()
             : renderEmptyList()}
         </TableBody>
