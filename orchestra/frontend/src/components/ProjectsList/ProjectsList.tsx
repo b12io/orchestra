@@ -14,10 +14,10 @@ import Badge from '@b12/metronome/components/layout/badge/Badge.es6.js'
 import StatusIndicator from '@b12/metronome/components/layout/status-indicator/StatusIndicator.es6.js'
 
 type Props = {
-
+  status: string
 }
 
-const ProjectList = ({}: Props) => {
+const ProjectList = (props: Props) => {
   const rowsLabels = [
     'Status',
     'Project and task',
@@ -68,7 +68,10 @@ const ProjectList = ({}: Props) => {
       dueBy: '-'
     },
   ]
-  const history = useHistory();
+  const history = useHistory()
+  const {
+    status
+  } = props
   return (
     <div className='projects-list__wrapper'>
       <Table
@@ -80,7 +83,17 @@ const ProjectList = ({}: Props) => {
         <TableHead>
           <TableRow>
             <TableCell className='projects-list__status-row'>
-              <b><StatusIndicator status='success' className='dsu-mr-xxxsm'/></b><p>{data.length} project{data.length !== 1 && 's'}</p>
+              <b><StatusIndicator
+                status={status}
+                className='dsu-mr-xxxsm'
+                statusLabels={{
+                  success: 'Active',
+                  error: 'Paused',
+                  default: 'Completed',
+                  warning: 'Pending'
+                }}
+              /></b>
+              <p>{data.length} project{data.length !== 1 && 's'}</p>
             </TableCell>
             <TableCell/>
             <TableCell/>
