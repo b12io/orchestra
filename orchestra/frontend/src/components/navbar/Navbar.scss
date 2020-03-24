@@ -31,9 +31,19 @@
     }
   }
 
+  &__dropdown .ds-dropdown__menu {
+    min-width: 200px;
+  }
+
   &__avatar {
     & > *:not(last-child) {
       padding-right: 6.5px;
+    }
+    svg.navbar__avatar-caret {
+      position: relative;
+      left: auto;
+      top: auto;
+      transform: none;
     }
   }
 

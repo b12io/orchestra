@@ -3,9 +3,9 @@ import {
   HashRouter as Router,
   Switch,
   Route,
-  Link
 } from "react-router-dom"
 
+import Navbar from './components/navbar/Navbar'
 import AvailableTasks from './views/available_tasks/AvailableTasks'
 import Dashboard from './views/dashboard/Dashboard'
 import Task from './views/task/Task'
@@ -17,26 +17,7 @@ function App() {
     <div className="App">
       <Router>
         <div>
-          <ul>
-            <li>
-              <Link to="/">Dashboard</Link>
-            </li>
-            <li>
-              <Link to="/timecard">Timecard</Link>
-            </li>
-            <li>
-              <Link to="/communication/available-staffing-requests">Available tasks</Link>
-            </li>
-            <li>
-              <Link to="/project/">Project management</Link>
-            </li>
-            <li>
-              <Link to="/accounts/settings">Account settings</Link>
-            </li>
-            <li>
-              <Link to="/accounts/logout_then_login">Sign out</Link>
-            </li>
-          </ul>
+          <Navbar />
           <Switch>
             <Route path="/task/:taskId" children={<Task />} />
             <Route path="/project/:projectId?" children={<div>Project management</div>} />
@@ -44,9 +25,7 @@ function App() {
             <Route path="/communication/available-staffing-requests" children={<AvailableTasks />} />
             <Route path="/accounts/settings" children={<div>Account settings</div>} />
             <Route path="/accounts/logout_then_login" children={<div>Sign out</div>} />
-            <Route path="/">
-              <Dashboard />
-            </Route>
+            <Route path="/" children={<Dashboard />} />
           </Switch>
         </div>
       </Router>

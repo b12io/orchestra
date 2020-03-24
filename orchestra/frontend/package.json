@@ -29,7 +29,7 @@
     "build": "react-app-rewired build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "watch": "watch 'yarn build' ./src"
+    "watch": "watch 'yarn build' ./src --wait=1"
   },
   "eslintConfig": {
     "extends": "react-app"
