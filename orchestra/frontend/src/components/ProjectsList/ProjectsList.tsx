@@ -83,6 +83,7 @@ const ProjectList = ({}: Props) => {
            <Table
             padding='comfortable'
             verticalAlign='middle'
+            className='projects-list'
             cardLike
             >
             <TableHead>
@@ -91,19 +92,19 @@ const ProjectList = ({}: Props) => {
                     <TableCell
                     key={rowLabel}
                     align='left'
-                    >{rowLabel}</TableCell>
+                    ><p>{rowLabel}</p></TableCell>
                 ))}
                 </TableRow>
             </TableHead>
             <TableBody>
                 {data.map((row, index) => (
                 <TableRow key={index}>
-                    <TableCell>{row.status}</TableCell>
-                    <TableCell>{row.project} / {row.task}</TableCell>
-                    <TableCell>{row.nextStep}</TableCell>
-                    <TableCell>{row.assignedDate}</TableCell>
-                    <TableCell>{row.startBy}</TableCell>
-                    <TableCell>{row.dueBy}</TableCell>
+                    <TableCell><p>{row.status}</p></TableCell>
+                    <TableCell><p>{row.project} / {row.task}</p></TableCell>
+                    <TableCell><p>{row.nextStep}</p></TableCell>
+                    <TableCell><p>{row.assignedDate}</p></TableCell>
+                    <TableCell><p>{row.startBy}</p></TableCell>
+                    <TableCell><p>{row.dueBy}</p></TableCell>
                 </TableRow>
                 ))}
             </TableBody>
