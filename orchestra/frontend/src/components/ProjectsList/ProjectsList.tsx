@@ -60,12 +60,12 @@ const ProjectList = (props) => {
   return (
     <div className='projects-list__wrapper'>
       <Table
-        padding='comfortable'
+        padding='compact'
         verticalAlign='middle'
         className='projects-list'
         cardLike
       >
-        <TableHead>
+        <TableHead padding="compact">
           <TableRow>
             <TableCell className='projects-list__status-row'>
               <b><StatusIndicator
