@@ -1,10 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux'
 
 import Navbar from '../../components/navbar/Navbar'
 import ProjectsList from '../../components/ProjectsList/ProjectsList'
+import { fetchDashboardTasks } from '../../state/dashboardTasks'
 
 const Dashboard = () => {
-    return (
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(fetchDashboardTasks())
+  }, [])
+
+  return (
         <div>
             <Navbar />
             <ProjectsList/>
