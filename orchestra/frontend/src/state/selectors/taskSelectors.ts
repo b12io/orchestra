@@ -35,3 +35,7 @@ export const getPausedTasksSelector = createSelector(
   tasks => tasks.filter(task => task.state === 'paused')
 )
 
+export const getCompletedTasksSelector = createSelector(
+  tasksSelector,
+  tasks => tasks.filter(task => task.state === 'complete')
+)

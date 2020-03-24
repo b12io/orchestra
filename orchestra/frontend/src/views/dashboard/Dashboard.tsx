@@ -4,7 +4,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import Navbar from '../../components/navbar/Navbar'
 import ProjectsList from '../../components/ProjectsList/ProjectsList'
 import { fetchDashboardTasks } from '../../state/dashboardTasks'
-import { getActiveTasksSelector } from '../../state/selectors/taskSelectors'
+import {
+    getActiveTasksSelector,
+    getPendingTasksSelector,
+    getPausedTasksSelector,
+    getCompletedTasksSelector
+} from '../../state/selectors/taskSelectors'
 
 const Dashboard = () => {
   const dispatch = useDispatch()
@@ -14,14 +19,17 @@ const Dashboard = () => {
   }, [])
 
   const activeTasks = useSelector(getActiveTasksSelector)
+  const pendingTasks = useSelector(getPendingTasksSelector)
+  const pausedTasks = useSelector(getPausedTasksSelector)
+  const completedTasks = useSelector(getCompletedTasksSelector)
 
   return (
         <div>
             <Navbar />
-            <ProjectsList status='success' projects={[]}/>
-            <ProjectsList status='warning' projects={[]}/>
-            <ProjectsList status='error' projects={[]}/>
-            <ProjectsList status='default' projects={[]}/>
+            <ProjectsList status='success' projects={activeTasks}/>
+            <ProjectsList status='warning' projects={pendingTasks}/>
+            <ProjectsList status='error' projects={pausedTasks}/>
+            <ProjectsList status='default' projects={completedTasks}/>
         </div>
     )
 }

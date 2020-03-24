@@ -31,15 +31,19 @@ const ProjectList = (props) => {
     return projects.map(row => (
       <TableRow key={row.id} onClick={() => history.push(`/task/${row.id}`)}>
         <TableCell>
-          <h4>{row.status}</h4>
+          <h4>{row.detail}</h4>
           <Badge size="medium" label="Iterating" primary filled className='dsu-mr-xxxsm'/>
           <Badge size="medium" label="SEO" filled neutral/>
         </TableCell>
-        <TableCell><p>{row.project} / {row.task}</p></TableCell>
-        <TableCell><p>{row.nextStep}</p></TableCell>
-        <TableCell><p>{row.assignedDate}</p></TableCell>
+        <TableCell><p>{row.project} / {row.step}</p></TableCell>
+        {/* change to next_todo_dict */}
+        <TableCell><p>{row.step}</p></TableCell>
+        <TableCell><p>2 weeks ago</p></TableCell>
+        <TableCell><p>Today, 8:00 am</p></TableCell>
+        <TableCell><p>-</p></TableCell>
+        {/* <TableCell><p>{row.assignedDate}</p></TableCell>
         <TableCell><p>{row.startBy}</p></TableCell>
-        <TableCell><p>{row.dueBy}</p></TableCell>
+        <TableCell><p>{row.dueBy}</p></TableCell> */}
       </TableRow>
     ))
   }
