@@ -2,6 +2,9 @@
 @import "~@b12/metronome/style/variables";
 
 .projects-list {
+    &__wrapper {
+        margin: 25px;
+    }
     @include ds-typography;
     th p {
         margin: 0;
