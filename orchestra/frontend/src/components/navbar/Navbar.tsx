@@ -1,11 +1,11 @@
-import React from 'react';
-import { useHistory } from "react-router-dom";
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux'
+import { useHistory } from 'react-router-dom'
 
 import AvatarItem from '@b12/metronome/components/layout/avatar/AvatarItem.es6.js'
 import Button from '@b12/metronome/components/form/button/Button.es6.js'
 import Grid from '@b12/metronome/components/layout/grid/Grid.es6.js'
 import TextField from '@b12/metronome/components/form/textfield/TextField.es6.js'
-
 import { Clock, CaretDown } from '@b12/metronome/components/Icons.es6.js'
 import Dropdown from '@b12/metronome/components/layout/dropdown/Dropdown.es6.js'
 import DropdownItem from '@b12/metronome/components/layout/dropdown/DropdownItem.es6.js'
@@ -13,9 +13,15 @@ import DropdownItem from '@b12/metronome/components/layout/dropdown/DropdownItem
 import './Navbar.scss'
 
 import ShuffleIcon from '../../assets/ShuffleIcon'
+import { fetchTimer } from '../../state/timer'
 
 const Navbar = () => {
   const history = useHistory()
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(fetchTimer())
+  }, [])
 
   return (
     <div className="navbar">
