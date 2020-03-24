@@ -11,12 +11,13 @@ import TableBody from '@b12/metronome/components/layout/table/TableBody.es6'
 import TableRow from '@b12/metronome/components/layout/table/TableRow.es6'
 import TableCell from '@b12/metronome/components/layout/table/TableCell.es6'
 import Badge from '@b12/metronome/components/layout/badge/Badge.es6.js'
+import StatusIndicator from '@b12/metronome/components/layout/status-indicator/StatusIndicator.es6.js'
 
 type Props = {
-
+  status: string
 }
 
-const ProjectList = ({}: Props) => {
+const ProjectList = (props: Props) => {
   const rowsLabels = [
     'Status',
     'Project and task',
@@ -67,7 +68,10 @@ const ProjectList = ({}: Props) => {
       dueBy: '-'
     },
   ]
-  const history = useHistory();
+  const history = useHistory()
+  const {
+    status
+  } = props
   return (
     <div className='projects-list__wrapper'>
       <Table
@@ -78,12 +82,34 @@ const ProjectList = ({}: Props) => {
       >
         <TableHead>
           <TableRow>
-          {rowsLabels.map(rowLabel => (
+            <TableCell className='projects-list__status-row'>
+              <b><StatusIndicator
+                status={status}
+                className='dsu-mr-xxxsm'
+                statusLabels={{
+                  success: 'Active',
+                  error: 'Paused',
+                  default: 'Completed',
+                  warning: 'Pending'
+                }}
+              /></b>
+              <p>{data.length} project{data.length !== 1 && 's'}</p>
+            </TableCell>
+            <TableCell/>
+            <TableCell/>
+            <TableCell/>
+            <TableCell/>
+            <TableCell/>
+          </TableRow>
+        </TableHead>
+        <TableHead>
+          <TableRow>
+            {rowsLabels.map(rowLabel => (
               <TableCell
-              key={rowLabel}
-              align='left'
+                key={rowLabel}
+                align='left'
               ><p>{rowLabel}</p></TableCell>
-          ))}
+            ))}
           </TableRow>
         </TableHead>
         <TableBody>

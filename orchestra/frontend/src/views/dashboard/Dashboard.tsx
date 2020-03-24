@@ -16,11 +16,14 @@ const Dashboard = () => {
   const activeTasks = useSelector(getActiveTasksSelector)
 
   return (
-    <div>
-      <Navbar />
-      <ProjectsList/>
-    </div>
-  )
+        <div>
+            <Navbar />
+            <ProjectsList status='success'/>
+            <ProjectsList status='warning'/>
+            <ProjectsList status='error'/>
+            <ProjectsList status='default'/>
+        </div>
+    )
 }
 
 export default Dashboard;
