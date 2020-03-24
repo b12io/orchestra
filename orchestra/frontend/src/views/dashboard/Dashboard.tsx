@@ -1,7 +1,7 @@
 import React from 'react';
 
 import Navbar from '../../components/navbar/Navbar'
-import ProjectsList from '../../components/ProjectsList/ProjeectsList'
+import ProjectsList from '../../components/ProjectsList/ProjectsList'
 
 const Dashboard = () => {
     return (
