@@ -27,12 +27,16 @@ interface DashboardTasksState {
   reviewerStatus: boolean,
   preventNew: boolean,
   tasks: Task[],
+  loading: boolean,
+  error?: string
 }
 
 const initialState: DashboardTasksState = {
   tasks: [],
   preventNew: true,
-  reviewerStatus: false
+  reviewerStatus: false,
+  loading: false,
+  error: null
 }
 
 const dashboardTasks = createSlice({
@@ -40,8 +44,8 @@ const dashboardTasks = createSlice({
   initialState,
   reducers: {
     getTodosStart(state) {
-      // state.loading = true
-      // state.error = null
+      state.loading = true
+      state.error = null
     },
     getTodosSuccess(state, action: PayloadAction<DashboardTasksState>) {
       console.log('getTodosSuccess')
@@ -50,11 +54,11 @@ const dashboardTasks = createSlice({
       state.tasks = action.payload.tasks
       state.preventNew = action.payload.preventNew
       state.reviewerStatus = action.payload.reviewerStatus
-      // state.loading = false
+      state.loading = false
     },
     getTodosFailure(state, action: PayloadAction<string>) {
-      // state.loading = false
-      // state.error = action.payload
+      state.loading = false
+      state.error = action.payload
     }
   }
 })
