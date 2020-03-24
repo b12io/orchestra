@@ -6,6 +6,7 @@ import {
   Link
 } from "react-router-dom"
 
+import AvailableTasks from './views/available_tasks/AvailableTasks'
 import Dashboard from './views/dashboard/Dashboard'
 import Task from './views/task/Task'
 
@@ -40,7 +41,7 @@ function App() {
             <Route path="/task/:taskId" children={<Task />} />
             <Route path="/project/:projectId?" children={<div>Project management</div>} />
             <Route path="/timecard" children={<div>Timecard</div>} />
-            <Route path="/communication/available-staffing-requests" children={<div>Available tasks</div>} />
+            <Route path="/communication/available-staffing-requests" children={<AvailableTasks />} />
             <Route path="/accounts/settings" children={<div>Account settings</div>} />
             <Route path="/accounts/logout_then_login" children={<div>Sign out</div>} />
             <Route path="/">
