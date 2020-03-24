@@ -1,0 +1,9 @@
+@import "~@b12/metronome/style/mixins";
+@import "~@b12/metronome/style/variables";
+
+.projects-list {
+    @include ds-typography;
+    th p {
+        margin: 0;
+    }
+}
