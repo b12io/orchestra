@@ -1,5 +1,4 @@
 const path = require('path');
-
 const { override, babelInclude } = require('customize-cra');
 
 module.exports = override(
@@ -8,3 +7,4 @@ module.exports = override(
     path.resolve('src/')
   ])
 )
+

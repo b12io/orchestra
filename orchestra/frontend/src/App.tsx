@@ -2,7 +2,7 @@ import React from 'react';
 import logo from './logo.svg';
 
 import Button from '@b12/metronome/components/form/button/Button.es6'
-import './App.css';
+import './App.scss';
 
 function App() {
   return (
@@ -20,8 +20,8 @@ function App() {
         >
           Learn React
         </a>
-        <Button label="abcs" />
-        Hello world!!!??????
+        <Button label="abcs" primary />
+        Hello world!!??!?!?!??
       </header>
     </div>
   );
