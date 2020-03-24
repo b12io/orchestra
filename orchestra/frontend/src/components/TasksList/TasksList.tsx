@@ -15,6 +15,8 @@ import StatusIndicator from '@b12/metronome/components/layout/status-indicator/S
 
 import AnimatedCircle from '../../assets/AnimatedCircle'
 
+import { getPrettyDatetime, specialFormatIfToday } from '../../util/time'
+
 type ProjectListProps = {
   status: any,
   tasks: any,
@@ -23,34 +25,39 @@ type ProjectListProps = {
 
 const TaskList = ({ status, tasks, isLoading = false }: ProjectListProps) => {
   const rowsLabels = [
-    'Status',
+    'Details',
     'Project / Task',
-    'Next steps',
     'Assigned',
+    'Next steps',
     'Start by',
     'Due by'
   ]
   const history = useHistory()
 
   const renderTasks = () => {
-    return tasks.map(row => (
-      <TableRow key={row.id} onClick={() => history.push(`/task/${row.id}`)}>
-        <TableCell>
-          <h4>{row.detail}</h4>
-          <Badge size="medium" label="Iterating" primary filled className='dsu-mr-xxxsm'/>
-          <Badge size="medium" label="SEO" filled neutral/>
-        </TableCell>
-        <TableCell><p>{row.project} / {row.step}</p></TableCell>
-        {/* change to next_todo_dict */}
-        <TableCell><p>{row.step}</p></TableCell>
-        <TableCell><p>2 weeks ago</p></TableCell>
-        <TableCell><p>Today, 8:00 am</p></TableCell>
-        <TableCell><p>-</p></TableCell>
-        {/* <TableCell><p>{row.assignedDate}</p></TableCell>
-        <TableCell><p>{row.startBy}</p></TableCell>
-        <TableCell><p>{row.dueBy}</p></TableCell> */}
-      </TableRow>
-    ))
+    return tasks.map(row => {
+      const assigned = getPrettyDatetime(row.assignment_start_datetime, 'MM/DD/YYYY')
+      const startBy = getPrettyDatetime(
+        row.next_todo_dict.start_by_datetime,
+        specialFormatIfToday(row.next_todo_dict.start_by_datetime))
+      const dueBy = getPrettyDatetime(
+        row.next_todo_dict.due_datetime,
+        specialFormatIfToday(row.next_todo_dict.due_datetime))
+
+      return (
+        <TableRow key={row.id} onClick={() => history.push(`/task/${row.id}`)}>
+          <TableCell>
+            <h4>{row.detail}</h4>
+            <Badge size="medium" label="Iterating" primary filled className='dsu-mr-xxxsm'/>
+            <Badge size="medium" label="SEO" filled neutral/>
+          </TableCell>
+          <TableCell><p>{row.project} / {row.step}</p></TableCell>
+          <TableCell><p>{assigned}</p></TableCell>
+          <TableCell><p>{row.next_todo_dict.description}</p></TableCell>
+          <TableCell><p>{startBy}</p></TableCell>
+          <TableCell><p>{dueBy}</p></TableCell>
+        </TableRow>
+      )})
   }
 
   const renderEmptyList = () => (
