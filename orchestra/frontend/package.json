@@ -18,8 +18,8 @@
     "watch": "^1.0.2"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "watch": "watch 'yarn build' ./src"
@@ -39,5 +39,9 @@
       "last 1 safari version"
     ]
   },
-  "homepage": "/static/dist2/"
+  "homepage": "/static/dist2/",
+  "devDependencies": {
+    "customize-cra": "^0.9.1",
+    "react-app-rewired": "^2.1.5"
+  }
 }

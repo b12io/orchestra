@@ -1,6 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
-// import Button from '@b12/metronome/components/form/button/Button.es6.js'
+
+import Button from '@b12/metronome/components/form/button/Button.es6'
 import './App.css';
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
         >
           Learn React
         </a>
+        <Button label="abcs" />
         Hello world!!!??????
       </header>
     </div>
