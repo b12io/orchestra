@@ -1,21 +1,22 @@
 {
   "compilerOptions": {
     "module": "esnext",
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "removeComments": true,
     "preserveConstEnums": true,
     "sourceMap": true,
-    "target": "es5",
+    "target": "es6",
     "lib": [
       "dom",
       "dom.iterable",
-      "esnext"
+      "esnext",
+      "ES6"
     ],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "strict": true,
+    "strict": false,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
@@ -24,7 +25,8 @@
     "jsx": "react"
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "node_modules/@b12/metronome/**/*"
   ],
   "exclude": [
     "node_modules",
