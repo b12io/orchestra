@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Link
+  useHistory
 } from "react-router-dom"
 
 import './ProjectsList.scss'
@@ -10,6 +10,7 @@ import TableHead from '@b12/metronome/components/layout/table/TableHead.es6'
 import TableBody from '@b12/metronome/components/layout/table/TableBody.es6'
 import TableRow from '@b12/metronome/components/layout/table/TableRow.es6'
 import TableCell from '@b12/metronome/components/layout/table/TableCell.es6'
+import Badge from '@b12/metronome/components/layout/badge/Badge.es6.js'
 
 type Props = {
 
@@ -66,6 +67,7 @@ const ProjectList = ({}: Props) => {
       dueBy: '-'
     },
   ]
+  const history = useHistory();
   return (
     <div className='projects-list__wrapper'>
       <Table
@@ -86,8 +88,12 @@ const ProjectList = ({}: Props) => {
         </TableHead>
         <TableBody>
           {data.map(row => (
-            <TableRow key={row.id}>
-              <TableCell><Link to={`/task/${row.id}`}><p>{row.status}</p></Link></TableCell>
+            <TableRow key={row.id} onClick={() => history.push(`/task/${row.id}`)}>
+              <TableCell>
+                <h4>{row.status}</h4>
+                <Badge size="medium" label="Iterating" primary filled className='dsu-mr-xxxsm'/>
+                <Badge size="medium" label="SEO" filled neutral/>
+              </TableCell>
               <TableCell><p>{row.project} / {row.task}</p></TableCell>
               <TableCell><p>{row.nextStep}</p></TableCell>
               <TableCell><p>{row.assignedDate}</p></TableCell>
