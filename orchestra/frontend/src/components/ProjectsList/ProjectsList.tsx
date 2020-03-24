@@ -47,6 +47,16 @@ const ProjectList = (props) => {
       </TableRow>
     ))
   }
+  const renderEmptyList = () => (
+    <TableRow>
+      <TableCell/>
+      <TableCell/>
+      <TableCell><p>No projects</p></TableCell>
+      <TableCell/>
+      <TableCell/>
+      <TableCell/>
+    </TableRow>
+  )
   return (
     <div className='projects-list__wrapper'>
       <Table
@@ -90,7 +100,7 @@ const ProjectList = (props) => {
         <TableBody>
           {projects.length !== 0
             ? renderProjects()
-            : 'No projects'}
+            : renderEmptyList()}
         </TableBody>
       </Table>
     </div>
