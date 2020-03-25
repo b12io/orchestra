@@ -60,6 +60,18 @@ const TaskList = ({ status, tasks, isLoading = false }: ProjectListProps) => {
       setSortedTasks(newSortedTasks)
     }
   }, [sortStatus])
+  const [searchedItem, setSearchedItem] = React.useState('')
+
+  const handleTextChange = value => {
+    setSearchedItem(value)
+  }
+
+  React.useEffect(() => {
+    const results = tasks.filter(task =>
+      task.detail.toLowerCase().includes(searchedItem.toLocaleLowerCase())
+    )
+    setSortedTasks(results)
+  }, [searchedItem])
 
   const rowsLabels = [
     'Details',
@@ -194,6 +206,8 @@ const TaskList = ({ status, tasks, isLoading = false }: ProjectListProps) => {
                 <TextField
                   placeholder="Search projects..."
                   searchIcon
+                  onUpdate={handleTextChange}
+                  value={searchedItem}
                 />
               </div>
             </th>
