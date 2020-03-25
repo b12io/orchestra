@@ -5,13 +5,15 @@
     &__wrapper {
         margin: 25px;
     }
-    &__status-row {
+    .ds-table__row-clickable &__status-row {
         display: flex;
         align-items: center;
         height: 39px;
+        border-bottom: none;
     }
     &__col-1 {
         width: 40%;
+        border-top: 2px solid hsla(0,0%,85.1%,.4);
     }
     &__col-2 {
         width: 20%;
