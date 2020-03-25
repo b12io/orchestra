@@ -1,19 +1,19 @@
 import axios from 'axios'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-import { AppThunk } from './store'
-import { TaskStates } from './selectors/taskSelectors'
+import { AppThunk } from '../store'
+import { TaskStates } from '../selectors/taskSelectors'
 
-interface NextTodo {
+export interface NextTodo {
   description: string;
   start_by_datetime: string;
   due_datetime: string;
 }
 
-interface Task {
+export interface Task {
   step: string;
   next_todo_dict: NextTodo;
-  tags: string[];
+  tags: any[];
   project: string;
   priority: number;
   assignment_start_datetime: string;

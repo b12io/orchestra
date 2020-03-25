@@ -25,6 +25,11 @@
     &__col-5 {
         width: 10%;
     }
+
+    &__col-header {
+        display: flex;
+    }
+
     @include ds-typography;
     th p {
         margin: 0;
@@ -43,4 +48,8 @@
     .ds-badge--filled.ds-badge--primary {
         background-color: $ds-brand-light-color;
     }
+}
+
+.caret-up {
+    transform: rotate(180deg);
 }

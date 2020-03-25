@@ -1,14 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import TasksList from '../../components/TasksList/TasksList'
-import { fetchDashboardTasks } from '../../state/dashboardTasks'
+import { fetchDashboardTasks } from 'state/slices/dashboardTasks'
 import {
-    getActiveTasksSelector,
-    getPendingTasksSelector,
-    getPausedTasksSelector,
-    getCompletedTasksSelector,
-    taskLoadingStateSelector
+  getActiveTasksSelector,
+  getPendingTasksSelector,
+  getPausedTasksSelector,
+  getCompletedTasksSelector,
+  taskLoadingStateSelector
 } from '../../state/selectors/taskSelectors'
 
 const Dashboard = () => {
@@ -34,4 +34,4 @@ const Dashboard = () => {
   )
 }
 
-export default Dashboard;
+export default Dashboard

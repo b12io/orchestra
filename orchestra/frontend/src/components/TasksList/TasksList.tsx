@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   useHistory
 } from 'react-router-dom'
@@ -12,18 +12,32 @@ import TableRow from '@b12/metronome/components/layout/table/TableRow.es6'
 import TableCell from '@b12/metronome/components/layout/table/TableCell.es6'
 import Badge from '@b12/metronome/components/layout/badge/Badge.es6.js'
 import StatusIndicator from '@b12/metronome/components/layout/status-indicator/StatusIndicator.es6.js'
+import {
+  CaretDown
+} from '@b12/metronome/components/Icons.es6.js'
 
 import AnimatedCircle from '../../assets/AnimatedCircle'
 
 import { getPrettyDatetime, specialFormatIfToday, isOutdated } from '../../util/time'
+import { Task } from 'state/slices/dashboardTasks'
 
 type ProjectListProps = {
   status: any;
-  tasks: any;
+  tasks: Task[];
   isLoading?: boolean;
 }
 
+type SortStatusType = {
+  column: string; // enum of rows
+  direction: 'ascending' | 'descending';
+}
+
 const TaskList = ({ status, tasks, isLoading = false }: ProjectListProps) => {
+  const [sortStatus, setSortStatus] = useState({
+    column: null,
+    direction: 'ascending'
+  })
+
   const rowsLabels = [
     'Details',
     'Project / Task',
@@ -68,13 +82,20 @@ const TaskList = ({ status, tasks, isLoading = false }: ProjectListProps) => {
         <TableRow key={row.id} onClick={handleRowClick} className={colorRow && 'grey-out'}>
           <TableCell className='tasks-list__col-1'>
             <h4>{row.detail}</h4>
-            {row.tags.map(tag => {
+            {row.tags.map((tag, index) => {
               const colorProps = {
                 [tagMapping[tag.status]]: true,
                 selected: tag.status === 'danger' || tag.status === 'primary' // Make it darker.
               }
               return (
-                <Badge size="small" label={tag.label} filled className='dsu-mr-xxxsm' {...colorProps}/>
+                <Badge
+                  key={index}
+                  size="small"
+                  label={tag.label}
+                  filled
+                  className="dsu-mr-xxxsm"
+                  {...colorProps}
+                />
               )
             })}
           </TableCell>
@@ -98,6 +119,26 @@ const TaskList = ({ status, tasks, isLoading = false }: ProjectListProps) => {
       <TableCell/>
     </TableRow>
   )
+
+  const handleHeaderClick = (column) => {
+    let direction
+    if (column !== sortStatus.column) {
+      direction = 'ascending'
+    } else {
+      direction = sortStatus.direction === 'ascending' ? 'descending' : 'ascending'
+    }
+
+    setSortStatus({
+      direction,
+      column
+    })
+  }
+
+  const renderSortCaret = () => {
+    return sortStatus.direction === 'ascending'
+      ? <CaretDown />
+      : <CaretDown className="caret-up" />
+  }
 
   const numberOfTasksText = `${tasks.length} task${tasks.length > 1 ? 's' : ''}`
 
@@ -138,7 +179,13 @@ const TaskList = ({ status, tasks, isLoading = false }: ProjectListProps) => {
                 key={rowLabel}
                 align='left'
                 className={`tasks-list__col-${index + 1}`}
-              ><p>{rowLabel}</p></TableCell>
+                onClick={() => handleHeaderClick(rowLabel)}
+              >
+                <div className="tasks-list__col-header">
+                  <p>{rowLabel}</p>
+                  {sortStatus.column === rowLabel && renderSortCaret()}
+                </div>
+              </TableCell>
             ))}
           </TableRow>
         </TableHead>
