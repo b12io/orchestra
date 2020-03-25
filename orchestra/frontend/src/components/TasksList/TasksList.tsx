@@ -15,7 +15,7 @@ import StatusIndicator from '@b12/metronome/components/layout/status-indicator/S
 
 import AnimatedCircle from '../../assets/AnimatedCircle'
 
-import { getPrettyDatetime, specialFormatIfToday } from '../../util/time'
+import { getPrettyDatetime, specialFormatIfToday, isOutdated } from '../../util/time'
 
 type ProjectListProps = {
   status: any;
@@ -62,9 +62,10 @@ const TaskList = ({ status, tasks, isLoading = false }: ProjectListProps) => {
           history.push(rowUrl)
         }
       }
+      const colorRow = isOutdated(row.next_todo_dict.due_datetime) && row.state !== 'complete'
 
       return (
-        <TableRow key={row.id} onClick={handleRowClick}>
+        <TableRow key={row.id} onClick={handleRowClick} className={colorRow && 'grey-out'}>
           <TableCell className='tasks-list__col-1'>
             <h4>{row.detail}</h4>
             {row.tags.map(tag => {

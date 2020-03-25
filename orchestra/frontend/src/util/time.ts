@@ -24,3 +24,8 @@ export const getPrettyDatetime = (datetimeString, customFormat=null, showTime=fa
     return datetime.format('ddd, MMM D')
   }
 }
+
+export const isOutdated = (datetimeString) => {
+  const now = moment().utc()
+  return now.isAfter(datetimeString)
+}

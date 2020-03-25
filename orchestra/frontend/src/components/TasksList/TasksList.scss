@@ -35,6 +35,9 @@
         tr td {
             text-align: left;
         }
+        tr.grey-out {
+            background: #f2f2f2;
+        }
     }
     .ds-badge--filled.ds-badge--primary {
         background-color: $ds-brand-light-color;
