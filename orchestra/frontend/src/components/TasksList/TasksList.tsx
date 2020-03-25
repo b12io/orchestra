@@ -10,6 +10,7 @@ import TableHead from '@b12/metronome/components/layout/table/TableHead.es6'
 import TableBody from '@b12/metronome/components/layout/table/TableBody.es6'
 import TableRow from '@b12/metronome/components/layout/table/TableRow.es6'
 import TableCell from '@b12/metronome/components/layout/table/TableCell.es6'
+import TextField from '@b12/metronome/components/form/textfield/TextField.es6.js'
 import Badge from '@b12/metronome/components/layout/badge/Badge.es6.js'
 import StatusIndicator from '@b12/metronome/components/layout/status-indicator/StatusIndicator.es6.js'
 import {
@@ -59,6 +60,21 @@ const TaskList = ({ status, tasks, isLoading = false }: ProjectListProps) => {
       setSortedTasks(newSortedTasks)
     }
   }, [sortStatus])
+  const [searchedItem, setSearchedItem] = useState('')
+
+  const handleTextChange = value => {
+    setSearchedItem(value)
+  }
+
+  useEffect(() => {
+    const results = tasks.filter(task => {
+      const lowerCaseSearchedItem = searchedItem.toLocaleLowerCase()
+      return task.detail.toLowerCase().includes(lowerCaseSearchedItem)
+      || task.project.toLowerCase().includes(lowerCaseSearchedItem)
+      || task.step.toLowerCase().includes(lowerCaseSearchedItem)
+    })
+    setSortedTasks(results)
+  }, [searchedItem])
 
   const rowsLabels = [
     'Details',
@@ -174,7 +190,7 @@ const TaskList = ({ status, tasks, isLoading = false }: ProjectListProps) => {
       >
         <TableHead padding="compact">
           <TableRow>
-            <TableCell className='tasks-list__status-row'>
+            <th className='tasks-list__status-row'>
               <b><StatusIndicator
                 status={status}
                 className='dsu-mr-xxxsm'
@@ -186,12 +202,18 @@ const TaskList = ({ status, tasks, isLoading = false }: ProjectListProps) => {
                 }}
               /></b>
               {isLoading ? <AnimatedCircle /> : <p>{numberOfTasksText}</p>}
-            </TableCell>
-            <TableCell/>
-            <TableCell/>
-            <TableCell/>
-            <TableCell/>
-            <TableCell/>
+            </th>
+            <th colSpan={2}/>
+            <th colSpan={4}>
+              <div className="navbar__textfield">
+                <TextField
+                  placeholder="Search projects..."
+                  searchIcon
+                  onUpdate={handleTextChange}
+                  value={searchedItem}
+                />
+              </div>
+            </th>
           </TableRow>
         </TableHead>
         <TableHead>
