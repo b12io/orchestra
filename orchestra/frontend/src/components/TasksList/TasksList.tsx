@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   useHistory
 } from 'react-router-dom'
@@ -37,6 +37,28 @@ const TaskList = ({ status, tasks, isLoading = false }: ProjectListProps) => {
     column: null,
     direction: 'ascending'
   })
+  const [sortedTasks, setSortedTasks] = useState<Task[]>([])
+
+  useEffect(() => {
+    setSortedTasks(tasks)
+  }, [tasks])
+
+  useEffect(() => {
+    // TODO: some small buggo that doesn't sort upon first click of sortStatus.
+    if (sortedTasks.length) {
+      const newSortedTasks = sortedTasks
+      newSortedTasks.sort((taskA, taskB) => {
+        if (sortStatus.column === 'Details') {
+          if (taskA.detail.toLowerCase() > taskB.detail.toLowerCase()) {
+            return sortStatus.direction === 'ascending' ? 1 : -1
+          } else {
+            return sortStatus.direction === 'ascending' ? -1 : 1
+          }
+        }
+      })
+      setSortedTasks(newSortedTasks)
+    }
+  }, [sortStatus])
 
   const rowsLabels = [
     'Details',
@@ -58,7 +80,7 @@ const TaskList = ({ status, tasks, isLoading = false }: ProjectListProps) => {
   const history = useHistory()
 
   const renderTasks = () => {
-    return tasks.map(row => {
+    return sortedTasks.map(row => {
       const assigned = getPrettyDatetime(row.assignment_start_datetime, 'MM/DD/YYYY')
       const startBy = getPrettyDatetime(
         row.next_todo_dict.start_by_datetime,
