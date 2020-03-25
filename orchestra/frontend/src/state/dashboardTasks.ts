@@ -2,6 +2,8 @@ import axios from 'axios'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 import { AppThunk } from './store'
+import { TaskStates } from './selectors/taskSelectors'
+
 
 interface NextTodo {
   description: string,
@@ -20,7 +22,7 @@ interface Task {
   detail: string,
   assignment_id: number,
   id: number,
-  state: string
+  state: TaskStates
 }
 
 interface DashboardTasksState {
