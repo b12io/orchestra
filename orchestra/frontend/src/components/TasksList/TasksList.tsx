@@ -32,6 +32,15 @@ const TaskList = ({ status, tasks, isLoading = false }: ProjectListProps) => {
     'Start by',
     'Due by'
   ]
+  // Map Orchestra tag values to Metronome badge color values.
+  const tagMapping = {
+    'default': 'primary',
+    'primary': 'primary',  // We'll add `selected` below to make it stand out.
+    'success': 'success',
+    'info': 'neutral',
+    'warning': 'warning',
+    'danger': 'warning'  // We'll add `selected` below to make it stand out.
+  }
   const history = useHistory()
 
   const renderTasks = () => {
@@ -48,8 +57,14 @@ const TaskList = ({ status, tasks, isLoading = false }: ProjectListProps) => {
         <TableRow key={row.id} onClick={() => history.push(`/task/${row.id}`)}>
           <TableCell>
             <h4>{row.detail}</h4>
-            <Badge size="medium" label="Iterating" primary filled className='dsu-mr-xxxsm'/>
-            <Badge size="medium" label="SEO" filled neutral/>
+            {row.tags.map(tag => {
+              const colorProps = {
+                [tagMapping[tag.status]]: true,
+                selected: tag.status === 'danger' || tag.status === 'primary' // Make it darker.
+              }
+              return (
+                <Badge size="small" label={tag.label} filled className='dsu-mr-xxxsm' {...colorProps}/>
+              )})}
           </TableCell>
           <TableCell><p>{row.project} / {row.step}</p></TableCell>
           <TableCell><p>{assigned}</p></TableCell>

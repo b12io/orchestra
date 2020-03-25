@@ -48,9 +48,6 @@ const dashboardTasks = createSlice({
       state.error = null
     },
     getTodosSuccess(state, action: PayloadAction<DashboardTasksState>) {
-      console.log('getTodosSuccess')
-      console.log(action)
-      console.log(action.payload)
       state.tasks = action.payload.tasks
       state.preventNew = action.payload.preventNew
       state.reviewerStatus = action.payload.reviewerStatus
@@ -70,7 +67,6 @@ export const fetchDashboardTasks = (): AppThunk => async dispatch => {
     dispatch(dashboardTasks.actions.getTodosStart())
     const response = await axios.get('/orchestra/api/interface/dashboard_tasks/')
     const data: DashboardTasksState = response.data
-    console.log('response', response)
     dispatch(dashboardTasks.actions.getTodosSuccess(data))
   } catch (err) {
     dispatch(dashboardTasks.actions.getTodosFailure(err))
