@@ -29,7 +29,7 @@ export const getActiveTasksSelector = createSelector(
   tasksSelector,
   tasks => tasks.filter(
     task => return ACTIVE_TASK_STATES.includes(task.state) && task.should_be_active
-  ) 
+  )
 )
 
 export const getPendingTasksSelector = createSelector(

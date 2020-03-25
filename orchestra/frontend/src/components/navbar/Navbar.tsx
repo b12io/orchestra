@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { useHistory } from 'react-router-dom'
 
@@ -33,7 +33,7 @@ const Navbar = () => {
           <TextField
             placeholder="Search projects..."
             searchIcon
-            />
+          />
         </div>
         <div className="navbar__timecard align-row">
           <Clock />
@@ -43,34 +43,34 @@ const Navbar = () => {
           className="navbar__dropdown"
           simple
           toggle={
-              <div className="navbar__avatar align-row">
-                  <AvatarItem primaryText="Elston Aijan" />
-                    <CaretDown className="navbar__avatar-caret"/>
-              </div>}>
+            <div className="navbar__avatar align-row">
+              <AvatarItem primaryText="Elston Aijan" />
+              <CaretDown className="navbar__avatar-caret"/>
+            </div>}>
           <DropdownItem
             label="Dashboard"
-            onClick={() => {history.push('/')}}
-            />
+            onClick={() => { history.push('/') }}
+          />
           <DropdownItem
             label="Timecard"
-            onClick={() => {history.push('/timecard/')}}
-            />
+            onClick={() => { history.push('/timecard/') }}
+          />
           <DropdownItem
             label="Available tasks"
-            onClick={() => {history.push('/communication/available-staffing-requests')}}
-            />
+            onClick={() => { history.push('/communication/available-staffing-requests') }}
+          />
           <DropdownItem
             label="Project management"
-            onClick={() => {history.push('/project/')}}
-            />
+            onClick={() => { history.push('/project/') }}
+          />
           <DropdownItem
             label="Account settings"
-            onClick={() => {history.push('/accounts/settings')}}
-            />
+            onClick={() => { history.push('/accounts/settings') }}
+          />
           <DropdownItem
             label="Sign out"
-            onClick={() => {history.push('/accounts/logout_then_login')}}
-            />
+            onClick={() => { history.push('/accounts/logout_then_login') }}
+          />
         </Dropdown>
       </Grid>
     </div>
