@@ -9,6 +9,21 @@
         display: flex;
         align-items: center;
     }
+    &__col-1 {
+        width: 40%;
+    }
+    &__col-2 {
+        width: 20%;
+    }
+    &__col-3 {
+        width: 11%;
+    }
+    &__col-4 {
+        width: 10%;
+    }
+    &__col-5 {
+        width: 10%;
+    }
     @include ds-typography;
     th p {
         margin: 0;
@@ -16,6 +31,9 @@
     tbody {
         tr:nth-child(even) {
             background: $ds-ui-light-color;
+        }
+        tr td {
+            text-align: left;
         }
     }
     .ds-badge--filled.ds-badge--primary {

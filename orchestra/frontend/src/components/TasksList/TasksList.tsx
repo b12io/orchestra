@@ -65,7 +65,7 @@ const TaskList = ({ status, tasks, isLoading = false }: ProjectListProps) => {
 
       return (
         <TableRow key={row.id} onClick={handleRowClick}>
-          <TableCell>
+          <TableCell className='tasks-list__col-1'>
             <h4>{row.detail}</h4>
             {row.tags.map(tag => {
               const colorProps = {
@@ -77,10 +77,10 @@ const TaskList = ({ status, tasks, isLoading = false }: ProjectListProps) => {
               )
             })}
           </TableCell>
-          <TableCell><p>{row.project} / {row.step}</p></TableCell>
-          <TableCell><p>{assigned}</p></TableCell>
-          <TableCell><p>{row.next_todo_dict.description}</p></TableCell>
-          <TableCell><p>{startBy}</p></TableCell>
+          <TableCell className='tasks-list__col-2'><p>{row.project} / {row.step}</p></TableCell>
+          <TableCell className='tasks-list__col-3'><p>{assigned}</p></TableCell>
+          <TableCell className='tasks-list__col-4'><p>{row.next_todo_dict.description}</p></TableCell>
+          <TableCell className='tasks-list__col-5'><p>{startBy}</p></TableCell>
           <TableCell><p>{dueBy}</p></TableCell>
         </TableRow>
       )
@@ -132,10 +132,11 @@ const TaskList = ({ status, tasks, isLoading = false }: ProjectListProps) => {
         </TableHead>
         <TableHead>
           <TableRow>
-            {rowsLabels.map(rowLabel => (
+            {rowsLabels.map((rowLabel, index) => (
               <TableCell
                 key={rowLabel}
                 align='left'
+                className={`tasks-list__col-${index + 1}`}
               ><p>{rowLabel}</p></TableCell>
             ))}
           </TableRow>
