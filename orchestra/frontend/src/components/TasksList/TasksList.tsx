@@ -60,13 +60,13 @@ const TaskList = ({ status, tasks, isLoading = false }: ProjectListProps) => {
       setSortedTasks(newSortedTasks)
     }
   }, [sortStatus])
-  const [searchedItem, setSearchedItem] = React.useState('')
+  const [searchedItem, setSearchedItem] = useState('')
 
   const handleTextChange = value => {
     setSearchedItem(value)
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     const results = tasks.filter(task => {
       const lowerCaseSearchedItem = searchedItem.toLocaleLowerCase()
       return task.detail.toLowerCase().includes(lowerCaseSearchedItem)
