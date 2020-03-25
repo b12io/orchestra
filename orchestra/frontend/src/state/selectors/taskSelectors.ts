@@ -28,15 +28,15 @@ export const tasksSelector = (state: RootState) => state.dashboardTasks.tasks
 export const getActiveTasksSelector = createSelector(
   tasksSelector,
   tasks => tasks.filter(
-    task => return ACTIVE_TASK_STATES.includes(task.state) && task.should_be_active
+    task => ACTIVE_TASK_STATES.includes(task.state) && task.should_be_active
   )
 )
 
 export const getPendingTasksSelector = createSelector(
   tasksSelector,
   tasks => tasks.filter(
-    task => (ACTIVE_TASK_STATES.includes(task.state) && !task.should_be_active) 
-      || PENDING_TASK_STATES.includes(task.state)
+    task => (ACTIVE_TASK_STATES.includes(task.state) && !task.should_be_active) ||
+      PENDING_TASK_STATES.includes(task.state)
   )
 )
 

@@ -5,5 +5,13 @@
   "extends": ["plugin:@typescript-eslint/recommended"],
   "parserOptions": {
     "project": "tsconfig.json"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx"],
+      "rules": {
+        "@typescript-eslint/explicit-function-return-type": "off"
+      }
+    }
+  ]
 }

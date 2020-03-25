@@ -11,8 +11,8 @@ import DropdownItem from '@b12/metronome/components/layout/dropdown/DropdownItem
 
 import './Navbar.scss'
 
-import ShuffleIcon from '../../assets/ShuffleIcon'
-import { fetchTimer } from '../../state/timer'
+import ShuffleIcon from 'assets/ShuffleIcon'
+import { fetchTimer } from 'state/timer'
 
 const Navbar = () => {
   const history = useHistory()

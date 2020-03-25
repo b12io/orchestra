@@ -63,7 +63,7 @@ const dashboardTasks = createSlice({
 
 export default dashboardTasks
 
-export const fetchDashboardTasks = (): AppThunk => async (dispatch): void => {
+export const fetchDashboardTasks = (): AppThunk => async (dispatch) => {
   try {
     dispatch(dashboardTasks.actions.getTodosStart())
     const response = await axios.get('/orchestra/api/interface/dashboard_tasks/')
