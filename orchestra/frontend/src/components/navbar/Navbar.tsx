@@ -22,10 +22,14 @@ const Navbar = () => {
     dispatch(fetchTimer())
   }, [])
 
+  const handleHomeClick = () => {
+    history.push('/')
+  }
+
   return (
     <div className="navbar">
       <Grid>
-        <div className="navbar__title align-row">
+        <div className="navbar__home align-row" onClick={handleHomeClick}>
           <ShuffleIcon />
           <h4>Orchestra</h4>
         </div>

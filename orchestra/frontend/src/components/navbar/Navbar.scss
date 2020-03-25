@@ -7,13 +7,17 @@
     align-items: center;
   }
 
-  &__title {
+  &__home {
     & > *:not(last-child) {
       padding-right: 12px;
     }
 
     & > h4 {
       margin: 0;
+    }
+
+    :hover {
+      cursor: pointer;
     }
   }
 
