@@ -91,7 +91,7 @@ class StaffingTestCase(OrchestraTestCase):
             self.worker, self.staffing_request_inquiry.id, is_available=True)
         self.assertTrue(response.is_winner)
         self.assertEqual(response.request_inquiry.request.status,
-                         StaffBotRequest.Status.WAITING_FOR_RESPONSES.value)
+                         StaffBotRequest.Status.COMPLETE.value)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
 
         # Change mind to `is_available=False` does not do anything
@@ -109,7 +109,7 @@ class StaffingTestCase(OrchestraTestCase):
             new_worker, new_request_inquiry.id, is_available=True)
         self.assertTrue(response.is_winner)
         self.assertEqual(response.request_inquiry.request.status,
-                         StaffBotRequest.Status.WAITING_FOR_RESPONSES.value)
+                         StaffBotRequest.Status.COMPLETE.value)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
 
         task_assignment = (
@@ -132,13 +132,16 @@ class StaffingTestCase(OrchestraTestCase):
             worker2, staffing_request_inquiry2.id, is_available=True)
         self.assertTrue(response.is_winner)
         self.assertEqual(response.request_inquiry.request.status,
-                         StaffBotRequest.Status.WAITING_FOR_RESPONSES.value)
+                         StaffBotRequest.Status.COMPLETE.value)
         task_assignment.refresh_from_db()
         self.assertEqual(task_assignment.worker, worker2)
 
     def test_handle_staffing_response_not_is_available(self):
         # Test StaffingResponse object creation
         old_count = StaffingResponse.objects.all().count()
+        request = self.staffing_request_inquiry.request
+        new_request_inquiry = StaffingRequestInquiryFactory(
+            request=request)
         response = handle_staffing_response(
             self.worker, self.staffing_request_inquiry.id,
             is_available=False)
@@ -162,7 +165,7 @@ class StaffingTestCase(OrchestraTestCase):
             is_available=True)
         self.assertTrue(response.is_winner)
         self.assertEqual(response.request_inquiry.request.status,
-                         StaffBotRequest.Status.WAITING_FOR_RESPONSES.value)
+                         StaffBotRequest.Status.COMPLETE.value)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
 
         # Task is not available to claim
@@ -175,7 +178,7 @@ class StaffingTestCase(OrchestraTestCase):
             new_worker, new_request_inquiry.id, is_available=True)
         self.assertFalse(response.is_winner)
         self.assertEqual(response.request_inquiry.request.status,
-                         StaffBotRequest.Status.WAITING_FOR_RESPONSES.value)
+                         StaffBotRequest.Status.COMPLETE.value)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
 
     @patch('orchestra.communication.staffing.message_experts_slack_group')
@@ -392,9 +395,10 @@ class StaffingTestCase(OrchestraTestCase):
            '._send_staffing_request_by_mail')
     @patch('orchestra.communication.staffing.StaffBot'
            '._send_staffing_request_by_slack')
-    def test_remind_workers_about_available_tasks(self, mock_slack, mock_mail):
+    def test_remind_workers_about_available_tasks_has_winner(
+            self, mock_slack, mock_mail):
         # mark existing request as a winner
-        staffing_response = StaffingResponse.objects.create(
+        StaffingResponse.objects.create(
             request_inquiry=self.staffing_request_inquiry,
             is_available=True,
             is_winner=True)
@@ -402,8 +406,12 @@ class StaffingTestCase(OrchestraTestCase):
         remind_workers_about_available_tasks()
         mock_slack.assert_not_called()
 
-        staffing_response.delete()
-
+    @patch('orchestra.communication.staffing.StaffBot'
+           '._send_staffing_request_by_mail')
+    @patch('orchestra.communication.staffing.StaffBot'
+           '._send_staffing_request_by_slack')
+    def test_remind_workers_about_available_tasks(self, mock_slack, mock_mail):
+        # mark existing request as a winner
         remind_workers_about_available_tasks()
         self.assertEqual(mock_slack.call_count, 1)
 
