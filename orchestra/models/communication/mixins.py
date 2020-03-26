@@ -83,7 +83,19 @@ class StaffingResponseMixin(object):
             inquiries = (
                 StaffingRequestInquiry.objects.filter(request=request)
             ).distinct()
+            num_inquired_workers = len(
+                set(inquiries.values_list(
+                    'communication_preference__worker__id', flat=True)
+                    )
+            )
+
             responded_inquiries = inquiries.filter(
                 responses__isnull=False).distinct()
-            if responded_inquiries.count() >= inquiries.count():
+            num_responded_workers = len(
+                set(responded_inquiries.values_list(
+                    'communication_preference__worker__id', flat=True)
+                    )
+            )
+
+            if num_responded_workers >= num_inquired_workers:
                 self._mark_staffbot_request_complete(request)
