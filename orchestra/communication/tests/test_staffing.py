@@ -448,6 +448,23 @@ class StaffingTestCase(OrchestraTestCase):
         response = self.staffing_request_inquiry.responses.first()
         self.assertTrue(response.is_winner)
 
+        # Can't mark another worker as a winner for this request
+        worker2 = WorkerFactory()
+        inquiry2 = StaffingRequestInquiryFactory(
+            communication_preference__worker=worker2,
+            communication_preference__communication_type=(
+                CommunicationPreference.CommunicationType
+                .NEW_TASK_AVAILABLE.value),
+            request__task__step__is_human=True,
+            request=self.staffing_request_inquiry.request
+        )
+        mark_worker_as_winner(worker2,
+                              inquiry2.request.task,
+                              0,
+                              inquiry2)
+        self.assertEqual(inquiry2.responses.count(), 0)
+
+        # A winner can't declined their accpeted task
         response.is_winner = False
         response.is_available = False
         mark_worker_as_winner(self.worker,
