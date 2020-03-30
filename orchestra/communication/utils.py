@@ -16,6 +16,7 @@ def mark_worker_as_winner(worker, task, required_role_counter,
     staffbot_request = (
         StaffBotRequest.objects
         .filter(task=task, required_role_counter=required_role_counter)
+        .exclude(status=StaffBotRequest.Status.COMPLETE.value)
         .order_by('-created_at'))
 
     # Check whether staffbot request was sent out for this task
