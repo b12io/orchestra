@@ -103,7 +103,7 @@ class StaffBotRequest(StaffBotRequestMixin, BaseModel):
 
     class Status(ChoicesEnum):
         SENDING_INQUIRIES = 'sending inquiries'
-        WAITING_FOR_RESPONSES = 'waiting for responses'
+        DONE_SENDING_INQUIRIES = 'done sending inquiries'
         COMPLETE = 'complete'
 
     task = models.ForeignKey(

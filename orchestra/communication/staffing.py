@@ -156,7 +156,7 @@ def _send_request_inquiries(staffbot, request, worker_batch_size,
             request.task.project.slack_group_id,
             ('All staffing requests for task {} have been sent!'
              .format(request.task)))
-        request.status = StaffBotRequest.Status.WAITING_FOR_RESPONSES.value
+        request.status = StaffBotRequest.Status.DONE_SENDING_INQUIRIES.value
     request.last_inquiry_sent = timezone.now()
     request.save()
 

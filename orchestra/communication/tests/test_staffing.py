@@ -230,7 +230,7 @@ class StaffingTestCase(OrchestraTestCase):
         self.assertTrue(mock_slack.called)
         request.refresh_from_db()
         self.assertEqual(request.status,
-                         StaffBotRequest.Status.WAITING_FOR_RESPONSES.value)
+                         StaffBotRequest.Status.DONE_SENDING_INQUIRIES.value)
         self.assertEqual(
             StaffingRequestInquiry.objects.filter(request=request).count(),
             4)
@@ -477,7 +477,7 @@ class StaffingTestCase(OrchestraTestCase):
         request.task.step.required_certifications.add(self.certification)
 
         self.staffing_request_inquiry.request.status = (
-            StaffBotRequest.Status.WAITING_FOR_RESPONSES)
+            StaffBotRequest.Status.DONE_SENDING_INQUIRIES)
 
         send_staffing_requests(worker_batch_size=1,
                                frequency=timedelta(minutes=20))
