@@ -91,7 +91,7 @@ class StaffingResponseTestCase(OrchestraModelTestCase):
             request.status,
             StaffBotRequest.Status.SENDING_INQUIRIES.value)
 
-        # The staff bot request status should be complete when one
+        # The staff bot request status should be closed when one
         # of its responses is a winner.
         StaffingResponseFactory(
             request_inquiry=inquiry,
@@ -99,7 +99,7 @@ class StaffingResponseTestCase(OrchestraModelTestCase):
             is_winner=True)
         self.assertEqual(
             request.status,
-            StaffBotRequest.Status.COMPLETE.value)
+            StaffBotRequest.Status.CLOSED.value)
 
     def test_no_winner(self):
         request = StaffBotRequestFactory()
@@ -126,7 +126,7 @@ class StaffingResponseTestCase(OrchestraModelTestCase):
             is_winner=False)
         self.assertNotEqual(
             request.status,
-            StaffBotRequest.Status.COMPLETE.value)
+            StaffBotRequest.Status.CLOSED.value)
 
         # The request is close when all responses were created
         # but there is no winner.
@@ -136,4 +136,4 @@ class StaffingResponseTestCase(OrchestraModelTestCase):
             is_winner=False)
         self.assertEqual(
             request.status,
-            StaffBotRequest.Status.COMPLETE.value)
+            StaffBotRequest.Status.CLOSED.value)

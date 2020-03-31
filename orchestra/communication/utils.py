@@ -16,7 +16,7 @@ def mark_worker_as_winner(worker, task, required_role_counter,
     staffbot_request = (
         StaffBotRequest.objects
         .filter(task=task, required_role_counter=required_role_counter)
-        .exclude(status=StaffBotRequest.Status.COMPLETE.value)
+        .exclude(status=StaffBotRequest.Status.CLOSED.value)
         .order_by('-created_at'))
 
     # Check whether staffbot request was sent out for this task
@@ -29,7 +29,7 @@ def mark_worker_as_winner(worker, task, required_role_counter,
         staffbot_request = staffbot_request.first()
 
     staffbot_request.status = (
-        StaffBotRequest.Status.COMPLETE.value)
+        StaffBotRequest.Status.CLOSED.value)
     staffbot_request.save()
 
     # If staffing request inquiry provided
@@ -75,8 +75,8 @@ def mark_worker_as_winner(worker, task, required_role_counter,
 
 @transaction.atomic
 def close_open_staffbot_requests(task):
-    COMPLETE = StaffBotRequest.Status.COMPLETE.value
+    CLOSED = StaffBotRequest.Status.CLOSED.value
     requests = task.staffing_requests.all()
     for request in requests:
-        request.status = COMPLETE
+        request.status = CLOSED
     StaffBotRequest.objects.bulk_update(requests, ['status'])

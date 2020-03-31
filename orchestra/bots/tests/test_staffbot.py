@@ -181,7 +181,7 @@ class StaffBotTest(OrchestraTestCase):
         Test that existing staffbot requests for a task is close when
         a staff function is called.
         """
-        COMPLETE = StaffBotRequest.Status.COMPLETE.value
+        CLOSED = StaffBotRequest.Status.CLOSED.value
 
         bot = StaffBot()
         task = TaskFactory()
@@ -192,7 +192,7 @@ class StaffBotTest(OrchestraTestCase):
         requests = StaffBotRequest.objects.filter(task=task)
         num_request = requests.count()
         self.assertEqual(num_request, init_num_request + 1)
-        self.assertNotEqual(requests.last().status, COMPLETE)
+        self.assertNotEqual(requests.last().status, CLOSED)
 
         # Calling staff on the same task should close the previous request
         # and create a new one.
@@ -200,8 +200,8 @@ class StaffBotTest(OrchestraTestCase):
         requests = list(StaffBotRequest.objects.filter(task=task))
         num_request = len(requests)
         self.assertEqual(num_request, init_num_request + 2)
-        self.assertEqual(requests[-2].status, COMPLETE)
-        self.assertNotEqual(requests[-1].status, COMPLETE)
+        self.assertEqual(requests[-2].status, CLOSED)
+        self.assertNotEqual(requests[-1].status, CLOSED)
 
     @patch('orchestra.bots.staffbot.send_mail')
     @patch('orchestra.bots.staffbot.message_experts_slack_group')
@@ -280,7 +280,7 @@ class StaffBotTest(OrchestraTestCase):
         Test that existing staffbot requests for a task is close when
         a staff function is called.
         """
-        COMPLETE = StaffBotRequest.Status.COMPLETE.value
+        CLOSED = StaffBotRequest.Status.CLOSED.value
 
         bot = StaffBot()
         task = (Task.objects
@@ -295,7 +295,7 @@ class StaffBotTest(OrchestraTestCase):
         requests = StaffBotRequest.objects.filter(task=task)
         num_request = requests.count()
         self.assertEqual(num_request, init_num_request + 1)
-        self.assertNotEqual(requests.last().status, COMPLETE)
+        self.assertNotEqual(requests.last().status, CLOSED)
 
         # Calling restaff on the same task should close the previous request
         # and create a new one.
@@ -303,8 +303,8 @@ class StaffBotTest(OrchestraTestCase):
         requests = list(StaffBotRequest.objects.filter(task=task))
         num_request = len(requests)
         self.assertEqual(num_request, init_num_request + 2)
-        self.assertEqual(requests[-2].status, COMPLETE)
-        self.assertNotEqual(requests[-1].status, COMPLETE)
+        self.assertEqual(requests[-2].status, CLOSED)
+        self.assertNotEqual(requests[-1].status, CLOSED)
 
     @override_settings(ORCHESTRA_MOCK_EMAILS=True)
     @patch('orchestra.bots.staffbot.send_mail')

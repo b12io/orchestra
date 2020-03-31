@@ -76,7 +76,7 @@ class StaffingTestCase(OrchestraTestCase):
         self.assertTrue(response.is_winner)
         self.staffing_request_inquiry.refresh_from_db()
         self.assertEqual(response.request_inquiry.request.status,
-                         StaffBotRequest.Status.COMPLETE.value)
+                         StaffBotRequest.Status.CLOSED.value)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
 
         task_assignment = (
@@ -92,7 +92,7 @@ class StaffingTestCase(OrchestraTestCase):
             self.worker, self.staffing_request_inquiry.id, is_available=True)
         self.assertTrue(response.is_winner)
         self.assertEqual(response.request_inquiry.request.status,
-                         StaffBotRequest.Status.COMPLETE.value)
+                         StaffBotRequest.Status.CLOSED.value)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
 
         # Change mind to `is_available=False` does not do anything
@@ -110,7 +110,7 @@ class StaffingTestCase(OrchestraTestCase):
             new_worker, new_request_inquiry.id, is_available=True)
         self.assertTrue(response.is_winner)
         self.assertEqual(response.request_inquiry.request.status,
-                         StaffBotRequest.Status.COMPLETE.value)
+                         StaffBotRequest.Status.CLOSED.value)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
 
         task_assignment = (
@@ -133,7 +133,7 @@ class StaffingTestCase(OrchestraTestCase):
             worker2, staffing_request_inquiry2.id, is_available=True)
         self.assertTrue(response.is_winner)
         self.assertEqual(response.request_inquiry.request.status,
-                         StaffBotRequest.Status.COMPLETE.value)
+                         StaffBotRequest.Status.CLOSED.value)
         task_assignment.refresh_from_db()
         self.assertEqual(task_assignment.worker, worker2)
 
@@ -166,7 +166,7 @@ class StaffingTestCase(OrchestraTestCase):
             is_available=True)
         self.assertTrue(response.is_winner)
         self.assertEqual(response.request_inquiry.request.status,
-                         StaffBotRequest.Status.COMPLETE.value)
+                         StaffBotRequest.Status.CLOSED.value)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
 
         # Task is not available to claim
@@ -179,7 +179,7 @@ class StaffingTestCase(OrchestraTestCase):
             new_worker, new_request_inquiry.id, is_available=True)
         self.assertFalse(response.is_winner)
         self.assertEqual(response.request_inquiry.request.status,
-                         StaffBotRequest.Status.COMPLETE.value)
+                         StaffBotRequest.Status.CLOSED.value)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
 
     @patch('orchestra.communication.staffing.message_experts_slack_group')
@@ -225,7 +225,7 @@ class StaffingTestCase(OrchestraTestCase):
             StaffingRequestInquiry.objects.filter(request=request).count(),
             4)
 
-        # marked as complete and no new request inquiries sent.
+        # marked as closed and no new request inquiries sent.
         send_staffing_requests(worker_batch_size=1,
                                frequency=timedelta(minutes=0))
         self.assertTrue(mock_slack.called)
@@ -291,7 +291,7 @@ class StaffingTestCase(OrchestraTestCase):
             is_available=False)
         self.assertFalse(response.is_winner)
         self.assertEqual(response.request_inquiry.request.status,
-                         StaffBotRequest.Status.COMPLETE.value)
+                         StaffBotRequest.Status.CLOSED.value)
         self.assertEqual(mock_slack.call_count, 1)
         mock_slack.reset()
 
@@ -303,7 +303,7 @@ class StaffingTestCase(OrchestraTestCase):
 
     @patch('orchestra.communication.staffing.message_experts_slack_group')
     def test_get_available_request(self, mock_slack):
-        # Complete all open requests so new worker doesn't receive them.
+        # Close all open requests so new worker doesn't receive them.
         send_staffing_requests(worker_batch_size=2,
                                frequency=timedelta(minutes=0))
 
@@ -442,7 +442,7 @@ class StaffingTestCase(OrchestraTestCase):
         staffbot_request.refresh_from_db()
 
         self.assertEqual(staffbot_request.status,
-                         StaffBotRequest.Status.COMPLETE.value)
+                         StaffBotRequest.Status.CLOSED.value)
         self.assertEqual(
             self.staffing_request_inquiry.responses.all().count(), 1)
 

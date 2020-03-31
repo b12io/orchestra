@@ -104,7 +104,7 @@ class StaffBotRequest(StaffBotRequestMixin, BaseModel):
     class Status(ChoicesEnum):
         SENDING_INQUIRIES = 'sending inquiries'
         DONE_SENDING_INQUIRIES = 'done sending inquiries'
-        COMPLETE = 'complete'
+        CLOSED = 'closed'
 
     task = models.ForeignKey(
         Task, related_name='staffing_requests', on_delete=models.CASCADE)
