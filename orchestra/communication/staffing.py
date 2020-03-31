@@ -66,6 +66,7 @@ def handle_staffing_response(worker, staffing_request_inquiry_id,
             is_available=is_available)
 
     request = staffing_request_inquiry.request
+    print('request status:', request.status)
     if (is_available and
             request.status != StaffBotRequest.Status.COMPLETE.value):
         task_assignment = get_object_or_None(
@@ -76,10 +77,12 @@ def handle_staffing_response(worker, staffing_request_inquiry_id,
 
         # if task assignment exists then reassign
         if task_assignment is not None:
+            print('reassign')
             reassign_assignment(worker.id, task_assignment.id,
                                 staffing_request_inquiry)
         # otherwise assign task
         else:
+            print('assign')
             assign_task(worker.id, request.task.id,
                         staffing_request_inquiry)
 

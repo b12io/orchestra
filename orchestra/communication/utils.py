@@ -32,10 +32,6 @@ def mark_worker_as_winner(worker, task, required_role_counter,
         StaffBotRequest.Status.COMPLETE.value)
     staffbot_request.save()
 
-    # Mark everyone else as non-winner
-    StaffingResponse.objects.filter(
-        request_inquiry__request=staffbot_request).update(is_winner=False)
-
     # If staffing request inquiry provided
     if staffing_request_inquiry:
         staffing_response = staffing_request_inquiry.responses.all()
