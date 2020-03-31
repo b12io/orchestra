@@ -65,11 +65,9 @@ def handle_staffing_response(worker, staffing_request_inquiry_id,
             request_inquiry=staffing_request_inquiry,
             is_available=is_available)
 
+    request = staffing_request_inquiry.request
     if (is_available and
-            not StaffingResponse.objects.filter(
-                request_inquiry__request=staffing_request_inquiry.request,
-                is_winner=True).exists()):
-        request = staffing_request_inquiry.request
+            request.status != StaffBotRequest.Status.COMPLETE.value):
         task_assignment = get_object_or_None(
             TaskAssignment,
             task=request.task,
@@ -95,7 +93,7 @@ def handle_staffing_response(worker, staffing_request_inquiry_id,
 def check_responses_complete(request):
     responses = StaffingResponse.objects.filter(
         request_inquiry__request=request)
-    if (request.state == StaffBotRequest.Status.COMPLETE.value and
+    if (request.status == StaffBotRequest.Status.COMPLETE.value and
             not responses.filter(is_winner=True).exists()):
         # notify that all workers have rejected a task
         message_experts_slack_group(
