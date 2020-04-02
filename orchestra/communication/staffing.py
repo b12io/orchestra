@@ -201,7 +201,6 @@ def send_request_inquiries(staffbot, request, worker_batch_size):
 def get_available_requests(worker):
     # We want to show a worker only requests for which there is no
     # winner or for which they have not already replied.
-    won_responses = StaffingResponse.objects.filter(is_winner=True)
     worker_provided_responses = StaffingResponse.objects.filter(
         request_inquiry__communication_preference__worker=worker)
     remaining_requests = (
@@ -210,7 +209,6 @@ def get_available_requests(worker):
         .exclude(status=StaffBotRequest.Status.CLOSED.value)
         .exclude(task__status=Task.Status.COMPLETE)
         .exclude(task__status=Task.Status.ABORTED)
-        .exclude(inquiries__responses__in=won_responses)
         .exclude(inquiries__responses__in=worker_provided_responses)
         .distinct())
     inquiries = (
