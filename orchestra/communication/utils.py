@@ -28,9 +28,7 @@ def mark_worker_as_winner(worker, task, required_role_counter,
     else:
         staffbot_request = staffbot_request.first()
 
-    staffbot_request.status = (
-        StaffBotRequest.Status.CLOSED.value)
-    staffbot_request.save()
+    close_open_staffbot_requests(task)
 
     # If staffing request inquiry provided
     if staffing_request_inquiry:
