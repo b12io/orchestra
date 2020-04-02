@@ -66,35 +66,3 @@ class StaffingResponseMixin(object):
             self.is_available,
             self.is_winner
         )
-
-    def _close_staffbot_request(self, request):
-        from orchestra.models import StaffBotRequest
-        request.status = StaffBotRequest.Status.CLOSED.value
-        request.save()
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        from orchestra.models import StaffingRequestInquiry
-        request = self.request_inquiry.request
-        if self.is_winner:
-            self._close_staffbot_request(request)
-        else:
-            inquiries = (
-                StaffingRequestInquiry.objects.filter(request=request)
-            ).distinct()
-            num_inquired_workers = len(
-                set(inquiries.values_list(
-                    'communication_preference__worker__id', flat=True)
-                    )
-            )
-
-            responded_inquiries = inquiries.filter(
-                responses__isnull=False).distinct()
-            num_responded_workers = len(
-                set(responded_inquiries.values_list(
-                    'communication_preference__worker__id', flat=True)
-                    )
-            )
-
-            if num_responded_workers >= num_inquired_workers:
-                self._close_staffbot_request(request)

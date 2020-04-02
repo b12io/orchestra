@@ -59,6 +59,7 @@ def handle_staffing_response(worker, staffing_request_inquiry_id,
                 'Cannot reject after accepting the task')
 
         response.is_available = is_available
+        response.save()
 
     else:
         response = StaffingResponse.objects.create(
@@ -94,10 +95,29 @@ def handle_staffing_response(worker, staffing_request_inquiry_id,
 
 
 def check_responses_complete(request):
+    inquiries = (
+        StaffingRequestInquiry.objects.filter(request=request)
+    ).distinct()
+    num_inquired_workers = len(
+        set(inquiries.values_list(
+            'communication_preference__worker__id', flat=True)
+            )
+    )
+    responded_inquiries = inquiries.filter(
+        responses__isnull=False).distinct()
+    num_responded_workers = len(
+        set(responded_inquiries.values_list(
+            'communication_preference__worker__id', flat=True)
+            )
+    )
+
     responses = StaffingResponse.objects.filter(
         request_inquiry__request=request)
-    if (request.status == StaffBotRequest.Status.CLOSED.value and
+    if (num_responded_workers >= num_inquired_workers and
             not responses.filter(is_winner=True).exists()):
+        request.status = StaffBotRequest.Status.CLOSED.value
+        request.save()
+
         # notify that all workers have rejected a task
         message_experts_slack_group(
             request.task.project.slack_group_id,
