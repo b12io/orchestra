@@ -72,7 +72,6 @@ class StaffingTestCase(OrchestraTestCase):
         response = handle_staffing_response(
             self.worker, self.staffing_request_inquiry.id,
             is_available=True)
-        print(response)
         self.assertTrue(response.is_winner)
         self.staffing_request_inquiry.refresh_from_db()
         self.assertEqual(response.request_inquiry.request.status,
