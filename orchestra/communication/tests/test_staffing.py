@@ -464,7 +464,7 @@ class StaffingTestCase(OrchestraTestCase):
                               inquiry2)
         self.assertEqual(inquiry2.responses.count(), 0)
 
-        # A winner can't declined their accpeted task
+        # A winner can't decline their accepted task
         response.is_winner = False
         response.is_available = False
         mark_worker_as_winner(self.worker,
