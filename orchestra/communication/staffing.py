@@ -57,7 +57,7 @@ def handle_staffing_response(worker, staffing_request_inquiry_id,
         if not is_available and response.is_winner:
             raise StaffingResponseException(
                 'Cannot reject after accepting the task')
-
+        # This update will be saved in re/assing_task if necessary.
         response.is_available = is_available
 
     else:
@@ -65,11 +65,9 @@ def handle_staffing_response(worker, staffing_request_inquiry_id,
             request_inquiry=staffing_request_inquiry,
             is_available=is_available)
 
+    request = staffing_request_inquiry.request
     if (is_available and
-            not StaffingResponse.objects.filter(
-                request_inquiry__request=staffing_request_inquiry.request,
-                is_winner=True).exists()):
-        request = staffing_request_inquiry.request
+            request.status != StaffBotRequest.Status.CLOSED.value):
         task_assignment = get_object_or_None(
             TaskAssignment,
             task=request.task,
@@ -93,13 +91,29 @@ def handle_staffing_response(worker, staffing_request_inquiry_id,
 
 
 def check_responses_complete(request):
-    # check all responses have been complete
+    inquiries = (
+        StaffingRequestInquiry.objects.filter(request=request)
+    ).distinct()
+    num_inquired_workers = len(
+        set(inquiries.values_list(
+            'communication_preference__worker__id', flat=True)
+            )
+    )
+    responded_inquiries = inquiries.filter(
+        responses__isnull=False).distinct()
+    num_responded_workers = len(
+        set(responded_inquiries.values_list(
+            'communication_preference__worker__id', flat=True)
+            )
+    )
+
     responses = StaffingResponse.objects.filter(
         request_inquiry__request=request)
-    request_inquiries = StaffingRequestInquiry.objects.filter(
-        request=request)
-    if (responses.count() == request_inquiries.count() and
+    if (num_responded_workers >= num_inquired_workers and
             not responses.filter(is_winner=True).exists()):
+        request.status = StaffBotRequest.Status.CLOSED.value
+        request.save()
+
         # notify that all workers have rejected a task
         message_experts_slack_group(
             request.task.project.slack_group_id,
@@ -114,7 +128,7 @@ def send_staffing_requests(
     cutoff_datetime = timezone.now() - frequency
     requests = (
         StaffBotRequest.objects
-        .filter(status=StaffBotRequest.Status.PROCESSING.value)
+        .filter(status=StaffBotRequest.Status.SENDING_INQUIRIES.value)
         .filter(Q(last_inquiry_sent__isnull=True) |
                 Q(last_inquiry_sent__lte=cutoff_datetime)))
 
@@ -156,7 +170,7 @@ def _send_request_inquiries(staffbot, request, worker_batch_size,
             request.task.project.slack_group_id,
             ('All staffing requests for task {} have been sent!'
              .format(request.task)))
-        request.status = StaffBotRequest.Status.COMPLETE.value
+        request.status = StaffBotRequest.Status.DONE_SENDING_INQUIRIES.value
     request.last_inquiry_sent = timezone.now()
     request.save()
 
@@ -186,15 +200,14 @@ def send_request_inquiries(staffbot, request, worker_batch_size):
 def get_available_requests(worker):
     # We want to show a worker only requests for which there is no
     # winner or for which they have not already replied.
-    won_responses = StaffingResponse.objects.filter(is_winner=True)
     worker_provided_responses = StaffingResponse.objects.filter(
         request_inquiry__communication_preference__worker=worker)
     remaining_requests = (
         StaffBotRequest.objects
         .filter(inquiries__communication_preference__worker=worker)
+        .exclude(status=StaffBotRequest.Status.CLOSED.value)
         .exclude(task__status=Task.Status.COMPLETE)
         .exclude(task__status=Task.Status.ABORTED)
-        .exclude(inquiries__responses__in=won_responses)
         .exclude(inquiries__responses__in=worker_provided_responses)
         .distinct())
     inquiries = (

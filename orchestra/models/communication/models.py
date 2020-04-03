@@ -102,8 +102,9 @@ class StaffBotRequest(StaffBotRequestMixin, BaseModel):
         RESTAFF = 'restaff'
 
     class Status(ChoicesEnum):
-        PROCESSING = 'processing'
-        COMPLETE = 'complete'
+        SENDING_INQUIRIES = 'sending inquiries'
+        DONE_SENDING_INQUIRIES = 'done sending inquiries'
+        CLOSED = 'closed'
 
     task = models.ForeignKey(
         Task, related_name='staffing_requests', on_delete=models.CASCADE)
@@ -111,7 +112,7 @@ class StaffBotRequest(StaffBotRequestMixin, BaseModel):
     request_cause = models.IntegerField(choices=RequestCause.choices())
     project_description = models.TextField(null=True, blank=True)
     status = models.IntegerField(
-        default=Status.PROCESSING.value,
+        default=Status.SENDING_INQUIRIES.value,
         choices=Status.choices())
     last_inquiry_sent = models.DateTimeField(null=True)
 
