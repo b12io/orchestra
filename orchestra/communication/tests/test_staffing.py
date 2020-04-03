@@ -443,10 +443,7 @@ class StaffingTestCase(OrchestraTestCase):
         self.assertEqual(staffbot_request.status,
                          StaffBotRequest.Status.CLOSED.value)
         self.assertEqual(
-            self.staffing_request_inquiry.responses.all().count(), 1)
-
-        response = self.staffing_request_inquiry.responses.first()
-        self.assertTrue(response.is_winner)
+            self.staffing_request_inquiry.responses.all().count(), 0)
 
         # Can't mark another worker as a winner for this request
         worker2 = WorkerFactory()
@@ -463,17 +460,6 @@ class StaffingTestCase(OrchestraTestCase):
                               0,
                               inquiry2)
         self.assertEqual(inquiry2.responses.count(), 0)
-
-        # A winner can't decline their accepted task
-        response.is_winner = False
-        response.is_available = False
-        mark_worker_as_winner(self.worker,
-                              self.staffing_request_inquiry.request.task,
-                              0, None)
-        self.assertEqual(
-            self.staffing_request_inquiry.responses.all().count(), 1)
-        response.refresh_from_db()
-        self.assertTrue(response.is_winner)
 
     @patch('orchestra.communication.staffing.message_experts_slack_group')
     def test_send_staffing_requests_parameters(self, mock_slack):
