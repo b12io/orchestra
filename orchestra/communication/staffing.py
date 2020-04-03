@@ -57,9 +57,8 @@ def handle_staffing_response(worker, staffing_request_inquiry_id,
         if not is_available and response.is_winner:
             raise StaffingResponseException(
                 'Cannot reject after accepting the task')
-
+        # This update will be saved in re/assing_task if necessary.
         response.is_available = is_available
-        response.save()
 
     else:
         response = StaffingResponse.objects.create(
