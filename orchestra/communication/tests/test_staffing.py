@@ -75,7 +75,7 @@ class StaffingTestCase(OrchestraTestCase):
         self.assertTrue(response.is_winner)
         self.staffing_request_inquiry.refresh_from_db()
         self.assertEqual(response.request_inquiry.request.status,
-                         StaffBotRequest.Status.COMPLETE.value)
+                         StaffBotRequest.Status.CLOSED.value)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
 
         task_assignment = (
@@ -91,7 +91,7 @@ class StaffingTestCase(OrchestraTestCase):
             self.worker, self.staffing_request_inquiry.id, is_available=True)
         self.assertTrue(response.is_winner)
         self.assertEqual(response.request_inquiry.request.status,
-                         StaffBotRequest.Status.COMPLETE.value)
+                         StaffBotRequest.Status.CLOSED.value)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
 
         # Change mind to `is_available=False` does not do anything
@@ -109,7 +109,7 @@ class StaffingTestCase(OrchestraTestCase):
             new_worker, new_request_inquiry.id, is_available=True)
         self.assertTrue(response.is_winner)
         self.assertEqual(response.request_inquiry.request.status,
-                         StaffBotRequest.Status.COMPLETE.value)
+                         StaffBotRequest.Status.CLOSED.value)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
 
         task_assignment = (
@@ -132,19 +132,22 @@ class StaffingTestCase(OrchestraTestCase):
             worker2, staffing_request_inquiry2.id, is_available=True)
         self.assertTrue(response.is_winner)
         self.assertEqual(response.request_inquiry.request.status,
-                         StaffBotRequest.Status.COMPLETE.value)
+                         StaffBotRequest.Status.CLOSED.value)
         task_assignment.refresh_from_db()
         self.assertEqual(task_assignment.worker, worker2)
 
     def test_handle_staffing_response_not_is_available(self):
         # Test StaffingResponse object creation
         old_count = StaffingResponse.objects.all().count()
+        request = self.staffing_request_inquiry.request
+        new_request_inquiry = StaffingRequestInquiryFactory(
+            request=request)
         response = handle_staffing_response(
             self.worker, self.staffing_request_inquiry.id,
             is_available=False)
         self.assertFalse(response.is_winner)
         self.assertEqual(response.request_inquiry.request.status,
-                         StaffBotRequest.Status.PROCESSING.value)
+                         StaffBotRequest.Status.SENDING_INQUIRIES.value)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
 
         # Replay of same request
@@ -153,7 +156,7 @@ class StaffingTestCase(OrchestraTestCase):
             is_available=False)
         self.assertFalse(response.is_winner)
         self.assertEqual(response.request_inquiry.request.status,
-                         StaffBotRequest.Status.PROCESSING.value)
+                         StaffBotRequest.Status.SENDING_INQUIRIES.value)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
 
         # Change mind to `is_available=True`
@@ -162,7 +165,7 @@ class StaffingTestCase(OrchestraTestCase):
             is_available=True)
         self.assertTrue(response.is_winner)
         self.assertEqual(response.request_inquiry.request.status,
-                         StaffBotRequest.Status.COMPLETE.value)
+                         StaffBotRequest.Status.CLOSED.value)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
 
         # Task is not available to claim
@@ -175,7 +178,7 @@ class StaffingTestCase(OrchestraTestCase):
             new_worker, new_request_inquiry.id, is_available=True)
         self.assertFalse(response.is_winner)
         self.assertEqual(response.request_inquiry.request.status,
-                         StaffBotRequest.Status.COMPLETE.value)
+                         StaffBotRequest.Status.CLOSED.value)
         self.assertEqual(StaffingResponse.objects.all().count(), old_count + 1)
 
     @patch('orchestra.communication.staffing.message_experts_slack_group')
@@ -195,14 +198,14 @@ class StaffingTestCase(OrchestraTestCase):
         request.task.step.required_certifications.add(self.certification)
 
         self.assertEqual(request.status,
-                         StaffBotRequest.Status.PROCESSING.value)
+                         StaffBotRequest.Status.SENDING_INQUIRIES.value)
 
         send_staffing_requests(worker_batch_size=1,
                                frequency=timedelta(minutes=0))
         mock_slack.assert_not_called()
         request.refresh_from_db()
         self.assertEqual(request.status,
-                         StaffBotRequest.Status.PROCESSING.value)
+                         StaffBotRequest.Status.SENDING_INQUIRIES.value)
         # Inquiries increase by two because we send a Slack and an
         # email notification.
         self.assertEqual(
@@ -216,18 +219,18 @@ class StaffingTestCase(OrchestraTestCase):
 
         request.refresh_from_db()
         self.assertEqual(request.status,
-                         StaffBotRequest.Status.PROCESSING.value)
+                         StaffBotRequest.Status.SENDING_INQUIRIES.value)
         self.assertEqual(
             StaffingRequestInquiry.objects.filter(request=request).count(),
             4)
 
-        # marked as complete and no new request inquiries sent.
+        # marked as closed and no new request inquiries sent.
         send_staffing_requests(worker_batch_size=1,
                                frequency=timedelta(minutes=0))
         self.assertTrue(mock_slack.called)
         request.refresh_from_db()
         self.assertEqual(request.status,
-                         StaffBotRequest.Status.COMPLETE.value)
+                         StaffBotRequest.Status.DONE_SENDING_INQUIRIES.value)
         self.assertEqual(
             StaffingRequestInquiry.objects.filter(request=request).count(),
             4)
@@ -256,7 +259,7 @@ class StaffingTestCase(OrchestraTestCase):
 
         request = StaffBotRequestFactory()
         self.assertEqual(request.status,
-                         StaffBotRequest.Status.PROCESSING.value)
+                         StaffBotRequest.Status.SENDING_INQUIRIES.value)
 
         # Workers should be contacted in priority order.
         excluded = []
@@ -287,7 +290,7 @@ class StaffingTestCase(OrchestraTestCase):
             is_available=False)
         self.assertFalse(response.is_winner)
         self.assertEqual(response.request_inquiry.request.status,
-                         StaffBotRequest.Status.PROCESSING.value)
+                         StaffBotRequest.Status.CLOSED.value)
         self.assertEqual(mock_slack.call_count, 1)
         mock_slack.reset()
 
@@ -299,7 +302,7 @@ class StaffingTestCase(OrchestraTestCase):
 
     @patch('orchestra.communication.staffing.message_experts_slack_group')
     def test_get_available_request(self, mock_slack):
-        # Complete all open requests so new worker doesn't receive them.
+        # Close all open requests so new worker doesn't receive them.
         send_staffing_requests(worker_batch_size=2,
                                frequency=timedelta(minutes=0))
 
@@ -392,9 +395,10 @@ class StaffingTestCase(OrchestraTestCase):
            '._send_staffing_request_by_mail')
     @patch('orchestra.communication.staffing.StaffBot'
            '._send_staffing_request_by_slack')
-    def test_remind_workers_about_available_tasks(self, mock_slack, mock_mail):
+    def test_remind_workers_about_available_tasks_has_winner(
+            self, mock_slack, mock_mail):
         # mark existing request as a winner
-        staffing_response = StaffingResponse.objects.create(
+        StaffingResponse.objects.create(
             request_inquiry=self.staffing_request_inquiry,
             is_available=True,
             is_winner=True)
@@ -402,8 +406,12 @@ class StaffingTestCase(OrchestraTestCase):
         remind_workers_about_available_tasks()
         mock_slack.assert_not_called()
 
-        staffing_response.delete()
-
+    @patch('orchestra.communication.staffing.StaffBot'
+           '._send_staffing_request_by_mail')
+    @patch('orchestra.communication.staffing.StaffBot'
+           '._send_staffing_request_by_slack')
+    def test_remind_workers_about_available_tasks(self, mock_slack, mock_mail):
+        # mark existing request as a winner
         remind_workers_about_available_tasks()
         self.assertEqual(mock_slack.call_count, 1)
 
@@ -433,22 +441,25 @@ class StaffingTestCase(OrchestraTestCase):
         staffbot_request.refresh_from_db()
 
         self.assertEqual(staffbot_request.status,
-                         StaffBotRequest.Status.COMPLETE.value)
+                         StaffBotRequest.Status.CLOSED.value)
         self.assertEqual(
-            self.staffing_request_inquiry.responses.all().count(), 1)
+            self.staffing_request_inquiry.responses.all().count(), 0)
 
-        response = self.staffing_request_inquiry.responses.first()
-        self.assertTrue(response.is_winner)
-
-        response.is_winner = False
-        response.is_available = False
-        mark_worker_as_winner(self.worker,
-                              self.staffing_request_inquiry.request.task,
-                              0, None)
-        self.assertEqual(
-            self.staffing_request_inquiry.responses.all().count(), 1)
-        response.refresh_from_db()
-        self.assertTrue(response.is_winner)
+        # Can't mark another worker as a winner for this request
+        worker2 = WorkerFactory()
+        inquiry2 = StaffingRequestInquiryFactory(
+            communication_preference__worker=worker2,
+            communication_preference__communication_type=(
+                CommunicationPreference.CommunicationType
+                .NEW_TASK_AVAILABLE.value),
+            request__task__step__is_human=True,
+            request=self.staffing_request_inquiry.request
+        )
+        mark_worker_as_winner(worker2,
+                              inquiry2.request.task,
+                              0,
+                              inquiry2)
+        self.assertEqual(inquiry2.responses.count(), 0)
 
     @patch('orchestra.communication.staffing.message_experts_slack_group')
     def test_send_staffing_requests_parameters(self, mock_slack):
@@ -469,7 +480,7 @@ class StaffingTestCase(OrchestraTestCase):
         request.task.step.required_certifications.add(self.certification)
 
         self.staffing_request_inquiry.request.status = (
-            StaffBotRequest.Status.COMPLETE)
+            StaffBotRequest.Status.DONE_SENDING_INQUIRIES)
 
         send_staffing_requests(worker_batch_size=1,
                                frequency=timedelta(minutes=20))
