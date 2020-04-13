@@ -1031,6 +1031,21 @@ def update_related_assignment_status(task, assignment_counter, data,
         start_datetime=submit_datetime)
 
 
+def _call_abort_completion_function(project):
+    abort_completion_fn = project.workflow_version.abort_completion_function
+    abort_completion_fn_val = (abort_completion_fn
+                               .get('abort_completion_function', {}))
+    abort_completion_fn_path = abort_completion_fn_val.get('path', '')
+    abort_completion_fn_kwargs = abort_completion_fn_val.get('kwargs', {})
+    if len(abort_completion_fn_path) == 0:
+        logger.warning('abort_completion_function is not supplied')
+        return
+    abort_completion_function = locate(abort_completion_fn_path)
+    abort_completion_function(
+        project.project_data,
+        abort_completion_fn_kwargs)
+
+
 def end_project(project_id):
     """
     Mark the specified project and its component tasks as aborted.
@@ -1044,6 +1059,7 @@ def end_project(project_id):
     project = Project.objects.get(id=project_id)
     project.status = Project.Status.ABORTED
     project.save()
+    _call_abort_completion_function(project)
     for task in project.tasks.all():
         task.status = Task.Status.ABORTED
         task.save()

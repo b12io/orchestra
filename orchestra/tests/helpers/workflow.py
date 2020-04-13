@@ -14,6 +14,10 @@ def machine_task_function():
     pass
 
 
+def abortion_cleanup_function(project_id, **kwargs):
+    pass
+
+
 def check_project(project):
     return [
         SanityCheck(check_slug='frequently_repeating_check'),
