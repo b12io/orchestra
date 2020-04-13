@@ -38,6 +38,8 @@ from orchestra.utils.task_lifecycle import submit_task
 from orchestra.utils.task_lifecycle import tasks_assigned_to_worker
 from orchestra.utils.task_lifecycle import worker_assigned_to_rejected_task
 from orchestra.utils.task_lifecycle import worker_has_reviewer_status
+from orchestra.utils.task_lifecycle import end_project
+from orchestra.utils.task_lifecycle import _call_abort_completion_function
 from orchestra.utils.task_properties import current_assignment
 from orchestra.workflow.defaults import get_default_creation_policy
 
@@ -769,3 +771,35 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
                 # should select the todo with a deadline
                 self.assertEqual(next_todo_start, DEADLINE1_DATETIME)
                 self.assertEqual(t['should_be_active'], False)
+
+
+class EndProjectTestCase(OrchestraTransactionTestCase):
+    def setUp(self):
+        super().setUp()
+        setup_models(self)
+        path = 'orchestra.tests.helpers.workflow.abortion_cleanup_function'
+        self.abort_completion_function = {
+            'path': path,
+            'kwargs': {
+                'some_key': 'some_value'
+            }
+        }
+
+    @patch('orchestra.utils.task_lifecycle.archive_project_slack_group')
+    @patch('orchestra.utils.task_lifecycle._call_abort_completion_function')
+    def test_end_project_calls_abort_completion_fn(
+            self, mock_call_abort_fn, mock_archive_project_slack_group):
+        project = self.projects['test_human_and_machine']
+        project.workflow_version.abort_completion_function = (
+            self.abort_completion_function)
+        end_project(project.id)
+        mock_call_abort_fn.assert_called_with(project)
+
+    @patch('orchestra.tests.helpers.workflow.abortion_cleanup_function')
+    def test_call_abort_completion_function(self, mock_ab_fn):
+        project = self.projects['test_human_and_machine']
+        project.workflow_version.abort_completion_function = (
+            self.abort_completion_function)
+        _call_abort_completion_function(project)
+        kwargs = self.abort_completion_function['kwargs']
+        mock_ab_fn.assert_called_with(project.project_data, **kwargs)
