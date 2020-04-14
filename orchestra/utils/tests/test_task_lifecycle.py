@@ -777,7 +777,7 @@ class EndProjectTestCase(OrchestraTransactionTestCase):
     def setUp(self):
         super().setUp()
         setup_models(self)
-        path = 'orchestra.tests.helpers.workflow.abortion_cleanup_function'
+        path = 'orchestra.tests.helpers.workflow.abort_cleanup_function'
         self.abort_completion_function = {
             'path': path,
             'kwargs': {
@@ -795,7 +795,7 @@ class EndProjectTestCase(OrchestraTransactionTestCase):
         end_project(project.id)
         mock_call_abort_fn.assert_called_with(project)
 
-    @patch('orchestra.tests.helpers.workflow.abortion_cleanup_function')
+    @patch('orchestra.tests.helpers.workflow.abort_cleanup_function')
     def test_call_abort_completion_function(self, mock_ab_fn):
         project = self.projects['test_human_and_machine']
         project.workflow_version.abort_completion_function = (

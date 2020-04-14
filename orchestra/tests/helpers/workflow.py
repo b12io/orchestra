@@ -14,7 +14,7 @@ def machine_task_function():
     pass
 
 
-def abortion_cleanup_function(project_id, **kwargs):
+def abort_cleanup_function(project_id, **kwargs):
     pass
 
 
