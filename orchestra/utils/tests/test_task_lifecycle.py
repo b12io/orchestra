@@ -777,29 +777,23 @@ class EndProjectTestCase(OrchestraTransactionTestCase):
     def setUp(self):
         super().setUp()
         setup_models(self)
+
+    @patch('orchestra.utils.task_lifecycle.archive_project_slack_group')
+    @patch('orchestra.tests.helpers.workflow.abort_cleanup_function')
+    def test_end_project_calls_abort_completion_function(
+            self, mock_abort_cleanup_fn, mock_archive_project_slack_group):
         path = 'orchestra.tests.helpers.workflow.abort_cleanup_function'
-        self.abort_completion_function = {
+        abort_completion_function = {
             'path': path,
             'kwargs': {
                 'some_key': 'some_value'
             }
         }
-
-    @patch('orchestra.utils.task_lifecycle.archive_project_slack_group')
-    @patch('orchestra.utils.task_lifecycle._call_abort_completion_function')
-    def test_end_project_calls_abort_completion_fn(
-            self, mock_call_abort_fn, mock_archive_project_slack_group):
         project = self.projects['test_human_and_machine']
         project.workflow_version.abort_completion_function = (
-            self.abort_completion_function)
+            abort_completion_function)
+        project.workflow_version.save()
         end_project(project.id)
-        mock_call_abort_fn.assert_called_with(project)
-
-    @patch('orchestra.tests.helpers.workflow.abort_cleanup_function')
-    def test_call_abort_completion_function(self, mock_ab_fn):
-        project = self.projects['test_human_and_machine']
-        project.workflow_version.abort_completion_function = (
-            self.abort_completion_function)
-        _call_abort_completion_function(project)
-        kwargs = self.abort_completion_function['kwargs']
-        mock_ab_fn.assert_called_with(project.project_data, **kwargs)
+        kwargs = abort_completion_function['kwargs']
+        mock_abort_cleanup_fn.assert_called_with(
+            project.project_data, **kwargs)
