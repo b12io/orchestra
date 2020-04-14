@@ -7,7 +7,7 @@ import jsonfield.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('orchestra', '0082_task_tags'),
+        ('orchestra', '0083_update_staffbot_request_status_choices'),
     ]
 
     operations = [
