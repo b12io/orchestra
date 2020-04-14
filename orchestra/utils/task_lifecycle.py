@@ -1038,7 +1038,7 @@ def _call_abort_completion_function(project):
     if abort_completion_fn_path:
         abort_completion_function = locate(abort_completion_fn_path)
         abort_completion_function(
-            project.project_data,
+            project.id,
             **abort_completion_fn_kwargs)
 
 
