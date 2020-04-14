@@ -39,7 +39,6 @@ from orchestra.utils.task_lifecycle import tasks_assigned_to_worker
 from orchestra.utils.task_lifecycle import worker_assigned_to_rejected_task
 from orchestra.utils.task_lifecycle import worker_has_reviewer_status
 from orchestra.utils.task_lifecycle import end_project
-from orchestra.utils.task_lifecycle import _call_abort_completion_function
 from orchestra.utils.task_properties import current_assignment
 from orchestra.workflow.defaults import get_default_creation_policy
 
