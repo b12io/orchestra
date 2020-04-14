@@ -1035,13 +1035,11 @@ def _call_abort_completion_function(project):
     abort_completion_fn = project.workflow_version.abort_completion_function
     abort_completion_fn_path = abort_completion_fn.get('path', '')
     abort_completion_fn_kwargs = abort_completion_fn.get('kwargs', {})
-    if len(abort_completion_fn_path) == 0:
-        logger.warning('abort_completion_function is not supplied')
-        return
-    abort_completion_function = locate(abort_completion_fn_path)
-    abort_completion_function(
-        project.project_data,
-        **abort_completion_fn_kwargs)
+    if abort_completion_fn_path:
+        abort_completion_function = locate(abort_completion_fn_path)
+        abort_completion_function(
+            project.project_data,
+            **abort_completion_fn_kwargs)
 
 
 def end_project(project_id):
