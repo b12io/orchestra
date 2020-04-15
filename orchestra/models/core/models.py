@@ -71,6 +71,9 @@ class WorkflowVersion(WorkflowVersionMixin, models.Model):
             An example configuration can be found in
             `orchestra.tests.helpers.workflow.py` in the
             `sanitybot_workflow` configuration.
+        abort_completion_function (str):
+            A JSON blob that identifies an optional function
+            to run if a project is aborted.
     """
     created_at = models.DateTimeField(default=timezone.now)
     slug = models.CharField(max_length=200)
@@ -79,6 +82,7 @@ class WorkflowVersion(WorkflowVersionMixin, models.Model):
     workflow = models.ForeignKey(
         Workflow, related_name='versions', on_delete=models.CASCADE)
     sanity_checks = JSONField(default={})
+    abort_completion_function = JSONField(default={})
 
     class Meta:
         app_label = 'orchestra'
