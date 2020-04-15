@@ -109,6 +109,8 @@ def load_workflow_version(version_data, workflow, force=False):
             'name': version_data['name'],
             'description': version_data['description'],
             'sanity_checks': version_data.get('sanity_checks', {}),
+            'abort_completion_function': version_data.get(
+                'abort_completion_function', {}),
         }
     )
 
