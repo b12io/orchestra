@@ -795,4 +795,4 @@ class EndProjectTestCase(OrchestraTransactionTestCase):
         end_project(project.id)
         kwargs = abort_completion_function['kwargs']
         mock_abort_cleanup_fn.assert_called_with(
-            project.id, **kwargs)
+            project, **kwargs)
