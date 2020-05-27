@@ -91,7 +91,6 @@ def index(request):
                 step.workflow_version.workflow.slug][
                     step.workflow_version.slug][step.slug] = (
                         step.user_interface['angular_directive'])
-    print('index')
     return render(request, 'orchestra/index.html', {
         'javascript_includes': javascript_includes,
         'stylesheet_includes': stylesheet_includes,
