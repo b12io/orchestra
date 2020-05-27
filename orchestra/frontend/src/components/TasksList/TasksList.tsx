@@ -22,6 +22,9 @@ import AnimatedCircle from '../../assets/AnimatedCircle'
 import { getPrettyDatetime, specialFormatIfToday, isOutdated } from '../../util/time'
 import { Task } from 'state/slices/dashboardTasks'
 
+const SORT_ASCENDING = 1
+const SORT_DESCENDING = -1
+
 type ProjectListProps = {
   status: any;
   tasks: Task[];
@@ -51,10 +54,12 @@ const TaskList = ({ status, tasks, isLoading = false }: ProjectListProps) => {
       newSortedTasks.sort((taskA, taskB) => {
         if (sortStatus.column === 'Details') {
           if (taskA.detail.toLowerCase() > taskB.detail.toLowerCase()) {
-            return sortStatus.direction === 'ascending' ? 1 : -1
+            return sortStatus.direction === 'ascending' ? SORT_ASCENDING : SORT_DESCENDING
           } else {
-            return sortStatus.direction === 'ascending' ? -1 : 1
+            return sortStatus.direction === 'ascending' ? SORT_DESCENDING : SORT_ASCENDING
           }
+        } else {
+          return SORT_ASCENDING
         }
       })
       setSortedTasks(newSortedTasks)
