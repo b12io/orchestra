@@ -3,16 +3,16 @@ import {
   HashRouter as Router,
   Switch,
   Route,
-} from "react-router-dom"
+} from 'react-router-dom'
 
 import Navbar from './components/navbar/Navbar'
 import AvailableTasks from './views/available_tasks/AvailableTasks'
 import Dashboard from './views/dashboard/Dashboard'
 import Task from './views/task/Task'
 
-import './App.scss';
+import './App.scss'
 
-function App() {
+function App () {
   return (
     <div className="App">
       <Router>
@@ -33,4 +33,4 @@ function App() {
   );
 }
 
-export default App;
+export default App
