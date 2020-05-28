@@ -64,7 +64,7 @@ const TaskList = ({ status, tasks, isLoading = false }: ProjectListProps) => {
       })
       setSortedTasks(newSortedTasks)
     }
-  }, [sortStatus])
+  }, [sortStatus, sortedTasks])
   const [searchedItem, setSearchedItem] = useState('')
 
   const handleTextChange = value => {

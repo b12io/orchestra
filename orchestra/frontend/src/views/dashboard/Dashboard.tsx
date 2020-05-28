@@ -16,7 +16,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     dispatch(fetchDashboardTasks())
-  }, [])
+  }, [dispatch])
 
   const activeTasks = useSelector(getActiveTasksSelector)
   const pendingTasks = useSelector(getPendingTasksSelector)

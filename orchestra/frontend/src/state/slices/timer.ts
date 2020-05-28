@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-import { AppThunk } from './store'
+import { AppThunk } from '../store'
 
 interface Timer {
   id: number,
