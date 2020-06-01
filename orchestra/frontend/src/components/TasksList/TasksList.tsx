@@ -22,8 +22,7 @@ import AnimatedCircle from '../../assets/AnimatedCircle'
 import { getPrettyDatetime, specialFormatIfToday, isOutdated } from '../../util/time'
 import { Task } from 'state/slices/dashboardTasks'
 
-const SORT_ASCENDING = 1
-const SORT_DESCENDING = -1
+import { sortTasks, SortStatus } from './helpers'
 
 type ProjectListProps = {
   status: any;
@@ -31,40 +30,17 @@ type ProjectListProps = {
   isLoading?: boolean;
 }
 
-type SortStatusType = {
-  column: string; // enum of rows
-  direction: 'ascending' | 'descending';
-}
-
 const TaskList = ({ status, tasks, isLoading = false }: ProjectListProps) => {
-  const [sortStatus, setSortStatus] = useState({
+  const [sortStatus, setSortStatus] = useState<SortStatus>({
     column: null,
     direction: 'ascending'
   })
-  const [sortedTasks, setSortedTasks] = useState<Task[]>([])
+  const [taskList, setTaskList] = useState<Task[]>([])
 
   useEffect(() => {
-    setSortedTasks(tasks)
+    setTaskList(tasks)
   }, [tasks])
 
-  useEffect(() => {
-    // TODO: some small buggo that doesn't sort upon first click of sortStatus.
-    if (sortedTasks.length) {
-      const newSortedTasks = sortedTasks
-      newSortedTasks.sort((taskA, taskB) => {
-        if (sortStatus.column === 'Details') {
-          if (taskA.detail.toLowerCase() > taskB.detail.toLowerCase()) {
-            return sortStatus.direction === 'ascending' ? SORT_ASCENDING : SORT_DESCENDING
-          } else {
-            return sortStatus.direction === 'ascending' ? SORT_DESCENDING : SORT_ASCENDING
-          }
-        } else {
-          return SORT_ASCENDING
-        }
-      })
-      setSortedTasks(newSortedTasks)
-    }
-  }, [sortStatus, sortedTasks])
   const [searchedItem, setSearchedItem] = useState('')
 
   const handleTextChange = value => {
@@ -74,11 +50,11 @@ const TaskList = ({ status, tasks, isLoading = false }: ProjectListProps) => {
   useEffect(() => {
     const results = tasks.filter(task => {
       const lowerCaseSearchedItem = searchedItem.toLocaleLowerCase()
-      return task.detail.toLowerCase().includes(lowerCaseSearchedItem)
-      || task.project.toLowerCase().includes(lowerCaseSearchedItem)
-      || task.step.toLowerCase().includes(lowerCaseSearchedItem)
+      return task.detail.toLowerCase().includes(lowerCaseSearchedItem) ||
+      task.project.toLowerCase().includes(lowerCaseSearchedItem) ||
+      task.step.toLowerCase().includes(lowerCaseSearchedItem)
     })
-    setSortedTasks(results)
+    setTaskList(results)
   }, [searchedItem])
 
   const rowsLabels = [
@@ -101,7 +77,7 @@ const TaskList = ({ status, tasks, isLoading = false }: ProjectListProps) => {
   const history = useHistory()
 
   const renderTasks = () => {
-    return sortedTasks.map(row => {
+    return taskList.map(row => {
       const assigned = getPrettyDatetime(row.assignment_start_datetime, 'MM/DD/YYYY')
       const startBy = getPrettyDatetime(
         row.next_todo_dict.start_by_datetime,
@@ -120,7 +96,6 @@ const TaskList = ({ status, tasks, isLoading = false }: ProjectListProps) => {
         }
       }
       const colorRow = isOutdated(row.next_todo_dict.due_datetime) && row.state !== 'complete'
-
       return (
         <TableRow key={row.id} onClick={handleRowClick} className={colorRow && 'grey-out'}>
           <TableCell className='tasks-list__col-1'>
@@ -171,10 +146,11 @@ const TaskList = ({ status, tasks, isLoading = false }: ProjectListProps) => {
       direction = sortStatus.direction === 'ascending' ? 'descending' : 'ascending'
     }
 
-    setSortStatus({
-      direction,
-      column
-    })
+    const newSortStatus = { direction, column }
+    const sortedTasks = sortTasks(taskList, newSortStatus)
+
+    setTaskList(sortedTasks)
+    setSortStatus(newSortStatus)
   }
 
   const renderSortCaret = () => {
@@ -239,7 +215,7 @@ const TaskList = ({ status, tasks, isLoading = false }: ProjectListProps) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {tasks.length !== 0 || isLoading
+          {taskList.length !== 0 || isLoading
             ? renderTasks()
             : renderEmptyList()}
         </TableBody>
