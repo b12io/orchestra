@@ -24,7 +24,7 @@
     "extract-text-webpack-plugin": "3.0.0",
     "gulp": "^3.9.1",
     "gulp-cached": "^1.1.0",
-    "gulp-htmlhint": "^0.3.1",
+    "gulp-htmlhint": "^3.0.1",
     "gulp-if": "^2.0.0",
     "gulp-jscs": "^3.0.2",
     "gulp-jshint": "^2.0.0",
