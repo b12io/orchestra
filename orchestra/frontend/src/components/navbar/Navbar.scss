@@ -1,0 +1,54 @@
+.navbar {
+  padding: 15px 30px;
+  box-shadow: 0 0 30px 0 rgba(17,15,51,0.1);
+  .align-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  &__home {
+    & > *:not(last-child) {
+      padding-right: 12px;
+    }
+
+    & > h4 {
+      margin: 0;
+    }
+
+    :hover {
+      cursor: pointer;
+    }
+  }
+
+  &__textfield {
+    width: 500px;
+  }
+
+  &__timecard {
+    & > p {
+      margin: 0;
+    }
+
+    & > *:not(last-child) {
+      padding-right: 8px;
+    }
+  }
+
+  &__dropdown .ds-dropdown__menu {
+    min-width: 200px;
+  }
+
+  &__avatar {
+    & > *:not(last-child) {
+      padding-right: 6.5px;
+    }
+    svg.navbar__avatar-caret {
+      position: relative;
+      left: auto;
+      top: auto;
+      transform: none;
+    }
+  }
+
+}
