@@ -1,0 +1,17 @@
+{
+  "plugins": [
+    "@typescript-eslint/eslint-plugin"
+  ],
+  "extends": ["plugin:@typescript-eslint/recommended", "plugin:react/recommended"],
+  "parserOptions": {
+    "project": "tsconfig.json"
+  },
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx"],
+      "rules": {
+        "@typescript-eslint/explicit-function-return-type": "off"
+      }
+    }
+  ]
+}

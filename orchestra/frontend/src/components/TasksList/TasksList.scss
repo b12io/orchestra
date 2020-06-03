@@ -1,0 +1,57 @@
+@import "~@b12/metronome/style/mixins";
+@import "~@b12/metronome/style/variables";
+
+.tasks-list {
+    &__wrapper {
+        margin: 25px;
+    }
+    .ds-table__row-clickable &__status-row {
+        display: flex;
+        align-items: center;
+        height: 39px;
+        border-bottom: none;
+    }
+    &__col-1 {
+        width: 40%;
+        border-top: 2px solid hsla(0,0%,85.1%,.4);
+    }
+    &__col-2 {
+        width: 20%;
+    }
+    &__col-3 {
+        width: 11%;
+    }
+    &__col-4 {
+        width: 10%;
+    }
+    &__col-5 {
+        width: 10%;
+    }
+
+    &__col-header {
+        display: flex;
+    }
+
+    @include ds-typography;
+    th p {
+        margin: 0;
+    }
+    tbody {
+        tr:nth-child(even) {
+            background: $ds-ui-light-color;
+        }
+        tr td {
+            text-align: left;
+        }
+        tr.grey-out {
+            background: #f2f2f2;
+        }
+    }
+    .ds-badge--filled.ds-badge--primary {
+        background-color: $ds-brand-light-color;
+    }
+}
+
+.caret-up {
+    transform: rotate(180deg);
+}

@@ -1,0 +1,7 @@
+.animated-circle {
+    -webkit-animation: spin 1s ease infinite;
+    -moz-animation: spin 1s ease infinite;
+    animation: spin 3s ease infinite;
+}
+
+@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
