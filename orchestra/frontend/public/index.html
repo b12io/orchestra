@@ -33,12 +33,9 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
-  <script src="/static/tasks/tasks.js" type="text/javascript"></script>
-  <script type="text/javascript">
-    window.orchestra = {
-      task: "/static/tasks/tasks.js",
-    };
-  </script>
+  {% for js in javascript_includes %}
+  {{ js | safe }}
+  {% endfor %}
 </body>
 
 </html>

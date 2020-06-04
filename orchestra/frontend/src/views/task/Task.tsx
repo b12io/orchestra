@@ -1,19 +1,12 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
-import { lazy } from '@loadable/component'
-
-const icon = 'ShuffleIcon'
 
 const Task = () => {
   const { taskId } = useParams()
-  const LoadableTaskComponent = lazy(() =>
-    import('../../assets/ShuffleIcon')
-  )
+  const LoadableTaskComponent = window.orchestra?.tasks
   return (
     <div>
-      <React.Suspense fallback="Loading...">
-        <LoadableTaskComponent />
-      </React.Suspense>
+      <LoadableTaskComponent id={taskId} />
     </div>
   )
 }

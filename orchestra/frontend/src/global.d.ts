@@ -1,6 +1,6 @@
 interface Window {
-  orchestra: {
-    task: string;
+  orchestra?: {
+    tasks: React.FC<{ id: string }>;
   };
 }
 
