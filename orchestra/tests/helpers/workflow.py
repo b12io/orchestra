@@ -743,7 +743,7 @@ def assert_test_dir_v1_not_loaded(test_case):
     })
 
 
-def assert_test_dir_v1_loaded(test_case):
+def assert_test_dir_v1_loaded(test_case, extra_step=False):
     """ Verify that the test_dir workflow v1's DB objects exist. """
     version1 = test_case.assertModelInstanceExists(
         WorkflowVersion,
@@ -848,6 +848,42 @@ def assert_test_dir_v1_loaded(test_case):
                           )))
     test_case.assertEqual(list(step3.creation_depends_on.all()), [step1])
     test_case.assertEqual(list(step3.submission_depends_on.all()), [step2])
+
+    if extra_step:
+        step4 = test_case.assertModelInstanceExists(
+            Step,
+            {
+                'workflow_version': version1,
+                'slug': 's4',
+            },
+            {
+                'name': 'Step 4',
+                'description': 'The fourth step',
+                'is_human': True,
+                'execution_function': {},
+                'review_policy': {
+                    'policy': 'sampled_review',
+                    'rate': 1,
+                    'max_reviews': 1,
+                },
+                'user_interface': {
+                    'angular_module': 'test_dir.v1.s3',
+                    'angular_directive': 's3',
+                    'javascript_includes': [
+                        'test_dir/v1/s3/js/modules.js',
+                        'test_dir/v1/s3/js/controllers.js',
+                        'test_dir/v1/s3/js/directives.js',
+                    ],
+                },
+            })
+        test_case.assertEqual(
+            set(step4.required_certifications.all()),
+            set(Certification.objects.filter(
+                slug__in=['certification1', 'certification2'],
+                workflow__slug='test_dir',
+            )))
+        test_case.assertEqual(list(step4.creation_depends_on.all()), [step1])
+        test_case.assertEqual(list(step4.submission_depends_on.all()), [step2])
 
 
 def assert_test_dir_v2_not_loaded(test_case):

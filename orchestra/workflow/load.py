@@ -128,11 +128,11 @@ def load_workflow_version(version_data, workflow, force=False):
             .filter(workflow_version=version)
             .values_list('slug', flat=True)
         )
-        if new_step_slugs != old_step_slugs:
-            raise WorkflowError('Even with --force, you cannot change the '
-                                'steps of a workflow. Drop and recreate the '
-                                'database to reset, or create a new version '
-                                'for your workflow.')
+        if old_step_slugs - new_step_slugs:
+            raise WorkflowError(
+                'Even with --force, you cannot remove steps from a workflow.'
+                'Drop and recreate the database to reset, or create a new '
+                'version for your workflow.')
 
     # Create or update the version steps.
     old_creation_dependencies = {}
