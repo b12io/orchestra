@@ -1,5 +1,6 @@
 import json
 import os
+from copy import deepcopy
 
 from django.db import transaction
 from django.test import modify_settings
@@ -123,16 +124,18 @@ class LoadWorkflowTestCase(OrchestraTestCase):
             with transaction.atomic():
                 load_workflow_version(v1_data, workflow)
 
-        # Even with --force, can't overwrite a version with a new step
-        v1_data['steps'].append({'slug': 'invalid_new_step'})
-        step_change_err_msg = ('Even with --force, you cannot change the '
-                               'steps of a workflow. Drop and recreate the '
-                               'database to reset, or create a new version '
-                               'for your workflow.')
-        with self.assertRaisesMessage(WorkflowError, step_change_err_msg):
-            with transaction.atomic():
-                load_workflow_version(v1_data, workflow, force=True)
+        # Even with --force, can't overwrite a version with fewer steps
+        removed_step = v1_data['steps'][-1]
         v1_data['steps'] = v1_data['steps'][:-1]
+        step_remove_err_msg = (
+            'Even with --force, you cannot remove steps from a workflow.'
+            'Drop and recreate the database to reset, or create a new '
+            'version for your workflow.')
+        with self.assertRaisesMessage(WorkflowError, step_remove_err_msg):
+            with transaction.atomic():
+                load_workflow_version(
+                    v1_data, workflow, force=True)
+        v1_data['steps'].append(removed_step)
 
         # Even with --force, can't change a step's creation dependencies.
         step_2_create_dependencies = v1_data['steps'][1]['creation_depends_on']
@@ -153,6 +156,21 @@ class LoadWorkflowTestCase(OrchestraTestCase):
         assert_test_dir_workflow_loaded(self)
         assert_test_dir_v1_loaded(self)
         assert_test_dir_v2_not_loaded(self)
+
+        # --force should reload even if we add a step to the workflow.
+        new_step = deepcopy(v1_data['steps'][-1])
+        new_step.update({
+            'slug': 's4',
+            'name': 'Step 4',
+            'description': 'The fourth step',
+        })
+        v1_data['steps'].append(new_step)
+        with transaction.atomic():
+            load_workflow_version(v1_data, workflow, force=True)
+        assert_test_dir_workflow_loaded(self)
+        assert_test_dir_v1_loaded(self, extra_step=True)
+        assert_test_dir_v2_not_loaded(self)
+        v1_data['steps'] = v1_data['steps'][:-1]
 
         # New versions with bad slugs should not load correctly
         v2_step_2 = v2_data['steps'][1]
