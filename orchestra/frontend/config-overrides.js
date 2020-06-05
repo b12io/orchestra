@@ -1,5 +1,5 @@
 const path = require('path');
-const { override, babelInclude } = require('customize-cra');
+const { override, babelInclude, addWebpackExternals } = require('customize-cra');
 
 module.exports = override(
   babelInclude([
@@ -8,6 +8,11 @@ module.exports = override(
     // the metronome design system has not been compiled before exporting.
     path.resolve('node_modules/@b12/metronome'),
     path.resolve('src/')
-  ])
+  ]),
+  addWebpackExternals({
+    react: 'React',
+    'react-dom': 'ReactDOM',
+    'react-redux': 'ReactRedux'
+  })
 )
 

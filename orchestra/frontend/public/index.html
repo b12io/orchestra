@@ -33,6 +33,9 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+  <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-redux@7.2.0/dist/react-redux.js" crossorigin></script>
   {% for js in javascript_includes %}
   {{ js | safe }}
   {% endfor %}
