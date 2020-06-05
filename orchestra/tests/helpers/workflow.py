@@ -876,11 +876,12 @@ def assert_test_dir_v1_loaded(test_case, extra_step=False):
                     ],
                 },
             })
-        test_case.assertEqual(set(step4.required_certifications.all()),
-                              set(Certification.objects.filter(
-                                  slug__in=['certification1', 'certification2'],
-                                  workflow__slug='test_dir',
-                              )))
+        test_case.assertEqual(
+            set(step4.required_certifications.all()),
+            set(Certification.objects.filter(
+                slug__in=['certification1', 'certification2'],
+                workflow__slug='test_dir',
+            )))
         test_case.assertEqual(list(step4.creation_depends_on.all()), [step1])
         test_case.assertEqual(list(step4.submission_depends_on.all()), [step2])
 
