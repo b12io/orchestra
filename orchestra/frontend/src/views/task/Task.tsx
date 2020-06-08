@@ -6,7 +6,7 @@ const Task = () => {
   const LoadableTaskComponent = window.orchestra?.tasks
   return (
     <div>
-      {LoadableTaskComponent && <LoadableTaskComponent />}
+      <LoadableTaskComponent />
     </div>
   )
 }

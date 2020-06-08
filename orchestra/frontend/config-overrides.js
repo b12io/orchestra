@@ -13,6 +13,6 @@ module.exports = override(
     react: 'React',
     'react-dom': 'ReactDOM',
     'react-redux': 'ReactRedux'
-  })
+  }),
 )
 
