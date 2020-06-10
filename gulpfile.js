@@ -37,7 +37,8 @@
     all_scss: [],
     jslint: [
       './gulpfile.js', // Lint ourselves!
-      '!**/common/js/lib/**'
+      '!**/common/js/lib/**',
+      '!**/dist2/**'
     ],
     jsonlint: [
       '!node_modules/**',
