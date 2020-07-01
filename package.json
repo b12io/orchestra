@@ -29,7 +29,7 @@
     "gulp-jscs": "^3.0.2",
     "gulp-jshint": "^2.0.0",
     "gulp-jsonlint": "^1.1.2",
-    "gulp-print": "^2.0.1",
+    "gulp-print": "^5.0.2",
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^2.2.0",
     "gulp-sourcemaps": "^1.6.0",
