@@ -35,7 +35,7 @@
     "gulp-sourcemaps": "^1.6.0",
     "gulp-util": "^3.0.7",
     "gulp-watch": "^4.3.5",
-    "html-loader": "^0.4.5",
+    "html-loader": "^0.5.5",
     "htmlhint": "^0.9.13",
     "htmlhint-loader": "^1.2.0",
     "jshint": "^2.9.1",
