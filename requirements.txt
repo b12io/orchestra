@@ -30,7 +30,7 @@ django-phonenumber-field==2.0.0
 django-nose==1.4.6
 django-annoying==0.10.3
 django-gulp==2.5.1
-django-related-admin==0.5.0
+django-related-admin==0.7.0
 django-ajax-selects==1.9.0
 django-kronos==1.0
 httpsig==1.2.0
