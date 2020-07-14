@@ -58,26 +58,26 @@ def main(args):
 
 
 def verify_and_warn(old_version, new_version, args):
-    # verify that we're on the master branch
+    # verify that we're on the main branch
     branch_cmd = ['git', 'symbolic-ref', '--short', 'HEAD']
     cur_branch = run_command(branch_cmd).strip().lower()
-    if cur_branch != 'master':
-        print('This script must be run from the master branch. Exiting.')
+    if cur_branch != 'main':
+        print('This script must be run from the main branch. Exiting.')
         exit()
 
-    # verify that master is up to date
+    # verify that main is up to date
     rev_cmd = ['git', 'rev-list']
-    unpushed_cmd = rev_cmd + ['origin/master..']
+    unpushed_cmd = rev_cmd + ['origin/main..']
     unpushed_commits = run_command(unpushed_cmd).strip()
     if unpushed_commits:
-        print('Your branch has commits not yet on origin/master. Exiting.')
+        print('Your branch has commits not yet on origin/main. Exiting.')
         exit()
 
-    run_command(['git', 'fetch', 'origin', 'master'])
-    unpulled_cmd = rev_cmd + ['..origin/master']
+    run_command(['git', 'fetch', 'origin', 'main'])
+    unpulled_cmd = rev_cmd + ['..origin/main']
     unpulled_commits = run_command(unpulled_cmd).strip()
     if unpulled_commits:
-        print('Your branch is behind origin/master. Exiting.')
+        print('Your branch is behind origin/main. Exiting.')
         exit()
 
     # verify that there are no outstanding changes
@@ -92,7 +92,7 @@ def verify_and_warn(old_version, new_version, args):
         return
     print('WARNING: running this script will {}. This involves making changes '
           'you CANNOT TAKE BACK. Before proceeding, ensure that you are on '
-          'the master branch, have pulled the latest changes, and have no '
+          'the main branch, have pulled the latest changes, and have no '
           'outstanding local changes. THIS SCRIPT WILL FAIL if you do not '
           'have credentials to push to the Orchestra GitHub repository or the '
           'Orchestra PyPI account.'.format(action_text))
@@ -180,7 +180,7 @@ def commit_and_push(fake=False):
     wrap_command(['git', 'commit', '-am', 'Version bump.'], fake)
 
     # Push changes
-    wrap_command(['git', 'push', 'origin', 'master'], fake)
+    wrap_command(['git', 'push', 'origin', 'main'], fake)
 
 
 def tag_release(version, fake=False):
