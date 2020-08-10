@@ -160,7 +160,7 @@ class TodosEndpointTests(EndpointTestCase):
         start_by_todo = TodoFactory(
             task=self.task,
             start_by_datetime=self.deadline,
-            description=START_TITLE)
+            title=START_TITLE)
 
         self._verify_todos_list(self.task.project.id, [
             _todo_data(
