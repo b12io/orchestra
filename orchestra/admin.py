@@ -175,10 +175,8 @@ class TimeEntryAdmin(AjaxSelectAdmin):
 
 
 @admin.register(Todo)
-class TodoAdmin(AjaxSelectAdmin):
-    form = make_ajax_form(Todo, {
-        'task': 'tasks',
-    })
+class TodoAdmin(admin.ModelAdmin):
+    autocomplete_fields = ('task', 'parent_todo')
     list_display = ('id', 'created_at', 'task', 'description', 'completed')
     ordering = ('-created_at',)
     search_fields = (
