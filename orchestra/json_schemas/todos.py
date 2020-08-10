@@ -27,7 +27,7 @@ class TodoSchema(jsl.Document):
     Attributes:
         id (int):
             A unique id for the todo.
-        description (str):
+        title (str):
             A text description of the todo.
         items (array):
             An array of sub-todos of this todo.
@@ -41,7 +41,7 @@ class TodoSchema(jsl.Document):
             dictionary of attributes and predicates which get ANDed together.
     """
     id = jsl.IntField(required=True)
-    description = jsl.StringField(required=True)
+    title = jsl.StringField(required=True)
     items = jsl.ArrayField(jsl.DocumentField('TodoSchema'))
     skip_if = jsl.ArrayField(
         jsl.DictField(

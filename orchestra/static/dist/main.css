@@ -1919,7 +1919,7 @@ a.logo {
 @charset "UTF-8";
 /*!
  * Pikaday
- * Copyright © 2014 David Bushell | BSD & MIT license | http://dbushell.com/
+ * Copyright © 2014 David Bushell | BSD & MIT license | https://dbushell.com/
  */
 .pika-single {
   z-index: 9999;
@@ -2065,15 +2065,19 @@ a.logo {
     border-radius: 3px; }
   .is-disabled .pika-button,
   .is-outside-current-month .pika-button {
-    pointer-events: none;
-    cursor: default;
     color: #999;
     opacity: .3; }
+  .is-disabled .pika-button {
+    pointer-events: none;
+    cursor: default; }
   .pika-button:hover {
     color: #fff;
     background: #ff8000;
     box-shadow: none;
     border-radius: 3px; }
+  .pika-button .is-selection-disabled {
+    pointer-events: none;
+    cursor: default; }
 
 .pika-week {
   font-size: 11px;

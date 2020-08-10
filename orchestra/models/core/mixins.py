@@ -191,7 +191,7 @@ class TodoMixin(object):
     def __str__(self):
         return '{} - {} ({})'.format(
             self.task,
-            self.description,
+            self.title,
             self.completed)
 
 

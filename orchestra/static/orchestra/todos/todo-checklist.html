@@ -16,7 +16,7 @@
         <i class="fa fa-circle-o" aria-hidden="true" ng-if="(!todo.items || todo.items.length === 0) && showSkipped" data-nodrag></i>
         <span ng-hide="!todo.items || todo.items.length < 1 || showSkipped">[{{ ( filterTodoList(todo.items, showSkipped) | filter: { completed: true } ).length }}/{{ filterTodoList(todo.items, showSkipped).length }}] </span>
         <span class="todo__role">{{steps[taskSlugs[todo.task]].name}}:&nbsp;</span>
-        <span class="todo__description" ng-bind-html="todo.description"></span>
+        <span class="todo__description" ng-bind-html="todo.title"></span>
         <span ng-class="{'todo__dates': true, 'todo__dates-danger': isInDanger(todo)}">
           <span ng-if="isNonEmptyString(todo.start_by_datetime)">
             Start <datetime-display datetime="todo.start_by_datetime" show-time="true"/>
@@ -33,10 +33,10 @@
         <a href="#" ng-hide="todo.parent_todo" ng-click="removeTodo(todo)">[remove]</a>
       </span>
     </label>
-    <div class="todo-qa panel panel-default" ng-if="todoQas[todo.description] && todoQas[todo.description].comment">
+    <div class="todo-qa panel panel-default" ng-if="todoQas[todo.title] && todoQas[todo.title].comment">
       <div class="panel-body">
-        <span>{{todoQas[todo.description].todo === todo.id?"Feedback on this project":"Feedback from previous project"}}:</span>
-        <strong>{{todoQas[todo.description].comment}}</strong>
+        <span>{{todoQas[todo.title].todo === todo.id?"Feedback on this project":"Feedback from previous project"}}:</span>
+        <strong>{{todoQas[todo.title].comment}}</strong>
       </div>
     </div>
   </div>

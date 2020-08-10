@@ -177,11 +177,11 @@ class TimeEntryAdmin(AjaxSelectAdmin):
 @admin.register(Todo)
 class TodoAdmin(admin.ModelAdmin):
     autocomplete_fields = ('task', 'parent_todo')
-    list_display = ('id', 'created_at', 'task', 'description', 'completed')
+    list_display = ('id', 'created_at', 'task', 'title', 'completed')
     ordering = ('-created_at',)
     search_fields = (
         'task__project__short_description', 'task__step__name',
-        'description')
+        'title')
     list_filter = ('task__project__workflow_version',)
 
 
@@ -189,7 +189,7 @@ class TodoAdmin(admin.ModelAdmin):
 class TodoQAAdmin(AjaxSelectAdmin):
     list_display = ('id', 'created_at', 'todo', 'comment', 'approved')
     ordering = ('-created_at',)
-    search_fields = ('todo__description', 'comment',)
+    search_fields = ('todo__title', 'comment',)
 
 
 @admin.register(TodoListTemplate)

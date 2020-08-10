@@ -162,8 +162,8 @@ class TimeEntryFactory(factory.django.DjangoModelFactory):
 class TodoFactory(factory.django.DjangoModelFactory):
     task = factory.SubFactory(TaskFactory)
     completed = False
-    description = factory.Sequence(
-        lambda n: 'Description {}'.format(n))
+    title = factory.Sequence(
+        lambda n: 'Title {}'.format(n))
     start_by_datetime = None
     due_datetime = None
 

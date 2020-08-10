@@ -31,7 +31,7 @@ export default function qa (orchestraApi) {
         todos.forEach((todo) => {
           summary = todoQa.commentSummary(todo.items, summary)
           if (todo.qa && todo.qa.comment) {
-            summary = `*Todo*: ${todo.description}\n*Comment*: ${todo.qa.comment}\n\n${summary}`
+            summary = `*Todo*: ${todo.title}\n*Comment*: ${todo.qa.comment}\n\n${summary}`
           }
         })
         return summary

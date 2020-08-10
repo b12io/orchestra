@@ -27,9 +27,9 @@ export default function todoList (orchestraApi) {
       todoList.templates = []
       todoList.todoQas = []
 
-      const createTodo = (taskId, description, completed, startDate, dueDate) => todoApi.create({
+      const createTodo = (taskId, title, completed, startDate, dueDate) => todoApi.create({
         task: taskId,
-        description,
+        title,
         completed,
         start_by_datetime: startDate,
         due_datetime: dueDate

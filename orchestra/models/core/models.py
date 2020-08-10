@@ -633,7 +633,7 @@ class Todo(TodoMixin, BaseModel):
             The given task the Todo is attached to.
         completed (boolean):
             Whether the todo has been completed.
-        description (str):
+        title (str):
             A text description of the Todo.
         start_by_datetime (datetime.datetime):
             The time to start the todo. (inclusive)
@@ -661,7 +661,7 @@ class Todo(TodoMixin, BaseModel):
 
     task = models.ForeignKey(
         Task, related_name='todos', on_delete=models.CASCADE)
-    description = models.TextField()
+    title = models.TextField()
     completed = models.BooleanField(default=False)
     start_by_datetime = models.DateTimeField(null=True, blank=True)
     due_datetime = models.DateTimeField(null=True, blank=True)
