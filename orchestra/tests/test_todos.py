@@ -130,7 +130,7 @@ class TodosEndpointTests(EndpointTestCase):
                 updated_todo, _todo_data(todo.task, title, True))
         else:
             self.assertEqual(resp.status_code, 403)
-            self.assertNotEqual(updated_todo['description'], description)
+            self.assertNotEqual(updated_todo['title'], title)
 
     def test_todos_list_create(self):
         self._verify_todos_list(self.task.project.id, [], True)
