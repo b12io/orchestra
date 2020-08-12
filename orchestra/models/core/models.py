@@ -660,7 +660,8 @@ class Todo(TodoMixin, BaseModel):
         app_label = 'orchestra'
 
     task = models.ForeignKey(
-        Task, related_name='todos', on_delete=models.CASCADE)
+        Task, null=True, blank=True, related_name='todos',
+        on_delete=models.CASCADE)
     title = models.TextField()
     completed = models.BooleanField(default=False)
     start_by_datetime = models.DateTimeField(null=True, blank=True)
