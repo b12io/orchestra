@@ -659,10 +659,16 @@ class Todo(TodoMixin, BaseModel):
     class Meta:
         app_label = 'orchestra'
 
-    task = models.ForeignKey(
-        Task, null=True, blank=True, related_name='todos',
-        on_delete=models.CASCADE)
+    task = models.ForeignKey(Task, null=True, blank=True,
+        related_name='todos', on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, null=True, blank=True,
+        related_name='todos', on_delete=models.CASCADE)
+    step = models.ForeignKey(Step, null=True, blank=True,
+        related_name='todos', on_delete=models.CASCADE)
     title = models.TextField()
+    details = models.TextField(null=True, blank=True)
+    section = models.CharField(max_length=255, null=True, blank=True)
+    order = models.IntegerField(null=True, blank=True)
     completed = models.BooleanField(default=False)
     start_by_datetime = models.DateTimeField(null=True, blank=True)
     due_datetime = models.DateTimeField(null=True, blank=True)
@@ -673,6 +679,8 @@ class Todo(TodoMixin, BaseModel):
         TodoListTemplate, null=True, blank=True, related_name='template',
         on_delete=models.SET_NULL)
     activity_log = JSONField(default={'actions': []})
+    delivery_status = models.IntegerField(null=True, blank=True)
+    additional_data = JSONField(default=dict)
 
 
 class TodoQA(TodoQAMixin, BaseModel):
