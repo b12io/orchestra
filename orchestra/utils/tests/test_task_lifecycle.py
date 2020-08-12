@@ -715,12 +715,12 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
         # create todos with different due date times and one without
         TodoFactory(
             task=task,
-            description='todo1',
+            title='todo1',
             due_datetime=parse(DEADLINE2_DATETIME))
 
         TodoFactory(
             task=task,
-            description='todo2')
+            title='todo2')
 
         tasks_assigned = tasks_assigned_to_worker(self.workers[5])
 
@@ -734,7 +734,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
 
         TodoFactory(
             task=task,
-            description='todo3',
+            title='todo3',
             due_datetime=parse(DEADLINE1_DATETIME))
 
         tasks_assigned = tasks_assigned_to_worker(self.workers[5])
@@ -754,12 +754,12 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
         # create todos with different due date times and one without
         TodoFactory(
             task=task,
-            description='todo1',
+            title='todo1',
             start_by_datetime=parse(DEADLINE2_DATETIME))
 
         TodoFactory(
             task=task,
-            description='todo2',
+            title='todo2',
             start_by_datetime=parse(DEADLINE1_DATETIME))
 
         tasks_assigned = tasks_assigned_to_worker(self.workers[5])

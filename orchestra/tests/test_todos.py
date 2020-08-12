@@ -22,14 +22,14 @@ from orchestra.todos.serializers import TodoListTemplateSerializer
 from orchestra.utils.load_json import load_encoded_json
 
 
-def _todo_data(task, description, completed,
+def _todo_data(task, title, completed,
                skipped_datetime=None, start_by=None,
                due=None, parent_todo=None, template=None,
                activity_log=str({'actions': []}), qa=None):
     return {
         'task': task.id,
         'completed': completed,
-        'description': description,
+        'title': title,
         'template': template,
         'parent_todo': parent_todo,
         'start_by_datetime': start_by,
@@ -59,7 +59,7 @@ class TodosEndpointTests(EndpointTestCase):
         self.list_details_url_name = 'orchestra:todos:todo'
         self.tasks = Task.objects.filter(assignments__worker=self.worker)
         self.task = self.tasks[0]
-        self.todo_description = 'Let us do this'
+        self.todo_title = 'Let us do this'
         self.deadline = parse('2018-01-16T07:03:00+00:00')
 
     def _verify_missing_task(self, response):
@@ -103,41 +103,41 @@ class TodosEndpointTests(EndpointTestCase):
         num_todos = Todo.objects.all().count()
         resp = self.request_client.post(self.list_create_url, {
             'task': task.id,
-            'description': self.todo_description})
+            'title': self.todo_title})
         if success:
             self.assertEqual(resp.status_code, 201)
             self.assertEqual(Todo.objects.all().count(), num_todos + 1)
             todo = load_encoded_json(resp.content)
             self._verify_todo_content(
-                todo, _todo_data(task, self.todo_description, False))
+                todo, _todo_data(task, self.todo_title, False))
         else:
             self.assertEqual(resp.status_code, 403)
             self.assertEqual(Todo.objects.all().count(), num_todos)
 
     def _verify_todo_update(self, todo, success):
-        description = 'new description'
+        title = 'new title'
         list_details_url = reverse(
             self.list_details_url_name,
             kwargs={'pk': todo.id})
         resp = self.request_client.put(
             list_details_url,
-            json.dumps(_todo_data(todo.task, description, True)),
+            json.dumps(_todo_data(todo.task, title, True)),
             content_type='application/json')
         updated_todo = TodoSerializer(Todo.objects.get(id=todo.id)).data
         if success:
             self.assertEqual(resp.status_code, 200)
             self._verify_todo_content(
-                updated_todo, _todo_data(todo.task, description, True))
+                updated_todo, _todo_data(todo.task, title, True))
         else:
             self.assertEqual(resp.status_code, 403)
-            self.assertNotEqual(updated_todo['description'], description)
+            self.assertNotEqual(updated_todo['title'], title)
 
     def test_todos_list_create(self):
         self._verify_todos_list(self.task.project.id, [], True)
         self._verify_todo_creation(self.task, True)
         self._verify_todos_list(self.task.project.id,
                                 [_todo_data(
-                                    self.task, self.todo_description, False)],
+                                    self.task, self.todo_title, False)],
                                 True)
 
     def test_todos_list_create_permissions(self):
@@ -155,17 +155,17 @@ class TodosEndpointTests(EndpointTestCase):
         self._verify_todo_update(bad_todo, False)
 
     def test_create_todo_with_start_by_datetime(self):
-        START_DESCRIPTION = 'Start soon'
+        START_TITLE = 'Start soon'
 
         start_by_todo = TodoFactory(
             task=self.task,
             start_by_datetime=self.deadline,
-            description=START_DESCRIPTION)
+            title=START_TITLE)
 
         self._verify_todos_list(self.task.project.id, [
             _todo_data(
                 start_by_todo.task,
-                START_DESCRIPTION,
+                START_TITLE,
                 False,
                 None,
                 self.deadline.strftime('%Y-%m-%dT%H:%M:%SZ'),
@@ -173,17 +173,17 @@ class TodosEndpointTests(EndpointTestCase):
         ], True)
 
     def test_create_todo_with_due_datetime(self):
-        DUE_DESCRIPTION = 'Due soon'
+        DUE_TITLE = 'Due soon'
 
         due_todo = TodoFactory(
             task=self.task,
             due_datetime=self.deadline,
-            description=DUE_DESCRIPTION)
+            title=DUE_TITLE)
 
         self._verify_todos_list(self.task.project.id, [
             _todo_data(
                 due_todo.task,
-                DUE_DESCRIPTION,
+                DUE_TITLE,
                 False,
                 None,
                 None,

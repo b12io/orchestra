@@ -542,7 +542,7 @@ def tasks_assigned_to_worker(worker):
         for task_assignment in task_assignments:
             step = task_assignment.task.step
             workflow_version = step.workflow_version
-            next_todo_description = None
+            next_todo_title = None
             next_todo_dict = {}
             should_be_active = False
             if state in ('returned', 'in_progress'):
@@ -572,7 +572,7 @@ def tasks_assigned_to_worker(worker):
                     .first())
 
                 if next_todo:
-                    next_todo_description = next_todo.description
+                    next_todo_title = next_todo.title
                     start_str = (
                         next_todo.start_by_datetime.strftime(
                             '%Y-%m-%dT%H:%M:%SZ'
@@ -584,7 +584,7 @@ def tasks_assigned_to_worker(worker):
                         ) if next_todo.due_datetime else ''
                     )
                     next_todo_dict = {
-                        'description': next_todo.description,
+                        'title': next_todo.title,
                         'start_by_datetime': start_str,
                         'due_datetime': due_str
                     }
@@ -601,7 +601,7 @@ def tasks_assigned_to_worker(worker):
                 # state is determined by the presence of incomplete
                 # todos.
                 task_started = (
-                    next_todo_description is not None
+                    next_todo_title is not None
                     and (
                         next_todo.start_by_datetime is None
                         or next_todo.start_by_datetime <= time_now
