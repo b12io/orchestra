@@ -29,7 +29,7 @@ def add_todolist_template(todolist_template_slug, task_id):
     template_todos = todolist_template.todos.get('items', [])
     root_todo = Todo(
         task=task,
-        description=todolist_template.name,
+        title=todolist_template.name,
         template=todolist_template
     )
     root_todo.save()
@@ -83,7 +83,7 @@ def _add_template_todo(
 
         todo = Todo(
             task=task,
-            description=template_todo['description'],
+            title=template_todo['description'],
             template=todolist_template,
             parent_todo=parent_todo,
             skipped_datetime=skipped_datetime

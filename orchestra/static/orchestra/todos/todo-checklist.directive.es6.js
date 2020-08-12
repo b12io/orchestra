@@ -35,7 +35,7 @@ export default function todoChecklist () {
       }
 
       scope.isInDanger = (todo) => {
-        return (!todo.completed && moment.isBeforeNowBy(todo.due_datetime, 1, 'days')) || (scope.todoQas[todo.description] && scope.todoQas[todo.description].approved === false)
+        return (!todo.completed && moment.isBeforeNowBy(todo.due_datetime, 1, 'days')) || (scope.todoQas[todo.title] && scope.todoQas[todo.title].approved === false)
       }
 
       scope.isSkipped = (todo) => {
@@ -71,7 +71,7 @@ export default function todoChecklist () {
             return scope.hasTodoQaComment(todo, showSkipped)
           })
         }
-        return ((scope.todoQas[todo.description] && scope.todoQas[todo.description].comment) && (showSkipped ? scope.isSkipped(todo) : scope.isNotSkipped(todo))) || items.length !== 0
+        return ((scope.todoQas[todo.title] && scope.todoQas[todo.title].comment) && (showSkipped ? scope.isSkipped(todo) : scope.isNotSkipped(todo))) || items.length !== 0
       }
 
       scope.filterTodoList = (todos, showSkipped) => {

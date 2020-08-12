@@ -73,7 +73,7 @@ def worker_task_recent_todo_qas(request):
         else:
             todo_qas = TodoQA.objects.none()
 
-    todos_recommendation = {todo_qa.todo.description: TodoQASerializer(
+    todos_recommendation = {todo_qa.todo.title: TodoQASerializer(
         todo_qa).data for todo_qa in todo_qas}
     return Response(todos_recommendation)
 
@@ -110,7 +110,7 @@ class TodoList(generics.ListCreateAPIView):
             if assignment and assignment.worker)
         message = '{} has created a new todo `{}` for {}.'.format(
             sender,
-            todo.description,
+            todo.title,
             recipients if recipients else '`{}`'.format(todo.task.step.slug))
         message_experts_slack_group(
             todo.task.project.slack_group_id, message)
@@ -144,7 +144,7 @@ class TodoDetail(generics.RetrieveUpdateDestroyAPIView):
                 (not (todo.parent_todo and todo.parent_todo.parent_todo)):
             message = '{} has marked `{}` as `{}`.'.format(
                 sender,
-                todo.description,
+                todo.title,
                 todo_change)
             message_experts_slack_group(
                 todo.task.project.slack_group_id, message)
