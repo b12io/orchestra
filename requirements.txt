@@ -11,10 +11,10 @@ ipython==6.2.1
 boto==2.48.0
 moto==0.4.31
 flake8==3.5.0
-djangorestframework==3.11.0
+djangorestframework==3.11.1
 djangorestframework-httpsignature==1.0.0
-djangocms-admin-style==1.2.7
-lxml==3.8.0
+djangocms-admin-style==1.5.0
+lxml==4.5.2
 beautifulsoup4==4.6.0
 pyOpenSSL==17.5.0
 google-api-python-client==1.6.5
@@ -22,7 +22,7 @@ slacker==0.13.0
 python-dateutil==2.6.1
 django-hijack==2.1.6
 django-hijack-admin==2.1.6
-django-money==0.12.3
+django-money==1.1
 django-filter==2.2.0
 django-widget-tweaks==1.4.1
 django-bitfield==2.0.1
