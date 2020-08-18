@@ -19,6 +19,7 @@ from orchestra.models.core.mixins import WorkerMixin
 from orchestra.models.core.mixins import WorkflowMixin
 from orchestra.models.core.mixins import WorkflowVersionMixin
 from orchestra.utils.models import BaseModel
+from orchestra.utils.models import ChoicesEnum
 
 # TODO(marcua): Convert ManyToManyFields to django-hstore referencefields or
 # wait for django-postgres ArrayFields in Django 1.8.
@@ -659,9 +660,21 @@ class Todo(TodoMixin, BaseModel):
     class Meta:
         app_label = 'orchestra'
 
-    task = models.ForeignKey(
-        Task, related_name='todos', on_delete=models.CASCADE)
+    class Status(ChoicesEnum):
+        PENDING = 'pending'
+        COMPLETED = 'completed'
+        DECLINED = 'declined'
+
+    task = models.ForeignKey(Task, null=True, blank=True,
+                             related_name='todos', on_delete=models.SET_NULL)
+    project = models.ForeignKey(Project, null=True, blank=True,
+                                related_name='todos', on_delete=models.CASCADE)
+    step = models.ForeignKey(Step, null=True, blank=True,
+                             related_name='todos', on_delete=models.CASCADE)
     title = models.TextField()
+    details = models.TextField(null=True, blank=True)
+    section = models.CharField(max_length=255, null=True, blank=True)
+    order = models.IntegerField(null=True, blank=True)
     completed = models.BooleanField(default=False)
     start_by_datetime = models.DateTimeField(null=True, blank=True)
     due_datetime = models.DateTimeField(null=True, blank=True)
@@ -672,6 +685,9 @@ class Todo(TodoMixin, BaseModel):
         TodoListTemplate, null=True, blank=True, related_name='template',
         on_delete=models.SET_NULL)
     activity_log = JSONField(default={'actions': []})
+    status = models.IntegerField(
+        null=True, blank=True, choices=Status.choices())
+    additional_data = JSONField(default=dict)
 
 
 class TodoQA(TodoQAMixin, BaseModel):
