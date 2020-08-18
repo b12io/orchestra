@@ -666,11 +666,11 @@ class Todo(TodoMixin, BaseModel):
         DECLINED = 'declined'
 
     task = models.ForeignKey(Task, null=True, blank=True,
-        related_name='todos', on_delete=models.CASCADE)
+                             related_name='todos', on_delete=models.CASCADE)
     project = models.ForeignKey(Project, null=True, blank=True,
-        related_name='todos', on_delete=models.CASCADE)
+                                related_name='todos', on_delete=models.CASCADE)
     step = models.ForeignKey(Step, null=True, blank=True,
-        related_name='todos', on_delete=models.CASCADE)
+                             related_name='todos', on_delete=models.CASCADE)
     title = models.TextField()
     details = models.TextField(null=True, blank=True)
     section = models.CharField(max_length=255, null=True, blank=True)
