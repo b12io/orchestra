@@ -19,6 +19,7 @@ from orchestra.models.core.mixins import WorkerMixin
 from orchestra.models.core.mixins import WorkflowMixin
 from orchestra.models.core.mixins import WorkflowVersionMixin
 from orchestra.utils.models import BaseModel
+from orchestra.utils.models import ChoicesEnum
 
 # TODO(marcua): Convert ManyToManyFields to django-hstore referencefields or
 # wait for django-postgres ArrayFields in Django 1.8.
@@ -659,6 +660,11 @@ class Todo(TodoMixin, BaseModel):
     class Meta:
         app_label = 'orchestra'
 
+    class Status(ChoicesEnum):
+        PENDING = 'pending'
+        COMPLETED = 'completed'
+        DECLINED = 'declined'
+
     task = models.ForeignKey(Task, null=True, blank=True,
         related_name='todos', on_delete=models.CASCADE)
     project = models.ForeignKey(Project, null=True, blank=True,
@@ -679,7 +685,8 @@ class Todo(TodoMixin, BaseModel):
         TodoListTemplate, null=True, blank=True, related_name='template',
         on_delete=models.SET_NULL)
     activity_log = JSONField(default={'actions': []})
-    delivery_status = models.IntegerField(null=True, blank=True)
+    status = models.IntegerField(
+        null=True, blank=True, choices=Status.choices())
     additional_data = JSONField(default=dict)
 
 
