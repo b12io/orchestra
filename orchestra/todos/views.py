@@ -3,6 +3,7 @@ import logging
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
 from jsonview.exceptions import BadRequest
 
 from orchestra.models import Task
@@ -14,12 +15,14 @@ from orchestra.todos.serializers import TodoSerializer
 from orchestra.todos.serializers import TodoWithQASerializer
 from orchestra.todos.serializers import TodoQASerializer
 from orchestra.todos.serializers import TodoListTemplateSerializer
+from orchestra.todos.serializers import BulkTodoSerializer
 from orchestra.utils.notifications import message_experts_slack_group
 from orchestra.todos.api import add_todolist_template
 from orchestra.utils.decorators import api_endpoint
 from orchestra.todos.auth import IsAssociatedWithTodosProject
 from orchestra.todos.auth import IsAssociatedWithProject
 from orchestra.todos.auth import IsAssociatedWithTask
+from orchestra.project_api.auth import OrchestraProjectAPIAuthentication
 
 logger = logging.getLogger(__name__)
 
@@ -178,3 +181,14 @@ class TodoListTemplateList(generics.ListCreateAPIView):
 
     serializer_class = TodoListTemplateSerializer
     queryset = TodoListTemplate.objects.all()
+
+
+class TodoListViewset(ModelViewSet):
+    serializer_class = BulkTodoSerializer
+    authentication_classes = (OrchestraProjectAPIAuthentication,)
+
+    def get_serializer(self, *args, **kwargs):
+        if isinstance(kwargs.get('data', {}), list):
+            kwargs['many'] = True
+
+        return super().get_serializer(*args, **kwargs)
