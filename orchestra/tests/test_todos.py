@@ -19,6 +19,7 @@ from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.todos.serializers import TodoSerializer
 from orchestra.todos.serializers import TodoQASerializer
 from orchestra.todos.serializers import TodoListTemplateSerializer
+from orchestra.todos.serializers import BulkTodoSerializer
 from orchestra.utils.load_json import load_encoded_json
 
 
@@ -602,3 +603,18 @@ class TodoTemplateEndpointTests(EndpointTestCase):
         ]
         for todo, expected_todo in zip(todos, expected_todos):
             self._verify_todo_content(todo, expected_todo)
+
+
+class BulkTodoSerializerTests(EndpointTestCase):
+    def setUp(self):
+        super().setUp()
+        setup_models(self)
+
+    def test_bulk_create(self):
+        data = [{'title': 'Testing title {}'.format(x)} for x in range(10)]
+        url = reverse('orchestra:todos:todo-new-list')
+        resp = self.request_client.post(
+            url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(resp.status_code, 201)
+        todos = Todo.objects.filter(title__startswith='Testing title ')
+        self.assertEqual(len(todos), 10)

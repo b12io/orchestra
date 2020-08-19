@@ -1,4 +1,7 @@
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
+
+from django.db import IntegrityError
 
 from orchestra.models import Todo
 from orchestra.models import TodoQA
@@ -89,3 +92,33 @@ class TodoListTemplateSerializer(serializers.ModelSerializer,
             'creator',
             'todos')
         read_only_fields = ('id',)
+
+
+class TodoBulkCreateListSerializer(serializers.ListSerializer):
+    def create(self, validated_data):
+        result = [self.child.create(attrs) for attrs in validated_data]
+        try:
+            self.child.Meta.model.objects.bulk_create(result)
+        except IntegrityError as e:
+            raise ValidationError(e)
+        return result
+
+
+class BulkTodoSerializer(serializers.ModelSerializer):
+
+    def create(self, validated_data):
+        instance = Todo(**validated_data)
+        if isinstance(self._kwargs['data'], dict):
+            instance.save()
+
+        return instance
+
+    class Meta:
+        model = Todo
+        fields = (
+            'id', 'title', 'details', 'section',
+            'order', 'completed', 'start_by_datetime', 'due_datetime',
+            'skipped_datetime', 'parent_todo', 'template', 'activity_log',
+            'status', 'additional_data')
+        read_only_fields = ('id',)
+        list_serializer_class = TodoBulkCreateListSerializer
