@@ -15,6 +15,8 @@ from orchestra.tests.helpers.fixtures import TaskFactory
 from orchestra.tests.helpers.fixtures import TodoFactory
 from orchestra.tests.helpers.fixtures import TodoQAFactory
 from orchestra.tests.helpers.fixtures import TodoListTemplateFactory
+from orchestra.tests.helpers.fixtures import ProjectFactory
+from orchestra.tests.helpers.fixtures import StepFactory
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.todos.serializers import TodoSerializer
 from orchestra.todos.serializers import TodoQASerializer
@@ -609,9 +611,16 @@ class BulkTodoSerializerTests(EndpointTestCase):
     def setUp(self):
         super().setUp()
         setup_models(self)
+        self.project = ProjectFactory()
+        self.step = StepFactory()
 
     def test_bulk_create(self):
-        data = [{'title': 'Testing title {}'.format(x)} for x in range(10)]
+        data = [
+            {
+                'title': 'Testing title {}'.format(x),
+                'project': self.project.id,
+            } for x in range(10)
+        ]
         url = reverse('orchestra:todos:todo-new-list')
         resp = self.request_client.post(
             url, data=json.dumps(data), content_type='application/json')
