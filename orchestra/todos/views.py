@@ -192,3 +192,6 @@ class TodoListViewset(ModelViewSet):
             kwargs['many'] = True
 
         return super().get_serializer(*args, **kwargs)
+
+    def get_queryset(self):
+        return Todo.objects.filter(pk=self.kwargs.get('pk'))
