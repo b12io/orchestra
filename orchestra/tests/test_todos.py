@@ -615,15 +615,21 @@ class BulkTodoSerializerTests(EndpointTestCase):
         self.step = StepFactory()
 
     def test_bulk_create(self):
+        todos = Todo.objects.filter(title__startswith='Testing title ')
+        self.assertEqual(len(todos), 0)
         data = [
             {
                 'title': 'Testing title {}'.format(x),
                 'project': self.project.id,
+                'step': self.step.id
             } for x in range(10)
         ]
         url = reverse('orchestra:todos:todo-new-list')
         resp = self.request_client.post(
             url, data=json.dumps(data), content_type='application/json')
         self.assertEqual(resp.status_code, 201)
-        todos = Todo.objects.filter(title__startswith='Testing title ')
+        todos = Todo.objects.filter(
+            title__startswith='Testing title ',
+            project=self.project,
+            step=self.step)
         self.assertEqual(len(todos), 10)

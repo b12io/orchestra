@@ -105,7 +105,6 @@ class TodoBulkCreateListSerializer(serializers.ListSerializer):
 
 
 class BulkTodoSerializer(serializers.ModelSerializer):
-
     def create(self, validated_data):
         instance = Todo(**validated_data)
         if isinstance(self._kwargs['data'], dict):
@@ -116,7 +115,7 @@ class BulkTodoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Todo
         fields = (
-            'id', 'title', 'details', 'section', 'project',
+            'id', 'title', 'details', 'section', 'project', 'step',
             'order', 'completed', 'start_by_datetime', 'due_datetime',
             'skipped_datetime', 'parent_todo', 'template', 'activity_log',
             'status', 'additional_data')
