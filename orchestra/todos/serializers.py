@@ -116,7 +116,7 @@ class BulkTodoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Todo
         fields = (
-            'id', 'title', 'details', 'section',
+            'id', 'title', 'details', 'section', 'project',
             'order', 'completed', 'start_by_datetime', 'due_datetime',
             'skipped_datetime', 'parent_todo', 'template', 'activity_log',
             'status', 'additional_data')
