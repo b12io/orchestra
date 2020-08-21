@@ -663,3 +663,23 @@ class BulkTodoSerializerTests(EndpointTestCase):
         resp = self.request_client.get(url_with_filters)
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()[0]['step'], self.todo_with_step.step.id)
+
+    def test_update_functionality(self):
+        todo1 = TodoFactory(
+            project=self.project, step=self.step, title='Test title1')
+        todo2 = TodoFactory(
+            project=self.project, step=self.step, title='Test title2')
+        # Set title of the todo2 to todo1
+        serialized = BulkTodoSerializer(todo2).data
+        detail_url = reverse(
+            'orchestra:todos:todo-new-detail',
+            kwargs={'pk': todo1.id})
+        resp = self.request_client.put(
+            detail_url,
+            data=json.dumps(serialized),
+            content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+
+        # Check if title is updated
+        updated_todo_1 = Todo.objects.get(pk=todo1.pk)
+        self.assertEqual(updated_todo_1.title, todo2.title)

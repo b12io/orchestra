@@ -197,7 +197,7 @@ class TodoListViewset(ModelViewSet):
         return super().get_serializer(*args, **kwargs)
 
     def get_queryset(self):
-        if self.action == 'retrieve':
+        if self.action == 'retrieve' or self.action == 'update':
             queryset = Todo.objects.filter(pk=self.kwargs.get('pk'))
         elif self.action == 'list':
             queryset = Todo.objects.all()
