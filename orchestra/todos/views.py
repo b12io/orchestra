@@ -4,6 +4,8 @@ from rest_framework import generics
 from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.exceptions import ValidationError
+from rest_framework.decorators import action
 from jsonview.exceptions import BadRequest
 from django_filters import rest_framework as filters
 
@@ -184,6 +186,16 @@ class TodoListTemplateList(generics.ListCreateAPIView):
     queryset = TodoListTemplate.objects.all()
 
 
+def validate_ids(data, field='id', unique=True):
+    if isinstance(data, list):
+        id_list = [int(x[field]) for x in data]
+        if unique and len(id_list) != len(set(id_list)):
+            raise ValidationError(
+                'Multiple updates to a single {} found'.format(field))
+        return id_list
+    return [data]
+
+
 class TodoListViewset(ModelViewSet):
     serializer_class = BulkTodoSerializer
     authentication_classes = (OrchestraProjectAPIAuthentication,)
@@ -196,9 +208,32 @@ class TodoListViewset(ModelViewSet):
 
         return super().get_serializer(*args, **kwargs)
 
-    def get_queryset(self):
-        if self.action == 'retrieve' or self.action == 'update':
+    def is_single_item_request_by_pk(self):
+        return (
+            self.action == 'retrieve' or
+            self.action == 'update' or
+            self.action == 'partial_update' or
+            self.action == 'destroy'
+        )
+
+    def get_queryset(self, ids=None):
+        queryset = Todo.objects.all()
+        if ids:
+            queryset = Todo.objects.filter(id__in=ids)
+        elif self.is_single_item_request_by_pk():
             queryset = Todo.objects.filter(pk=self.kwargs.get('pk'))
-        elif self.action == 'list':
-            queryset = Todo.objects.all()
         return queryset
+
+    @action(detail=False, methods=['put'])
+    def put(self, request, *args, **kwargs):
+        ids = validate_ids(request.data)
+        instances = self.get_queryset(ids=ids)
+        serializer = self.get_serializer(
+            instances, data=request.data, partial=False, many=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        data = serializer.data
+        return Response(data)
+
+    def perform_update(self, serializer):
+        serializer.save()
