@@ -683,3 +683,56 @@ class BulkTodoSerializerTests(EndpointTestCase):
         # Check if title is updated
         updated_todo_1 = Todo.objects.get(pk=todo1.pk)
         self.assertEqual(updated_todo_1.title, todo2.title)
+
+    def test_partial_update_functionality(self):
+        detail_url = reverse(
+            'orchestra:todos:todo-new-detail',
+            kwargs={'pk': self.todo.id})
+        expected_title = 'Partial update title'
+        resp = self.request_client.patch(
+            detail_url,
+            data=json.dumps({'title': expected_title}),
+            content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()['title'], expected_title)
+
+    def test_destroy_functionality(self):
+        all_todos_count = Todo.objects.count()
+        self.assertEqual(all_todos_count, 2)
+        detail_url = reverse(
+            'orchestra:todos:todo-new-detail',
+            kwargs={'pk': self.todo.id})
+        resp = self.request_client.delete(detail_url)
+        self.assertEqual(resp.status_code, 204)
+        all_todos_count = Todo.objects.count()
+        self.assertEqual(all_todos_count, 1)
+
+        marked_as_deleted = Todo.unsafe_objects.get(pk=self.todo.pk)
+        self.assertTrue(marked_as_deleted.is_deleted)
+        self.assertEqual(marked_as_deleted, self.todo)
+
+    def test_bulk_update(self):
+        todo1 = TodoFactory(
+            project=self.project, step=self.step, title='Test title1')
+        todo2 = TodoFactory(
+            project=self.project, step=self.step, title='Test title2')
+        todo3 = TodoFactory(
+            project=self.project, step=self.step, title='Test title3')
+        serialized = BulkTodoSerializer([todo1, todo2, todo3], many=True).data
+        # Change titles
+        updated = [
+            self._change_attr(x, 'title',  'updated title {}'.format(x['id']))
+            for x in serialized]
+        resp = self.request_client.put(
+            self.list_url, data=json.dumps(updated),
+            content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+
+        updated_todos = Todo.objects.filter(
+            id__in=[todo1.id, todo2.id, todo3.id])
+        for todo in updated_todos:
+            self.assertTrue(todo.title.startswith('updated title'))
+
+    def _change_attr(self, item, attr, value):
+        item[attr] = value
+        return item

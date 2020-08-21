@@ -103,13 +103,41 @@ class TodoBulkCreateListSerializer(serializers.ListSerializer):
             raise ValidationError(e)
         return result
 
+    def update(self, instances, validated_data):
+        instance_hash = {
+            index: instance for index, instance in enumerate(instances)}
+
+        result = [
+            self.child.update(instance_hash[index], attrs)
+            for index, attrs in enumerate(validated_data)
+        ]
+
+        writable_fields = [
+            x for x in self.child.Meta.fields
+            if x not in self.child.Meta.read_only_fields
+        ]
+
+        try:
+            self.child.Meta.model.objects.bulk_update(result, writable_fields)
+        except IntegrityError as e:
+            raise ValidationError(e)
+
+        return result
+
 
 class BulkTodoSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         instance = Todo(**validated_data)
         if isinstance(self._kwargs['data'], dict):
             instance.save()
+        return instance
 
+    def update(self, instance, validated_data):
+        for k, v in validated_data.items():
+            setattr(instance, k, v)
+
+        if isinstance(self._kwargs['data'], dict):
+            instance.save()
         return instance
 
     class Meta:
