@@ -5,6 +5,7 @@ from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from jsonview.exceptions import BadRequest
+from django_filters import rest_framework as filters
 
 from orchestra.models import Task
 from orchestra.models import Todo
@@ -186,6 +187,8 @@ class TodoListTemplateList(generics.ListCreateAPIView):
 class TodoListViewset(ModelViewSet):
     serializer_class = BulkTodoSerializer
     authentication_classes = (OrchestraProjectAPIAuthentication,)
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_fields = ('project', 'step',)
 
     def get_serializer(self, *args, **kwargs):
         if isinstance(kwargs.get('data', {}), list):
@@ -194,4 +197,8 @@ class TodoListViewset(ModelViewSet):
         return super().get_serializer(*args, **kwargs)
 
     def get_queryset(self):
-        return Todo.objects.filter(pk=self.kwargs.get('pk'))
+        if self.action == 'retrieve':
+            queryset = Todo.objects.filter(pk=self.kwargs.get('pk'))
+        elif self.action == 'list':
+            queryset = Todo.objects.all()
+        return queryset

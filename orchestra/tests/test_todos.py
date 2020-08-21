@@ -615,6 +615,7 @@ class BulkTodoSerializerTests(EndpointTestCase):
         self.step = StepFactory()
         self.list_url = reverse('orchestra:todos:todo-new-list')
         self.todo = TodoFactory(project=self.project)
+        self.todo_with_step = TodoFactory(project=self.project, step=self.step)
 
     def test_bulk_create(self):
         todos = Todo.objects.filter(title__startswith='Testing title ')
@@ -642,3 +643,23 @@ class BulkTodoSerializerTests(EndpointTestCase):
             kwargs={'pk': self.todo.id})
         resp = self.request_client.get(detail_url)
         self.assertEqual(resp.status_code, 200)
+
+    def test_get_list_of_todos_with_filters(self):
+        url_with_project_filter = '{}?project={}'.format(
+            self.list_url, self.project.id)
+        resp = self.request_client.get(url_with_project_filter)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.json()), 2)
+
+        url_with_step_filter = '{}?step={}'.format(
+            self.list_url, self.todo_with_step.step.id)
+        resp = self.request_client.get(url_with_step_filter)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.json()), 1)
+        self.assertEqual(resp.json()[0]['step'], self.todo_with_step.step.id)
+
+        url_with_filters = '{}?project={}&step={}'.format(
+            self.list_url, self.project.id, self.todo_with_step.step.id)
+        resp = self.request_client.get(url_with_filters)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()[0]['step'], self.todo_with_step.step.id)
