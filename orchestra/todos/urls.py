@@ -33,9 +33,8 @@ urlpatterns = [
 ]
 
 router = routers.SimpleRouter()
-# TODO(murat): rename URL
 router.register(
-    r'todo-new', views.TodoListViewset, basename='todo-new'
+    r'todo-api', views.TodoListViewset, basename='todo-api'
 )
 
 urlpatterns += router.urls
