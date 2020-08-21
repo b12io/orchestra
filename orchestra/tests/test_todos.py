@@ -613,7 +613,7 @@ class BulkTodoSerializerTests(EndpointTestCase):
         setup_models(self)
         self.project = ProjectFactory()
         self.step = StepFactory()
-        self.list_url = reverse('orchestra:todos:todo-new-list')
+        self.list_url = reverse('orchestra:todos:todo-api-list')
         self.todo = TodoFactory(project=self.project)
         self.todo_with_step = TodoFactory(project=self.project, step=self.step)
 
@@ -639,7 +639,7 @@ class BulkTodoSerializerTests(EndpointTestCase):
 
     def test_get_single_todo_by_pk(self):
         detail_url = reverse(
-            'orchestra:todos:todo-new-detail',
+            'orchestra:todos:todo-api-detail',
             kwargs={'pk': self.todo.id})
         resp = self.request_client.get(detail_url)
         self.assertEqual(resp.status_code, 200)
@@ -672,7 +672,7 @@ class BulkTodoSerializerTests(EndpointTestCase):
         # Set title of the todo2 to todo1
         serialized = BulkTodoSerializer(todo2).data
         detail_url = reverse(
-            'orchestra:todos:todo-new-detail',
+            'orchestra:todos:todo-api-detail',
             kwargs={'pk': todo1.id})
         resp = self.request_client.put(
             detail_url,
@@ -686,7 +686,7 @@ class BulkTodoSerializerTests(EndpointTestCase):
 
     def test_partial_update_functionality(self):
         detail_url = reverse(
-            'orchestra:todos:todo-new-detail',
+            'orchestra:todos:todo-api-detail',
             kwargs={'pk': self.todo.id})
         expected_title = 'Partial update title'
         resp = self.request_client.patch(
@@ -700,7 +700,7 @@ class BulkTodoSerializerTests(EndpointTestCase):
         all_todos_count = Todo.objects.count()
         self.assertEqual(all_todos_count, 2)
         detail_url = reverse(
-            'orchestra:todos:todo-new-detail',
+            'orchestra:todos:todo-api-detail',
             kwargs={'pk': self.todo.id})
         resp = self.request_client.delete(detail_url)
         self.assertEqual(resp.status_code, 204)
