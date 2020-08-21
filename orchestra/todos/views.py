@@ -222,6 +222,7 @@ class TodoListViewset(ModelViewSet):
             queryset = Todo.objects.filter(id__in=ids)
         elif self.is_single_item_request_by_pk():
             queryset = Todo.objects.filter(pk=self.kwargs.get('pk'))
+        queryset = queryset.order_by('-created_at')
         return queryset
 
     @action(detail=False, methods=['put'])
