@@ -26,7 +26,7 @@ django-money==0.12.3
 django-filter==2.3.0
 django-widget-tweaks==1.4.8
 django-bitfield==2.0.1
-django-phonenumber-field==4.0.0
+django-phonenumber-field==5.0.0
 django-nose==1.4.6
 django-annoying==0.10.3
 django-gulp==2.5.1
