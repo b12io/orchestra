@@ -191,6 +191,7 @@ class TodoListViewset(ModelViewSet):
     authentication_classes = (OrchestraProjectAPIAuthentication,)
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_fields = ('project', 'step',)
+    queryset = Todo.objects.all()
 
     def get_serializer(self, *args, **kwargs):
         if isinstance(kwargs.get('data', {}), list):
@@ -207,11 +208,8 @@ class TodoListViewset(ModelViewSet):
         )
 
     def get_queryset(self):
-        queryset = Todo.objects.all()
-        if self.is_single_item_request_by_pk():
-            queryset = Todo.objects.filter(pk=self.kwargs.get('pk'))
-        queryset = queryset.order_by('-created_at')
-        return queryset
+        queryset = super().get_queryset()
+        return queryset.order_by('-created_at')
 
     @action(detail=False, methods=['put'])
     def put(self, request, *args, **kwargs):
