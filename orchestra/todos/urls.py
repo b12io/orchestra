@@ -1,5 +1,4 @@
 from django.conf.urls import url
-from rest_framework import routers
 
 from orchestra.todos.views import TodoDetail
 from orchestra.todos.views import TodoList
@@ -31,10 +30,3 @@ urlpatterns = [
         views.worker_task_recent_todo_qas,
         name='worker_task_recent_todo_qas'),
 ]
-
-router = routers.SimpleRouter()
-router.register(
-    r'todo-api', views.TodoListViewset, basename='todo-api'
-)
-
-urlpatterns += router.urls

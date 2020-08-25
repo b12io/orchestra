@@ -3,11 +3,8 @@ import logging
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
 from rest_framework.exceptions import ValidationError
-from rest_framework.decorators import action
 from jsonview.exceptions import BadRequest
-from django_filters import rest_framework as filters
 
 from orchestra.models import Task
 from orchestra.models import Todo
@@ -18,14 +15,12 @@ from orchestra.todos.serializers import TodoSerializer
 from orchestra.todos.serializers import TodoWithQASerializer
 from orchestra.todos.serializers import TodoQASerializer
 from orchestra.todos.serializers import TodoListTemplateSerializer
-from orchestra.todos.serializers import BulkTodoSerializer
 from orchestra.utils.notifications import message_experts_slack_group
 from orchestra.todos.api import add_todolist_template
 from orchestra.utils.decorators import api_endpoint
 from orchestra.todos.auth import IsAssociatedWithTodosProject
 from orchestra.todos.auth import IsAssociatedWithProject
 from orchestra.todos.auth import IsAssociatedWithTask
-from orchestra.project_api.auth import OrchestraProjectAPIAuthentication
 
 logger = logging.getLogger(__name__)
 
@@ -184,42 +179,3 @@ class TodoListTemplateList(generics.ListCreateAPIView):
 
     serializer_class = TodoListTemplateSerializer
     queryset = TodoListTemplate.objects.all()
-
-
-class TodoListViewset(ModelViewSet):
-    serializer_class = BulkTodoSerializer
-    authentication_classes = (OrchestraProjectAPIAuthentication,)
-    filter_backends = (filters.DjangoFilterBackend,)
-    filterset_fields = ('project', 'step',)
-    queryset = Todo.objects.all()
-
-    def get_serializer(self, *args, **kwargs):
-        if isinstance(kwargs.get('data', {}), list):
-            kwargs['many'] = True
-
-        return super().get_serializer(*args, **kwargs)
-
-    def is_single_item_request_by_pk(self):
-        return (
-            self.action == 'retrieve' or
-            self.action == 'update' or
-            self.action == 'partial_update' or
-            self.action == 'destroy'
-        )
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        return queryset.order_by('-created_at')
-
-    @action(detail=False, methods=['put'])
-    def put(self, request, *args, **kwargs):
-        instances = self.get_queryset()
-        serializer = self.get_serializer(
-            instances, data=request.data, partial=False, many=True)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        data = serializer.data
-        return Response(data)
-
-    def perform_update(self, serializer):
-        serializer.save()
