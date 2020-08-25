@@ -122,6 +122,10 @@ class TodoBulkCreateListSerializer(serializers.ListSerializer):
 
 
 class BulkTodoSerializer(serializers.ModelSerializer):
+    json_schemas = {
+        'activity_log': TodoActionListSchema
+    }
+
     def create(self, validated_data):
         instance = Todo(**validated_data)
         if isinstance(self._kwargs['data'], dict):
@@ -139,9 +143,22 @@ class BulkTodoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Todo
         fields = (
-            'id', 'title', 'details', 'section', 'project', 'step',
-            'order', 'completed', 'start_by_datetime', 'due_datetime',
-            'skipped_datetime', 'parent_todo', 'template', 'activity_log',
-            'status', 'additional_data')
+            'id',
+            'created_at',
+            'task',
+            'title',
+            'parent_todo',
+            'template',
+            'completed',
+            'skipped_datetime',
+            'start_by_datetime',
+            'due_datetime',
+            'activity_log',
+            'section',
+            'project',
+            'step',
+            'order',
+            'status',
+            'additional_data')
         read_only_fields = ('id',)
         list_serializer_class = TodoBulkCreateListSerializer
