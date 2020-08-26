@@ -636,6 +636,22 @@ class BulkTodoSerializerTests(EndpointTestCase):
             resp.json()['detail'],
             'Authentication credentials were not provided.')
 
+    def test_create(self):
+        data = {
+            'title': 'Testing create action',
+            'project': self.project.id,
+            'step': self.step.id
+        }
+        resp = self.request_client.post(
+            self.list_url, data=json.dumps(data),
+            content_type='application/json')
+        self.assertEqual(resp.status_code, 201)
+        todos = Todo.objects.filter(
+            title__startswith='Testing create action',
+            project=self.project,
+            step=self.step)
+        self.assertEqual(todos.count(), 1)
+
     def test_bulk_create(self):
         todos = Todo.objects.filter(title__startswith='Testing title ')
         self.assertEqual(len(todos), 0)
