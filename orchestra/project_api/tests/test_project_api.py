@@ -634,6 +634,8 @@ class TestTodoListViewset(EndpointTestCase):
             project=self.project, step=self.step, title='Test title2')
         todo3 = TodoFactory(
             project=self.project, step=self.step, title='Test title3')
+        todo_should_not_be_updated = TodoFactory(
+            project=self.project, step=self.step, title='Not updated')
         serialized = BulkTodoSerializer([todo1, todo2, todo3], many=True).data
         # Change titles
         updated = [
@@ -648,6 +650,7 @@ class TestTodoListViewset(EndpointTestCase):
             id__in=[todo1.id, todo2.id, todo3.id])
         for todo in updated_todos:
             self.assertTrue(todo.title.startswith('updated title'))
+        self.assertEqual(todo_should_not_be_updated.title, 'Not updated')
 
     def _change_attr(self, item, attr, value):
         item[attr] = value

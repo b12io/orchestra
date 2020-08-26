@@ -176,13 +176,16 @@ class TodoListViewset(ModelViewSet):
 
         return super().get_serializer(*args, **kwargs)
 
-    def get_queryset(self):
+    def get_queryset(self, ids=None):
         queryset = super().get_queryset()
+        if ids:
+            return queryset.filter(id__in=ids).order_by('-created_at')
         return queryset.order_by('-created_at')
 
     @action(detail=False, methods=['put'])
     def put(self, request, *args, **kwargs):
-        instances = self.get_queryset()
+        ids = [x['id'] for x in request.data]
+        instances = self.get_queryset(ids=ids)
         serializer = self.get_serializer(
             instances, data=request.data, partial=False, many=True)
         serializer.is_valid(raise_exception=True)
