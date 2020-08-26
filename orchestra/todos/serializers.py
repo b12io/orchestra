@@ -4,6 +4,7 @@ from rest_framework.exceptions import ValidationError
 from django.db import IntegrityError
 
 from orchestra.models import Todo
+from orchestra.models import Step
 from orchestra.models import TodoQA
 from orchestra.models import TodoListTemplate
 from orchestra.json_schemas.todos import TodoListSchema
