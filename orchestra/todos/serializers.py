@@ -133,6 +133,10 @@ class BulkTodoSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {'step': ['step should be supplied.']}
             )
+        if 'project' not in data.keys():
+            raise serializers.ValidationError(
+                {'project': ['project should be supplied.']}
+            )
         return data
 
     def create(self, validated_data):
