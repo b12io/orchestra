@@ -164,6 +164,7 @@ def message_project_team(request):
 
 class TodoListViewset(ModelViewSet):
     serializer_class = BulkTodoSerializer
+    permission_classes = (IsSignedUser,)
     authentication_classes = (OrchestraProjectAPIAuthentication,)
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_fields = ('project', 'step',)

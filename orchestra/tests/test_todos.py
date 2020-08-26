@@ -3,12 +3,14 @@ import json
 from django.utils import timezone
 from dateutil.parser import parse
 from django.urls import reverse
+from rest_framework.test import APIClient
 
 from orchestra.models import Task
 from orchestra.models import Todo
 from orchestra.models import TodoQA
 from orchestra.models import TodoListTemplate
 from orchestra.models import Worker
+from orchestra.project_api.auth import SignedUser
 from orchestra.project_api.serializers import TimeEntrySerializer
 from orchestra.tests.helpers import EndpointTestCase
 from orchestra.tests.helpers.fixtures import TaskFactory
@@ -610,12 +612,29 @@ class TodoTemplateEndpointTests(EndpointTestCase):
 class BulkTodoSerializerTests(EndpointTestCase):
     def setUp(self):
         super().setUp()
+        self.request_client = APIClient(enforce_csrf_checks=True)
+        self.request_client.force_authenticate(user=SignedUser())
         setup_models(self)
         self.project = ProjectFactory()
         self.step = StepFactory()
         self.list_url = reverse('orchestra:api:todo-api-list')
         self.todo = TodoFactory(project=self.project)
         self.todo_with_step = TodoFactory(project=self.project, step=self.step)
+
+    def test_permissions(self):
+        data = {
+            'title': 'Testing title 1',
+            'project': self.project.id,
+            'step': self.step.id
+        }
+        request_client = APIClient(enforce_csrf_checks=True)
+        resp = request_client.post(
+            self.list_url, data=json.dumps(data),
+            content_type='application/json')
+        self.assertEqual(resp.status_code, 403)
+        self.assertEqual(
+            resp.json()['detail'],
+            'Authentication credentials were not provided.')
 
     def test_bulk_create(self):
         todos = Todo.objects.filter(title__startswith='Testing title ')
