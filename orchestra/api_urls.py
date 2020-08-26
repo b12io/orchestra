@@ -91,7 +91,7 @@ urlpatterns = [
 
 router = routers.SimpleRouter()
 router.register(
-    r'todo-api', TodoListViewset, basename='todo-api'
+    r'project/todo-api', TodoListViewset, basename='todo-api'
 )
 
 urlpatterns += router.urls
