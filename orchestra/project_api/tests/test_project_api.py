@@ -502,7 +502,7 @@ class TestTodoListViewset(EndpointTestCase):
         worker = Worker.objects.get(user__username='test_user_6')
         request_client = APIClient(enforce_csrf_checks=True)
         request_client.login(username=worker.user.username,
-                                  password='defaultpassword')
+                             password='defaultpassword')
         resp = request_client.post(
             self.list_url, data=json.dumps(data),
             content_type='application/json')
