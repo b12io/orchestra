@@ -691,10 +691,14 @@ class BulkTodoSerializerTests(EndpointTestCase):
         expected_title = 'Partial update title'
         resp = self.request_client.patch(
             detail_url,
-            data=json.dumps({'title': expected_title}),
+            data=json.dumps({
+                'title': expected_title,
+                'step': self.step.id
+            }),
             content_type='application/json')
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()['title'], expected_title)
+        self.assertEqual(resp.json()['step'], self.step.id)
 
     def test_destroy_functionality(self):
         all_todos_count = Todo.objects.count()

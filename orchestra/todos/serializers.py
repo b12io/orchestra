@@ -4,6 +4,7 @@ from rest_framework.exceptions import ValidationError
 from django.db import IntegrityError
 
 from orchestra.models import Todo
+from orchestra.models import Step
 from orchestra.models import TodoQA
 from orchestra.models import TodoListTemplate
 from orchestra.json_schemas.todos import TodoListSchema
@@ -125,6 +126,14 @@ class BulkTodoSerializer(serializers.ModelSerializer):
     json_schemas = {
         'activity_log': TodoActionListSchema
     }
+
+    # TODO(murat): Remove this validation when step will be marked as required
+    def validate(self, data):
+        if 'step' not in data.keys():
+            raise serializers.ValidationError(
+                {'step': ['step should be supplied.']}
+            )
+        return data
 
     def create(self, validated_data):
         instance = Todo(**validated_data)
