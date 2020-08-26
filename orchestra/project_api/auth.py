@@ -19,8 +19,6 @@ class IsSignedUser(BasePermission):
         return request.user and isinstance(request.user, SignedUser)
 
 
-# TODO(murat): rename and move to common/ since it's being
-# used in multiple places
 class OrchestraProjectAPIAuthentication(SignatureAuthentication):
     API_KEY_HEADER = 'X-Api-Key'
 
