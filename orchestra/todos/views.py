@@ -11,6 +11,7 @@ from orchestra.models import TodoQA
 from orchestra.models import TodoListTemplate
 from orchestra.models import Worker
 from orchestra.todos.serializers import TodoSerializer
+from orchestra.todos.serializers import BulkTodoSerializer
 from orchestra.todos.serializers import TodoWithQASerializer
 from orchestra.todos.serializers import TodoQASerializer
 from orchestra.todos.serializers import TodoListTemplateSerializer
@@ -23,6 +24,9 @@ from orchestra.todos.auth import IsAssociatedWithTask
 
 logger = logging.getLogger(__name__)
 
+def _set_data(obj, key, value):
+    obj[key] = value
+    return obj
 
 @api_endpoint(methods=['POST'],
               permissions=(IsAssociatedWithProject,),
@@ -35,8 +39,9 @@ def update_todos_from_todolist_template(request):
         project = Task.objects.get(id=task_id).project
         todos = Todo.objects.filter(
             task__project__id=int(project.id)).order_by('-created_at')
-        serializer = TodoSerializer(todos, many=True)
-        return Response(serializer.data)
+        serializer = BulkTodoSerializer(todos, many=True)
+        data = [_set_data(x, 'qa', None) for x in serializer.data]
+        return Response(data)
     except TodoListTemplate.DoesNotExist:
         raise BadRequest('TodoList Template not found for the given slug.')
 

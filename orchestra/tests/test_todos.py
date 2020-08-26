@@ -39,6 +39,29 @@ def _todo_data(task, title, completed,
         'qa': qa
     }
 
+def _todo_data_new(task, title, completed,
+                   skipped_datetime=None, start_by=None,
+                   due=None, parent_todo=None, template=None,
+                   activity_log=str({'actions': []}), qa=None):
+    return {
+        'task': task.id,
+        'completed': completed,
+        'title': title,
+        'template': template,
+        'parent_todo': parent_todo,
+        'start_by_datetime': start_by,
+        'due_datetime': due,
+        'activity_log': activity_log,
+        'skipped_datetime': skipped_datetime,
+        'qa': qa,
+        'additional_data': '{}',
+        'order': None,
+        'project': None,
+        'section': None,
+        'status': None,
+        'step': None
+    }
+
 
 def _get_test_conditional_props(project):
     return {
@@ -477,13 +500,13 @@ class TodoTemplateEndpointTests(EndpointTestCase):
         self.assertEqual(Todo.objects.all().count(), num_todos + 3)
         todos = load_encoded_json(resp.content)
         expected_todos = [
-            _todo_data(self.task, 'todo child', False,
+            _todo_data_new(self.task, 'todo child', False,
                        template=todolist_template.id,
                        parent_todo=todos[1]['id']),
-            _todo_data(self.task, 'todo parent', False,
+            _todo_data_new(self.task, 'todo parent', False,
                        template=todolist_template.id,
                        parent_todo=todos[2]['id']),
-            _todo_data(self.task, self.todolist_template_name,
+            _todo_data_new(self.task, self.todolist_template_name,
                        False, template=todolist_template.id),
         ]
         for todo, expected_todo in zip(todos, expected_todos):
@@ -590,15 +613,15 @@ class TodoTemplateEndpointTests(EndpointTestCase):
         todos = load_encoded_json(resp.content)
 
         expected_todos = [
-            _todo_data(self.task, 'todo child 2', False,
-                       template=todolist_template.id,
-                       parent_todo=todos[1]['id'],
-                       skipped_datetime=timezone.now()),
-            _todo_data(self.task, 'todo parent 2', False,
-                       template=todolist_template.id,
-                       parent_todo=todos[2]['id']),
-            _todo_data(self.task, self.todolist_template_name,
-                       False, template=todolist_template.id),
+            _todo_data_new(self.task, 'todo child 2', False,
+                           template=todolist_template.id,
+                           parent_todo=todos[1]['id'],
+                           skipped_datetime=timezone.now()),
+            _todo_data_new(self.task, 'todo parent 2', False,
+                           template=todolist_template.id,
+                           parent_todo=todos[2]['id']),
+            _todo_data_new(self.task, self.todolist_template_name,
+                           False, template=todolist_template.id),
         ]
         for todo, expected_todo in zip(todos, expected_todos):
             self._verify_todo_content(todo, expected_todo)
