@@ -3,14 +3,12 @@ import json
 from django.utils import timezone
 from dateutil.parser import parse
 from django.urls import reverse
-from rest_framework.test import APIClient
 
 from orchestra.models import Task
 from orchestra.models import Todo
 from orchestra.models import TodoQA
 from orchestra.models import TodoListTemplate
 from orchestra.models import Worker
-from orchestra.project_api.auth import SignedUser
 from orchestra.project_api.serializers import TimeEntrySerializer
 from orchestra.tests.helpers import EndpointTestCase
 from orchestra.tests.helpers.fixtures import TaskFactory

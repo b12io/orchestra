@@ -3,7 +3,6 @@ import logging
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework.response import Response
-from rest_framework.exceptions import ValidationError
 from jsonview.exceptions import BadRequest
 
 from orchestra.models import Task
