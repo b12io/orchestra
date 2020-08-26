@@ -636,6 +636,19 @@ class BulkTodoSerializerTests(EndpointTestCase):
             resp.json()['detail'],
             'Authentication credentials were not provided.')
 
+        # Test if a logged in user cannot access this endpoint
+        worker = Worker.objects.get(user__username='test_user_6')
+        request_client = APIClient(enforce_csrf_checks=True)
+        request_client.login(username=worker.user.username,
+                                  password='defaultpassword')
+        resp = request_client.post(
+            self.list_url, data=json.dumps(data),
+            content_type='application/json')
+        self.assertEqual(resp.status_code, 403)
+        self.assertEqual(
+            resp.json()['detail'],
+            'Authentication credentials were not provided.')
+
     def test_create(self):
         data = {
             'title': 'Testing create action',
