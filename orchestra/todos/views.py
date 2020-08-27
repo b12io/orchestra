@@ -10,8 +10,7 @@ from orchestra.models import Todo
 from orchestra.models import TodoQA
 from orchestra.models import TodoListTemplate
 from orchestra.models import Worker
-from orchestra.todos.serializers import TodoSerializer
-from orchestra.todos.serializers import BulkTodoSerializer
+from orchestra.todos.serializers import BulkTodoSerializerWithQAField
 from orchestra.todos.serializers import TodoWithQASerializer
 from orchestra.todos.serializers import TodoQASerializer
 from orchestra.todos.serializers import TodoListTemplateSerializer
@@ -39,9 +38,8 @@ def update_todos_from_todolist_template(request):
         project = Task.objects.get(id=task_id).project
         todos = Todo.objects.filter(
             task__project__id=int(project.id)).order_by('-created_at')
-        serializer = BulkTodoSerializer(todos, many=True)
-        data = [_set_data(x, 'qa', None) for x in serializer.data]
-        return Response(data)
+        serializer = BulkTodoSerializerWithQAField(todos, many=True)
+        return Response(serializer.data)
     except TodoListTemplate.DoesNotExist:
         raise BadRequest('TodoList Template not found for the given slug.')
 
@@ -95,7 +93,7 @@ class TodoList(generics.ListCreateAPIView):
                 name='project_admins').exists():
             return TodoWithQASerializer
         else:
-            return TodoSerializer
+            return BulkTodoSerializerWithQAField
 
     def get_queryset(self):
         queryset = Todo.objects.all()
@@ -125,7 +123,7 @@ class TodoDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (permissions.IsAuthenticated,
                           IsAssociatedWithTodosProject)
     queryset = Todo.objects.all()
-    serializer_class = TodoSerializer
+    serializer_class = BulkTodoSerializerWithQAField
 
     def perform_update(self, serializer):
         old_todo = self.get_object()
