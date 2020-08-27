@@ -403,7 +403,7 @@ class ProjectAPITestCase(OrchestraTestCase):
              ' should be supplied'))
         # Non-existent project_id provided
         response = self.api_client.post(
-            url, {'message': 'text', 'project_id': 123}, format='json')
+            url, {'message': 'text', 'project_id': 123456}, format='json')
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['message'],
                          'No project for given id')
