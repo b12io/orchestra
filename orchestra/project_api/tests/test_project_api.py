@@ -1,3 +1,4 @@
+import json
 import datetime
 from unittest.mock import patch
 
@@ -11,17 +12,23 @@ from rest_framework.test import APIClient
 from orchestra.google_apps.service import Service
 from orchestra.models import Project
 from orchestra.models import Task
+from orchestra.models import Todo
 from orchestra.models import TaskAssignment
 from orchestra.models import TimeEntry
+from orchestra.models import Worker
 from orchestra.models import WorkerCertification
+from orchestra.todos.serializers import BulkTodoSerializer
 from orchestra.project_api.api import MalformedDependencyException
 from orchestra.project_api.api import get_workflow_steps
 from orchestra.project_api.api import get_project_information
 from orchestra.project_api.auth import OrchestraProjectAPIAuthentication
 from orchestra.project_api.auth import SignedUser
 from orchestra.tests.helpers import OrchestraTestCase
+from orchestra.tests.helpers import EndpointTestCase
 from orchestra.tests.helpers.fixtures import setup_models
+from orchestra.tests.helpers.fixtures import StepFactory
 from orchestra.tests.helpers.fixtures import ProjectFactory
+from orchestra.tests.helpers.fixtures import TodoFactory
 from orchestra.tests.helpers.google_apps import mock_create_drive_service
 from orchestra.utils.load_json import load_encoded_json
 from orchestra.utils.task_lifecycle import get_new_task_assignment
@@ -396,7 +403,7 @@ class ProjectAPITestCase(OrchestraTestCase):
              ' should be supplied'))
         # Non-existent project_id provided
         response = self.api_client.post(
-            url, {'message': 'text', 'project_id': 123}, format='json')
+            url, {'message': 'text', 'project_id': 123456}, format='json')
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['message'],
                          'No project for given id')
@@ -462,3 +469,189 @@ class ProjectAPIAuthTestCase(OrchestraTestCase):
         self.assertEqual(
             self.authentication.fetch_user_data('a'),
             (SignedUser(), 'b'))
+
+
+class TestTodoListViewset(EndpointTestCase):
+    def setUp(self):
+        super().setUp()
+        self.request_client = APIClient(enforce_csrf_checks=True)
+        self.request_client.force_authenticate(user=SignedUser())
+        setup_models(self)
+        self.project = ProjectFactory()
+        self.step = StepFactory()
+        self.list_url = reverse('orchestra:api:todo-api-list')
+        self.todo = TodoFactory(project=self.project)
+        self.todo_with_step = TodoFactory(project=self.project, step=self.step)
+
+    def test_permissions(self):
+        data = {
+            'title': 'Testing title 1',
+            'project': self.project.id,
+            'step': self.step.id
+        }
+        request_client = APIClient(enforce_csrf_checks=True)
+        resp = request_client.post(
+            self.list_url, data=json.dumps(data),
+            content_type='application/json')
+        self.assertEqual(resp.status_code, 403)
+        self.assertEqual(
+            resp.json()['detail'],
+            'Authentication credentials were not provided.')
+
+        # Test if a logged in user cannot access this endpoint
+        worker = Worker.objects.get(user__username='test_user_6')
+        request_client = APIClient(enforce_csrf_checks=True)
+        request_client.login(username=worker.user.username,
+                             password='defaultpassword')
+        resp = request_client.post(
+            self.list_url, data=json.dumps(data),
+            content_type='application/json')
+        self.assertEqual(resp.status_code, 403)
+        self.assertEqual(
+            resp.json()['detail'],
+            'Authentication credentials were not provided.')
+
+    def test_create(self):
+        data = {
+            'title': 'Testing create action',
+            'project': self.project.id,
+            'step': self.step.id
+        }
+        resp = self.request_client.post(
+            self.list_url, data=json.dumps(data),
+            content_type='application/json')
+        self.assertEqual(resp.status_code, 201)
+        todos = Todo.objects.filter(
+            title__startswith='Testing create action',
+            project=self.project,
+            step=self.step)
+        self.assertEqual(todos.count(), 1)
+
+    def test_bulk_create(self):
+        todos = Todo.objects.filter(title__startswith='Testing title ')
+        self.assertEqual(len(todos), 0)
+        data = [
+            {
+                'title': 'Testing title {}'.format(x),
+                'project': self.project.id,
+                'step': self.step.id
+            } for x in range(10)
+        ]
+        resp = self.request_client.post(
+            self.list_url, data=json.dumps(data),
+            content_type='application/json')
+        self.assertEqual(resp.status_code, 201)
+        todos = Todo.objects.filter(
+            title__startswith='Testing title ',
+            project=self.project,
+            step=self.step)
+        self.assertEqual(len(todos), 10)
+
+    def test_get_single_todo_by_pk(self):
+        detail_url = reverse(
+            'orchestra:api:todo-api-detail',
+            kwargs={'pk': self.todo.id})
+        resp = self.request_client.get(detail_url)
+        self.assertEqual(resp.status_code, 200)
+
+    def test_get_list_of_todos_with_filters(self):
+        url_with_project_filter = '{}?project={}'.format(
+            self.list_url, self.project.id)
+        resp = self.request_client.get(url_with_project_filter)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.json()), 2)
+
+        url_with_step_filter = '{}?step={}'.format(
+            self.list_url, self.todo_with_step.step.id)
+        resp = self.request_client.get(url_with_step_filter)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.json()), 1)
+        self.assertEqual(resp.json()[0]['step'], self.todo_with_step.step.id)
+
+        url_with_filters = '{}?project={}&step={}'.format(
+            self.list_url, self.project.id, self.todo_with_step.step.id)
+        resp = self.request_client.get(url_with_filters)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()[0]['step'], self.todo_with_step.step.id)
+
+    def test_update_functionality(self):
+        todo1 = TodoFactory(
+            project=self.project, step=self.step, title='Test title1')
+        todo2 = TodoFactory(
+            project=self.project, step=self.step, title='Test title2')
+        # Set title of the todo2 to todo1
+        serialized = BulkTodoSerializer(todo2).data
+        detail_url = reverse(
+            'orchestra:api:todo-api-detail',
+            kwargs={'pk': todo1.id})
+        resp = self.request_client.put(
+            detail_url,
+            data=json.dumps(serialized),
+            content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+
+        # Check if title is updated
+        updated_todo_1 = Todo.objects.get(pk=todo1.pk)
+        self.assertEqual(updated_todo_1.title, todo2.title)
+
+    def test_partial_update_functionality(self):
+        detail_url = reverse(
+            'orchestra:api:todo-api-detail',
+            kwargs={'pk': self.todo.id})
+        expected_title = 'Partial update title'
+        resp = self.request_client.patch(
+            detail_url,
+            data=json.dumps({
+                'title': expected_title,
+                'step': self.step.id,
+                'project': self.project.id
+            }),
+            content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()['title'], expected_title)
+        self.assertEqual(resp.json()['step'], self.step.id)
+        self.assertEqual(resp.json()['project'], self.project.id)
+
+    def test_destroy_functionality(self):
+        all_todos_count = Todo.objects.count()
+        self.assertEqual(all_todos_count, 2)
+        detail_url = reverse(
+            'orchestra:api:todo-api-detail',
+            kwargs={'pk': self.todo.id})
+        resp = self.request_client.delete(detail_url)
+        self.assertEqual(resp.status_code, 204)
+        all_todos_count = Todo.objects.count()
+        self.assertEqual(all_todos_count, 1)
+
+        marked_as_deleted = Todo.unsafe_objects.get(pk=self.todo.pk)
+        self.assertTrue(marked_as_deleted.is_deleted)
+        self.assertEqual(marked_as_deleted, self.todo)
+
+    def test_bulk_update(self):
+        todo1 = TodoFactory(
+            project=self.project, step=self.step, title='Test title1')
+        todo2 = TodoFactory(
+            project=self.project, step=self.step, title='Test title2')
+        todo3 = TodoFactory(
+            project=self.project, step=self.step, title='Test title3')
+        todo_should_not_be_updated = TodoFactory(
+            project=self.project, step=self.step, title='Not updated')
+        serialized = BulkTodoSerializer([todo1, todo2, todo3], many=True).data
+        # Change titles
+        updated = [
+            self._change_attr(x, 'title',  'updated title {}'.format(x['id']))
+            for x in serialized]
+        resp = self.request_client.put(
+            self.list_url, data=json.dumps(updated),
+            content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+
+        updated_todos = Todo.objects.filter(
+            id__in=[todo1.id, todo2.id, todo3.id])
+        for todo in updated_todos:
+            self.assertTrue(todo.title.startswith('updated title'))
+        self.assertEqual(todo_should_not_be_updated.title, 'Not updated')
+
+    def _change_attr(self, item, attr, value):
+        item[attr] = value
+        return item
