@@ -11,7 +11,7 @@ from orchestra.models import TodoQA
 from orchestra.models import TodoListTemplate
 from orchestra.models import Worker
 from orchestra.todos.serializers import BulkTodoSerializerWithQAField
-from orchestra.todos.serializers import TodoWithQASerializer
+from orchestra.todos.serializers import BulkTodoSerializerWithQASerializer
 from orchestra.todos.serializers import TodoQASerializer
 from orchestra.todos.serializers import TodoListTemplateSerializer
 from orchestra.utils.notifications import message_experts_slack_group
@@ -91,7 +91,7 @@ class TodoList(generics.ListCreateAPIView):
         # Only include todo QA data for users in the `project_admins` group.
         if self.request.user.groups.filter(
                 name='project_admins').exists():
-            return TodoWithQASerializer
+            return BulkTodoSerializerWithQASerializer
         else:
             return BulkTodoSerializerWithQAField
 
