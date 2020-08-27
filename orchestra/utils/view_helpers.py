@@ -16,6 +16,7 @@ class IsAssociatedWorker(permissions.BasePermission):
 
 
 def get_todo_change(old_todo, new_todo):
+    # TODO(murat): think about updates we want to notify about
     # When activity_log is updated, `todo_change = None`
     # to avoid triggering any slack messages
     todo_change = None
@@ -32,9 +33,14 @@ def notify_single_todo_update(todo_change, todo, sender):
     # depth 0 (no parent) or 1 (no grantparent).
     if todo_change and \
             (not (todo.parent_todo and todo.parent_todo.parent_todo)):
-        message = '{} has marked `{}` as `{}`.'.format(
-            sender,
-            todo.title,
-            todo_change)
+        if sender:
+            message = '{} has marked `{}` as `{}`.'.format(
+                sender,
+                todo.title,
+                todo_change)
+        else:
+            message = '`{}` was marked as `{}`.'.format(
+                todo.title,
+                todo_change)
         message_experts_slack_group(
             todo.task.project.slack_group_id, message)

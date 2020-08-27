@@ -21,6 +21,8 @@ from orchestra.utils.decorators import api_endpoint
 from orchestra.utils.load_json import load_encoded_json
 from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.notifications import message_experts_slack_group
+from orchestra.utils.view_helpers import get_todo_change
+from orchestra.utils.view_helpers import notify_single_todo_update
 from orchestra.project_api.auth import OrchestraProjectAPIAuthentication
 from orchestra.project_api.auth import IsSignedUser
 from orchestra.todos.serializers import BulkTodoSerializer
@@ -194,4 +196,11 @@ class TodoListViewset(ModelViewSet):
         return Response(data)
 
     def perform_update(self, serializer):
-        serializer.save()
+        if isinstance(serializer.validated_data, list):
+            serializer.save()
+        else:
+            todo = serializer.save()
+            old_todo = self.get_object()
+            todo_change = get_todo_change(old_todo, todo)
+            notify_single_todo_update(
+                todo_change, todo, sender=None)
