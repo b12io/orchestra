@@ -174,3 +174,15 @@ class BulkTodoSerializer(serializers.ModelSerializer):
             'additional_data')
         read_only_fields = ('id',)
         list_serializer_class = TodoBulkCreateListSerializer
+
+class BulkTodoSerializerWithQAField(BulkTodoSerializer):
+    qa = serializers.SerializerMethodField()
+
+    def get_qa(self, obj):
+        return None
+
+    class Meta:
+        model = Todo
+        fields = BulkTodoSerializer.Meta.fields + ('qa',)
+        read_only_fields = ('id',)
+        list_serializer_class = TodoBulkCreateListSerializer
