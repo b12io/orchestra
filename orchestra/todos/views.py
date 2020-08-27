@@ -14,6 +14,8 @@ from orchestra.todos.serializers import BulkTodoSerializerWithQAField
 from orchestra.todos.serializers import BulkTodoSerializerWithQASerializer
 from orchestra.todos.serializers import TodoQASerializer
 from orchestra.todos.serializers import TodoListTemplateSerializer
+from orchestra.utils.view_helpers import get_todo_change
+from orchestra.utils.view_helpers import notify_single_todo_update
 from orchestra.utils.notifications import message_experts_slack_group
 from orchestra.todos.api import add_todolist_template
 from orchestra.utils.decorators import api_endpoint
@@ -132,27 +134,8 @@ class TodoDetail(generics.RetrieveUpdateDestroyAPIView):
         todo = serializer.save()
         sender = Worker.objects.get(
             user=self.request.user).formatted_slack_username()
-
-        if old_todo.completed != todo.completed:
-            todo_change = 'complete' if todo.completed else 'incomplete'
-        elif old_todo.skipped_datetime != todo.skipped_datetime:
-            todo_change = 'not relevant' \
-                if todo.skipped_datetime else 'relevant'
-        else:
-            # When activity_log is updated, `todo_change = None`
-            # to avoid triggering any slack messages
-            todo_change = None
-
-        # To avoid Slack noise, only send updates for changed TODOs with
-        # depth 0 (no parent) or 1 (no grantparent).
-        if todo_change and \
-                (not (todo.parent_todo and todo.parent_todo.parent_todo)):
-            message = '{} has marked `{}` as `{}`.'.format(
-                sender,
-                todo.title,
-                todo_change)
-            message_experts_slack_group(
-                todo.task.project.slack_group_id, message)
+        todo_change = get_todo_change(old_todo, todo)
+        notify_single_todo_update(todo_change, todo, sender)
 
 
 class TodoQADetail(generics.UpdateAPIView):
