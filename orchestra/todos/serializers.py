@@ -24,33 +24,6 @@ class TodoQASerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)
 
 
-class TodoSerializer(serializers.ModelSerializer):
-    qa = serializers.SerializerMethodField()
-    json_schemas = {
-        'activity_log': TodoActionListSchema
-    }
-
-    def get_qa(self, obj):
-        return None
-
-    class Meta:
-        model = Todo
-        fields = (
-            'id',
-            'created_at',
-            'task',
-            'title',
-            'parent_todo',
-            'template',
-            'qa',
-            'completed',
-            'skipped_datetime',
-            'start_by_datetime',
-            'due_datetime',
-            'activity_log')
-        read_only_fields = ('id',)
-
-
 class TodoWithQASerializer(serializers.ModelSerializer):
     qa = TodoQASerializer(read_only=True)
     json_schemas = {
