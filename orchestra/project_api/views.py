@@ -179,7 +179,7 @@ class TodoListViewset(ModelViewSet):
     def get_queryset(self, ids=None):
         queryset = super().get_queryset()
         if ids:
-            return queryset.filter(id__in=ids).order_by('-created_at')
+            queryset = queryset.filter(id__in=ids)
         return queryset.order_by('-created_at')
 
     @action(detail=False, methods=['put'])
