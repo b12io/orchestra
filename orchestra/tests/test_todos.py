@@ -27,25 +27,8 @@ from orchestra.utils.load_json import load_encoded_json
 def _todo_data(task, title, completed,
                skipped_datetime=None, start_by=None,
                due=None, parent_todo=None, template=None,
-               activity_log=str({'actions': []}), qa=None):
-    return {
-        'task': task.id,
-        'completed': completed,
-        'title': title,
-        'template': template,
-        'parent_todo': parent_todo,
-        'start_by_datetime': start_by,
-        'due_datetime': due,
-        'activity_log': activity_log,
-        'skipped_datetime': skipped_datetime,
-        'qa': qa
-    }
-
-def _todo_data_new(task, title, completed,
-                   skipped_datetime=None, start_by=None,
-                   due=None, parent_todo=None, template=None,
-                   activity_log=str({'actions': []}), qa=None,
-                   project=None, step=None):
+               activity_log=str({'actions': []}), qa=None,
+               project=None, step=None):
     return {
         'task': task.id,
         'completed': completed,
@@ -139,7 +122,7 @@ class TodosEndpointTests(EndpointTestCase):
             self.assertEqual(Todo.objects.all().count(), num_todos + 1)
             todo = load_encoded_json(resp.content)
             self._verify_todo_content(
-                todo, _todo_data_new(
+                todo, _todo_data(
                     task, self.todo_title, False, project=project, step=step))
         else:
             self.assertEqual(resp.status_code, 403)
@@ -152,7 +135,7 @@ class TodosEndpointTests(EndpointTestCase):
             kwargs={'pk': todo.id})
         resp = self.request_client.put(
             list_details_url,
-            json.dumps(_todo_data_new(
+            json.dumps(_todo_data(
                 todo.task, title, True,
                 project=self.project.id, step=self.step.id)),
             content_type='application/json')
@@ -161,7 +144,7 @@ class TodosEndpointTests(EndpointTestCase):
         if success:
             self.assertEqual(resp.status_code, 200)
             self._verify_todo_content(
-                updated_todo, _todo_data_new(
+                updated_todo, _todo_data(
                     todo.task, title, True,
                     project=self.project.id,
                     step=self.step.id))
@@ -174,7 +157,7 @@ class TodosEndpointTests(EndpointTestCase):
         self._verify_todo_creation(
             self.task, True, self.project.id, self.step.id)
         self._verify_todos_list(self.task.project.id,
-                                [_todo_data_new(
+                                [_todo_data(
                                     self.task,
                                     self.todo_title,
                                     False,
@@ -205,7 +188,7 @@ class TodosEndpointTests(EndpointTestCase):
             title=START_TITLE)
 
         self._verify_todos_list(self.task.project.id, [
-            _todo_data_new(
+            _todo_data(
                 start_by_todo.task,
                 START_TITLE,
                 False,
@@ -223,7 +206,7 @@ class TodosEndpointTests(EndpointTestCase):
             title=DUE_TITLE)
 
         self._verify_todos_list(self.task.project.id, [
-            _todo_data_new(
+            _todo_data(
                 due_todo.task,
                 DUE_TITLE,
                 False,
@@ -519,13 +502,13 @@ class TodoTemplateEndpointTests(EndpointTestCase):
         self.assertEqual(Todo.objects.all().count(), num_todos + 3)
         todos = load_encoded_json(resp.content)
         expected_todos = [
-            _todo_data_new(self.task, 'todo child', False,
+            _todo_data(self.task, 'todo child', False,
                        template=todolist_template.id,
                        parent_todo=todos[1]['id']),
-            _todo_data_new(self.task, 'todo parent', False,
+            _todo_data(self.task, 'todo parent', False,
                        template=todolist_template.id,
                        parent_todo=todos[2]['id']),
-            _todo_data_new(self.task, self.todolist_template_name,
+            _todo_data(self.task, self.todolist_template_name,
                        False, template=todolist_template.id),
         ]
         for todo, expected_todo in zip(todos, expected_todos):
@@ -632,15 +615,15 @@ class TodoTemplateEndpointTests(EndpointTestCase):
         todos = load_encoded_json(resp.content)
 
         expected_todos = [
-            _todo_data_new(self.task, 'todo child 2', False,
-                           template=todolist_template.id,
-                           parent_todo=todos[1]['id'],
-                           skipped_datetime=timezone.now()),
-            _todo_data_new(self.task, 'todo parent 2', False,
-                           template=todolist_template.id,
-                           parent_todo=todos[2]['id']),
-            _todo_data_new(self.task, self.todolist_template_name,
-                           False, template=todolist_template.id),
+            _todo_data(self.task, 'todo child 2', False,
+                       template=todolist_template.id,
+                       parent_todo=todos[1]['id'],
+                       skipped_datetime=timezone.now()),
+            _todo_data(self.task, 'todo parent 2', False,
+                       template=todolist_template.id,
+                       parent_todo=todos[2]['id']),
+            _todo_data(self.task, self.todolist_template_name,
+                       False, template=todolist_template.id),
         ]
         for todo, expected_todo in zip(todos, expected_todos):
             self._verify_todo_content(todo, expected_todo)
