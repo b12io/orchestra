@@ -165,6 +165,6 @@ def message_project_team(request):
     return {'success': True}
 
 
-class TodoListViewset(GenericTodoViewset):
+class TodoApiViewset(GenericTodoViewset):
     permission_classes = (IsSignedUser,)
     authentication_classes = (OrchestraProjectAPIAuthentication,)
