@@ -36,9 +36,14 @@ def get_todo_change(old_todo, new_todo):
         changed_fields.append('order')
     if old_todo.status != old_todo.status:
         changed_fields.append('status')
-    dict1 = new_todo.additional_data
-    dict2 = old_todo.additional_data
-    changed_subfields = [k for k in dict1 if dict1.get(k) != dict2.get(k)]
+    dict1 = {}
+    dict2 = {}
+    if isinstance(old_todo.additional_data, dict):
+        dict1 = old_todo.additional_data
+    if isinstance(new_todo.additional_data, dict):
+        dict2 = new_todo.additional_data
+    changed_subfields = [k for k in dict1.keys()
+                         if dict1.get(k) != dict2.get(k)]
     changed_fields.extend(changed_subfields)
     if len(todo_change):
         return '{}. Changed fields: {}'.format(
