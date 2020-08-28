@@ -471,7 +471,7 @@ class ProjectAPIAuthTestCase(OrchestraTestCase):
             (SignedUser(), 'b'))
 
 
-class TestTodoListViewset(EndpointTestCase):
+class TestTodoApiViewset(EndpointTestCase):
     def setUp(self):
         super().setUp()
         self.request_client = APIClient(enforce_csrf_checks=True)
