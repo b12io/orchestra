@@ -91,35 +91,6 @@ def worker_task_recent_todo_qas(request):
     return Response(todos_recommendation)
 
 
-class TodoList(generics.ListCreateAPIView):
-    permission_classes = (permissions.IsAuthenticated,
-                          IsAssociatedWithProject)
-
-    queryset = Todo.objects.all()
-
-    def get_serializer_class(self):
-        # Only include todo QA data for users in the `project_admins` group.
-        if self.request.user.groups.filter(
-                name='project_admins').exists():
-            return BulkTodoSerializerWithQASerializer
-        else:
-            return BulkTodoSerializerWithQAField
-
-    def get_queryset(self):
-        queryset = Todo.objects.all()
-        project_id = self.request.query_params.get('project', None)
-        if project_id is not None:
-            queryset = queryset.filter(task__project__id=int(project_id))
-        queryset = queryset.order_by('-created_at')
-        return queryset
-
-    def perform_create(self, serializer):
-        todo = serializer.save()
-        sender = Worker.objects.get(
-            user=self.request.user).formatted_slack_username()
-        notify_todo_created(todo, sender)
-
-
 class TodoQADetail(generics.UpdateAPIView):
     permission_classes = (permissions.IsAuthenticated,
                           IsAssociatedWithTodosProject)
@@ -194,6 +165,12 @@ class GenericTodoViewset(ModelViewSet):
             notify_single_todo_update(
                 todo_change, todo, sender=sender)
 
+    def perform_create(self, serializer):
+        todo = serializer.save()
+        sender = Worker.objects.get(
+            user=self.request.user).formatted_slack_username()
+        notify_todo_created(todo, sender)
+
 
 class TodoViewset(GenericTodoViewset):
     def get_permissions(self):
@@ -203,3 +180,15 @@ class TodoViewset(GenericTodoViewset):
             permission_classes = (permissions.IsAuthenticated,
                                   IsAssociatedWithTodosProject)
         return [permission() for permission in permission_classes]
+
+    def get_serializer_class(self):
+        if self.action == 'list' or self.action == 'create':
+            # Only include todo QA data for users in the
+            # `project_admins` group.
+            if self.request.user.groups.filter(
+                    name='project_admins').exists():
+                return BulkTodoSerializerWithQASerializer
+            else:
+                return BulkTodoSerializerWithQAField
+        else:
+            return super().get_serializer_class()

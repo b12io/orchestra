@@ -1,7 +1,5 @@
 from django.conf.urls import url
 
-from orchestra.todos.views import TodoDetail
-from orchestra.todos.views import TodoList
 from orchestra.todos.views import TodoQADetail
 from orchestra.todos.views import TodoQAList
 from orchestra.todos.views import TodoViewset
@@ -13,7 +11,7 @@ app_name = 'todos'
 
 urlpatterns = [
     url(r'^todo/$',
-        TodoList.as_view(), name='todos'),
+        TodoViewset.as_view({'post': 'create', 'get': 'list'}), name='todos'),
     url(r'^todo/(?P<pk>[0-9]+)/$',
         TodoViewset.as_view({'put': 'update'}), name='todo'),
     url(r'^todo_qa/$',
