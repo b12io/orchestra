@@ -2,14 +2,18 @@ import logging
 
 from rest_framework import generics
 from rest_framework import permissions
+from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from jsonview.exceptions import BadRequest
+from django_filters import rest_framework as filters
 
 from orchestra.models import Task
 from orchestra.models import Todo
 from orchestra.models import TodoQA
 from orchestra.models import TodoListTemplate
 from orchestra.models import Worker
+from orchestra.todos.serializers import BulkTodoSerializer
 from orchestra.todos.serializers import BulkTodoSerializerWithQAField
 from orchestra.todos.serializers import BulkTodoSerializerWithQASerializer
 from orchestra.todos.serializers import TodoQASerializer
@@ -22,6 +26,7 @@ from orchestra.utils.decorators import api_endpoint
 from orchestra.todos.auth import IsAssociatedWithTodosProject
 from orchestra.todos.auth import IsAssociatedWithProject
 from orchestra.todos.auth import IsAssociatedWithTask
+from orchestra.project_api.auth import SignedUser
 
 logger = logging.getLogger(__name__)
 
@@ -157,3 +162,48 @@ class TodoListTemplateList(generics.ListCreateAPIView):
 
     serializer_class = TodoListTemplateSerializer
     queryset = TodoListTemplate.objects.all()
+
+
+class GenericTodoViewset(ModelViewSet):
+    serializer_class = BulkTodoSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_fields = ('project', 'step',)
+    queryset = Todo.objects.all()
+
+    def get_serializer(self, *args, **kwargs):
+        if isinstance(kwargs.get('data', {}), list):
+            kwargs['many'] = True
+
+        return super().get_serializer(*args, **kwargs)
+
+    def get_queryset(self, ids=None):
+        queryset = super().get_queryset()
+        if ids:
+            queryset = queryset.filter(id__in=ids)
+        return queryset.order_by('-created_at')
+
+    @action(detail=False, methods=['put'])
+    def put(self, request, *args, **kwargs):
+        ids = [x['id'] for x in request.data]
+        instances = self.get_queryset(ids=ids)
+        serializer = self.get_serializer(
+            instances, data=request.data, partial=False, many=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        data = serializer.data
+        return Response(data)
+
+    def perform_update(self, serializer):
+        if isinstance(serializer.validated_data, list):
+            serializer.save()
+        else:
+            todo = serializer.save()
+            old_todo = self.get_object()
+            todo_change = get_todo_change(old_todo, todo)
+            if isinstance(self.request.user, SignedUser):
+                sender = None
+            else:
+                sender = Worker.objects.get(
+                    user=self.request.user).formatted_slack_username()
+            notify_single_todo_update(
+                todo_change, todo, sender=sender)

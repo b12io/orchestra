@@ -26,6 +26,7 @@ from orchestra.utils.view_helpers import notify_single_todo_update
 from orchestra.project_api.auth import OrchestraProjectAPIAuthentication
 from orchestra.project_api.auth import IsSignedUser
 from orchestra.todos.serializers import BulkTodoSerializer
+from orchestra.todos.views import GenericTodoViewset
 
 logger = logging.getLogger(__name__)
 
@@ -164,43 +165,6 @@ def message_project_team(request):
     return {'success': True}
 
 
-class TodoListViewset(ModelViewSet):
-    serializer_class = BulkTodoSerializer
+class TodoListViewset(GenericTodoViewset):
     permission_classes = (IsSignedUser,)
     authentication_classes = (OrchestraProjectAPIAuthentication,)
-    filter_backends = (filters.DjangoFilterBackend,)
-    filterset_fields = ('project', 'step',)
-    queryset = Todo.objects.all()
-
-    def get_serializer(self, *args, **kwargs):
-        if isinstance(kwargs.get('data', {}), list):
-            kwargs['many'] = True
-
-        return super().get_serializer(*args, **kwargs)
-
-    def get_queryset(self, ids=None):
-        queryset = super().get_queryset()
-        if ids:
-            queryset = queryset.filter(id__in=ids)
-        return queryset.order_by('-created_at')
-
-    @action(detail=False, methods=['put'])
-    def put(self, request, *args, **kwargs):
-        ids = [x['id'] for x in request.data]
-        instances = self.get_queryset(ids=ids)
-        serializer = self.get_serializer(
-            instances, data=request.data, partial=False, many=True)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        data = serializer.data
-        return Response(data)
-
-    def perform_update(self, serializer):
-        if isinstance(serializer.validated_data, list):
-            serializer.save()
-        else:
-            todo = serializer.save()
-            old_todo = self.get_object()
-            todo_change = get_todo_change(old_todo, todo)
-            notify_single_todo_update(
-                todo_change, todo, sender=None)

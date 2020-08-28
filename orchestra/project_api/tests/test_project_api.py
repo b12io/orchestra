@@ -574,7 +574,7 @@ class TestTodoListViewset(EndpointTestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()[0]['step'], self.todo_with_step.step.id)
 
-    @patch('orchestra.project_api.views.notify_single_todo_update')
+    @patch('orchestra.todos.views.notify_single_todo_update')
     def test_update_functionality(self, mock_notify):
         todo1 = TodoFactory(
             project=self.project, step=self.step, title='Test title1')
@@ -595,7 +595,7 @@ class TestTodoListViewset(EndpointTestCase):
         updated_todo_1 = Todo.objects.get(pk=todo1.pk)
         self.assertEqual(updated_todo_1.title, todo2.title)
 
-    @patch('orchestra.project_api.views.notify_single_todo_update')
+    @patch('orchestra.todos.views.notify_single_todo_update')
     def test_partial_update_functionality(self, mock_notify):
         detail_url = reverse(
             'orchestra:api:todo-api-detail',
