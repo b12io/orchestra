@@ -61,4 +61,4 @@ def notify_single_todo_update(todo_change, todo, sender):
                 todo.title,
                 todo_change)
         message_experts_slack_group(
-            todo.task.project.slack_group_id, message)
+            todo.project.slack_group_id, message)
