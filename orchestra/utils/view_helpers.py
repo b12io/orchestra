@@ -15,17 +15,8 @@ class IsAssociatedWorker(permissions.BasePermission):
         return obj.worker == worker
 
 
-def get_todo_change(old_todo, new_todo):
-    # TODO(murat): think about updates we want to notify about
-    # When activity_log is updated, `todo_change = None`
-    # to avoid triggering any slack messages
+def _get_changed_fields(old_todo, new_todo):
     changed_fields = []
-    todo_change = ''
-    if old_todo.completed != new_todo.completed:
-        todo_change = 'complete' if new_todo.completed else 'incomplete'
-    elif old_todo.skipped_datetime != new_todo.skipped_datetime:
-        todo_change = 'not relevant' \
-            if new_todo.skipped_datetime else 'relevant'
     if old_todo.title != new_todo.title:
         changed_fields.append('title')
     if old_todo.details != new_todo.details:
@@ -45,6 +36,20 @@ def get_todo_change(old_todo, new_todo):
     changed_subfields = [k for k in dict1.keys()
                          if dict1.get(k) != dict2.get(k)]
     changed_fields.extend(changed_subfields)
+    return changed_fields
+
+
+def get_todo_change(old_todo, new_todo):
+    # TODO(murat): think about updates we want to notify about
+    # When activity_log is updated, `todo_change = None`
+    # to avoid triggering any slack messages
+    todo_change = ''
+    changed_fields = _get_changed_fields(old_todo, new_todo)
+    if old_todo.completed != new_todo.completed:
+        todo_change = 'complete' if new_todo.completed else 'incomplete'
+    elif old_todo.skipped_datetime != new_todo.skipped_datetime:
+        todo_change = 'not relevant' \
+            if new_todo.skipped_datetime else 'relevant'
     if len(todo_change):
         return '{}. Changed fields: {}'.format(
             todo_change, ', '.join(changed_fields))

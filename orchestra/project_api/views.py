@@ -4,14 +4,10 @@ from urllib.parse import urlunsplit
 
 from django.urls import reverse
 from jsonview.exceptions import BadRequest
-from django_filters import rest_framework as filters
 from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
 
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import WorkerCertificationError
-from orchestra.models import Todo
 from orchestra.models import Project
 from orchestra.models import WorkerCertification
 from orchestra.models import Workflow
@@ -21,11 +17,8 @@ from orchestra.utils.decorators import api_endpoint
 from orchestra.utils.load_json import load_encoded_json
 from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.notifications import message_experts_slack_group
-from orchestra.utils.view_helpers import get_todo_change
-from orchestra.utils.view_helpers import notify_single_todo_update
 from orchestra.project_api.auth import OrchestraProjectAPIAuthentication
 from orchestra.project_api.auth import IsSignedUser
-from orchestra.todos.serializers import BulkTodoSerializer
 from orchestra.todos.views import GenericTodoViewset
 
 logger = logging.getLogger(__name__)

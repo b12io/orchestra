@@ -21,7 +21,6 @@ from orchestra.todos.serializers import TodoListTemplateSerializer
 from orchestra.utils.view_helpers import get_todo_change
 from orchestra.utils.view_helpers import notify_todo_created
 from orchestra.utils.view_helpers import notify_single_todo_update
-from orchestra.utils.notifications import message_experts_slack_group
 from orchestra.todos.api import add_todolist_template
 from orchestra.utils.decorators import api_endpoint
 from orchestra.todos.auth import IsAssociatedWithTodosProject
