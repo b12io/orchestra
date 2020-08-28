@@ -48,7 +48,7 @@ def get_todo_change(old_todo, new_todo):
 
 def notify_single_todo_update(todo_change, todo, sender):
     # To avoid Slack noise, only send updates for changed TODOs with
-    # depth 0 (no parent) or 1 (no grantparent).
+    # depth 0 (no parent) or 1 (no grandparent).
     if todo_change and \
             (not (todo.parent_todo and todo.parent_todo.parent_todo)):
         if sender:
