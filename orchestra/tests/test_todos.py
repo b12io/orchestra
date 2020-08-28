@@ -126,6 +126,7 @@ class TodosEndpointTests(EndpointTestCase):
             self._verify_todo_content(
                 todo, _todo_data(
                     task, self.todo_title, False, project=project, step=step))
+            self.assertTrue(mock_notify.called)
         else:
             self.assertEqual(resp.status_code, 403)
             self.assertEqual(Todo.objects.all().count(), num_todos)
@@ -151,6 +152,7 @@ class TodosEndpointTests(EndpointTestCase):
                     todo.task, title, True,
                     project=self.project.id,
                     step=self.step.id))
+            self.assertTrue(mock_notify.called)
         else:
             self.assertEqual(resp.status_code, 403)
             self.assertNotEqual(updated_todo['title'], title)
