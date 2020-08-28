@@ -511,7 +511,8 @@ class TestTodoListViewset(EndpointTestCase):
             resp.json()['detail'],
             'Authentication credentials were not provided.')
 
-    def test_create(self):
+    @patch('orchestra.todos.views.notify_todo_created')
+    def test_create(self, mock_notify):
         data = {
             'title': 'Testing create action',
             'project': self.project.id,
@@ -526,6 +527,7 @@ class TestTodoListViewset(EndpointTestCase):
             project=self.project,
             step=self.step)
         self.assertEqual(todos.count(), 1)
+        self.assertTrue(mock_notify.called)
 
     def test_bulk_create(self):
         todos = Todo.objects.filter(title__startswith='Testing title ')

@@ -78,9 +78,14 @@ def notify_todo_created(todo, sender):
         for task in tasks
         for assignment in task.assignments.all()
         if assignment and assignment.worker)
-    message = '{} has created a new todo `{}` for {}.'.format(
-        sender,
-        todo.title,
-        recipients if recipients else '`{}`'.format(todo.step.slug))
+    if sender:
+        message = '{} has created a new todo `{}` for {}.'.format(
+            sender,
+            todo.title,
+            recipients if recipients else '`{}`'.format(todo.step.slug))
+    else:
+        message = 'A new todo `{}` was created for {}.'.format(
+            todo.title,
+            recipients if recipients else '`{}`'.format(todo.step.slug))
     message_experts_slack_group(
         todo.project.slack_group_id, message)
