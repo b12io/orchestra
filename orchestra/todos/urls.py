@@ -4,6 +4,7 @@ from orchestra.todos.views import TodoDetail
 from orchestra.todos.views import TodoList
 from orchestra.todos.views import TodoQADetail
 from orchestra.todos.views import TodoQAList
+from orchestra.todos.views import TodoViewset
 from orchestra.todos.views import TodoListTemplateDetail
 from orchestra.todos.views import TodoListTemplateList
 import orchestra.todos.views as views
@@ -14,7 +15,7 @@ urlpatterns = [
     url(r'^todo/$',
         TodoList.as_view(), name='todos'),
     url(r'^todo/(?P<pk>[0-9]+)/$',
-        TodoDetail.as_view(), name='todo'),
+        TodoViewset.as_view({'put': 'update'}), name='todo'),
     url(r'^todo_qa/$',
         TodoQAList.as_view(), name='todo_qas'),
     url(r'^todo_qa/(?P<pk>[0-9]+)/$',

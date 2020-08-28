@@ -19,6 +19,7 @@ from orchestra.todos.serializers import BulkTodoSerializerWithQASerializer
 from orchestra.todos.serializers import TodoQASerializer
 from orchestra.todos.serializers import TodoListTemplateSerializer
 from orchestra.utils.view_helpers import get_todo_change
+from orchestra.utils.view_helpers import notify_todo_created
 from orchestra.utils.view_helpers import notify_single_todo_update
 from orchestra.utils.notifications import message_experts_slack_group
 from orchestra.todos.api import add_todolist_template
@@ -119,21 +120,6 @@ class TodoList(generics.ListCreateAPIView):
         notify_todo_created(todo, sender)
 
 
-class TodoDetail(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = (permissions.IsAuthenticated,
-                          IsAssociatedWithTodosProject)
-    queryset = Todo.objects.all()
-    serializer_class = BulkTodoSerializerWithQAField
-
-    def perform_update(self, serializer):
-        old_todo = self.get_object()
-        todo = serializer.save()
-        sender = Worker.objects.get(
-            user=self.request.user).formatted_slack_username()
-        todo_change = get_todo_change(old_todo, todo)
-        notify_single_todo_update(todo_change, todo, sender)
-
-
 class TodoQADetail(generics.UpdateAPIView):
     permission_classes = (permissions.IsAuthenticated,
                           IsAssociatedWithTodosProject)
@@ -207,3 +193,13 @@ class GenericTodoViewset(ModelViewSet):
                     user=self.request.user).formatted_slack_username()
             notify_single_todo_update(
                 todo_change, todo, sender=sender)
+
+
+class TodoViewset(GenericTodoViewset):
+    def get_permissions(self):
+        permission_classes = (permissions.IsAuthenticated,
+                              IsAssociatedWithProject)
+        if self.action == 'update':
+            permission_classes = (permissions.IsAuthenticated,
+                                  IsAssociatedWithTodosProject)
+        return [permission() for permission in permission_classes]
