@@ -111,16 +111,7 @@ class TodoList(generics.ListCreateAPIView):
         todo = serializer.save()
         sender = Worker.objects.get(
             user=self.request.user).formatted_slack_username()
-        recipients = ' & '.join(
-            assignment.worker.formatted_slack_username()
-            for assignment in todo.task.assignments.all()
-            if assignment and assignment.worker)
-        message = '{} has created a new todo `{}` for {}.'.format(
-            sender,
-            todo.title,
-            recipients if recipients else '`{}`'.format(todo.task.step.slug))
-        message_experts_slack_group(
-            todo.task.project.slack_group_id, message)
+        notify_todo_created(todo, sender)
 
 
 class TodoDetail(generics.RetrieveUpdateDestroyAPIView):

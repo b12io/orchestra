@@ -62,3 +62,20 @@ def notify_single_todo_update(todo_change, todo, sender):
                 todo_change)
         message_experts_slack_group(
             todo.project.slack_group_id, message)
+
+
+def notify_todo_created(todo, sender):
+    tasks = (
+        task for task in todo.project.tasks.all()
+        if task.step.slug == todo.step.slug)
+    recipients = ' & '.join(
+        assignment.worker.formatted_slack_username()
+        for task in tasks
+        for assignment in task.assignments.all()
+        if assignment and assignment.worker)
+    message = '{} has created a new todo `{}` for {}.'.format(
+        sender,
+        todo.title,
+        recipients if recipients else '`{}`'.format(todo.step.slug))
+    message_experts_slack_group(
+        todo.project.slack_group_id, message)
