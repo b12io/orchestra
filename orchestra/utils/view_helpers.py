@@ -19,13 +19,31 @@ def get_todo_change(old_todo, new_todo):
     # TODO(murat): think about updates we want to notify about
     # When activity_log is updated, `todo_change = None`
     # to avoid triggering any slack messages
-    todo_change = None
+    changed_fields = []
+    todo_change = ''
     if old_todo.completed != new_todo.completed:
         todo_change = 'complete' if new_todo.completed else 'incomplete'
     elif old_todo.skipped_datetime != new_todo.skipped_datetime:
         todo_change = 'not relevant' \
             if new_todo.skipped_datetime else 'relevant'
-    return todo_change
+    if old_todo.title != new_todo.title:
+        changed_fields.append('title')
+    if old_todo.details != new_todo.details:
+        changed_fields.append('details')
+    if old_todo.section != new_todo.section:
+        changed_fields.append('section')
+    if old_todo.order != old_todo.order:
+        changed_fields.append('order')
+    if old_todo.status != old_todo.status:
+        changed_fields.append('status')
+    dict1 = new_todo.additional_data
+    dict2 = old_todo.additional_data
+    changed_subfields = [k for k in dict1 if dict1.get(k) != dict2.get(k)]
+    changed_fields.extend(changed_subfields)
+    if len(todo_change):
+        return '{}. Changed fields: {}'.format(
+            todo_change, ', '.join(changed_fields))
+    return 'changed. Changed fields: {}'.format(', '.join(changed_fields))
 
 
 def notify_single_todo_update(todo_change, todo, sender):
