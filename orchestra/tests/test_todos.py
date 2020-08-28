@@ -1,4 +1,5 @@
 import json
+from unittest.mock import patch
 
 from django.utils import timezone
 from dateutil.parser import parse
@@ -110,7 +111,8 @@ class TodosEndpointTests(EndpointTestCase):
         else:
             self.assertEqual(resp.status_code, 403)
 
-    def _verify_todo_creation(self, task, success, project, step):
+    @patch('orchestra.todos.views.notify_todo_created')
+    def _verify_todo_creation(self, task, success, project, step, mock_notify):
         num_todos = Todo.objects.all().count()
         resp = self.request_client.post(self.list_create_url, {
             'task': task.id,
@@ -128,7 +130,8 @@ class TodosEndpointTests(EndpointTestCase):
             self.assertEqual(resp.status_code, 403)
             self.assertEqual(Todo.objects.all().count(), num_todos)
 
-    def _verify_todo_update(self, todo, success):
+    @patch('orchestra.todos.views.notify_single_todo_update')
+    def _verify_todo_update(self, todo, success, mock_notify):
         title = 'new title'
         list_details_url = reverse(
             self.list_details_url_name,
