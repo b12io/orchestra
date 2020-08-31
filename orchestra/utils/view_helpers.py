@@ -43,10 +43,16 @@ def get_todo_change(old_todo, new_todo):
     elif old_todo.skipped_datetime != new_todo.skipped_datetime:
         todo_change = 'not relevant' \
             if new_todo.skipped_datetime else 'relevant'
-    if len(todo_change):
-        return '{}. Changed fields: {}'.format(
+    message = ''
+    if len(todo_change) and len(changed_fields):
+        message = '{}. Changed fields: {}'.format(
             todo_change, ', '.join(changed_fields))
-    return 'changed. Changed fields: {}'.format(', '.join(changed_fields))
+    elif len(changed_fields):
+        message = 'changed. Changed fields: {}'.format(
+            ', '.join(changed_fields))
+    else:
+        message = todo_change
+    return message
 
 
 def notify_single_todo_update(todo_change, todo, sender):
