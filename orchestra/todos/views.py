@@ -31,11 +31,6 @@ from orchestra.project_api.auth import SignedUser
 logger = logging.getLogger(__name__)
 
 
-def _set_data(obj, key, value):
-    obj[key] = value
-    return obj
-
-
 @api_endpoint(methods=['POST'],
               permissions=(IsAssociatedWithProject,),
               logger=logger)
