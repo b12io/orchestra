@@ -144,26 +144,17 @@ class GenericTodoViewset(ModelViewSet):
         data = serializer.data
         return Response(data)
 
-    def _get_sender(self):
-        if isinstance(self.request.user, SignedUser):
-            return None
-        return Worker.objects.get(
-            user=self.request.user).formatted_slack_username()
-
     def perform_update(self, serializer):
         todo = serializer.save()
         if isinstance(todo, Todo):
             old_todo = self.get_object()
-            todo_change = get_todo_change(old_todo, todo)
-            sender = self._get_sender()
             notify_single_todo_update(
-                todo_change, todo, sender=sender)
+                self.request.user, old_todo, todo)
 
     def perform_create(self, serializer):
         todo = serializer.save()
         if isinstance(todo, Todo):
-            sender = self._get_sender()
-            notify_todo_created(todo, sender)
+            notify_todo_created(todo, self.request.user)
 
 
 class TodoViewset(GenericTodoViewset):

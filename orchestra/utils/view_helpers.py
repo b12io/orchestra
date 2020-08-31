@@ -55,9 +55,18 @@ def get_todo_change(old_todo, new_todo):
     return message
 
 
-def notify_single_todo_update(todo_change, todo, sender):
+def _get_sender(user):
+    if isinstance(user, SignedUser):
+        return None
+    return Worker.objects.get(
+        user=user).formatted_slack_username()
+
+
+def notify_single_todo_update(user, old_todo, todo):
     # To avoid Slack noise, only send updates for changed TODOs with
     # depth 0 (no parent) or 1 (no grandparent).
+    todo_change = get_todo_change(old_todo, todo)
+    sender = _get_sender(user)
     if todo_change and \
             (not (todo.parent_todo and todo.parent_todo.parent_todo)):
         if sender:
@@ -73,7 +82,8 @@ def notify_single_todo_update(todo_change, todo, sender):
             todo.project.slack_group_id, message)
 
 
-def notify_todo_created(todo, sender):
+def notify_todo_created(todo, user):
+    sender = _get_sender(user)
     tasks = (
         task for task in todo.project.tasks.all()
         if task.step.slug == todo.step.slug)
