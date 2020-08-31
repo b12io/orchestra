@@ -151,10 +151,8 @@ class GenericTodoViewset(ModelViewSet):
             user=self.request.user).formatted_slack_username()
 
     def perform_update(self, serializer):
-        if isinstance(serializer.validated_data, list):
-            serializer.save()
-        else:
-            todo = serializer.save()
+        todo = serializer.save()
+        if isinstance(todo, Todo):
             old_todo = self.get_object()
             todo_change = get_todo_change(old_todo, todo)
             sender = self._get_sender()
