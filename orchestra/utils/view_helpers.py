@@ -21,12 +21,6 @@ def _get_changed_fields(old_todo, new_todo):
         changed_fields.append('title')
     if old_todo.details != new_todo.details:
         changed_fields.append('details')
-    if old_todo.section != new_todo.section:
-        changed_fields.append('section')
-    if old_todo.order != old_todo.order:
-        changed_fields.append('order')
-    if old_todo.status != old_todo.status:
-        changed_fields.append('status')
     dict1 = {}
     dict2 = {}
     if isinstance(old_todo.additional_data, dict):
@@ -40,7 +34,6 @@ def _get_changed_fields(old_todo, new_todo):
 
 
 def get_todo_change(old_todo, new_todo):
-    # TODO(murat): think about updates we want to notify about
     # When activity_log is updated, `todo_change = None`
     # to avoid triggering any slack messages
     todo_change = ''
