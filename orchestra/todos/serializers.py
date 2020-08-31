@@ -125,7 +125,7 @@ class BulkTodoSerializer(serializers.ModelSerializer):
         list_serializer_class = TodoBulkCreateListSerializer
 
 
-class BulkTodoSerializerWithQAField(BulkTodoSerializer):
+class BulkTodoSerializerWithoutQA(BulkTodoSerializer):
     qa = serializers.SerializerMethodField()
 
     def get_qa(self, obj):
@@ -135,7 +135,7 @@ class BulkTodoSerializerWithQAField(BulkTodoSerializer):
         fields = BulkTodoSerializer.Meta.fields + ('qa',)
 
 
-class BulkTodoSerializerWithQASerializer(BulkTodoSerializer):
+class BulkTodoSerializerWithQA(BulkTodoSerializer):
     qa = TodoQASerializer(read_only=True)
 
     class Meta(BulkTodoSerializer.Meta):

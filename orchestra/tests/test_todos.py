@@ -20,7 +20,7 @@ from orchestra.tests.helpers.fixtures import TodoQAFactory
 from orchestra.tests.helpers.fixtures import TodoListTemplateFactory
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.todos.serializers import TodoQASerializer
-from orchestra.todos.serializers import BulkTodoSerializerWithQAField
+from orchestra.todos.serializers import BulkTodoSerializerWithoutQA
 from orchestra.todos.serializers import TodoListTemplateSerializer
 from orchestra.utils.load_json import load_encoded_json
 
@@ -143,7 +143,7 @@ class TodosEndpointTests(EndpointTestCase):
                 todo.task, title, True,
                 project=self.project.id, step=self.step.id)),
             content_type='application/json')
-        updated_todo = BulkTodoSerializerWithQAField(
+        updated_todo = BulkTodoSerializerWithoutQA(
             Todo.objects.get(id=todo.id)).data
         if success:
             self.assertEqual(resp.status_code, 200)

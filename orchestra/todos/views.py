@@ -14,8 +14,8 @@ from orchestra.models import TodoQA
 from orchestra.models import TodoListTemplate
 from orchestra.models import Worker
 from orchestra.todos.serializers import BulkTodoSerializer
-from orchestra.todos.serializers import BulkTodoSerializerWithQAField
-from orchestra.todos.serializers import BulkTodoSerializerWithQASerializer
+from orchestra.todos.serializers import BulkTodoSerializerWithoutQA
+from orchestra.todos.serializers import BulkTodoSerializerWithQA
 from orchestra.todos.serializers import TodoQASerializer
 from orchestra.todos.serializers import TodoListTemplateSerializer
 from orchestra.utils.view_helpers import get_todo_change
@@ -47,7 +47,7 @@ def update_todos_from_todolist_template(request):
         project = Task.objects.get(id=task_id).project
         todos = Todo.objects.filter(
             task__project__id=int(project.id)).order_by('-created_at')
-        serializer = BulkTodoSerializerWithQAField(todos, many=True)
+        serializer = BulkTodoSerializerWithoutQA(todos, many=True)
         return Response(serializer.data)
     except TodoListTemplate.DoesNotExist:
         raise BadRequest('TodoList Template not found for the given slug.')
@@ -188,8 +188,8 @@ class TodoViewset(GenericTodoViewset):
             # `project_admins` group.
             if self.request.user.groups.filter(
                     name='project_admins').exists():
-                return BulkTodoSerializerWithQASerializer
+                return BulkTodoSerializerWithQA
             else:
-                return BulkTodoSerializerWithQAField
+                return BulkTodoSerializerWithoutQA
         else:
             return super().get_serializer_class()
