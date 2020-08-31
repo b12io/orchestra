@@ -133,6 +133,7 @@ class BulkTodoSerializerWithoutQA(BulkTodoSerializer):
 
     class Meta(BulkTodoSerializer.Meta):
         fields = BulkTodoSerializer.Meta.fields + ('qa',)
+        read_only_fields = ('id',)
 
 
 class BulkTodoSerializerWithQA(BulkTodoSerializer):
@@ -140,3 +141,4 @@ class BulkTodoSerializerWithQA(BulkTodoSerializer):
 
     class Meta(BulkTodoSerializer.Meta):
         fields = BulkTodoSerializer.Meta.fields + ('qa',)
+        read_only_fields = ('id',)
