@@ -1,6 +1,7 @@
 from rest_framework import permissions
 
 from orchestra.models import Worker
+from orchestra.project_api.auth import SignedUser
 from orchestra.utils.notifications import message_experts_slack_group
 
 
