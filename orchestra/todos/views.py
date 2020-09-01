@@ -12,13 +12,11 @@ from orchestra.models import Task
 from orchestra.models import Todo
 from orchestra.models import TodoQA
 from orchestra.models import TodoListTemplate
-from orchestra.models import Worker
 from orchestra.todos.serializers import BulkTodoSerializer
 from orchestra.todos.serializers import BulkTodoSerializerWithoutQA
 from orchestra.todos.serializers import BulkTodoSerializerWithQA
 from orchestra.todos.serializers import TodoQASerializer
 from orchestra.todos.serializers import TodoListTemplateSerializer
-from orchestra.utils.view_helpers import get_todo_change
 from orchestra.utils.view_helpers import notify_todo_created
 from orchestra.utils.view_helpers import notify_single_todo_update
 from orchestra.todos.api import add_todolist_template
@@ -26,7 +24,6 @@ from orchestra.utils.decorators import api_endpoint
 from orchestra.todos.auth import IsAssociatedWithTodosProject
 from orchestra.todos.auth import IsAssociatedWithProject
 from orchestra.todos.auth import IsAssociatedWithTask
-from orchestra.project_api.auth import SignedUser
 
 logger = logging.getLogger(__name__)
 

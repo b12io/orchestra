@@ -4,7 +4,6 @@ from urllib.parse import urlunsplit
 
 from django.urls import reverse
 from jsonview.exceptions import BadRequest
-from rest_framework.decorators import action
 
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import WorkerCertificationError
