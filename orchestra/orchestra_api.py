@@ -87,6 +87,12 @@ def get_project_information(project_ids):
     return json.loads(response.text, object_hook=convert_key_to_int)
 
 
+def create_todos(todos):
+    response = _make_api_request('post', 'todo-api',
+                                 data=json.dumps(todos))
+    return json.loads(response.text, object_hook=convert_key_to_int)
+
+
 def assign_worker_to_task(worker_id, task_id):
     data = {
         'worker_id': worker_id,
