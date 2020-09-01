@@ -159,5 +159,9 @@ def message_project_team(request):
 
 
 class TodoApiViewset(GenericTodoViewset):
+    """
+    This viewset inherits from GenericTodoViewset and used by
+    an orchestra-client facing endpoint, exposed via a router in api_urls.py
+    """
     permission_classes = (IsSignedUser,)
     authentication_classes = (OrchestraProjectAPIAuthentication,)

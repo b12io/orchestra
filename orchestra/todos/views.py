@@ -116,6 +116,12 @@ class TodoListTemplateList(generics.ListCreateAPIView):
 
 
 class GenericTodoViewset(ModelViewSet):
+    """
+    A base viewset inherited by multiple viewsets from, created
+    to de-duplicate Todo-related views.
+    It lacks permission and auth classes, so that child
+    classes could indicate their own ones.
+    """
     serializer_class = BulkTodoSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_fields = ('project', 'step',)
@@ -158,6 +164,12 @@ class GenericTodoViewset(ModelViewSet):
 
 
 class TodoViewset(GenericTodoViewset):
+    """
+    This viewset inherits from GenericTodoViewset is used by two endpoints
+    (see urls.py).
+    todo/ -- For creating and listing Todos.
+    todo/1234/ -- For updating a Todo.
+    """
     def get_permissions(self):
         permission_classes = (permissions.IsAuthenticated,
                               IsAssociatedWithProject)
