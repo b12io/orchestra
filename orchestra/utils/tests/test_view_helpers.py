@@ -7,6 +7,7 @@ from orchestra.tests.helpers.fixtures import StepFactory
 from orchestra.tests.helpers.fixtures import ProjectFactory
 from orchestra.utils.view_helpers import get_update_message
 
+
 class ViewHelpersTests(TestCase):
     def setUp(self):
         super().setUp()
