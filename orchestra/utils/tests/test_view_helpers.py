@@ -40,16 +40,16 @@ class ViewHelpersTests(TestCase):
     def test_fields_updated_completed_with_sender(self):
         msg = get_update_message(self.old_todo, self.new_todo, self.sender)
         expected_msg = (
-            '{} has updated `{}`: marked as complete, '
-            'changed title, and details'
+            '{} has updated `{}`: marked complete, '
+            'changed title and details'
             ).format(self.sender.username, self.new_todo.title)
         self.assertEqual(msg, expected_msg)
 
     def test_fields_updated_completed_without_sender(self):
         msg = get_update_message(self.old_todo, self.new_todo)
         expected_msg = (
-            '`{}` has been updated: marked as complete, '
-            'changed title, and details'
+            '`{}` has been updated: marked complete, '
+            'changed title and details'
             ).format(self.new_todo.title)
         self.assertEqual(msg, expected_msg)
 
@@ -59,7 +59,7 @@ class ViewHelpersTests(TestCase):
             details=self.old_details,
             completed=True)
         msg = get_update_message(self.old_todo, new_todo, self.sender)
-        expected_msg = '{} has updated `{}`: marked as complete'.format(
+        expected_msg = '{} has updated `{}`: marked complete'.format(
             self.sender.username, new_todo.title)
         self.assertEqual(msg, expected_msg)
 
@@ -70,13 +70,13 @@ class ViewHelpersTests(TestCase):
             completed=False,
             skipped_datetime=timezone.now())
         msg = get_update_message(self.old_todo, new_todo, self.sender)
-        expected_msg = '{} has updated `{}`: marked as not relevant'.format(
+        expected_msg = '{} has updated `{}`: marked not relevant'.format(
             self.sender.username, new_todo.title)
         self.assertEqual(msg, expected_msg)
 
         # No sender
         msg = get_update_message(self.old_todo, new_todo)
-        expected_msg = '`{}` has been updated: marked as not relevant'.format(
+        expected_msg = '`{}` has been updated: marked not relevant'.format(
             new_todo.title)
         self.assertEqual(msg, expected_msg)
 
@@ -89,7 +89,7 @@ class ViewHelpersTests(TestCase):
             details=self.new_details)
         msg = get_update_message(old_todo, new_todo, self.sender)
         expected_msg = (
-            '{} has updated `{}`: changed title, and details').format(
+            '{} has updated `{}`: changed title and details').format(
             self.sender.username, new_todo.title)
         self.assertEqual(msg, expected_msg)
 

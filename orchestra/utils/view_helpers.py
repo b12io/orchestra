@@ -25,7 +25,7 @@ def get_changed_fields(old_todo, new_todo):
         changed_fields.append('details')
     if len(changed_fields) > 1:
         changed_fields[-1] = 'and {}'.format(changed_fields[-1])
-    return ', '.join(changed_fields)
+    return ' '.join(changed_fields)
 
 
 def get_relevance_and_completion_changes(old_todo, new_todo):
@@ -46,7 +46,7 @@ def get_update_message(old_todo, new_todo, sender=None):
     changed_fields = get_changed_fields(old_todo, new_todo)
     head = '{} has updated `{}`:'.format(sender, new_todo.title) \
         if sender else '`{}` has been updated:'.format(new_todo.title)
-    body = 'marked as {}'.format(changes) if changes else ''
+    body = 'marked {}'.format(changes) if changes else ''
     tail = 'changed {}'.format(changed_fields) if changed_fields else ''
     if body or tail:
         tail = ', {}'.format(tail) if body and tail else '{}'.format(tail)
