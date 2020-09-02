@@ -16,7 +16,7 @@ class IsAssociatedWorker(permissions.BasePermission):
         return obj.worker == worker
 
 
-def _get_changed_fields(old_todo, new_todo):
+def get_changed_fields(old_todo, new_todo):
     changed_fields = []
     if old_todo.title != new_todo.title:
         changed_fields.append('title')
@@ -31,28 +31,34 @@ def _get_changed_fields(old_todo, new_todo):
     changed_subfields = [k for k in dict1.keys()
                          if dict1.get(k) != dict2.get(k)]
     changed_fields.extend(changed_subfields)
-    return changed_fields
+    if len(changed_fields) > 1:
+        changed_fields[-1] = 'and {}'.format(changed_fields[-1])
+    return ', '.join(changed_fields)
 
 
-def get_todo_change(old_todo, new_todo):
-    # When activity_log is updated, `todo_change = None`
+def get_relevance_and_completion_changes(old_todo, new_todo):
+    # When activity_log is updated, `todo_change = ''`
     # to avoid triggering any slack messages
     todo_change = ''
-    changed_fields = _get_changed_fields(old_todo, new_todo)
     if old_todo.completed != new_todo.completed:
         todo_change = 'complete' if new_todo.completed else 'incomplete'
     elif old_todo.skipped_datetime != new_todo.skipped_datetime:
         todo_change = 'not relevant' \
             if new_todo.skipped_datetime else 'relevant'
+    return todo_change
+
+
+def get_update_message(old_todo, new_todo, sender=None):
     message = ''
-    if len(todo_change) and len(changed_fields):
-        message = '{}. Changed fields: {}'.format(
-            todo_change, ', '.join(changed_fields))
-    elif len(changed_fields):
-        message = 'changed. Changed fields: {}'.format(
-            ', '.join(changed_fields))
-    else:
-        message = todo_change
+    changes = get_relevance_and_completion_changes(old_todo, new_todo)
+    changed_fields = get_changed_fields(old_todo, new_todo)
+    head = '{} has updated `{}`:'.format(sender, new_todo.title) \
+        if sender else '`{}` has been updated:'.format(new_todo.title)
+    body = 'marked as {}'.format(changes) if changes else ''
+    tail = 'changed {}'.format(changed_fields) if changed_fields else ''
+    if body or tail:
+        tail = ', {}'.format(tail) if body and tail else '{}'.format(tail)
+        message = '{} {}{}'.format(head, body, tail)
     return message
 
 
@@ -66,19 +72,10 @@ def _get_sender(user):
 def notify_single_todo_update(user, old_todo, todo):
     # To avoid Slack noise, only send updates for changed TODOs with
     # depth 0 (no parent) or 1 (no grandparent).
-    todo_change = get_todo_change(old_todo, todo)
     sender = _get_sender(user)
-    if todo_change and \
+    message = get_update_message(old_todo, todo, sender)
+    if message and \
             (not (todo.parent_todo and todo.parent_todo.parent_todo)):
-        if sender:
-            message = '{} has marked `{}` as `{}`.'.format(
-                sender,
-                todo.title,
-                todo_change)
-        else:
-            message = '`{}` was marked as `{}`.'.format(
-                todo.title,
-                todo_change)
         message_experts_slack_group(
             todo.project.slack_group_id, message)
 
