@@ -17,20 +17,12 @@ class IsAssociatedWorker(permissions.BasePermission):
 
 
 def get_changed_fields(old_todo, new_todo):
+    # To avoid Slack noise, only care about title and details
     changed_fields = []
     if old_todo.title != new_todo.title:
         changed_fields.append('title')
     if old_todo.details != new_todo.details:
         changed_fields.append('details')
-    dict1 = {}
-    dict2 = {}
-    if isinstance(old_todo.additional_data, dict):
-        dict1 = old_todo.additional_data
-    if isinstance(new_todo.additional_data, dict):
-        dict2 = new_todo.additional_data
-    changed_subfields = [k for k in dict1.keys()
-                         if dict1.get(k) != dict2.get(k)]
-    changed_fields.extend(changed_subfields)
     if len(changed_fields) > 1:
         changed_fields[-1] = 'and {}'.format(changed_fields[-1])
     return ', '.join(changed_fields)
