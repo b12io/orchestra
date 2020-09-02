@@ -39,7 +39,7 @@ def _make_api_request(method, endpoint, *args, **kwargs):
     all_kwargs.update(kwargs)
     url = '{}{}/'.format(_api_root_url, endpoint)
     response = func(url, *args, **all_kwargs)
-    if response.status_code != 200:
+    if response.status_code != 200 and response.status_code != 201:
         raise OrchestraError(response.text)
     return response
 
@@ -90,7 +90,7 @@ def get_project_information(project_ids):
 def create_todos(todos):
     response = _make_api_request('post', 'todo-api',
                                  data=json.dumps(todos))
-    return json.loads(response.text, object_hook=convert_key_to_int)
+    return json.loads(response.text)
 
 
 def assign_worker_to_task(worker_id, task_id):
