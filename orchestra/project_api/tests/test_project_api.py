@@ -471,7 +471,7 @@ class ProjectAPIAuthTestCase(OrchestraTestCase):
             (SignedUser(), 'b'))
 
 
-class TestTodoListViewset(EndpointTestCase):
+class TestTodoApiViewset(EndpointTestCase):
     def setUp(self):
         super().setUp()
         self.request_client = APIClient(enforce_csrf_checks=True)
@@ -511,7 +511,8 @@ class TestTodoListViewset(EndpointTestCase):
             resp.json()['detail'],
             'Authentication credentials were not provided.')
 
-    def test_create(self):
+    @patch('orchestra.todos.views.notify_todo_created')
+    def test_create(self, mock_notify):
         data = {
             'title': 'Testing create action',
             'project': self.project.id,
@@ -526,6 +527,7 @@ class TestTodoListViewset(EndpointTestCase):
             project=self.project,
             step=self.step)
         self.assertEqual(todos.count(), 1)
+        self.assertTrue(mock_notify.called)
 
     def test_bulk_create(self):
         todos = Todo.objects.filter(title__startswith='Testing title ')
@@ -574,7 +576,8 @@ class TestTodoListViewset(EndpointTestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()[0]['step'], self.todo_with_step.step.id)
 
-    def test_update_functionality(self):
+    @patch('orchestra.todos.views.notify_single_todo_update')
+    def test_update_functionality(self, mock_notify):
         todo1 = TodoFactory(
             project=self.project, step=self.step, title='Test title1')
         todo2 = TodoFactory(
@@ -594,7 +597,8 @@ class TestTodoListViewset(EndpointTestCase):
         updated_todo_1 = Todo.objects.get(pk=todo1.pk)
         self.assertEqual(updated_todo_1.title, todo2.title)
 
-    def test_partial_update_functionality(self):
+    @patch('orchestra.todos.views.notify_single_todo_update')
+    def test_partial_update_functionality(self, mock_notify):
         detail_url = reverse(
             'orchestra:api:todo-api-detail',
             kwargs={'pk': self.todo.id})

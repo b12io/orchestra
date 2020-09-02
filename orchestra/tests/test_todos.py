@@ -1,4 +1,5 @@
 import json
+from unittest.mock import patch
 
 from django.utils import timezone
 from dateutil.parser import parse
@@ -13,11 +14,13 @@ from orchestra.project_api.serializers import TimeEntrySerializer
 from orchestra.tests.helpers import EndpointTestCase
 from orchestra.tests.helpers.fixtures import TaskFactory
 from orchestra.tests.helpers.fixtures import TodoFactory
+from orchestra.tests.helpers.fixtures import StepFactory
+from orchestra.tests.helpers.fixtures import ProjectFactory
 from orchestra.tests.helpers.fixtures import TodoQAFactory
 from orchestra.tests.helpers.fixtures import TodoListTemplateFactory
 from orchestra.tests.helpers.fixtures import setup_models
-from orchestra.todos.serializers import TodoSerializer
 from orchestra.todos.serializers import TodoQASerializer
+from orchestra.todos.serializers import BulkTodoSerializerWithoutQA
 from orchestra.todos.serializers import TodoListTemplateSerializer
 from orchestra.utils.load_json import load_encoded_json
 
@@ -25,7 +28,8 @@ from orchestra.utils.load_json import load_encoded_json
 def _todo_data(task, title, completed,
                skipped_datetime=None, start_by=None,
                due=None, parent_todo=None, template=None,
-               activity_log=str({'actions': []}), qa=None):
+               activity_log=str({'actions': []}), qa=None,
+               project=None, step=None):
     return {
         'task': task.id,
         'completed': completed,
@@ -36,7 +40,13 @@ def _todo_data(task, title, completed,
         'due_datetime': due,
         'activity_log': activity_log,
         'skipped_datetime': skipped_datetime,
-        'qa': qa
+        'qa': qa,
+        'additional_data': '{}',
+        'order': None,
+        'project': project,
+        'section': None,
+        'status': None,
+        'step': step
     }
 
 
@@ -57,6 +67,8 @@ class TodosEndpointTests(EndpointTestCase):
                                   password='defaultpassword')
         self.list_create_url = reverse('orchestra:todos:todos')
         self.list_details_url_name = 'orchestra:todos:todo'
+        self.step = StepFactory()
+        self.project = ProjectFactory()
         self.tasks = Task.objects.filter(assignments__worker=self.worker)
         self.task = self.tasks[0]
         self.todo_title = 'Let us do this'
@@ -99,52 +111,70 @@ class TodosEndpointTests(EndpointTestCase):
         else:
             self.assertEqual(resp.status_code, 403)
 
-    def _verify_todo_creation(self, task, success):
+    @patch('orchestra.todos.views.notify_todo_created')
+    def _verify_todo_creation(self, task, success, project, step, mock_notify):
         num_todos = Todo.objects.all().count()
         resp = self.request_client.post(self.list_create_url, {
             'task': task.id,
+            'project': project,
+            'step': step,
             'title': self.todo_title})
         if success:
             self.assertEqual(resp.status_code, 201)
             self.assertEqual(Todo.objects.all().count(), num_todos + 1)
             todo = load_encoded_json(resp.content)
             self._verify_todo_content(
-                todo, _todo_data(task, self.todo_title, False))
+                todo, _todo_data(
+                    task, self.todo_title, False, project=project, step=step))
+            self.assertTrue(mock_notify.called)
         else:
             self.assertEqual(resp.status_code, 403)
             self.assertEqual(Todo.objects.all().count(), num_todos)
 
-    def _verify_todo_update(self, todo, success):
+    @patch('orchestra.todos.views.notify_single_todo_update')
+    def _verify_todo_update(self, todo, success, mock_notify):
         title = 'new title'
         list_details_url = reverse(
             self.list_details_url_name,
             kwargs={'pk': todo.id})
         resp = self.request_client.put(
             list_details_url,
-            json.dumps(_todo_data(todo.task, title, True)),
+            json.dumps(_todo_data(
+                todo.task, title, True,
+                project=self.project.id, step=self.step.id)),
             content_type='application/json')
-        updated_todo = TodoSerializer(Todo.objects.get(id=todo.id)).data
+        updated_todo = BulkTodoSerializerWithoutQA(
+            Todo.objects.get(id=todo.id)).data
         if success:
             self.assertEqual(resp.status_code, 200)
             self._verify_todo_content(
-                updated_todo, _todo_data(todo.task, title, True))
+                updated_todo, _todo_data(
+                    todo.task, title, True,
+                    project=self.project.id,
+                    step=self.step.id))
+            self.assertTrue(mock_notify.called)
         else:
             self.assertEqual(resp.status_code, 403)
             self.assertNotEqual(updated_todo['title'], title)
 
     def test_todos_list_create(self):
         self._verify_todos_list(self.task.project.id, [], True)
-        self._verify_todo_creation(self.task, True)
+        self._verify_todo_creation(
+            self.task, True, self.project.id, self.step.id)
         self._verify_todos_list(self.task.project.id,
                                 [_todo_data(
-                                    self.task, self.todo_title, False)],
+                                    self.task,
+                                    self.todo_title,
+                                    False,
+                                    project=self.project.id,
+                                    step=self.step.id)],
                                 True)
 
     def test_todos_list_create_permissions(self):
         # Can't make requests for projects in which you're uninvolved.
         task = TaskFactory()
         self._verify_todos_list(task.project.id, [], False)
-        self._verify_todo_creation(task, False)
+        self._verify_todo_creation(task, False, self.project.id, self.step.id)
 
     def test_todo_details_and_permissions(self):
         # You should be able to update Todos for projects in which

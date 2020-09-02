@@ -24,57 +24,6 @@ class TodoQASerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)
 
 
-class TodoSerializer(serializers.ModelSerializer):
-    qa = serializers.SerializerMethodField()
-    json_schemas = {
-        'activity_log': TodoActionListSchema
-    }
-
-    def get_qa(self, obj):
-        return None
-
-    class Meta:
-        model = Todo
-        fields = (
-            'id',
-            'created_at',
-            'task',
-            'title',
-            'parent_todo',
-            'template',
-            'qa',
-            'completed',
-            'skipped_datetime',
-            'start_by_datetime',
-            'due_datetime',
-            'activity_log')
-        read_only_fields = ('id',)
-
-
-class TodoWithQASerializer(serializers.ModelSerializer):
-    qa = TodoQASerializer(read_only=True)
-    json_schemas = {
-        'activity_log': TodoActionListSchema
-    }
-
-    class Meta:
-        model = Todo
-        fields = (
-            'id',
-            'created_at',
-            'task',
-            'title',
-            'parent_todo',
-            'template',
-            'qa',
-            'completed',
-            'skipped_datetime',
-            'start_by_datetime',
-            'due_datetime',
-            'activity_log')
-        read_only_fields = ('id',)
-
-
 class TodoListTemplateSerializer(serializers.ModelSerializer,
                                  JSONSchemaValidationMixin):
     json_schemas = {
@@ -174,3 +123,22 @@ class BulkTodoSerializer(serializers.ModelSerializer):
             'additional_data')
         read_only_fields = ('id',)
         list_serializer_class = TodoBulkCreateListSerializer
+
+
+class BulkTodoSerializerWithoutQA(BulkTodoSerializer):
+    qa = serializers.SerializerMethodField()
+
+    def get_qa(self, obj):
+        return None
+
+    class Meta(BulkTodoSerializer.Meta):
+        fields = BulkTodoSerializer.Meta.fields + ('qa',)
+        read_only_fields = ('id',)
+
+
+class BulkTodoSerializerWithQA(BulkTodoSerializer):
+    qa = TodoQASerializer(read_only=True)
+
+    class Meta(BulkTodoSerializer.Meta):
+        fields = BulkTodoSerializer.Meta.fields + ('qa',)
+        read_only_fields = ('id',)

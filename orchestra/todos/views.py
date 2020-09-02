@@ -2,19 +2,23 @@ import logging
 
 from rest_framework import generics
 from rest_framework import permissions
+from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from jsonview.exceptions import BadRequest
+from django_filters import rest_framework as filters
 
 from orchestra.models import Task
 from orchestra.models import Todo
 from orchestra.models import TodoQA
 from orchestra.models import TodoListTemplate
-from orchestra.models import Worker
-from orchestra.todos.serializers import TodoSerializer
-from orchestra.todos.serializers import TodoWithQASerializer
+from orchestra.todos.serializers import BulkTodoSerializer
+from orchestra.todos.serializers import BulkTodoSerializerWithoutQA
+from orchestra.todos.serializers import BulkTodoSerializerWithQA
 from orchestra.todos.serializers import TodoQASerializer
 from orchestra.todos.serializers import TodoListTemplateSerializer
-from orchestra.utils.notifications import message_experts_slack_group
+from orchestra.utils.view_helpers import notify_todo_created
+from orchestra.utils.view_helpers import notify_single_todo_update
 from orchestra.todos.api import add_todolist_template
 from orchestra.utils.decorators import api_endpoint
 from orchestra.todos.auth import IsAssociatedWithTodosProject
@@ -35,7 +39,7 @@ def update_todos_from_todolist_template(request):
         project = Task.objects.get(id=task_id).project
         todos = Todo.objects.filter(
             task__project__id=int(project.id)).order_by('-created_at')
-        serializer = TodoSerializer(todos, many=True)
+        serializer = BulkTodoSerializerWithoutQA(todos, many=True)
         return Response(serializer.data)
     except TodoListTemplate.DoesNotExist:
         raise BadRequest('TodoList Template not found for the given slug.')
@@ -78,78 +82,6 @@ def worker_task_recent_todo_qas(request):
     return Response(todos_recommendation)
 
 
-class TodoList(generics.ListCreateAPIView):
-    permission_classes = (permissions.IsAuthenticated,
-                          IsAssociatedWithProject)
-
-    queryset = Todo.objects.all()
-
-    def get_serializer_class(self):
-        # Only include todo QA data for users in the `project_admins` group.
-        if self.request.user.groups.filter(
-                name='project_admins').exists():
-            return TodoWithQASerializer
-        else:
-            return TodoSerializer
-
-    def get_queryset(self):
-        queryset = Todo.objects.all()
-        project_id = self.request.query_params.get('project', None)
-        if project_id is not None:
-            queryset = queryset.filter(task__project__id=int(project_id))
-        queryset = queryset.order_by('-created_at')
-        return queryset
-
-    def perform_create(self, serializer):
-        todo = serializer.save()
-        sender = Worker.objects.get(
-            user=self.request.user).formatted_slack_username()
-        recipients = ' & '.join(
-            assignment.worker.formatted_slack_username()
-            for assignment in todo.task.assignments.all()
-            if assignment and assignment.worker)
-        message = '{} has created a new todo `{}` for {}.'.format(
-            sender,
-            todo.title,
-            recipients if recipients else '`{}`'.format(todo.task.step.slug))
-        message_experts_slack_group(
-            todo.task.project.slack_group_id, message)
-
-
-class TodoDetail(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = (permissions.IsAuthenticated,
-                          IsAssociatedWithTodosProject)
-    queryset = Todo.objects.all()
-    serializer_class = TodoSerializer
-
-    def perform_update(self, serializer):
-        old_todo = self.get_object()
-        todo = serializer.save()
-        sender = Worker.objects.get(
-            user=self.request.user).formatted_slack_username()
-
-        if old_todo.completed != todo.completed:
-            todo_change = 'complete' if todo.completed else 'incomplete'
-        elif old_todo.skipped_datetime != todo.skipped_datetime:
-            todo_change = 'not relevant' \
-                if todo.skipped_datetime else 'relevant'
-        else:
-            # When activity_log is updated, `todo_change = None`
-            # to avoid triggering any slack messages
-            todo_change = None
-
-        # To avoid Slack noise, only send updates for changed TODOs with
-        # depth 0 (no parent) or 1 (no grantparent).
-        if todo_change and \
-                (not (todo.parent_todo and todo.parent_todo.parent_todo)):
-            message = '{} has marked `{}` as `{}`.'.format(
-                sender,
-                todo.title,
-                todo_change)
-            message_experts_slack_group(
-                todo.task.project.slack_group_id, message)
-
-
 class TodoQADetail(generics.UpdateAPIView):
     permission_classes = (permissions.IsAuthenticated,
                           IsAssociatedWithTodosProject)
@@ -178,3 +110,79 @@ class TodoListTemplateList(generics.ListCreateAPIView):
 
     serializer_class = TodoListTemplateSerializer
     queryset = TodoListTemplate.objects.all()
+
+
+class GenericTodoViewset(ModelViewSet):
+    """
+    A base viewset inherited by multiple viewsets, created
+    to de-duplicate Todo-related views.
+    It lacks permission and auth classes, so that child
+    classes can select their own.
+    """
+    serializer_class = BulkTodoSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_fields = ('project', 'step',)
+    queryset = Todo.objects.all()
+
+    def get_serializer(self, *args, **kwargs):
+        if isinstance(kwargs.get('data', {}), list):
+            kwargs['many'] = True
+
+        return super().get_serializer(*args, **kwargs)
+
+    def get_queryset(self, ids=None):
+        queryset = super().get_queryset()
+        if ids:
+            queryset = queryset.filter(id__in=ids)
+        return queryset.order_by('-created_at')
+
+    @action(detail=False, methods=['put'])
+    def put(self, request, *args, **kwargs):
+        ids = [x['id'] for x in request.data]
+        instances = self.get_queryset(ids=ids)
+        serializer = self.get_serializer(
+            instances, data=request.data, partial=False, many=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        data = serializer.data
+        return Response(data)
+
+    def perform_update(self, serializer):
+        todo = serializer.save()
+        if isinstance(todo, Todo):
+            old_todo = self.get_object()
+            notify_single_todo_update(
+                self.request.user, old_todo, todo)
+
+    def perform_create(self, serializer):
+        todo = serializer.save()
+        if isinstance(todo, Todo):
+            notify_todo_created(todo, self.request.user)
+
+
+class TodoViewset(GenericTodoViewset):
+    """
+    This viewset inherits from GenericTodoViewset is used by two endpoints
+    (see urls.py).
+    todo/ -- For creating and listing Todos.
+    todo/1234/ -- For updating a Todo.
+    """
+    def get_permissions(self):
+        permission_classes = (permissions.IsAuthenticated,
+                              IsAssociatedWithProject)
+        if self.action == 'update':
+            permission_classes = (permissions.IsAuthenticated,
+                                  IsAssociatedWithTodosProject)
+        return [permission() for permission in permission_classes]
+
+    def get_serializer_class(self):
+        if self.action == 'list' or self.action == 'create':
+            # Only include todo QA data for users in the
+            # `project_admins` group.
+            if self.request.user.groups.filter(
+                    name='project_admins').exists():
+                return BulkTodoSerializerWithQA
+            else:
+                return BulkTodoSerializerWithoutQA
+        else:
+            return super().get_serializer_class()
