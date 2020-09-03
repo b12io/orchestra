@@ -556,26 +556,6 @@ class TestTodoApiViewset(EndpointTestCase):
         resp = self.request_client.get(detail_url)
         self.assertEqual(resp.status_code, 200)
 
-    def test_get_list_of_todos_with_filters(self):
-        url_with_project_filter = '{}?project={}'.format(
-            self.list_url, self.project.id)
-        resp = self.request_client.get(url_with_project_filter)
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(len(resp.json()), 2)
-
-        url_with_step_filter = '{}?step__slug={}'.format(
-            self.list_url, self.todo_with_step.step.slug)
-        resp = self.request_client.get(url_with_step_filter)
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(len(resp.json()), 1)
-        self.assertEqual(resp.json()[0]['step'], self.todo_with_step.step.id)
-
-        url_with_filters = '{}?project={}&step__slug={}'.format(
-            self.list_url, self.project.id, self.todo_with_step.step.slug)
-        resp = self.request_client.get(url_with_filters)
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.json()[0]['step'], self.todo_with_step.step.id)
-
     @patch('orchestra.todos.views.notify_single_todo_update')
     def test_update_functionality(self, mock_notify):
         todo1 = TodoFactory(
