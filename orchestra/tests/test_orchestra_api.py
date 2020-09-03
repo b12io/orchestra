@@ -49,7 +49,8 @@ class TodoAPITests(TestCase):
             self.assertTrue(r['title'].startswith('Testing title'))
 
     @patch('orchestra.orchestra_api.requests')
-    def test_(self, mock_request):
+    def test_get_todos(self, mock_request):
+        # This converts DRF's `APIClient.get` into `requests.get`
         def get(url, *args, **kwargs):
             return_value = self.request_client.get(url, format='json')
             return_value.text = json.dumps(return_value.data)
