@@ -136,6 +136,11 @@ class GenericTodoViewset(ModelViewSet):
             queryset = queryset.filter(id__in=ids)
         return queryset.order_by('-created_at')
 
+    @action(detail=False, methods=['delete'])
+    def delete(self, request, *args, **kwargs):
+        data = self.get_queryset(ids=request.data).delete()
+        return Response(data)
+
     @action(detail=False, methods=['put'])
     def put(self, request, *args, **kwargs):
         ids = [x['id'] for x in request.data]
