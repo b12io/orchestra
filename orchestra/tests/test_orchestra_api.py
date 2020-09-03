@@ -162,6 +162,7 @@ class TodoAPITests(TestCase):
         todo4 = TodoFactory(step=self.step, project=self.project)
 
         res = delete_todos([todo1.id, todo2.id, todo3.id])
+        self.assertEqual(res[0], 3)
         left_todos = Todo.objects.all()
         self.assertEqual(left_todos.count(), 1)
         self.assertEqual(left_todos[0].id, todo4.id)
