@@ -1,6 +1,5 @@
 import json
 from unittest.mock import patch
-from unittest.mock import PropertyMock
 
 from django.test import TestCase
 from rest_framework.test import APIClient
@@ -11,7 +10,6 @@ from orchestra.tests.helpers.fixtures import TodoFactory
 from orchestra.tests.helpers.fixtures import StepFactory
 from orchestra.tests.helpers.fixtures import ProjectFactory
 from orchestra.project_api.auth import SignedUser
-from orchestra.orchestra_api import get_project_information
 from orchestra.orchestra_api import create_todos
 from orchestra.orchestra_api import get_todos
 from orchestra.orchestra_api import update_todos
@@ -24,7 +22,7 @@ class TodoAPITests(TestCase):
         self.request_client.force_authenticate(user=SignedUser())
         self.project = ProjectFactory()
         self.step = StepFactory()
-    
+
     def _pause(self):
         self.assertTrue(False)
 
