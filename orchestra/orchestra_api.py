@@ -100,7 +100,14 @@ def get_todos(project_id=None, step_slug=None):
         step_slug) if step_slug is not None else ''
     juncture = '&' if project_param and step_slug_param else ''
     query_params = '?{}{}{}'.format(project_param, juncture, step_slug_param)
+
     response = _make_api_request('get', 'todo-api', query_params)
+    return json.loads(response.text)
+
+
+def update_todos(updated_todos):
+    response = _make_api_request('put', 'todo-api',
+                                 data=json.dumps(updated_todos))
     return json.loads(response.text)
 
 

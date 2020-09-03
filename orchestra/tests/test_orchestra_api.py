@@ -5,6 +5,7 @@ from unittest.mock import PropertyMock
 from django.test import TestCase
 from rest_framework.test import APIClient
 
+from orchestra.todos.serializers import BulkTodoSerializer
 from orchestra.tests.helpers.fixtures import TodoFactory
 from orchestra.tests.helpers.fixtures import StepFactory
 from orchestra.tests.helpers.fixtures import ProjectFactory
@@ -12,6 +13,7 @@ from orchestra.project_api.auth import SignedUser
 from orchestra.orchestra_api import get_project_information
 from orchestra.orchestra_api import create_todos
 from orchestra.orchestra_api import get_todos
+from orchestra.orchestra_api import update_todos
 
 
 class TodoAPITests(TestCase):
@@ -103,3 +105,34 @@ class TodoAPITests(TestCase):
         expected_ids = [todo1.id, todo2.id, todo3.id, todo4.id]
         for r in res:
             self.assertIn(r['id'], expected_ids)
+
+    @patch('orchestra.orchestra_api.requests')
+    def test_update_todos(self, mock_request):
+        # This converts `requests.put` into DRF's `APIClient.put`
+        # To make it testable
+        def put(url, *args, **kwargs):
+            kw = kwargs.get('data', '')
+            data = json.loads(kw)
+            return_value = self.request_client.put(
+                url, data, format='json')
+            return_value.text = json.dumps(return_value.data)
+            return return_value
+
+        mock_request.put = put
+
+        todo1 = TodoFactory(step=self.step, project=self.project)
+        todo2 = TodoFactory(step=self.step, project=self.project)
+        todo3 = TodoFactory(step=self.step, project=self.project)
+        serialized = BulkTodoSerializer([todo1, todo2, todo3], many=True).data
+        # Change titles
+        updated = [
+            self._change_attr(x, 'title',  'updated title {}'.format(x['id']))
+            for x in serialized]
+        result = update_todos(updated)
+        self.assertEqual(len(result), 3)
+        for r in result:
+            self.assertTrue(r['title'].startswith('updated title'))
+
+    def _change_attr(self, item, attr, value):
+        item[attr] = value
+        return item
