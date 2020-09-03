@@ -26,8 +26,9 @@ class TodoAPITests(TestCase):
         self.assertTrue(False)
 
     @patch('orchestra.orchestra_api.requests')
-    def test_create_todos(self, mock_request_post):
-        # This converts DRF's `APIClient.post` into `requests.post`
+    def test_create_todos(self, mock_request):
+        # This converts `requests.post` into DRF's `APIClient.post`
+        # To make it testable
         def post(url, *args, **kwargs):
             kw = kwargs.get('data', '')
             data = json.loads(kw)
@@ -35,7 +36,7 @@ class TodoAPITests(TestCase):
             return_value.text = json.dumps(return_value.data)
             return return_value
 
-        mock_request_post.post = post
+        mock_request.post = post
         data = [
             {
                 'title': 'Testing title {}'.format(x),
@@ -50,7 +51,8 @@ class TodoAPITests(TestCase):
 
     @patch('orchestra.orchestra_api.requests')
     def test_get_todos(self, mock_request):
-        # This converts DRF's `APIClient.get` into `requests.get`
+        # This converts `requests.get` into DRF's `APIClient.get`
+        # To make it testable
         def get(url, *args, **kwargs):
             return_value = self.request_client.get(url, format='json')
             return_value.text = json.dumps(return_value.data)
