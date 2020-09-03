@@ -478,7 +478,7 @@ class TestTodoApiViewset(EndpointTestCase):
         self.request_client.force_authenticate(user=SignedUser())
         setup_models(self)
         self.project = ProjectFactory()
-        self.step = StepFactory()
+        self.step = StepFactory(slug='step-slug')
         self.list_url = reverse('orchestra:api:todo-api-list')
         self.todo = TodoFactory(project=self.project)
         self.todo_with_step = TodoFactory(project=self.project, step=self.step)
@@ -563,15 +563,15 @@ class TestTodoApiViewset(EndpointTestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.json()), 2)
 
-        url_with_step_filter = '{}?step={}'.format(
-            self.list_url, self.todo_with_step.step.id)
+        url_with_step_filter = '{}?step__slug={}'.format(
+            self.list_url, self.todo_with_step.step.slug)
         resp = self.request_client.get(url_with_step_filter)
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.json()), 1)
         self.assertEqual(resp.json()[0]['step'], self.todo_with_step.step.id)
 
-        url_with_filters = '{}?project={}&step={}'.format(
-            self.list_url, self.project.id, self.todo_with_step.step.id)
+        url_with_filters = '{}?project={}&step__slug={}'.format(
+            self.list_url, self.project.id, self.todo_with_step.step.slug)
         resp = self.request_client.get(url_with_filters)
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()[0]['step'], self.todo_with_step.step.id)
