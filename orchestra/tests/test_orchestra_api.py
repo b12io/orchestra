@@ -13,6 +13,7 @@ from orchestra.project_api.auth import SignedUser
 from orchestra.orchestra_api import create_todos
 from orchestra.orchestra_api import get_todos
 from orchestra.orchestra_api import update_todos
+from orchestra.orchestra_api import delete_todos
 
 
 class TodoAPITests(TestCase):
@@ -140,3 +141,27 @@ class TodoAPITests(TestCase):
     def _change_attr(self, item, attr, value):
         item[attr] = value
         return item
+
+    @patch('orchestra.orchestra_api.requests')
+    def test_delete_todos(self, mock_request):
+        # This converts `requests.delete` into DRF's `APIClient.delete`
+        # To make it testable
+        def delete(url, *args, **kwargs):
+            kw = kwargs.get('data', '')
+            data = json.loads(kw)
+            return_value = self.request_client.delete(
+                url, data, format='json')
+            return_value.text = json.dumps(return_value.data)
+            return return_value
+
+        mock_request.delete = delete
+
+        todo1 = TodoFactory(step=self.step, project=self.project)
+        todo2 = TodoFactory(step=self.step, project=self.project)
+        todo3 = TodoFactory(step=self.step, project=self.project)
+        todo4 = TodoFactory(step=self.step, project=self.project)
+
+        res = delete_todos([todo1.id, todo2.id, todo3.id])
+        left_todos = Todo.objects.all()
+        self.assertEqual(left_todos.count(), 1)
+        self.assertEqual(left_todos[0].id, todo4.id)

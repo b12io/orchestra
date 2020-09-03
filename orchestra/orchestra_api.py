@@ -111,6 +111,12 @@ def update_todos(updated_todos):
     return json.loads(response.text)
 
 
+def delete_todos(todo_ids):
+    response = _make_api_request('delete', 'todo-api',
+                                 data=json.dumps(todo_ids))
+    return json.loads(response.text)
+
+
 def assign_worker_to_task(worker_id, task_id):
     data = {
         'worker_id': worker_id,
