@@ -5,6 +5,7 @@ from unittest.mock import PropertyMock
 from django.test import TestCase
 from rest_framework.test import APIClient
 
+from orchestra.models import Todo
 from orchestra.todos.serializers import BulkTodoSerializer
 from orchestra.tests.helpers.fixtures import TodoFactory
 from orchestra.tests.helpers.fixtures import StepFactory
@@ -123,6 +124,8 @@ class TodoAPITests(TestCase):
         todo1 = TodoFactory(step=self.step, project=self.project)
         todo2 = TodoFactory(step=self.step, project=self.project)
         todo3 = TodoFactory(step=self.step, project=self.project)
+        todo_should_not_be_updated = TodoFactory(
+            project=self.project, step=self.step, title='Not updated')
         serialized = BulkTodoSerializer([todo1, todo2, todo3], many=True).data
         # Change titles
         updated = [
@@ -130,8 +133,11 @@ class TodoAPITests(TestCase):
             for x in serialized]
         result = update_todos(updated)
         self.assertEqual(len(result), 3)
-        for r in result:
-            self.assertTrue(r['title'].startswith('updated title'))
+        updated_todos = Todo.objects.filter(
+            id__in=[todo1.id, todo2.id, todo3.id])
+        for todo in updated_todos:
+            self.assertTrue(todo.title.startswith('updated title'))
+        self.assertEqual(todo_should_not_be_updated.title, 'Not updated')
 
     def _change_attr(self, item, attr, value):
         item[attr] = value
