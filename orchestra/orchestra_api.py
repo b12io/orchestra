@@ -27,7 +27,7 @@ class OrchestraError(Exception):
     pass
 
 
-def _make_api_request(method, endpoint, *args, **kwargs):
+def _make_api_request(method, endpoint, query_params='', *args, **kwargs):
     func = getattr(requests, method)
     # Adding 'date' header as per
     # https://github.com/zzsnzmn/py-http-signature/blob/e2e2c753db7da45fab4b215d84e8d490bd708833/http_signature/sign.py#L155  # noqa
@@ -37,7 +37,7 @@ def _make_api_request(method, endpoint, *args, **kwargs):
     headers.update(kwargs.pop('headers', {}))
     all_kwargs = {'auth': _httpsig_auth, 'headers': headers}
     all_kwargs.update(kwargs)
-    url = '{}{}/'.format(_api_root_url, endpoint)
+    url = '{}{}/{}'.format(_api_root_url, endpoint, query_params)
     response = func(url, *args, **all_kwargs)
     if response.status_code != 200 and response.status_code != 201:
         raise OrchestraError(response.text)
@@ -90,6 +90,17 @@ def get_project_information(project_ids):
 def create_todos(todos):
     response = _make_api_request('post', 'todo-api',
                                  data=json.dumps(todos))
+    return json.loads(response.text)
+
+
+def get_todos(project_id=None, step_slug=None):
+    project_param = 'project={}'.format(
+        project_id) if project_id is not None else ''
+    step_slug_param = 'step__slug={}'.format(
+        step_slug) if step_slug is not None else ''
+    juncture = '&' if project_param and step_slug_param else ''
+    query_params = '?{}{}{}'.format(project_param, juncture, step_slug_param)
+    response = _make_api_request('get', 'todo-api', query_params)
     return json.loads(response.text)
 
 
