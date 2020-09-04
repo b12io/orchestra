@@ -93,13 +93,14 @@ def create_todos(todos):
     return json.loads(response.text)
 
 
-def get_todos(project_id=None, step_slug=None):
+def get_todos(project_id, step_slug=None):
+    if project_id is None:
+        raise OrchestraError('project_id is required')
     project_param = 'project={}'.format(
-        project_id) if project_id is not None else ''
-    step_slug_param = 'step__slug={}'.format(
+        project_id)
+    step_slug_param = '&step__slug={}'.format(
         step_slug) if step_slug is not None else ''
-    juncture = '&' if project_param and step_slug_param else ''
-    query_params = '?{}{}{}'.format(project_param, juncture, step_slug_param)
+    query_params = '?{}{}'.format(project_param, step_slug_param)
 
     response = _make_api_request('get', 'todo-api', query_params)
     return json.loads(response.text)

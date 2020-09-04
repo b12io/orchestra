@@ -14,6 +14,7 @@ from orchestra.orchestra_api import create_todos
 from orchestra.orchestra_api import get_todos
 from orchestra.orchestra_api import update_todos
 from orchestra.orchestra_api import delete_todos
+from orchestra.orchestra_api import OrchestraError
 
 
 class TodoAPITests(TestCase):
@@ -85,13 +86,6 @@ class TodoAPITests(TestCase):
         self.assertEqual(len(res), 1)
         self.assertEqual(res[0]['id'], todo3.id)
 
-        # Filter by step slug
-        res = get_todos(project_id=None, step_slug=step_1.slug)
-        self.assertEqual(len(res), 3)
-        expected_ids = [todo1.id, todo2.id, todo4.id]
-        for r in res:
-            self.assertIn(r['id'], expected_ids)
-
         # Filter by project_id
         res = get_todos(project_id=project2.id)
         self.assertEqual(len(res), 2)
@@ -99,12 +93,10 @@ class TodoAPITests(TestCase):
         for r in res:
             self.assertIn(r['id'], expected_ids)
 
-        # Get all todos
-        res = get_todos()
-        self.assertEqual(len(res), 4)
-        expected_ids = [todo1.id, todo2.id, todo3.id, todo4.id]
-        for r in res:
-            self.assertIn(r['id'], expected_ids)
+        # Test project_id is required
+        msg = 'project_id is required'
+        with self.assertRaisesMessage(OrchestraError, msg):
+            get_todos(None)
 
     @patch('orchestra.orchestra_api.requests')
     def test_update_todos(self, mock_request):
