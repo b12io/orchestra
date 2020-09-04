@@ -656,6 +656,33 @@ class TestTodoApiViewset(EndpointTestCase):
             self.assertTrue(todo.title.startswith('updated title'))
         self.assertEqual(todo_should_not_be_updated.title, 'Not updated')
 
+    def test_bulk_partial_update(self):
+        todo1 = TodoFactory(
+            project=self.project, step=self.step, title='Test title1')
+        todo2 = TodoFactory(
+            project=self.project, step=self.step, title='Test title2')
+        todo3 = TodoFactory(
+            project=self.project, step=self.step, title='Test title3')
+        todo_should_not_be_updated = TodoFactory(
+            project=self.project, step=self.step, title='Not updated')
+        # Change titles
+        todos_with_updated_titles = [{
+            'id': x.id,
+            'title': 'Updated title {}'.format(x.id),
+            'step': x.step.id,
+            'project': x.project.id
+        } for x in [todo1, todo3, todo2]]
+        resp = self.request_client.patch(
+            self.list_url, data=json.dumps(todos_with_updated_titles),
+            content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+
+        updated_todos = Todo.objects.filter(
+            id__in=[todo1.id, todo2.id, todo3.id])
+        for todo in updated_todos:
+            self.assertEqual(todo.title, 'Updated title {}'.format(todo.id))
+        self.assertEqual(todo_should_not_be_updated.title, 'Not updated')
+
     def _change_attr(self, item, attr, value):
         item[attr] = value
         return item

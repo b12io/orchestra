@@ -143,14 +143,22 @@ class GenericTodoViewset(ModelViewSet):
 
     @action(detail=False, methods=['put'])
     def put(self, request, *args, **kwargs):
+        partial = kwargs.get('partial', False)
         ids = [x['id'] for x in request.data]
-        instances = self.get_queryset(ids=ids)
+        # To avoid mess, sort data and queryset by ids
+        sorted_data = sorted(request.data, key=lambda x: x['id'])
+        instances = self.get_queryset(ids=ids).order_by('id')
         serializer = self.get_serializer(
-            instances, data=request.data, partial=False, many=True)
+            instances, data=sorted_data, partial=partial, many=True)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         data = serializer.data
         return Response(data)
+
+    @action(detail=False, methods=['patch'])
+    def patch(self, request, *args, **kwargs):
+        kwargs['partial'] = True
+        return self.put(request, *args, **kwargs)
 
     def perform_update(self, serializer):
         todo = serializer.save()
