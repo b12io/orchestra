@@ -5,7 +5,6 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 
 from orchestra.models import Todo
-from orchestra.todos.serializers import BulkTodoSerializer
 from orchestra.tests.helpers.fixtures import TodoFactory
 from orchestra.tests.helpers.fixtures import StepFactory
 from orchestra.tests.helpers.fixtures import ProjectFactory
