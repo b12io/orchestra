@@ -25,9 +25,6 @@ class TodoAPITests(TestCase):
         self.project = ProjectFactory()
         self.step = StepFactory()
 
-    def _pause(self):
-        self.assertTrue(False)
-
     @patch('orchestra.orchestra_api.requests')
     def test_create_todos(self, mock_request):
         # This converts `requests.post` into DRF's `APIClient.post`
