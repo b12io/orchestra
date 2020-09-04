@@ -640,7 +640,7 @@ class TestTodoApiViewset(EndpointTestCase):
             project=self.project, step=self.step, title='Test title3')
         todo_should_not_be_updated = TodoFactory(
             project=self.project, step=self.step, title='Not updated')
-        serialized = BulkTodoSerializer([todo1, todo2, todo3], many=True).data
+        serialized = BulkTodoSerializer([todo3, todo2, todo1], many=True).data
         # Change titles
         updated = [
             self._change_attr(x, 'title',  'updated title {}'.format(x['id']))
@@ -653,7 +653,7 @@ class TestTodoApiViewset(EndpointTestCase):
         updated_todos = Todo.objects.filter(
             id__in=[todo1.id, todo2.id, todo3.id])
         for todo in updated_todos:
-            self.assertTrue(todo.title.startswith('updated title'))
+            self.assertEqual(todo.title, 'updated title {}'.format(todo.id))
         self.assertEqual(todo_should_not_be_updated.title, 'Not updated')
 
     def test_bulk_partial_update(self):
