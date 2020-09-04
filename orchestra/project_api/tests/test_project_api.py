@@ -556,6 +556,26 @@ class TestTodoApiViewset(EndpointTestCase):
         resp = self.request_client.get(detail_url)
         self.assertEqual(resp.status_code, 200)
 
+    def test_get_list_of_todos_with_filters(self):
+        url_with_project_filter = '{}?project={}'.format(
+            self.list_url, self.project.id)
+        resp = self.request_client.get(url_with_project_filter)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.json()), 2)
+
+        url_with_step_filter = '{}?step__slug={}'.format(
+            self.list_url, self.todo_with_step.step.slug)
+        resp = self.request_client.get(url_with_step_filter)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.json()), 1)
+        self.assertEqual(resp.json()[0]['step'], self.todo_with_step.step.id)
+
+        url_with_filters = '{}?project={}&step__slug={}'.format(
+            self.list_url, self.project.id, self.todo_with_step.step.slug)
+        resp = self.request_client.get(url_with_filters)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()[0]['step'], self.todo_with_step.step.id)
+
     @patch('orchestra.todos.views.notify_single_todo_update')
     def test_update_functionality(self, mock_notify):
         todo1 = TodoFactory(
@@ -610,3 +630,32 @@ class TestTodoApiViewset(EndpointTestCase):
         marked_as_deleted = Todo.unsafe_objects.get(pk=self.todo.pk)
         self.assertTrue(marked_as_deleted.is_deleted)
         self.assertEqual(marked_as_deleted, self.todo)
+
+    def test_bulk_update(self):
+        todo1 = TodoFactory(
+            project=self.project, step=self.step, title='Test title1')
+        todo2 = TodoFactory(
+            project=self.project, step=self.step, title='Test title2')
+        todo3 = TodoFactory(
+            project=self.project, step=self.step, title='Test title3')
+        todo_should_not_be_updated = TodoFactory(
+            project=self.project, step=self.step, title='Not updated')
+        serialized = BulkTodoSerializer([todo1, todo2, todo3], many=True).data
+        # Change titles
+        updated = [
+            self._change_attr(x, 'title',  'updated title {}'.format(x['id']))
+            for x in serialized]
+        resp = self.request_client.put(
+            self.list_url, data=json.dumps(updated),
+            content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+
+        updated_todos = Todo.objects.filter(
+            id__in=[todo1.id, todo2.id, todo3.id])
+        for todo in updated_todos:
+            self.assertTrue(todo.title.startswith('updated title'))
+        self.assertEqual(todo_should_not_be_updated.title, 'Not updated')
+
+    def _change_attr(self, item, attr, value):
+        item[attr] = value
+        return item
