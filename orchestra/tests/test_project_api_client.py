@@ -97,9 +97,9 @@ class TodoAPITests(TestCase):
 
     @patch('orchestra.orchestra_api.requests')
     def test_update_todos(self, mock_request):
-        # This converts `requests.put` into DRF's `APIClient.put`
+        # This converts `requests.patch` into DRF's `APIClient.patch`
         # To make it testable
-        def put(url, *args, **kwargs):
+        def patch_func(url, *args, **kwargs):
             kw = kwargs.get('data', '')
             data = json.loads(kw)
             return_value = self.request_client.put(
@@ -107,24 +107,26 @@ class TodoAPITests(TestCase):
             return_value.text = json.dumps(return_value.data)
             return return_value
 
-        mock_request.put = put
+        mock_request.patch = patch_func
 
         todo1 = TodoFactory(step=self.step, project=self.project)
         todo2 = TodoFactory(step=self.step, project=self.project)
         todo3 = TodoFactory(step=self.step, project=self.project)
         todo_should_not_be_updated = TodoFactory(
             project=self.project, step=self.step, title='Not updated')
-        serialized = BulkTodoSerializer([todo1, todo2, todo3], many=True).data
         # Change titles
-        updated = [
-            self._change_attr(x, 'title',  'updated title {}'.format(x['id']))
-            for x in serialized]
-        result = update_todos(updated)
+        todos_with_updated_titles = [{
+            'id': x.id,
+            'title': 'Updated title {}'.format(x.id),
+            'step': x.step.id,
+            'project': x.project.id
+        } for x in [todo1, todo3, todo2]]
+        result = update_todos(todos_with_updated_titles)
         self.assertEqual(len(result), 3)
         updated_todos = Todo.objects.filter(
             id__in=[todo1.id, todo2.id, todo3.id])
         for todo in updated_todos:
-            self.assertTrue(todo.title.startswith('updated title'))
+            self.assertEqual(todo.title, 'Updated title {}'.format(todo.id))
         self.assertEqual(todo_should_not_be_updated.title, 'Not updated')
 
     def _change_attr(self, item, attr, value):

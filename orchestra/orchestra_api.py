@@ -107,7 +107,7 @@ def get_todos(project_id, step_slug=None):
 
 
 def update_todos(updated_todos):
-    response = _make_api_request('put', 'todo-api',
+    response = _make_api_request('patch', 'todo-api',
                                  data=json.dumps(updated_todos))
     return json.loads(response.text)
 
