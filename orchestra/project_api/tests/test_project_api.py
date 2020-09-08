@@ -616,6 +616,17 @@ class TestTodoApiViewset(EndpointTestCase):
         self.assertEqual(resp.json()['step'], self.step.id)
         self.assertEqual(resp.json()['project'], self.project.id)
 
+        resp = self.request_client.patch(
+            detail_url,
+            data=json.dumps({
+                'title': expected_title,
+                'step': self.step.id,
+            }),
+            content_type='application/json')
+        self.assertEqual(resp.status_code, 400)
+        self.assertEqual(resp.json()['project'],
+                         ['project should be supplied.'])
+
     def test_destroy_functionality(self):
         all_todos_count = Todo.objects.count()
         self.assertEqual(all_todos_count, 2)
@@ -638,6 +649,8 @@ class TestTodoApiViewset(EndpointTestCase):
             project=self.project, step=self.step, title='Test title2')
         todo3 = TodoFactory(
             project=self.project, step=self.step, title='Test title3')
+        todo_wo_project = TodoFactory(
+            title='Test title3')
         todo_should_not_be_updated = TodoFactory(
             project=self.project, step=self.step, title='Not updated')
         serialized = BulkTodoSerializer([todo3, todo2, todo1], many=True).data
@@ -655,6 +668,17 @@ class TestTodoApiViewset(EndpointTestCase):
         for todo in updated_todos:
             self.assertEqual(todo.title, 'updated title {}'.format(todo.id))
         self.assertEqual(todo_should_not_be_updated.title, 'Not updated')
+
+        serialized = BulkTodoSerializer([todo_wo_project], many=True).data
+        updated = [
+            self._change_attr(x, 'title',  'updated title {}'.format(x['id']))
+            for x in serialized]
+        resp = self.request_client.put(
+            self.list_url, data=json.dumps(updated),
+            content_type='application/json')
+        self.assertEqual(resp.status_code, 400)
+        self.assertEqual(resp.json()[0]['project'],
+                         ['project should be supplied.'])
 
     def test_bulk_partial_update(self):
         todo1 = TodoFactory(
