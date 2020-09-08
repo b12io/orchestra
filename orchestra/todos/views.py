@@ -145,7 +145,8 @@ class GenericTodoViewset(ModelViewSet):
     def put(self, request, *args, **kwargs):
         partial = kwargs.get('partial', False)
         ids = [x['id'] for x in request.data]
-        # To avoid mess, sort data and queryset by ids
+        # Sort the queryset and data by primary key
+        # so we update the correct records.
         sorted_data = sorted(request.data, key=lambda x: x['id'])
         instances = self.get_queryset(ids=ids).order_by('id')
         serializer = self.get_serializer(
