@@ -6,7 +6,8 @@ from pydoc import locate
 
 from orchestra.models import TodoListTemplate
 from orchestra.models import Todo
-from orchestra.models import Task
+from orchestra.models import Project
+from orchestra.models import Step
 
 logger = logging.getLogger(__name__)
 
@@ -21,14 +22,16 @@ OPERATORS = {
 
 
 @transaction.atomic
-def add_todolist_template(todolist_template_slug, task_id):
+def add_todolist_template(todolist_template_slug, project_id, step_id):
     todolist_template = TodoListTemplate.objects.get(
         slug=todolist_template_slug)
 
-    task = Task.objects.get(id=task_id)
+    project = Project.objects.get(id=project_id)
+    step = Step.objects.get(id=step_id)
     template_todos = todolist_template.todos.get('items', [])
     root_todo = Todo(
-        task=task,
+        project=project,
+        step=step,
         title=todolist_template.name,
         template=todolist_template
     )
@@ -40,12 +43,13 @@ def add_todolist_template(todolist_template_slug, task_id):
     if path:
         try:
             get_cond_props = locate(path)
-            cond_props = get_cond_props(task.project)
+            cond_props = get_cond_props(project)
         except Exception:
             logger.exception('Invalid conditional function path.')
     for template_todo in template_todos:
         _add_template_todo(
-            template_todo, todolist_template, root_todo, task, cond_props)
+            template_todo, todolist_template,
+            root_todo, project, step, cond_props)
 
 
 def _to_exclude(props, conditions):
@@ -71,7 +75,7 @@ def _to_exclude(props, conditions):
 
 def _add_template_todo(
         template_todo, todolist_template,
-        parent_todo, task, conditional_props):
+        parent_todo, project, step, conditional_props):
     remove = _to_exclude(conditional_props, template_todo.get('remove_if', []))
     if not remove:
         if parent_todo.skipped_datetime:
@@ -82,7 +86,8 @@ def _add_template_todo(
             skipped_datetime = timezone.now() if to_skip else None
 
         todo = Todo(
-            task=task,
+            project=project,
+            step=step,
             title=template_todo['description'],
             template=todolist_template,
             parent_todo=parent_todo,
@@ -92,4 +97,4 @@ def _add_template_todo(
         for template_todo_item in template_todo.get('items', []):
             _add_template_todo(
                 template_todo_item, todolist_template, todo,
-                task, conditional_props)
+                project, step, conditional_props)
