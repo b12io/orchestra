@@ -121,7 +121,7 @@ class GenericTodoViewset(ModelViewSet):
     """
     serializer_class = BulkTodoSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filterset_fields = ('project', 'step',)
+    filterset_fields = ('project', 'step__slug',)
     queryset = Todo.objects.all()
 
     def get_serializer(self, *args, **kwargs):
@@ -136,16 +136,30 @@ class GenericTodoViewset(ModelViewSet):
             queryset = queryset.filter(id__in=ids)
         return queryset.order_by('-created_at')
 
+    @action(detail=False, methods=['delete'])
+    def delete(self, request, *args, **kwargs):
+        data = self.get_queryset(ids=request.data).delete()
+        return Response(data)
+
     @action(detail=False, methods=['put'])
     def put(self, request, *args, **kwargs):
+        partial = kwargs.get('partial', False)
         ids = [x['id'] for x in request.data]
-        instances = self.get_queryset(ids=ids)
+        # Sort the queryset and data by primary key
+        # so we update the correct records.
+        sorted_data = sorted(request.data, key=lambda x: x['id'])
+        instances = self.get_queryset(ids=ids).order_by('id')
         serializer = self.get_serializer(
-            instances, data=request.data, partial=False, many=True)
+            instances, data=sorted_data, partial=partial, many=True)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         data = serializer.data
         return Response(data)
+
+    @action(detail=False, methods=['patch'])
+    def patch(self, request, *args, **kwargs):
+        kwargs['partial'] = True
+        return self.put(request, *args, **kwargs)
 
     def perform_update(self, serializer):
         todo = serializer.save()

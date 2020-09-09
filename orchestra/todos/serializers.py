@@ -77,11 +77,7 @@ class BulkTodoSerializer(serializers.ModelSerializer):
 
     # TODO(murat): Remove this validation when step will be marked as required
     def validate(self, data):
-        if 'step' not in data.keys():
-            raise serializers.ValidationError(
-                {'step': ['step should be supplied.']}
-            )
-        if 'project' not in data.keys():
+        if data.get('project') is None:
             raise serializers.ValidationError(
                 {'project': ['project should be supplied.']}
             )
