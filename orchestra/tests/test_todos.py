@@ -25,13 +25,13 @@ from orchestra.todos.serializers import TodoListTemplateSerializer
 from orchestra.utils.load_json import load_encoded_json
 
 
-def _todo_data(task, title, completed,
+def _todo_data(task_id, title, completed,
                skipped_datetime=None, start_by=None,
                due=None, parent_todo=None, template=None,
                activity_log=str({'actions': []}), qa=None,
                project=None, step=None):
     return {
-        'task': task.id,
+        'task': task_id,
         'completed': completed,
         'title': title,
         'template': template,
@@ -384,8 +384,14 @@ class TodoTemplateEndpointTests(EndpointTestCase):
         self.todolist_template_name = 'test_todolist_template_name'
         self.todolist_template_description = \
             'test_todolist_template_description'
+        self.step = StepFactory()
+        self.project = ProjectFactory()
+        self.project2 = ProjectFactory()
         self.tasks = Task.objects.filter(assignments__worker=self.worker)
         self.task = self.tasks[0]
+        self.task.project = self.project
+        self.task.step = self.step
+        self.task.save()
 
     def _todolist_template_data(
             self, slug, name, description, creator=None,
@@ -489,6 +495,7 @@ class TodoTemplateEndpointTests(EndpointTestCase):
             todos={'items': [{
                 'id': 1,
                 'description': 'todo parent',
+                'project': self.project.id,
                 'items': [{
                     'id': 2,
                     'description': 'todo child',
@@ -500,43 +507,33 @@ class TodoTemplateEndpointTests(EndpointTestCase):
             update_todos_from_todolist_template_url,
             {
                 'todolist_template': todolist_template.slug,
-                'task': self.task.id,
+                'project': self.project.id,
+                'step': self.step.id
             })
 
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(Todo.objects.all().count(), num_todos + 3)
         todos = load_encoded_json(resp.content)
         expected_todos = [
-            _todo_data(self.task, 'todo child', False,
+            _todo_data(None, 'todo child', False,
                        template=todolist_template.id,
-                       parent_todo=todos[1]['id']),
-            _todo_data(self.task, 'todo parent', False,
+                       parent_todo=todos[1]['id'],
+                       project=self.project.id,
+                       step=self.step.id),
+            _todo_data(None, 'todo parent', False,
                        template=todolist_template.id,
-                       parent_todo=todos[2]['id']),
-            _todo_data(self.task, self.todolist_template_name,
-                       False, template=todolist_template.id),
+                       parent_todo=todos[2]['id'],
+                       project=self.project.id,
+                       step=self.step.id),
+            _todo_data(None, self.todolist_template_name,
+                       False, template=todolist_template.id,
+                       project=self.project.id,
+                       step=self.step.id),
         ]
         for todo, expected_todo in zip(todos, expected_todos):
             self._verify_todo_content(todo, expected_todo)
 
-    def test_update_todos_from_todolist_template_missing_task_id(self):
-        update_todos_from_todolist_template_url = \
-            reverse('orchestra:todos:update_todos_from_todolist_template')
-        todolist_template = TodoListTemplateFactory(
-            slug=self.todolist_template_slug,
-            name=self.todolist_template_name,
-            description=self.todolist_template_description,
-            todos={'items': []},
-        )
-        resp = self.request_client.post(
-            update_todos_from_todolist_template_url,
-            {
-                'todolist_template': todolist_template.slug
-            })
-
-        self.assertEqual(resp.status_code, 403)
-
-    def test_update_todos_from_todolist_template_invalid_task(self):
+    def test_update_todos_from_todolist_template_missing_project_id(self):
         update_todos_from_todolist_template_url = \
             reverse('orchestra:todos:update_todos_from_todolist_template')
         todolist_template = TodoListTemplateFactory(
@@ -549,7 +546,26 @@ class TodoTemplateEndpointTests(EndpointTestCase):
             update_todos_from_todolist_template_url,
             {
                 'todolist_template': todolist_template.slug,
-                'task': 999999999999999,
+                'step': self.step.id
+            })
+
+        self.assertEqual(resp.status_code, 403)
+
+    def test_update_todos_from_todolist_template_invalid_project(self):
+        update_todos_from_todolist_template_url = \
+            reverse('orchestra:todos:update_todos_from_todolist_template')
+        todolist_template = TodoListTemplateFactory(
+            slug=self.todolist_template_slug,
+            name=self.todolist_template_name,
+            description=self.todolist_template_description,
+            todos={'items': []},
+        )
+        resp = self.request_client.post(
+            update_todos_from_todolist_template_url,
+            {
+                'todolist_template': todolist_template.slug,
+                'project': self.project2.id,
+                'step': self.step.id
             })
 
         self.assertEqual(resp.status_code, 403)
@@ -562,7 +578,8 @@ class TodoTemplateEndpointTests(EndpointTestCase):
             update_todos_from_todolist_template_url,
             {
                 'todolist_template': 'invalid-slug',
-                'task': self.task.id,
+                'project': self.project.id,
+                'step': self.step.id
             })
 
         self.assertEqual(resp.status_code, 400)
@@ -583,9 +600,11 @@ class TodoTemplateEndpointTests(EndpointTestCase):
                 {
                     'id': 1,
                     'description': 'todo parent 1',
+                    'project': self.project.id,
                     'items': [{
                         'id': 2,
                         'description': 'todo child 1',
+                        'project': self.project.id,
                         'items': []
                     }],
                     'remove_if': [{
@@ -597,9 +616,11 @@ class TodoTemplateEndpointTests(EndpointTestCase):
                 }, {
                     'id': 3,
                     'description': 'todo parent 2',
+                    'project': self.project.id,
                     'items': [{
                         'id': 4,
                         'description': 'todo child 2',
+                        'project': self.project.id,
                         'items': [],
                         'skip_if': [{
                             'prop2': {
@@ -614,21 +635,28 @@ class TodoTemplateEndpointTests(EndpointTestCase):
             update_todos_from_todolist_template_url,
             {
                 'todolist_template': todolist_template.slug,
-                'task': self.task.id,
+                'project': self.project.id,
+                'step': self.step.id
             })
         self.assertEqual(resp.status_code, 200)
         todos = load_encoded_json(resp.content)
 
         expected_todos = [
-            _todo_data(self.task, 'todo child 2', False,
+            _todo_data(None, 'todo child 2', False,
                        template=todolist_template.id,
                        parent_todo=todos[1]['id'],
-                       skipped_datetime=timezone.now()),
-            _todo_data(self.task, 'todo parent 2', False,
+                       skipped_datetime=timezone.now(),
+                       project=self.project.id,
+                       step=self.step.id),
+            _todo_data(None, 'todo parent 2', False,
                        template=todolist_template.id,
-                       parent_todo=todos[2]['id']),
-            _todo_data(self.task, self.todolist_template_name,
-                       False, template=todolist_template.id),
+                       parent_todo=todos[2]['id'],
+                       project=self.project.id,
+                       step=self.step.id),
+            _todo_data(None, self.todolist_template_name,
+                       False, template=todolist_template.id,
+                       project=self.project.id,
+                       step=self.step.id),
         ]
         for todo, expected_todo in zip(todos, expected_todos):
             self._verify_todo_content(todo, expected_todo)

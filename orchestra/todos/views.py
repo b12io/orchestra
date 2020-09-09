@@ -33,12 +33,12 @@ logger = logging.getLogger(__name__)
               logger=logger)
 def update_todos_from_todolist_template(request):
     todolist_template_slug = request.data.get('todolist_template')
-    task_id = request.data.get('task')
+    project_id = request.data.get('project')
+    step_id = request.data.get('step')
     try:
-        add_todolist_template(todolist_template_slug, task_id)
-        project = Task.objects.get(id=task_id).project
+        add_todolist_template(todolist_template_slug, project_id, step_id)
         todos = Todo.objects.filter(
-            task__project__id=int(project.id)).order_by('-created_at')
+            project__id=project_id).order_by('-created_at')
         serializer = BulkTodoSerializerWithoutQA(todos, many=True)
         return Response(serializer.data)
     except TodoListTemplate.DoesNotExist:
