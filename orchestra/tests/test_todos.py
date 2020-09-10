@@ -237,11 +237,20 @@ class TodoQAEndpointTests(EndpointTestCase):
         self.worker_task_recent_todo_qas_url = reverse(
             'orchestra:todos:worker_task_recent_todo_qas')
         self.list_details_url_name = 'orchestra:todos:todo_qa'
+        self.project0 = ProjectFactory()
+        self.project1 = ProjectFactory()
+        self.step = StepFactory(slug='some-slug')
         self.tasks = Task.objects.filter(
             assignments__worker=self.worker)
         self.task_0 = self.tasks[0]
+        self.task_0.project = self.project0
+        self.task_0.step = self.step
+        self.task_0.save()
         self.task_1 = self.tasks[1]
-        self.todo = TodoFactory(task=self.task_0)
+        self.task_1.project = self.project1
+        self.task_1.step = self.step
+        self.task_1.save()
+        self.todo = TodoFactory(project=self.project0, step=self.step)
         self.comment = 'Test comment'
 
     def _todo_qa_data(
@@ -331,8 +340,10 @@ class TodoQAEndpointTests(EndpointTestCase):
             self.assertEqual(resp.status_code, 403)
 
     def test_worker_task_recent_todo_qas(self):
-        todo_task_0 = TodoFactory(task=self.task_0)
-        todo_task_1 = TodoFactory(task=self.task_1)
+        todo_task_0 = TodoFactory(
+            project=self.project0, step=self.step)
+        todo_task_1 = TodoFactory(
+            project=self.project1, step=self.step)
 
         # Zero TodoQAs
         self._verify_worker_task_recent_todo_qas(
