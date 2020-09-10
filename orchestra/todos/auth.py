@@ -1,7 +1,6 @@
 from rest_framework import permissions
 
 from orchestra.models import Worker
-from orchestra.models import Task
 from orchestra.models import Todo
 from orchestra.models import TodoQA
 
