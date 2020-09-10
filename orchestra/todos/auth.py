@@ -35,10 +35,13 @@ class IsAssociatedWithProject(permissions.BasePermission):
     def has_permission(self, request, view):
         worker = Worker.objects.get(user=request.user)
         todo_id = request.data.get('todo')
+        project_id = None
         if todo_id is not None:
             project_id = Todo.objects.get(id=todo_id).project_id
         if project_id is None:
             project_id = request.query_params.get('project')
+        if project_id is None:
+            project_id = request.data.get('project')
         if worker.is_project_admin():
             return True
         return worker.assignments.filter(task__project__id=project_id).exists()
