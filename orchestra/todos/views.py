@@ -58,21 +58,24 @@ def worker_task_recent_todo_qas(request):
     2. Otherwise, use the TodoQAs from the requesting user's most recent
     task with matching task slug.
     """
-    task_id = request.query_params.get('task')
-    task_todo_qas = TodoQA.objects.filter(todo__task=task_id)
+    project_id = request.query_params.get('project')
+    step_slug = request.query_params.get('step_slug')
+    project_todo_qas = TodoQA.objects.filter(todo__project__id=project_id)
 
-    if task_todo_qas.exists():
-        todo_qas = task_todo_qas
+    if project_todo_qas.exists():
+        todo_qas = project_todo_qas
     else:
-        task = Task.objects.get(pk=task_id)
         most_recent_worker_task_todo_qa = TodoQA.objects.filter(
-            todo__task__assignments__worker__user=request.user,
-            todo__task__step__slug=task.step.slug
+            todo__project__tasks__assignments__worker__user=request.user,
+            todo__step__slug=step_slug
         ).order_by('-created_at').first()
 
         if most_recent_worker_task_todo_qa:
+            project = Project.objects.get(id=project_id)
+            step = Step.objects.get(slug=step_slug)
+            task = project.tasks.filter(step=step).first()
             todo_qas = TodoQA.objects.filter(
-                todo__task=most_recent_worker_task_todo_qa.todo.task,
+                todo__task=task,
                 approved=False)
         else:
             todo_qas = TodoQA.objects.none()

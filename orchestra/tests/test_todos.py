@@ -71,6 +71,9 @@ class TodosEndpointTests(EndpointTestCase):
         self.project = ProjectFactory()
         self.tasks = Task.objects.filter(assignments__worker=self.worker)
         self.task = self.tasks[0]
+        self.task.project = self.project
+        self.task.step = self.step
+        self.task.save()
         self.todo_title = 'Let us do this'
         self.deadline = parse('2018-01-16T07:03:00+00:00')
 
@@ -115,7 +118,6 @@ class TodosEndpointTests(EndpointTestCase):
     def _verify_todo_creation(self, task, success, project, step, mock_notify):
         num_todos = Todo.objects.all().count()
         resp = self.request_client.post(self.list_create_url, {
-            'task': task.id,
             'project': project,
             'step': step,
             'title': self.todo_title})
@@ -140,7 +142,7 @@ class TodosEndpointTests(EndpointTestCase):
         resp = self.request_client.put(
             list_details_url,
             json.dumps(_todo_data(
-                todo.task, title, True,
+                None, title, True,
                 project=self.project.id, step=self.step.id)),
             content_type='application/json')
         updated_todo = BulkTodoSerializerWithoutQA(
@@ -149,7 +151,7 @@ class TodosEndpointTests(EndpointTestCase):
             self.assertEqual(resp.status_code, 200)
             self._verify_todo_content(
                 updated_todo, _todo_data(
-                    todo.task, title, True,
+                    None, title, True,
                     project=self.project.id,
                     step=self.step.id))
             self.assertTrue(mock_notify.called)
@@ -158,12 +160,12 @@ class TodosEndpointTests(EndpointTestCase):
             self.assertNotEqual(updated_todo['title'], title)
 
     def test_todos_list_create(self):
-        self._verify_todos_list(self.task.project.id, [], True)
+        self._verify_todos_list(self.project.id, [], True)
         self._verify_todo_creation(
-            self.task, True, self.project.id, self.step.id)
+            None, True, self.project.id, self.step.id)
         self._verify_todos_list(self.task.project.id,
                                 [_todo_data(
-                                    self.task,
+                                    None,
                                     self.todo_title,
                                     False,
                                     project=self.project.id,
@@ -172,14 +174,16 @@ class TodosEndpointTests(EndpointTestCase):
 
     def test_todos_list_create_permissions(self):
         # Can't make requests for projects in which you're uninvolved.
-        task = TaskFactory()
+        project = ProjectFactory()
+        step = StepFactory()
+        task = TaskFactory(project=project, step=step)
         self._verify_todos_list(task.project.id, [], False)
-        self._verify_todo_creation(task, False, self.project.id, self.step.id)
+        self._verify_todo_creation(task, False, task.project.id, task.step.id)
 
     def test_todo_details_and_permissions(self):
         # You should be able to update Todos for projects in which
         # you're involved, and not for other projects.
-        good_todo = TodoFactory(task=self.task)
+        good_todo = TodoFactory(project=self.project, step=self.step)
         self._verify_todo_update(good_todo, True)
         bad_todo = TodoFactory()
         self._verify_todo_update(bad_todo, False)
