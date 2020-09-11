@@ -31,7 +31,6 @@ def _todo_data(title, completed,
                activity_log=str({'actions': []}), qa=None,
                project=None, step=None):
     return {
-        'task': None,
         'completed': completed,
         'title': title,
         'template': template,
@@ -190,34 +189,40 @@ class TodosEndpointTests(EndpointTestCase):
         START_TITLE = 'Start soon'
 
         start_by_todo = TodoFactory(
-            task=self.task,
+            project=self.project,
+            step=self.step,
             start_by_datetime=self.deadline,
             title=START_TITLE)
 
-        self._verify_todos_list(self.task.project.id, [
+        self._verify_todos_list(start_by_todo.project.id, [
             _todo_data(
                 START_TITLE,
                 False,
                 None,
                 self.deadline.strftime('%Y-%m-%dT%H:%M:%SZ'),
-                None)
+                None,
+                project=start_by_todo.project.id,
+                step=start_by_todo.step.id)
         ], True)
 
     def test_create_todo_with_due_datetime(self):
         DUE_TITLE = 'Due soon'
 
         due_todo = TodoFactory(
-            task=self.task,
+            project=self.project,
+            step=self.step,
             due_datetime=self.deadline,
             title=DUE_TITLE)
 
-        self._verify_todos_list(self.task.project.id, [
+        self._verify_todos_list(due_todo.project.id, [
             _todo_data(
                 DUE_TITLE,
                 False,
                 None,
                 None,
-                self.deadline.strftime('%Y-%m-%dT%H:%M:%SZ')),
+                self.deadline.strftime('%Y-%m-%dT%H:%M:%SZ'),
+                project=due_todo.project.id,
+                step=due_todo.step.id),
         ], True)
 
 
@@ -308,7 +313,9 @@ class TodoQAEndpointTests(EndpointTestCase):
 
     def test_todo_qas_create_permissions(self):
         # Can't make requests for projects in which you're uninvolved.
-        todo = TodoFactory()
+        project = ProjectFactory()
+        step = StepFactory()
+        todo = TodoFactory(project=project, step=step)
         self._verify_todo_qa_creation(todo, False)
 
     def test_todo_qa_details_and_permissions(self):
