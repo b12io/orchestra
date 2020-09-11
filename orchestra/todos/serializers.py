@@ -3,6 +3,7 @@ from rest_framework.exceptions import ValidationError
 
 from django.db import IntegrityError
 
+from orchestra.models import Step
 from orchestra.models import Todo
 from orchestra.models import TodoQA
 from orchestra.models import TodoListTemplate
@@ -70,12 +71,23 @@ class TodoBulkCreateListSerializer(serializers.ListSerializer):
         return result
 
 
+class StepField(serializers.Field):
+    def to_representation(self, data):
+        return data.slug
+
+    def to_internal_value(self, value):
+        return value
+
+
 class BulkTodoSerializer(serializers.ModelSerializer):
     json_schemas = {
         'activity_log': TodoActionListSchema
     }
 
-    # TODO(murat): Remove this validation when step will be marked as required
+    step = StepField()
+
+    # TODO(murat): Remove this validation when project
+    # will become a required field in models
     def validate(self, data):
         if data.get('project') is None:
             raise serializers.ValidationError(
@@ -83,13 +95,23 @@ class BulkTodoSerializer(serializers.ModelSerializer):
             )
         return data
 
+    def _set_step_to_validated_data(self, validated_data):
+        project_id = validated_data['project'].id
+        step = Step.objects.get(
+            slug=validated_data['step'],
+            workflow_version__projects__id=project_id)
+        validated_data['step'] = step
+        return validated_data
+
     def create(self, validated_data):
+        validated_data = self._set_step_to_validated_data(validated_data)
         instance = Todo(**validated_data)
         if isinstance(self._kwargs['data'], dict):
             instance.save()
         return instance
 
     def update(self, instance, validated_data):
+        validated_data = self._set_step_to_validated_data(validated_data)
         for k, v in validated_data.items():
             setattr(instance, k, v)
 

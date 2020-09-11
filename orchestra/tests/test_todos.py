@@ -17,6 +17,7 @@ from orchestra.tests.helpers.fixtures import TodoFactory
 from orchestra.tests.helpers.fixtures import StepFactory
 from orchestra.tests.helpers.fixtures import ProjectFactory
 from orchestra.tests.helpers.fixtures import TodoQAFactory
+from orchestra.tests.helpers.fixtures import WorkflowVersionFactory
 from orchestra.tests.helpers.fixtures import TodoListTemplateFactory
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.todos.serializers import TodoQASerializer
@@ -66,8 +67,12 @@ class TodosEndpointTests(EndpointTestCase):
                                   password='defaultpassword')
         self.list_create_url = reverse('orchestra:todos:todos')
         self.list_details_url_name = 'orchestra:todos:todo'
-        self.step = StepFactory()
-        self.project = ProjectFactory()
+        self.workflow_version = WorkflowVersionFactory()
+        self.step = StepFactory(
+            slug='step-slug',
+            workflow_version=self.workflow_version)
+        self.project = ProjectFactory(
+            workflow_version=self.workflow_version)
         self.tasks = Task.objects.filter(assignments__worker=self.worker)
         self.task = self.tasks[0]
         self.task.project = self.project
@@ -118,7 +123,7 @@ class TodosEndpointTests(EndpointTestCase):
         num_todos = Todo.objects.all().count()
         resp = self.request_client.post(self.list_create_url, {
             'project': project,
-            'step': step,
+            'step': step.slug,
             'title': self.todo_title})
         if success:
             self.assertEqual(resp.status_code, 201)
@@ -126,7 +131,7 @@ class TodosEndpointTests(EndpointTestCase):
             todo = load_encoded_json(resp.content)
             self._verify_todo_content(
                 todo, _todo_data(
-                    self.todo_title, False, project=project, step=step))
+                    self.todo_title, False, project=project, step=step.slug))
             self.assertTrue(mock_notify.called)
         else:
             self.assertEqual(resp.status_code, 403)
@@ -142,7 +147,7 @@ class TodosEndpointTests(EndpointTestCase):
             list_details_url,
             json.dumps(_todo_data(
                 title, True,
-                project=self.project.id, step=self.step.id)),
+                project=self.project.id, step=self.step.slug)),
             content_type='application/json')
         updated_todo = BulkTodoSerializerWithoutQA(
             Todo.objects.get(id=todo.id)).data
@@ -152,7 +157,7 @@ class TodosEndpointTests(EndpointTestCase):
                 updated_todo, _todo_data(
                     title, True,
                     project=self.project.id,
-                    step=self.step.id))
+                    step=self.step.slug))
             self.assertTrue(mock_notify.called)
         else:
             self.assertEqual(resp.status_code, 403)
@@ -161,13 +166,13 @@ class TodosEndpointTests(EndpointTestCase):
     def test_todos_list_create(self):
         self._verify_todos_list(self.project.id, [], True)
         self._verify_todo_creation(
-            True, self.project.id, self.step.id)
+            True, self.project.id, self.step)
         self._verify_todos_list(self.task.project.id,
                                 [_todo_data(
                                     self.todo_title,
                                     False,
                                     project=self.project.id,
-                                    step=self.step.id)],
+                                    step=self.step.slug)],
                                 True)
 
     def test_todos_list_create_permissions(self):
@@ -175,7 +180,7 @@ class TodosEndpointTests(EndpointTestCase):
         project = ProjectFactory()
         step = StepFactory()
         self._verify_todos_list(project.id, [], False)
-        self._verify_todo_creation(False, project.id, step.id)
+        self._verify_todo_creation(False, project.id, step)
 
     def test_todo_details_and_permissions(self):
         # You should be able to update Todos for projects in which
@@ -202,7 +207,7 @@ class TodosEndpointTests(EndpointTestCase):
                 self.deadline.strftime('%Y-%m-%dT%H:%M:%SZ'),
                 None,
                 project=start_by_todo.project.id,
-                step=start_by_todo.step.id)
+                step=start_by_todo.step.slug)
         ], True)
 
     def test_create_todo_with_due_datetime(self):
@@ -222,7 +227,7 @@ class TodosEndpointTests(EndpointTestCase):
                 None,
                 self.deadline.strftime('%Y-%m-%dT%H:%M:%SZ'),
                 project=due_todo.project.id,
-                step=due_todo.step.id),
+                step=due_todo.step.slug),
         ], True)
 
 
@@ -402,7 +407,7 @@ class TodoTemplateEndpointTests(EndpointTestCase):
         self.todolist_template_name = 'test_todolist_template_name'
         self.todolist_template_description = \
             'test_todolist_template_description'
-        self.step = StepFactory()
+        self.step = StepFactory(slug='test-slug')
         self.project = ProjectFactory()
         self.project2 = ProjectFactory()
         self.tasks = Task.objects.filter(assignments__worker=self.worker)
@@ -537,16 +542,16 @@ class TodoTemplateEndpointTests(EndpointTestCase):
                        template=todolist_template.id,
                        parent_todo=todos[1]['id'],
                        project=self.project.id,
-                       step=self.step.id),
+                       step=self.step.slug),
             _todo_data('todo parent', False,
                        template=todolist_template.id,
                        parent_todo=todos[2]['id'],
                        project=self.project.id,
-                       step=self.step.id),
+                       step=self.step.slug),
             _todo_data(self.todolist_template_name,
                        False, template=todolist_template.id,
                        project=self.project.id,
-                       step=self.step.id),
+                       step=self.step.slug),
         ]
         for todo, expected_todo in zip(todos, expected_todos):
             self._verify_todo_content(todo, expected_todo)
@@ -665,16 +670,16 @@ class TodoTemplateEndpointTests(EndpointTestCase):
                        parent_todo=todos[1]['id'],
                        skipped_datetime=timezone.now(),
                        project=self.project.id,
-                       step=self.step.id),
+                       step=self.step.slug),
             _todo_data('todo parent 2', False,
                        template=todolist_template.id,
                        parent_todo=todos[2]['id'],
                        project=self.project.id,
-                       step=self.step.id),
+                       step=self.step.slug),
             _todo_data(self.todolist_template_name,
                        False, template=todolist_template.id,
                        project=self.project.id,
-                       step=self.step.id),
+                       step=self.step.slug),
         ]
         for todo, expected_todo in zip(todos, expected_todos):
             self._verify_todo_content(todo, expected_todo)
