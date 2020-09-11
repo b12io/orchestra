@@ -102,7 +102,6 @@ class BulkTodoSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'created_at',
-            'task',
             'title',
             'parent_todo',
             'template',
