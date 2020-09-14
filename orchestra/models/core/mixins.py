@@ -114,6 +114,12 @@ class ProjectMixin(object):
 
 class TaskMixin(object):
 
+    @property
+    def todos(self):
+        from orchestra.models import Todo
+        return Todo.objects.filter(project=self.project,
+                                   step=self.step)
+
     def is_worker_assigned(self, worker):
         """
         Check if specified worker is assigned to the given task.
