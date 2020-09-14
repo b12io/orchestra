@@ -17,7 +17,7 @@ export default function todoList (orchestraApi) {
     controller: function (todoApi, todoListTemplateApi, todoQaApi, $scope) {
       var todoList = this
       todoList.possibleTasks = []
-      todoList.newTodoTaskIdAndStepSlug = null
+      todoList.newTodoStepSlug = null
       todoList.newTodoDescription = null
       todoList.newTodoStartDate = null
       todoList.newTodoDueDate = null
@@ -30,7 +30,7 @@ export default function todoList (orchestraApi) {
       const createTodo = (title, completed, startDate, dueDate) => {
         todoApi.create({
           project: todoList.projectId,
-          step: todoList.newTodoTaskIdAndStepSlug.split('--')[1],
+          step: todoList.newTodoStepSlug,
           title,
           completed,
           start_by_datetime: startDate,
@@ -42,7 +42,7 @@ export default function todoList (orchestraApi) {
       }
 
       todoList.canAddTodo = () => {
-        return todoList.newTodoTaskIdAndStepSlug && todoList.newTodoDescription
+        return todoList.newTodoStepSlug && todoList.newTodoDescription
       }
 
       todoList.canSendToPending = () => {
@@ -83,7 +83,7 @@ export default function todoList (orchestraApi) {
       todoList.updateTodoListFromTemplate = (newTodoListTemplateSlug) => {
         todoListTemplateApi.updateTodoListFromTemplate({
           project: todoList.projectId,
-          step: todoList.newTodoTaskIdAndStepSlug.split('--')[1],
+          step: todoList.newTodoStepSlug,
           todolist_template: newTodoListTemplateSlug
         }).then((updatedTodos) => {
           todoList.newTodoListTemplateSlug = null
