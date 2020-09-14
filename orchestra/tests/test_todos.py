@@ -407,8 +407,12 @@ class TodoTemplateEndpointTests(EndpointTestCase):
         self.todolist_template_name = 'test_todolist_template_name'
         self.todolist_template_description = \
             'test_todolist_template_description'
-        self.step = StepFactory(slug='test-slug')
-        self.project = ProjectFactory()
+        self.workflow_version = WorkflowVersionFactory()
+        self.step = StepFactory(
+            slug='step-slug',
+            workflow_version=self.workflow_version)
+        self.project = ProjectFactory(
+            workflow_version=self.workflow_version)
         self.project2 = ProjectFactory()
         self.tasks = Task.objects.filter(assignments__worker=self.worker)
         self.task = self.tasks[0]
@@ -519,8 +523,11 @@ class TodoTemplateEndpointTests(EndpointTestCase):
                 'id': 1,
                 'description': 'todo parent',
                 'project': self.project.id,
+                'step': self.step.slug,
                 'items': [{
                     'id': 2,
+                    'project': self.project.id,
+                    'step': self.step.slug,
                     'description': 'todo child',
                     'items': []
                 }]
@@ -531,7 +538,7 @@ class TodoTemplateEndpointTests(EndpointTestCase):
             {
                 'todolist_template': todolist_template.slug,
                 'project': self.project.id,
-                'step': self.step.id
+                'step': self.step.slug
             })
 
         self.assertEqual(resp.status_code, 200)
@@ -569,7 +576,7 @@ class TodoTemplateEndpointTests(EndpointTestCase):
             update_todos_from_todolist_template_url,
             {
                 'todolist_template': todolist_template.slug,
-                'step': self.step.id
+                'step': self.step.slug
             })
 
         self.assertEqual(resp.status_code, 403)
@@ -659,7 +666,7 @@ class TodoTemplateEndpointTests(EndpointTestCase):
             {
                 'todolist_template': todolist_template.slug,
                 'project': self.project.id,
-                'step': self.step.id
+                'step': self.step.slug
             })
         self.assertEqual(resp.status_code, 200)
         todos = load_encoded_json(resp.content)
