@@ -682,8 +682,8 @@ class TestTodoApiViewset(EndpointTestCase):
             self.list_url, data=json.dumps(updated),
             content_type='application/json')
         self.assertEqual(resp.status_code, 400)
-        self.assertEqual(resp.json()[0]['project'],
-                         ['project should be supplied.'])
+        self.assertEqual(resp.json()[0]['step'],
+                         ['This field may not be null.'])
 
     def test_bulk_partial_update(self):
         todo1 = TodoFactory(
@@ -698,7 +698,7 @@ class TestTodoApiViewset(EndpointTestCase):
         todos_with_updated_titles = [{
             'id': x.id,
             'title': 'Updated title {}'.format(x.id),
-            'step': x.step.id,
+            'step': x.step.slug,
             'project': x.project.id
         } for x in [todo1, todo3, todo2]]
         resp = self.request_client.patch(
