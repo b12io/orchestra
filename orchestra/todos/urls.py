@@ -14,7 +14,7 @@ urlpatterns = [
         TodoViewset.as_view({'post': 'create', 'get': 'list'}), name='todos'),
     url(r'^todo/(?P<pk>[0-9]+)/$',
         TodoViewset.as_view(
-        {'put': 'update', 'delete': 'destroy'}), name='todo'),
+            {'put': 'update', 'delete': 'destroy'}), name='todo'),
     url(r'^todo_qa/$',
         TodoQAList.as_view(), name='todo_qas'),
     url(r'^todo_qa/(?P<pk>[0-9]+)/$',
