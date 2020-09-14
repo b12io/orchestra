@@ -82,7 +82,8 @@ export default function todoList (orchestraApi) {
 
       todoList.updateTodoListFromTemplate = (newTodoListTemplateSlug) => {
         todoListTemplateApi.updateTodoListFromTemplate({
-          task: todoList.newTodoTaskIdAndStepSlug.split('--')[0],
+          project: todoList.projectId,
+          step: todoList.newTodoTaskIdAndStepSlug.split('--')[1],
           todolist_template: newTodoListTemplateSlug
         }).then((updatedTodos) => {
           todoList.newTodoListTemplateSlug = null

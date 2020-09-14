@@ -34,9 +34,9 @@ logger = logging.getLogger(__name__)
 def update_todos_from_todolist_template(request):
     todolist_template_slug = request.data.get('todolist_template')
     project_id = request.data.get('project')
-    step_id = request.data.get('step')
+    step_slug = request.data.get('step')
     try:
-        add_todolist_template(todolist_template_slug, project_id, step_id)
+        add_todolist_template(todolist_template_slug, project_id, step_slug)
         todos = Todo.objects.filter(
             project__id=project_id).order_by('-created_at')
         serializer = BulkTodoSerializerWithoutQA(todos, many=True)

@@ -7,7 +7,7 @@ from pydoc import locate
 from orchestra.models import TodoListTemplate
 from orchestra.models import Todo
 from orchestra.models import Project
-from orchestra.models import Step
+from orchestra.utils.view_helpers import get_step_by_project_id_and_step_slug
 
 logger = logging.getLogger(__name__)
 
@@ -22,12 +22,12 @@ OPERATORS = {
 
 
 @transaction.atomic
-def add_todolist_template(todolist_template_slug, project_id, step_id):
+def add_todolist_template(todolist_template_slug, project_id, step_slug):
     todolist_template = TodoListTemplate.objects.get(
         slug=todolist_template_slug)
 
     project = Project.objects.get(id=project_id)
-    step = Step.objects.get(id=step_id)
+    step = get_step_by_project_id_and_step_slug(project_id, step_slug)
     template_todos = todolist_template.todos.get('items', [])
     root_todo = Todo(
         project=project,
