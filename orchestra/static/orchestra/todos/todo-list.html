@@ -10,9 +10,9 @@
 
     <div class="row section-body new-todo">
       <div class="col-lg-2">
-        <select class="form-control input-sm" name="todoList" id="todoList" ng-model="todoList.newTodoTaskId">
+        <select class="form-control input-sm" name="todoList" id="todoList" ng-model="todoList.newTodoTaskIdAndStepSlug">
           <option value="" selected>Select owner</option>
-          <option value="{{task.id}}" ng-repeat="task in todoList.possibleTasks">{{todoList.steps[task.step_slug].name}}</option>
+          <option value="{{task.id}}--{{task.step_slug}}" ng-repeat="task in todoList.possibleTasks">{{todoList.steps[task.step_slug].name}}</option>
         </select>
       </div>
       <div class="col-lg-5">
@@ -54,7 +54,7 @@
       <div class="col-lg-2" ng-if="todoList.templates.length > 0">
         <div class="btn-group">
           <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                  ng-disabled="!todoList.newTodoTaskId">
+                  ng-disabled="!todoList.newTodoTaskIdAndStepSlug">
             Add todos from a template <span class="caret"></span>
           </button>
           <ul class="dropdown-menu">
