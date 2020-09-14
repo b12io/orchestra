@@ -3,13 +3,13 @@ from rest_framework.exceptions import ValidationError
 
 from django.db import IntegrityError
 
-from orchestra.models import Step
 from orchestra.models import Todo
 from orchestra.models import TodoQA
 from orchestra.models import TodoListTemplate
 from orchestra.json_schemas.todos import TodoListSchema
 from orchestra.json_schemas.todos import TodoActionListSchema
 from orchestra.utils.mixins import JSONSchemaValidationMixin
+from orchestra.utils.view_helpers import get_step_by_project_id_and_step_slug
 
 
 class TodoQASerializer(serializers.ModelSerializer):
@@ -97,9 +97,8 @@ class BulkTodoSerializer(serializers.ModelSerializer):
 
     def _set_step_to_validated_data(self, validated_data):
         project_id = validated_data['project'].id
-        step = Step.objects.get(
-            slug=validated_data['step'],
-            workflow_version__projects__id=project_id)
+        step = get_step_by_project_id_and_step_slug(project_id,
+                                                    validated_data['step'])
         validated_data['step'] = step
         return validated_data
 
