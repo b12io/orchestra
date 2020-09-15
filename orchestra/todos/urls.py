@@ -1,4 +1,5 @@
 from django.conf.urls import url
+from rest_framework import routers
 
 from orchestra.todos.views import TodoQADetail
 from orchestra.todos.views import TodoQAList
@@ -10,11 +11,6 @@ import orchestra.todos.views as views
 app_name = 'todos'
 
 urlpatterns = [
-    url(r'^todo/$',
-        TodoViewset.as_view({'post': 'create', 'get': 'list'}), name='todos'),
-    url(r'^todo/(?P<pk>[0-9]+)/$',
-        TodoViewset.as_view(
-            {'put': 'update', 'delete': 'destroy'}), name='todo'),
     url(r'^todo_qa/$',
         TodoQAList.as_view(), name='todo_qas'),
     url(r'^todo_qa/(?P<pk>[0-9]+)/$',
@@ -30,3 +26,10 @@ urlpatterns = [
         views.worker_task_recent_todo_qas,
         name='worker_task_recent_todo_qas'),
 ]
+
+router = routers.SimpleRouter()
+router.register(
+    r'todo', TodoViewset, basename='todos'
+)
+
+urlpatterns += router.urls

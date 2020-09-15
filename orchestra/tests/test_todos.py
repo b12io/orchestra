@@ -65,8 +65,8 @@ class TodosEndpointTests(EndpointTestCase):
         self.worker = Worker.objects.get(user__username='test_user_6')
         self.request_client.login(username=self.worker.user.username,
                                   password='defaultpassword')
-        self.list_create_url = reverse('orchestra:todos:todos')
-        self.list_details_url_name = 'orchestra:todos:todo'
+        self.list_create_url = reverse('orchestra:todos:todos-list')
+        self.list_details_url_name = 'orchestra:todos:todos-detail'
         self.workflow_version = WorkflowVersionFactory()
         self.step = StepFactory(
             slug='step-slug',
