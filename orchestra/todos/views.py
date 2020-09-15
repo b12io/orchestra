@@ -38,7 +38,8 @@ def update_todos_from_todolist_template(request):
     try:
         add_todolist_template(todolist_template_slug, project_id, step_slug)
         todos = Todo.objects.filter(
-            project__id=project_id).order_by('-created_at')
+            project__id=project_id,
+            step__slug=step_slug).order_by('-created_at')
         serializer = BulkTodoSerializerWithoutQA(todos, many=True)
         return Response(serializer.data)
     except TodoListTemplate.DoesNotExist:
