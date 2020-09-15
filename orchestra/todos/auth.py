@@ -32,17 +32,21 @@ class IsAssociatedWithProject(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
+        """
+        We pass project_id as a payload in cases when the request
+        is either POST, PUT or PATCH. It can be passed via query param
+        not only in a GET request, but also in the requests listed above
+        (when applying a filter).
+        """
         worker = Worker.objects.get(user=request.user)
         if worker.is_project_admin():
             return True
         todo_id = request.data.get('todo')
-        project_id = None
-        if todo_id is not None:
-            project_id = Todo.objects.get(id=todo_id).project.id
+        project_id = request.data.get('project')
         if project_id is None:
             project_id = request.query_params.get('project')
-        if project_id is None:
-            project_id = request.data.get('project')
+        if project_id is None and todo_id is not None:
+            project_id = Todo.objects.get(id=todo_id).project.id
         return worker.assignments.filter(task__project__id=project_id).exists()
 
 
