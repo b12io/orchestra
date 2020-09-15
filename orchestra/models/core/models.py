@@ -666,7 +666,7 @@ class Todo(TodoMixin, BaseModel):
         DECLINED = 'declined'
 
     task = models.ForeignKey(Task, null=True, blank=True,
-                             related_name='todos_old',
+                             related_name='todos_deprecated',
                              on_delete=models.SET_NULL)
     project = models.ForeignKey(Project, null=True, blank=True,
                                 related_name='todos', on_delete=models.CASCADE)
