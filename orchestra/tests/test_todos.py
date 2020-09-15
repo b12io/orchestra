@@ -73,11 +73,11 @@ class TodosEndpointTests(EndpointTestCase):
             workflow_version=self.workflow_version)
         self.project = ProjectFactory(
             workflow_version=self.workflow_version)
-        self.tasks = Task.objects.filter(assignments__worker=self.worker)
-        self.task = self.tasks[0]
-        self.task.project = self.project
-        self.task.step = self.step
-        self.task.save()
+        tasks = Task.objects.filter(assignments__worker=self.worker)
+        task = tasks[0]
+        task.project = self.project
+        task.step = self.step
+        task.save()
         self.todo_title = 'Let us do this'
         self.deadline = parse('2018-01-16T07:03:00+00:00')
 
@@ -167,7 +167,7 @@ class TodosEndpointTests(EndpointTestCase):
         self._verify_todos_list(self.project.id, [], True)
         self._verify_todo_creation(
             True, self.project.id, self.step)
-        self._verify_todos_list(self.task.project.id,
+        self._verify_todos_list(self.project.id,
                                 [_todo_data(
                                     self.todo_title,
                                     False,
@@ -246,13 +246,13 @@ class TodoQAEndpointTests(EndpointTestCase):
         self.project0 = ProjectFactory()
         self.project1 = ProjectFactory()
         self.step = StepFactory(slug='some-slug')
-        self.tasks = Task.objects.filter(
+        tasks = Task.objects.filter(
             assignments__worker=self.worker)
-        self.task_0 = self.tasks[0]
+        self.task_0 = tasks[0]
         self.task_0.project = self.project0
         self.task_0.step = self.step
         self.task_0.save()
-        self.task_1 = self.tasks[1]
+        self.task_1 = tasks[1]
         self.task_1.project = self.project1
         self.task_1.step = self.step
         self.task_1.save()
@@ -414,8 +414,8 @@ class TodoTemplateEndpointTests(EndpointTestCase):
         self.project = ProjectFactory(
             workflow_version=self.workflow_version)
         self.project2 = ProjectFactory()
-        self.tasks = Task.objects.filter(assignments__worker=self.worker)
-        self.task = self.tasks[0]
+        tasks = Task.objects.filter(assignments__worker=self.worker)
+        self.task = tasks[0]
         self.task.project = self.project
         self.task.step = self.step
         self.task.save()
