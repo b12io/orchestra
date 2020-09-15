@@ -22,7 +22,6 @@ export default function todoList (orchestraApi) {
       todoList.newTodoStartDate = null
       todoList.newTodoDueDate = null
       todoList.ready = false
-      todoList.taskSlugs = {}
       todoList.todos = []
       todoList.templates = []
       todoList.todoQas = []
@@ -43,18 +42,6 @@ export default function todoList (orchestraApi) {
 
       todoList.canAddTodo = () => {
         return todoList.newTodoStepSlug && todoList.newTodoDescription
-      }
-
-      todoList.canSendToPending = () => {
-        const numTodosOnThisTask = reduce(
-          todoList.todos, (result, todo) => {
-            return result + (todo.task === todoList.taskId ? 1 : 0)
-          }, 0)
-        return todoList.ready && (numTodosOnThisTask === 0)
-      }
-
-      todoList.sendToPending = () => {
-        createTodo('Send task to pending state', true)
       }
 
       todoList.getUTCDateTimeString = (datetime) => {
@@ -158,11 +145,6 @@ export default function todoList (orchestraApi) {
           todoList.steps = reduce(
             Object.values(steps), (result, step) => {
               result[step.slug] = step
-              return result
-            }, {})
-          todoList.taskSlugs = reduce(
-            Object.values(tasks), (result, task) => {
-              result[task.id] = task.step_slug
               return result
             }, {})
           todoList.possibleTasks = Object.values(tasks).filter(task => task.status !== 'Complete' && humanSteps.has(task.step_slug))

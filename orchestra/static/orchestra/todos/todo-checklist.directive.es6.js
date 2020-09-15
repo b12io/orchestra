@@ -22,7 +22,6 @@ export default function todoChecklist () {
       unskipTodo: '=',
       onToggleTodo: '=',
       steps: '<',
-      taskSlugs: '<'
     },
     link: (scope, elem, attrs) => {
       scope.isNonEmptyString = (str) => {
