@@ -17,8 +17,8 @@ from orchestra.todos.serializers import BulkTodoSerializerWithoutQA
 from orchestra.todos.serializers import BulkTodoSerializerWithQA
 from orchestra.todos.serializers import TodoQASerializer
 from orchestra.todos.serializers import TodoListTemplateSerializer
-from orchestra.utils.view_helpers import notify_todo_created
-from orchestra.utils.view_helpers import notify_single_todo_update
+from orchestra.utils.common_helpers import notify_todo_created
+from orchestra.utils.common_helpers import notify_single_todo_update
 from orchestra.todos.api import add_todolist_template
 from orchestra.utils.decorators import api_endpoint
 from orchestra.todos.auth import IsAssociatedWithTodosProject

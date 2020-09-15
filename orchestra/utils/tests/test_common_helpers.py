@@ -5,7 +5,7 @@ from orchestra.tests.helpers.fixtures import UserFactory
 from orchestra.tests.helpers.fixtures import TodoFactory
 from orchestra.tests.helpers.fixtures import StepFactory
 from orchestra.tests.helpers.fixtures import ProjectFactory
-from orchestra.utils.view_helpers import get_update_message
+from orchestra.utils.common_helpers import get_update_message
 
 
 class ViewHelpersTests(TestCase):

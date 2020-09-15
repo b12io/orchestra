@@ -7,7 +7,7 @@ from pydoc import locate
 from orchestra.models import TodoListTemplate
 from orchestra.models import Todo
 from orchestra.models import Project
-from orchestra.utils.view_helpers import get_step_by_project_id_and_step_slug
+from orchestra.utils.common_helpers import get_step_by_project_id_and_step_slug
 
 logger = logging.getLogger(__name__)
 

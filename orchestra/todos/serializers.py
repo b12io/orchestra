@@ -9,7 +9,7 @@ from orchestra.models import TodoListTemplate
 from orchestra.json_schemas.todos import TodoListSchema
 from orchestra.json_schemas.todos import TodoActionListSchema
 from orchestra.utils.mixins import JSONSchemaValidationMixin
-from orchestra.utils.view_helpers import get_step_by_project_id_and_step_slug
+from orchestra.utils.common_helpers import get_step_by_project_id_and_step_slug
 
 
 class TodoQASerializer(serializers.ModelSerializer):
