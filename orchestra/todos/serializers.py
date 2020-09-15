@@ -87,7 +87,7 @@ class BulkTodoSerializer(serializers.ModelSerializer):
     step = StepField()
 
     # TODO(murat): Remove this validation when project
-    # will become a required field in models
+    # becomes a required field in models
     def validate(self, data):
         if data.get('project') is None:
             raise serializers.ValidationError(
