@@ -44,7 +44,7 @@ from orchestra.utils.task_lifecycle import tasks_assigned_to_worker
 from orchestra.utils.task_lifecycle import worker_assigned_to_max_tasks
 from orchestra.utils.task_lifecycle import worker_assigned_to_rejected_task
 from orchestra.utils.task_lifecycle import worker_has_reviewer_status
-from orchestra.utils.view_helpers import IsAssociatedWorker
+from orchestra.utils.common_helpers import IsAssociatedWorker
 
 logger = logging.getLogger(__name__)
 UserModel = get_user_model()
