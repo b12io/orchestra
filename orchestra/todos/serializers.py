@@ -9,6 +9,7 @@ from orchestra.models import TodoListTemplate
 from orchestra.json_schemas.todos import TodoListSchema
 from orchestra.json_schemas.todos import TodoActionListSchema
 from orchestra.utils.mixins import JSONSchemaValidationMixin
+from orchestra.utils.common_helpers import get_step_by_project_id_and_step_slug
 
 
 class TodoQASerializer(serializers.ModelSerializer):
@@ -70,12 +71,23 @@ class TodoBulkCreateListSerializer(serializers.ListSerializer):
         return result
 
 
+class StepField(serializers.Field):
+    def to_representation(self, data):
+        return data.slug
+
+    def to_internal_value(self, value):
+        return value
+
+
 class BulkTodoSerializer(serializers.ModelSerializer):
     json_schemas = {
         'activity_log': TodoActionListSchema
     }
 
-    # TODO(murat): Remove this validation when step will be marked as required
+    step = StepField()
+
+    # TODO(murat): Remove this validation when project
+    # becomes a required field in models
     def validate(self, data):
         if data.get('project') is None:
             raise serializers.ValidationError(
@@ -83,13 +95,22 @@ class BulkTodoSerializer(serializers.ModelSerializer):
             )
         return data
 
+    def _set_step_to_validated_data(self, validated_data):
+        project_id = validated_data['project'].id
+        step = get_step_by_project_id_and_step_slug(project_id,
+                                                    validated_data['step'])
+        validated_data['step'] = step
+        return validated_data
+
     def create(self, validated_data):
+        validated_data = self._set_step_to_validated_data(validated_data)
         instance = Todo(**validated_data)
         if isinstance(self._kwargs['data'], dict):
             instance.save()
         return instance
 
     def update(self, instance, validated_data):
+        validated_data = self._set_step_to_validated_data(validated_data)
         for k, v in validated_data.items():
             setattr(instance, k, v)
 
@@ -102,7 +123,6 @@ class BulkTodoSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'created_at',
-            'task',
             'title',
             'parent_todo',
             'template',

@@ -29,6 +29,7 @@ from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.fixtures import StepFactory
 from orchestra.tests.helpers.fixtures import ProjectFactory
 from orchestra.tests.helpers.fixtures import TodoFactory
+from orchestra.tests.helpers.fixtures import WorkflowVersionFactory
 from orchestra.tests.helpers.google_apps import mock_create_drive_service
 from orchestra.utils.load_json import load_encoded_json
 from orchestra.utils.task_lifecycle import get_new_task_assignment
@@ -477,8 +478,12 @@ class TestTodoApiViewset(EndpointTestCase):
         self.request_client = APIClient(enforce_csrf_checks=True)
         self.request_client.force_authenticate(user=SignedUser())
         setup_models(self)
-        self.project = ProjectFactory()
-        self.step = StepFactory(slug='step-slug')
+        self.workflow_version = WorkflowVersionFactory()
+        self.step = StepFactory(
+            slug='step-slug',
+            workflow_version=self.workflow_version)
+        self.project = ProjectFactory(
+            workflow_version=self.workflow_version)
         self.list_url = reverse('orchestra:api:todo-api-list')
         self.todo = TodoFactory(project=self.project)
         self.todo_with_step = TodoFactory(project=self.project, step=self.step)
@@ -487,7 +492,7 @@ class TestTodoApiViewset(EndpointTestCase):
         data = {
             'title': 'Testing title 1',
             'project': self.project.id,
-            'step': self.step.id
+            'step': self.step.slug
         }
         request_client = APIClient(enforce_csrf_checks=True)
         resp = request_client.post(
@@ -516,7 +521,7 @@ class TestTodoApiViewset(EndpointTestCase):
         data = {
             'title': 'Testing create action',
             'project': self.project.id,
-            'step': self.step.id
+            'step': self.step.slug
         }
         resp = self.request_client.post(
             self.list_url, data=json.dumps(data),
@@ -536,7 +541,7 @@ class TestTodoApiViewset(EndpointTestCase):
             {
                 'title': 'Testing title {}'.format(x),
                 'project': self.project.id,
-                'step': self.step.id
+                'step': self.step.slug
             } for x in range(10)
         ]
         resp = self.request_client.post(
@@ -568,13 +573,13 @@ class TestTodoApiViewset(EndpointTestCase):
         resp = self.request_client.get(url_with_step_filter)
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.json()), 1)
-        self.assertEqual(resp.json()[0]['step'], self.todo_with_step.step.id)
+        self.assertEqual(resp.json()[0]['step'], self.todo_with_step.step.slug)
 
         url_with_filters = '{}?project={}&step__slug={}'.format(
             self.list_url, self.project.id, self.todo_with_step.step.slug)
         resp = self.request_client.get(url_with_filters)
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.json()[0]['step'], self.todo_with_step.step.id)
+        self.assertEqual(resp.json()[0]['step'], self.todo_with_step.step.slug)
 
     @patch('orchestra.todos.views.notify_single_todo_update')
     def test_update_functionality(self, mock_notify):
@@ -607,13 +612,13 @@ class TestTodoApiViewset(EndpointTestCase):
             detail_url,
             data=json.dumps({
                 'title': expected_title,
-                'step': self.step.id,
+                'step': self.step.slug,
                 'project': self.project.id
             }),
             content_type='application/json')
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()['title'], expected_title)
-        self.assertEqual(resp.json()['step'], self.step.id)
+        self.assertEqual(resp.json()['step'], self.step.slug)
         self.assertEqual(resp.json()['project'], self.project.id)
 
         resp = self.request_client.patch(
@@ -677,8 +682,8 @@ class TestTodoApiViewset(EndpointTestCase):
             self.list_url, data=json.dumps(updated),
             content_type='application/json')
         self.assertEqual(resp.status_code, 400)
-        self.assertEqual(resp.json()[0]['project'],
-                         ['project should be supplied.'])
+        self.assertEqual(resp.json()[0]['step'],
+                         ['This field may not be null.'])
 
     def test_bulk_partial_update(self):
         todo1 = TodoFactory(
@@ -693,7 +698,7 @@ class TestTodoApiViewset(EndpointTestCase):
         todos_with_updated_titles = [{
             'id': x.id,
             'title': 'Updated title {}'.format(x.id),
-            'step': x.step.id,
+            'step': x.step.slug,
             'project': x.project.id
         } for x in [todo1, todo3, todo2]]
         resp = self.request_client.patch(

@@ -17,8 +17,8 @@ from orchestra.todos.serializers import BulkTodoSerializerWithoutQA
 from orchestra.todos.serializers import BulkTodoSerializerWithQA
 from orchestra.todos.serializers import TodoQASerializer
 from orchestra.todos.serializers import TodoListTemplateSerializer
-from orchestra.utils.view_helpers import notify_todo_created
-from orchestra.utils.view_helpers import notify_single_todo_update
+from orchestra.utils.common_helpers import notify_todo_created
+from orchestra.utils.common_helpers import notify_single_todo_update
 from orchestra.todos.api import add_todolist_template
 from orchestra.utils.decorators import api_endpoint
 from orchestra.todos.auth import IsAssociatedWithTodosProject
@@ -33,12 +33,13 @@ logger = logging.getLogger(__name__)
               logger=logger)
 def update_todos_from_todolist_template(request):
     todolist_template_slug = request.data.get('todolist_template')
-    task_id = request.data.get('task')
+    project_id = request.data.get('project')
+    step_slug = request.data.get('step')
     try:
-        add_todolist_template(todolist_template_slug, task_id)
-        project = Task.objects.get(id=task_id).project
+        add_todolist_template(todolist_template_slug, project_id, step_slug)
         todos = Todo.objects.filter(
-            task__project__id=int(project.id)).order_by('-created_at')
+            project__id=project_id,
+            step__slug=step_slug).order_by('-created_at')
         serializer = BulkTodoSerializerWithoutQA(todos, many=True)
         return Response(serializer.data)
     except TodoListTemplate.DoesNotExist:
@@ -58,21 +59,25 @@ def worker_task_recent_todo_qas(request):
     2. Otherwise, use the TodoQAs from the requesting user's most recent
     task with matching task slug.
     """
+
     task_id = request.query_params.get('task')
-    task_todo_qas = TodoQA.objects.filter(todo__task=task_id)
+    task_todo_qas = TodoQA.objects.filter(todo__project__tasks__id=task_id)
 
     if task_todo_qas.exists():
         todo_qas = task_todo_qas
     else:
         task = Task.objects.get(pk=task_id)
         most_recent_worker_task_todo_qa = TodoQA.objects.filter(
-            todo__task__assignments__worker__user=request.user,
-            todo__task__step__slug=task.step.slug
+            todo__project__tasks__assignments__worker__user=request.user,
+            todo__step__slug=task.step.slug
         ).order_by('-created_at').first()
 
         if most_recent_worker_task_todo_qa:
+            project = most_recent_worker_task_todo_qa.todo.project
+            step = most_recent_worker_task_todo_qa.todo.step
             todo_qas = TodoQA.objects.filter(
-                todo__task=most_recent_worker_task_todo_qa.todo.task,
+                todo__project=project,
+                todo__step=step,
                 approved=False)
         else:
             todo_qas = TodoQA.objects.none()
@@ -181,6 +186,8 @@ class TodoViewset(GenericTodoViewset):
     todo/ -- For creating and listing Todos.
     todo/1234/ -- For updating a Todo.
     """
+    http_method_names = ['get', 'post', 'put', 'delete']
+
     def get_permissions(self):
         permission_classes = (permissions.IsAuthenticated,
                               IsAssociatedWithProject)

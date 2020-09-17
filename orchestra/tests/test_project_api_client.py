@@ -8,6 +8,7 @@ from orchestra.models import Todo
 from orchestra.tests.helpers.fixtures import TodoFactory
 from orchestra.tests.helpers.fixtures import StepFactory
 from orchestra.tests.helpers.fixtures import ProjectFactory
+from orchestra.tests.helpers.fixtures import WorkflowVersionFactory
 from orchestra.project_api.auth import SignedUser
 from orchestra.orchestra_api import create_todos
 from orchestra.orchestra_api import get_todos
@@ -21,8 +22,12 @@ class TodoAPITests(TestCase):
         super().setUp()
         self.request_client = APIClient(enforce_csrf_checks=True)
         self.request_client.force_authenticate(user=SignedUser())
-        self.project = ProjectFactory()
-        self.step = StepFactory()
+        self.workflow_version = WorkflowVersionFactory()
+        self.step = StepFactory(
+            slug='step-slug',
+            workflow_version=self.workflow_version)
+        self.project = ProjectFactory(
+            workflow_version=self.workflow_version)
 
     @patch('orchestra.orchestra_api.requests')
     def test_create_todos(self, mock_request):
@@ -40,7 +45,7 @@ class TodoAPITests(TestCase):
             {
                 'title': 'Testing title {}'.format(x),
                 'project': self.project.id,
-                'step': self.step.id
+                'step': self.step.slug
             } for x in range(10)
         ]
         result = create_todos(data)
@@ -117,7 +122,7 @@ class TodoAPITests(TestCase):
         todos_with_updated_titles = [{
             'id': x.id,
             'title': 'Updated title {}'.format(x.id),
-            'step': x.step.id,
+            'step': x.step.slug,
             'project': x.project.id
         } for x in [todo1, todo3, todo2]]
         result = update_todos(todos_with_updated_titles)

@@ -1,5 +1,6 @@
 from rest_framework import permissions
 
+from orchestra.models import Step
 from orchestra.models import Worker
 from orchestra.project_api.auth import SignedUser
 from orchestra.utils.notifications import message_experts_slack_group
@@ -93,3 +94,10 @@ def notify_todo_created(todo, user):
             recipients if recipients else '`{}`'.format(todo.step.slug))
     message_experts_slack_group(
         todo.project.slack_group_id, message)
+
+
+def get_step_by_project_id_and_step_slug(project_id, step_slug):
+    step = Step.objects.get(
+        slug=step_slug,
+        workflow_version__projects__id=project_id)
+    return step

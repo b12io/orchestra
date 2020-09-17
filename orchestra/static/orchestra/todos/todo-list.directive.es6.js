@@ -17,41 +17,31 @@ export default function todoList (orchestraApi) {
     controller: function (todoApi, todoListTemplateApi, todoQaApi, $scope) {
       var todoList = this
       todoList.possibleTasks = []
-      todoList.newTodoTaskId = null
+      todoList.newTodoStepSlug = null
       todoList.newTodoDescription = null
       todoList.newTodoStartDate = null
       todoList.newTodoDueDate = null
       todoList.ready = false
-      todoList.taskSlugs = {}
       todoList.todos = []
       todoList.templates = []
       todoList.todoQas = []
 
-      const createTodo = (taskId, title, completed, startDate, dueDate) => todoApi.create({
-        task: taskId,
-        title,
-        completed,
-        start_by_datetime: startDate,
-        due_datetime: dueDate
-      }).then((taskData) => {
-        todoList.todos.unshift(taskData)
-        return taskData
-      })
+      const createTodo = (title, completed, startDate, dueDate) => {
+        todoApi.create({
+          project: todoList.projectId,
+          step: todoList.newTodoStepSlug,
+          title,
+          completed,
+          start_by_datetime: startDate,
+          due_datetime: dueDate
+        }).then((taskData) => {
+          todoList.todos.unshift(taskData)
+          return taskData
+        })
+      }
 
       todoList.canAddTodo = () => {
-        return todoList.newTodoTaskId && todoList.newTodoDescription
-      }
-
-      todoList.canSendToPending = () => {
-        const numTodosOnThisTask = reduce(
-          todoList.todos, (result, todo) => {
-            return result + (todo.task === todoList.taskId ? 1 : 0)
-          }, 0)
-        return todoList.ready && (numTodosOnThisTask === 0)
-      }
-
-      todoList.sendToPending = () => {
-        createTodo(todoList.taskId, 'Send task to pending state', true)
+        return todoList.newTodoStepSlug && todoList.newTodoDescription
       }
 
       todoList.getUTCDateTimeString = (datetime) => {
@@ -66,8 +56,7 @@ export default function todoList (orchestraApi) {
         const start = todoList.getUTCDateTimeString(todoList.newTodoStartDate)
         const due = todoList.getUTCDateTimeString(todoList.newTodoDueDate)
 
-        createTodo(todoList.newTodoTaskId,
-          todoList.newTodoDescription,
+        createTodo(todoList.newTodoDescription,
           false,
           start,
           due
@@ -80,7 +69,8 @@ export default function todoList (orchestraApi) {
 
       todoList.updateTodoListFromTemplate = (newTodoListTemplateSlug) => {
         todoListTemplateApi.updateTodoListFromTemplate({
-          task: todoList.newTodoTaskId,
+          project: todoList.projectId,
+          step: todoList.newTodoStepSlug,
           todolist_template: newTodoListTemplateSlug
         }).then((updatedTodos) => {
           todoList.newTodoListTemplateSlug = null
@@ -105,7 +95,7 @@ export default function todoList (orchestraApi) {
         activityLog['actions'].push({
           'action': action,
           'datetime': activityDatetime,
-          'step_slug': todoList.taskSlugs[todoList.taskId]
+          'step_slug': todo.step
         })
         todo.activity_log = JSON.stringify(activityLog).replace(/'/g, '"')
       }
@@ -155,11 +145,6 @@ export default function todoList (orchestraApi) {
           todoList.steps = reduce(
             Object.values(steps), (result, step) => {
               result[step.slug] = step
-              return result
-            }, {})
-          todoList.taskSlugs = reduce(
-            Object.values(tasks), (result, task) => {
-              result[task.id] = task.step_slug
               return result
             }, {})
           todoList.possibleTasks = Object.values(tasks).filter(task => task.status !== 'Complete' && humanSteps.has(task.step_slug))
