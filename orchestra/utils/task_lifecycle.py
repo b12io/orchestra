@@ -1220,7 +1220,7 @@ def create_subsequent_tasks(project):
 
                 # Apply todolist templates to Task
                 for template in task.step.todolist_templates_to_apply.all():
-                    add_todolist_template(template.slug, task.id)
+                    add_todolist_template(template.slug, project.id, step.slug)
 
                 _preassign_workers(task, AssignmentPolicyType.ENTRY_LEVEL)
 

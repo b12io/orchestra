@@ -10,8 +10,7 @@ export default function todoListTemplateApi ($http) {
   }
 
   return {
-    updateTodoListFromTemplate: (data) => $http.post(updateTodoListFromTemplate(), data)
-      .then(response => response.data),
+    updateTodoListFromTemplate: (data) => $http.post(updateTodoListFromTemplate(), data).then(response => response.data),
     list: (projectId) => $http.get(list())
       .then(response => response.data)
   }

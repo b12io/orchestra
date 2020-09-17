@@ -4,14 +4,9 @@ from urllib.parse import urlunsplit
 
 from django.urls import reverse
 from jsonview.exceptions import BadRequest
-from django_filters import rest_framework as filters
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
 
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import WorkerCertificationError
-from orchestra.models import Todo
 from orchestra.models import Project
 from orchestra.models import WorkerCertification
 from orchestra.models import Workflow
@@ -23,7 +18,7 @@ from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.notifications import message_experts_slack_group
 from orchestra.project_api.auth import OrchestraProjectAPIAuthentication
 from orchestra.project_api.auth import IsSignedUser
-from orchestra.todos.serializers import BulkTodoSerializer
+from orchestra.todos.views import GenericTodoViewset
 
 logger = logging.getLogger(__name__)
 
@@ -162,36 +157,10 @@ def message_project_team(request):
     return {'success': True}
 
 
-class TodoListViewset(ModelViewSet):
-    serializer_class = BulkTodoSerializer
+class TodoApiViewset(GenericTodoViewset):
+    """
+    This viewset inherits from GenericTodoViewset and used by
+    an orchestra-client facing endpoint, exposed via a router in api_urls.py
+    """
     permission_classes = (IsSignedUser,)
     authentication_classes = (OrchestraProjectAPIAuthentication,)
-    filter_backends = (filters.DjangoFilterBackend,)
-    filterset_fields = ('project', 'step',)
-    queryset = Todo.objects.all()
-
-    def get_serializer(self, *args, **kwargs):
-        if isinstance(kwargs.get('data', {}), list):
-            kwargs['many'] = True
-
-        return super().get_serializer(*args, **kwargs)
-
-    def get_queryset(self, ids=None):
-        queryset = super().get_queryset()
-        if ids:
-            queryset = queryset.filter(id__in=ids)
-        return queryset.order_by('-created_at')
-
-    @action(detail=False, methods=['put'])
-    def put(self, request, *args, **kwargs):
-        ids = [x['id'] for x in request.data]
-        instances = self.get_queryset(ids=ids)
-        serializer = self.get_serializer(
-            instances, data=request.data, partial=False, many=True)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        data = serializer.data
-        return Response(data)
-
-    def perform_update(self, serializer):
-        serializer.save()

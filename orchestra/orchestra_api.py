@@ -27,7 +27,7 @@ class OrchestraError(Exception):
     pass
 
 
-def _make_api_request(method, endpoint, *args, **kwargs):
+def _make_api_request(method, endpoint, query_params='', *args, **kwargs):
     func = getattr(requests, method)
     # Adding 'date' header as per
     # https://github.com/zzsnzmn/py-http-signature/blob/e2e2c753db7da45fab4b215d84e8d490bd708833/http_signature/sign.py#L155  # noqa
@@ -37,9 +37,9 @@ def _make_api_request(method, endpoint, *args, **kwargs):
     headers.update(kwargs.pop('headers', {}))
     all_kwargs = {'auth': _httpsig_auth, 'headers': headers}
     all_kwargs.update(kwargs)
-    url = '{}{}/'.format(_api_root_url, endpoint)
+    url = '{}{}/{}'.format(_api_root_url, endpoint, query_params)
     response = func(url, *args, **all_kwargs)
-    if response.status_code != 200:
+    if response.status_code != 200 and response.status_code != 201:
         raise OrchestraError(response.text)
     return response
 
@@ -85,6 +85,36 @@ def get_project_information(project_ids):
     response = _make_api_request('post', 'project_information',
                                  data=json.dumps(data))
     return json.loads(response.text, object_hook=convert_key_to_int)
+
+
+def create_todos(todos):
+    response = _make_api_request('post', 'todo-api',
+                                 data=json.dumps(todos))
+    return json.loads(response.text)
+
+
+def get_todos(project_id, step_slug=None):
+    if project_id is None:
+        raise OrchestraError('project_id is required')
+    project_param = 'project={}'.format(project_id)
+    step_slug_param = '&step__slug={}'.format(
+        step_slug) if step_slug is not None else ''
+    query_params = '?{}{}'.format(project_param, step_slug_param)
+
+    response = _make_api_request('get', 'todo-api', query_params)
+    return json.loads(response.text)
+
+
+def update_todos(updated_todos):
+    response = _make_api_request('patch', 'todo-api',
+                                 data=json.dumps(updated_todos))
+    return json.loads(response.text)
+
+
+def delete_todos(todo_ids):
+    response = _make_api_request('delete', 'todo-api',
+                                 data=json.dumps(todo_ids))
+    return json.loads(response.text)
 
 
 def assign_worker_to_task(worker_id, task_id):

@@ -180,9 +180,9 @@ class TodoAdmin(admin.ModelAdmin):
     list_display = ('id', 'created_at', 'task', 'title', 'completed')
     ordering = ('-created_at',)
     search_fields = (
-        'task__project__short_description', 'task__step__name',
+        'project__short_description', 'step__name',
         'title')
-    list_filter = ('task__project__workflow_version',)
+    list_filter = ('project__workflow_version',)
 
 
 @admin.register(TodoQA)

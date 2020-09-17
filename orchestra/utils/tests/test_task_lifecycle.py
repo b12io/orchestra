@@ -25,7 +25,9 @@ from orchestra.tests.helpers.fixtures import StepFactory
 from orchestra.tests.helpers.fixtures import TaskAssignmentFactory
 from orchestra.tests.helpers.fixtures import TaskFactory
 from orchestra.tests.helpers.fixtures import TodoFactory
+from orchestra.tests.helpers.fixtures import ProjectFactory
 from orchestra.tests.helpers.fixtures import setup_models
+from orchestra.tests.helpers.fixtures import WorkflowVersionFactory
 from orchestra.utils.task_lifecycle import AssignmentPolicyType
 from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.task_lifecycle import create_subsequent_tasks
@@ -55,6 +57,12 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
     def setUp(self):
         super().setUp()
         setup_models(self)
+        self.workflow_version = WorkflowVersionFactory()
+        self.step = StepFactory(
+            slug='step-slug',
+            workflow_version=self.workflow_version)
+        self.project = ProjectFactory(
+            workflow_version=self.workflow_version)
 
     def test_is_worker_certified_for_task(self):
         task = Task.objects.filter(status=Task.Status.AWAITING_PROCESSING)[0]
@@ -712,14 +720,19 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
 
     def test_next_todo_with_earlier_due_time(self):
         task = self.tasks['next_todo_task']
+        task.step = self.step
+        task.project = self.project
+        task.save()
         # create todos with different due date times and one without
         TodoFactory(
-            task=task,
+            step=self.step,
+            project=self.project,
             title='todo1',
             due_datetime=parse(DEADLINE2_DATETIME))
 
         TodoFactory(
-            task=task,
+            step=self.step,
+            project=self.project,
             title='todo2')
 
         tasks_assigned = tasks_assigned_to_worker(self.workers[5])
@@ -733,7 +746,8 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
                 self.assertEqual(t['should_be_active'], True)
 
         TodoFactory(
-            task=task,
+            step=self.step,
+            project=self.project,
             title='todo3',
             due_datetime=parse(DEADLINE1_DATETIME))
 
@@ -751,14 +765,19 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
         mock_timezone.now = MagicMock(return_value=parse(
                                         MOCK_CURRENT))
         task = self.tasks['next_todo_task']
+        task.step = self.step
+        task.project = self.project
+        task.save()
         # create todos with different due date times and one without
         TodoFactory(
-            task=task,
+            step=self.step,
+            project=self.project,
             title='todo1',
             start_by_datetime=parse(DEADLINE2_DATETIME))
 
         TodoFactory(
-            task=task,
+            step=self.step,
+            project=self.project,
             title='todo2',
             start_by_datetime=parse(DEADLINE1_DATETIME))
 

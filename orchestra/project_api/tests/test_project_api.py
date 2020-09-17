@@ -29,6 +29,7 @@ from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.fixtures import StepFactory
 from orchestra.tests.helpers.fixtures import ProjectFactory
 from orchestra.tests.helpers.fixtures import TodoFactory
+from orchestra.tests.helpers.fixtures import WorkflowVersionFactory
 from orchestra.tests.helpers.google_apps import mock_create_drive_service
 from orchestra.utils.load_json import load_encoded_json
 from orchestra.utils.task_lifecycle import get_new_task_assignment
@@ -471,14 +472,18 @@ class ProjectAPIAuthTestCase(OrchestraTestCase):
             (SignedUser(), 'b'))
 
 
-class TestTodoListViewset(EndpointTestCase):
+class TestTodoApiViewset(EndpointTestCase):
     def setUp(self):
         super().setUp()
         self.request_client = APIClient(enforce_csrf_checks=True)
         self.request_client.force_authenticate(user=SignedUser())
         setup_models(self)
-        self.project = ProjectFactory()
-        self.step = StepFactory()
+        self.workflow_version = WorkflowVersionFactory()
+        self.step = StepFactory(
+            slug='step-slug',
+            workflow_version=self.workflow_version)
+        self.project = ProjectFactory(
+            workflow_version=self.workflow_version)
         self.list_url = reverse('orchestra:api:todo-api-list')
         self.todo = TodoFactory(project=self.project)
         self.todo_with_step = TodoFactory(project=self.project, step=self.step)
@@ -487,7 +492,7 @@ class TestTodoListViewset(EndpointTestCase):
         data = {
             'title': 'Testing title 1',
             'project': self.project.id,
-            'step': self.step.id
+            'step': self.step.slug
         }
         request_client = APIClient(enforce_csrf_checks=True)
         resp = request_client.post(
@@ -511,11 +516,12 @@ class TestTodoListViewset(EndpointTestCase):
             resp.json()['detail'],
             'Authentication credentials were not provided.')
 
-    def test_create(self):
+    @patch('orchestra.todos.views.notify_todo_created')
+    def test_create(self, mock_notify):
         data = {
             'title': 'Testing create action',
             'project': self.project.id,
-            'step': self.step.id
+            'step': self.step.slug
         }
         resp = self.request_client.post(
             self.list_url, data=json.dumps(data),
@@ -526,6 +532,7 @@ class TestTodoListViewset(EndpointTestCase):
             project=self.project,
             step=self.step)
         self.assertEqual(todos.count(), 1)
+        self.assertTrue(mock_notify.called)
 
     def test_bulk_create(self):
         todos = Todo.objects.filter(title__startswith='Testing title ')
@@ -534,7 +541,7 @@ class TestTodoListViewset(EndpointTestCase):
             {
                 'title': 'Testing title {}'.format(x),
                 'project': self.project.id,
-                'step': self.step.id
+                'step': self.step.slug
             } for x in range(10)
         ]
         resp = self.request_client.post(
@@ -561,20 +568,21 @@ class TestTodoListViewset(EndpointTestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.json()), 2)
 
-        url_with_step_filter = '{}?step={}'.format(
-            self.list_url, self.todo_with_step.step.id)
+        url_with_step_filter = '{}?step__slug={}'.format(
+            self.list_url, self.todo_with_step.step.slug)
         resp = self.request_client.get(url_with_step_filter)
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.json()), 1)
-        self.assertEqual(resp.json()[0]['step'], self.todo_with_step.step.id)
+        self.assertEqual(resp.json()[0]['step'], self.todo_with_step.step.slug)
 
-        url_with_filters = '{}?project={}&step={}'.format(
-            self.list_url, self.project.id, self.todo_with_step.step.id)
+        url_with_filters = '{}?project={}&step__slug={}'.format(
+            self.list_url, self.project.id, self.todo_with_step.step.slug)
         resp = self.request_client.get(url_with_filters)
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.json()[0]['step'], self.todo_with_step.step.id)
+        self.assertEqual(resp.json()[0]['step'], self.todo_with_step.step.slug)
 
-    def test_update_functionality(self):
+    @patch('orchestra.todos.views.notify_single_todo_update')
+    def test_update_functionality(self, mock_notify):
         todo1 = TodoFactory(
             project=self.project, step=self.step, title='Test title1')
         todo2 = TodoFactory(
@@ -594,7 +602,8 @@ class TestTodoListViewset(EndpointTestCase):
         updated_todo_1 = Todo.objects.get(pk=todo1.pk)
         self.assertEqual(updated_todo_1.title, todo2.title)
 
-    def test_partial_update_functionality(self):
+    @patch('orchestra.todos.views.notify_single_todo_update')
+    def test_partial_update_functionality(self, mock_notify):
         detail_url = reverse(
             'orchestra:api:todo-api-detail',
             kwargs={'pk': self.todo.id})
@@ -603,14 +612,25 @@ class TestTodoListViewset(EndpointTestCase):
             detail_url,
             data=json.dumps({
                 'title': expected_title,
-                'step': self.step.id,
+                'step': self.step.slug,
                 'project': self.project.id
             }),
             content_type='application/json')
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()['title'], expected_title)
-        self.assertEqual(resp.json()['step'], self.step.id)
+        self.assertEqual(resp.json()['step'], self.step.slug)
         self.assertEqual(resp.json()['project'], self.project.id)
+
+        resp = self.request_client.patch(
+            detail_url,
+            data=json.dumps({
+                'title': expected_title,
+                'step': self.step.id,
+            }),
+            content_type='application/json')
+        self.assertEqual(resp.status_code, 400)
+        self.assertEqual(resp.json()['project'],
+                         ['project should be supplied.'])
 
     def test_destroy_functionality(self):
         all_todos_count = Todo.objects.count()
@@ -634,9 +654,11 @@ class TestTodoListViewset(EndpointTestCase):
             project=self.project, step=self.step, title='Test title2')
         todo3 = TodoFactory(
             project=self.project, step=self.step, title='Test title3')
+        todo_wo_project = TodoFactory(
+            title='Test title3')
         todo_should_not_be_updated = TodoFactory(
             project=self.project, step=self.step, title='Not updated')
-        serialized = BulkTodoSerializer([todo1, todo2, todo3], many=True).data
+        serialized = BulkTodoSerializer([todo3, todo2, todo1], many=True).data
         # Change titles
         updated = [
             self._change_attr(x, 'title',  'updated title {}'.format(x['id']))
@@ -649,7 +671,45 @@ class TestTodoListViewset(EndpointTestCase):
         updated_todos = Todo.objects.filter(
             id__in=[todo1.id, todo2.id, todo3.id])
         for todo in updated_todos:
-            self.assertTrue(todo.title.startswith('updated title'))
+            self.assertEqual(todo.title, 'updated title {}'.format(todo.id))
+        self.assertEqual(todo_should_not_be_updated.title, 'Not updated')
+
+        serialized = BulkTodoSerializer([todo_wo_project], many=True).data
+        updated = [
+            self._change_attr(x, 'title',  'updated title {}'.format(x['id']))
+            for x in serialized]
+        resp = self.request_client.put(
+            self.list_url, data=json.dumps(updated),
+            content_type='application/json')
+        self.assertEqual(resp.status_code, 400)
+        self.assertEqual(resp.json()[0]['step'],
+                         ['This field may not be null.'])
+
+    def test_bulk_partial_update(self):
+        todo1 = TodoFactory(
+            project=self.project, step=self.step, title='Test title1')
+        todo2 = TodoFactory(
+            project=self.project, step=self.step, title='Test title2')
+        todo3 = TodoFactory(
+            project=self.project, step=self.step, title='Test title3')
+        todo_should_not_be_updated = TodoFactory(
+            project=self.project, step=self.step, title='Not updated')
+        # Change titles
+        todos_with_updated_titles = [{
+            'id': x.id,
+            'title': 'Updated title {}'.format(x.id),
+            'step': x.step.slug,
+            'project': x.project.id
+        } for x in [todo1, todo3, todo2]]
+        resp = self.request_client.patch(
+            self.list_url, data=json.dumps(todos_with_updated_titles),
+            content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+
+        updated_todos = Todo.objects.filter(
+            id__in=[todo1.id, todo2.id, todo3.id])
+        for todo in updated_todos:
+            self.assertEqual(todo.title, 'Updated title {}'.format(todo.id))
         self.assertEqual(todo_should_not_be_updated.title, 'Not updated')
 
     def _change_attr(self, item, attr, value):
