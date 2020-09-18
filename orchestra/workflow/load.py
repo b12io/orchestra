@@ -224,3 +224,4 @@ def _set_step_relations(step, step_data, relation_attr, relation_model,
             		    '{}.{} contains a non-existent slug.'
             		    .format(step_data['slug'], relation_attr))
     getattr(step, relation_attr).set(relations)
+
