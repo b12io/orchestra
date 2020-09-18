@@ -83,10 +83,10 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
 
         create_subsequent_tasks(project)
         project.refresh_from_db()
-        num_incomplete_tasks = (Task.objects.filter(project=project)
-                                .exclude(Q(status=Task.Status.COMPLETE) |
-                                         Q(status=Task.Status.ABORTED))).count()
-        self.assertTrue(num_incomplete_tasks > 0)
+        incomplete_tasks = (Task.objects.filter(project=project).exclude(
+            Q(status=Task.Status.COMPLETE) |
+            Q(status=Task.Status.ABORTED))).count()
+        self.assertTrue(incomplete_tasks > 0)
         self.assertEqual(project.status, Project.Status.COMPLETED)
         self.assertTrue(mock_slack_archive.called)
 
@@ -105,9 +105,9 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
 
         create_subsequent_tasks(project)
         project.refresh_from_db()
-        num_incomplete_tasks = (Task.objects.filter(project=project)
-                                .exclude(Q(status=Task.Status.COMPLETE) |
-                                         Q(status=Task.Status.ABORTED))).count()
-        self.assertTrue(num_incomplete_tasks > 0)
+        incomplete_tasks = (Task.objects.filter(project=project).exclude(
+            Q(status=Task.Status.COMPLETE) |
+            Q(status=Task.Status.ABORTED))).count()
+        self.assertTrue(incomplete_tasks > 0)
         self.assertEqual(project.status, Project.Status.ACTIVE)
         self.assertFalse(mock_slack_archive.called)
