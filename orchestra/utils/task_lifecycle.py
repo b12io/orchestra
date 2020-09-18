@@ -1206,8 +1206,8 @@ def create_subsequent_tasks(project):
 
     machine_tasks_to_schedule = []
     for step in all_steps:
-        if step.slug in completed_step_slugs and step.completion_ends_project:
-            end_project = True
+        end_project = end_project or (
+            step.slug in completed_step_slugs and step.completion_ends_project)
 
         if step.slug in completed_step_slugs or Task.objects.filter(
                 project=project, step=step).exists():
