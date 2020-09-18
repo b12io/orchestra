@@ -1,5 +1,6 @@
 from unittest.mock import patch
 
+from django.db.models import Q
 from django.test import override_settings
 
 from orchestra.communication.slack import create_project_slack_group
@@ -20,6 +21,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
     """
     Test project module helper functions.
     """
+
     def setUp(self):
         super().setUp()
         setup_models(self)
@@ -63,3 +65,49 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         project.refresh_from_db()
         self.assertEqual(project.status, Project.Status.COMPLETED)
         self.assertTrue(mock_slack_archive.called)
+
+    @override_settings(ORCHESTRA_SLACK_EXPERTS_ENABLED=True)
+    @patch('orchestra.communication.tests.helpers.slack.Groups.archive')
+    def test_completion_ends_project_true(self, mock_slack_archive):
+        project = self.projects['test_human_and_machine']
+        create_subsequent_tasks(project)
+
+        task = project.tasks.first()
+        assign_task(self.workers[1].id, task.id)
+        self.assertEqual(project.status, Project.Status.ACTIVE)
+        self.assertFalse(mock_slack_archive.called)
+        task.step.completion_ends_project = True
+        task.step.save()
+        task.status = Task.Status.COMPLETE
+        task.save()
+
+        create_subsequent_tasks(project)
+        project.refresh_from_db()
+        num_incomplete_tasks = (Task.objects.filter(project=project)
+                                .exclude(Q(status=Task.Status.COMPLETE) |
+                                         Q(status=Task.Status.ABORTED))).count()
+        self.assertTrue(num_incomplete_tasks > 0)
+        self.assertEqual(project.status, Project.Status.COMPLETED)
+        self.assertTrue(mock_slack_archive.called)
+
+    @override_settings(ORCHESTRA_SLACK_EXPERTS_ENABLED=True)
+    @patch('orchestra.communication.tests.helpers.slack.Groups.archive')
+    def test_completion_ends_project_false(self, mock_slack_archive):
+        project = self.projects['test_human_and_machine']
+        create_subsequent_tasks(project)
+
+        task = project.tasks.first()
+        assign_task(self.workers[1].id, task.id)
+        self.assertEqual(project.status, Project.Status.ACTIVE)
+        self.assertFalse(mock_slack_archive.called)
+        task.status = Task.Status.COMPLETE
+        task.save()
+
+        create_subsequent_tasks(project)
+        project.refresh_from_db()
+        num_incomplete_tasks = (Task.objects.filter(project=project)
+                                .exclude(Q(status=Task.Status.COMPLETE) |
+                                         Q(status=Task.Status.ABORTED))).count()
+        self.assertTrue(num_incomplete_tasks > 0)
+        self.assertEqual(project.status, Project.Status.ACTIVE)
+        self.assertFalse(mock_slack_archive.called)

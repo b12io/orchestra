@@ -1194,6 +1194,7 @@ def create_subsequent_tasks(project):
         project (orchestra.models.Project):
             The modified project object.
     """
+    end_project = False
     workflow_version = project.workflow_version
     all_steps = workflow_version.steps.all()
 
@@ -1205,6 +1206,9 @@ def create_subsequent_tasks(project):
 
     machine_tasks_to_schedule = []
     for step in all_steps:
+        if step.slug in completed_step_slugs and step.completion_ends_project:
+            end_project = True
+
         if step.slug in completed_step_slugs or Task.objects.filter(
                 project=project, step=step).exists():
             continue
@@ -1235,7 +1239,7 @@ def create_subsequent_tasks(project):
                         .exclude(Q(status=Task.Status.COMPLETE) |
                                  Q(status=Task.Status.ABORTED)))
 
-    if incomplete_tasks.count() == 0:
+    if end_project or incomplete_tasks.count() == 0:
         if project.status != Project.Status.COMPLETED:
             set_project_status(project.id, 'Completed')
             archive_project_slack_group(project)
