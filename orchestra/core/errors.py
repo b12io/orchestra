@@ -72,3 +72,7 @@ class TimerError(Exception):
 
 class ProjectStatusError(Exception):
     pass
+
+
+class TodoListTemplateValidationError(Exception):
+    pass

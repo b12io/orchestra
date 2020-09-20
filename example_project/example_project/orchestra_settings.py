@@ -44,6 +44,7 @@ def setup_orchestra(settings_module_name):
         'registration',
         'widget_tweaks',
         'ajax_select',
+        'django_object_actions',
     )
 
     settings.STATICFILES_FINDERS += (
@@ -225,6 +226,10 @@ def setup_orchestra(settings_module_name):
     # Set to True if you want to enable buttons to pull new
     # delivery/review tasks in the dashboard.
     settings.ORCHESTRA_ENABLE_NEW_TASK_BUTTONS = True
+
+    # The ID of the Google Drive folder for exporting/importing todo
+    # list templates
+    settings.ORCHESTRA_TODO_LIST_TEMPLATE_EXPORT_GDRIVE_FOLDER = ''
 
 
 def install_context_processors(settings):

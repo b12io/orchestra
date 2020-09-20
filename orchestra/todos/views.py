@@ -1,5 +1,11 @@
 import logging
 
+from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
+from django.shortcuts import redirect
+from django.shortcuts import render
+from django.utils.decorators import method_decorator
+from django.views.generic import View
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework.viewsets import ModelViewSet
@@ -8,10 +14,12 @@ from rest_framework.decorators import action
 from jsonview.exceptions import BadRequest
 from django_filters import rest_framework as filters
 
+from orchestra.core.errors import TodoListTemplateValidationError
 from orchestra.models import Task
 from orchestra.models import Todo
 from orchestra.models import TodoQA
 from orchestra.models import TodoListTemplate
+from orchestra.todos.forms import ImportTodoListTemplateFromSpreadsheetForm
 from orchestra.todos.serializers import BulkTodoSerializer
 from orchestra.todos.serializers import BulkTodoSerializerWithoutQA
 from orchestra.todos.serializers import BulkTodoSerializerWithQA
@@ -24,6 +32,7 @@ from orchestra.utils.decorators import api_endpoint
 from orchestra.todos.auth import IsAssociatedWithTodosProject
 from orchestra.todos.auth import IsAssociatedWithProject
 from orchestra.todos.auth import IsAssociatedWithTask
+from orchestra.todos.import_export import import_from_spreadsheet
 
 logger = logging.getLogger(__name__)
 
@@ -207,3 +216,43 @@ class TodoViewset(GenericTodoViewset):
                 return BulkTodoSerializerWithoutQA
         else:
             return super().get_serializer_class()
+
+
+@method_decorator(staff_member_required, name='dispatch')
+class ImportTodoListTemplateFromSpreadsheet(View):
+    TEMPLATE = 'orchestra/import_todo_list_template_from_spreadsheet.html'
+
+    def get(self, request, pk):
+        # Display a form with a spreadsheet URL for import.
+        return render(
+            request,
+            self.TEMPLATE,
+            {'form': ImportTodoListTemplateFromSpreadsheetForm(initial={})})
+
+    def post(self, request, pk):
+        # Try to import the spreadsheet and redirect back to the admin
+        # entry for the imported TodoListTemplate. If we encounter an
+        # error, display the error on the form.
+        form = ImportTodoListTemplateFromSpreadsheetForm(request.POST)
+        context = {'form': form}
+        if form.is_valid():
+            try:
+                todo_list_template = TodoListTemplate.objects.get(
+                    id=pk)
+                import_from_spreadsheet(
+                    todo_list_template,
+                    form.cleaned_data['spreadsheet_url'],
+                    request)
+                messages.info(
+                    request, 'Successfully imported from spreadsheet.')
+                return redirect(
+                    'admin:orchestra_todolisttemplate_change',
+                    pk)
+            except TodoListTemplateValidationError as e:
+                context['import_error'] = str(e)
+        else:
+            context['import_error'] = 'Please provide a spreadsheet URL'
+        return render(
+            request,
+            self.TEMPLATE,
+            context)
