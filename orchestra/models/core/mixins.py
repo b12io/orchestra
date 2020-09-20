@@ -217,6 +217,13 @@ class TodoListTemplateMixin(object):
             self.name, self.description)
 
 
+class TodoListTemplateImportRecordMixin(object):
+
+    def __str__(self):
+        return '{} - {}'.format(
+            self.todo_list_template, self.created_at)
+
+
 class PayRateMixin(object):
 
     def __str__(self):

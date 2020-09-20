@@ -37,6 +37,77 @@ BASE_DATETIME = parse('2015-10-12T00:00:00+00:00')
 ITERATION_DURATION = timedelta(hours=1)
 PICKUP_DELAY = timedelta(hours=1)
 
+TODO_TEMPLATE_GOOD_CSV_TEXT = """Remove if,Skip if
+[],[],the root
+[],[],,todo parent 1
+[],"[{""prop"": {""value"": true, ""operator"": ""==""}}]",,,todo child 1-1
+"[{""prop"": {""value"": true, ""operator"": ""==""}}]",[],,todo parent 2
+[],[],,,todo child 2-1
+[],[],,,,todo child 2-1-1
+[],[],,,todo child 2-2
+"""
+
+TODO_TEMPLATE_BAD_HEADER_CSV_TEXT = """,Remove if,Skip if
+[],[],the root
+"""
+
+TODO_TEMPLATE_TWO_ENTRIES_CSV_TEXT = """Remove if,Skip if
+[],[],the root,the second root
+"""
+
+TODO_TEMPLATE_INVALID_PARENT_CSV_TEXT = """Remove if,Skip if
+[],[],the root
+[],[],,,,,,an impossible child
+"""
+
+TODO_TEMPLATE_NESTED_TODOS = {
+    'description': 'the root',
+    'id': 0,
+    'items': [
+        {
+            'id': 2,
+            'description': 'todo parent 2',
+            'items': [
+                {
+                    'id': 22,
+                    'description': 'todo child 2-2',
+                    'items': []
+                },
+                {
+                    'id': 21,
+                    'description': 'todo child 2-1',
+                    'items': [
+                        {
+                            'id': 211,
+                            'description': 'todo child 2-1-1',
+                            'items': []
+                        }
+                    ]
+                }
+            ],
+            'remove_if': [{
+                'prop': {
+                    'operator': '==',
+                    'value': True
+                }
+            }]
+        },
+        {
+            'id': 1,
+            'description': 'todo parent 1',
+            'items': [{
+                'id': 11,
+                'description': 'todo child 1-1',
+                'items': [],
+                'skip_if': [{
+                    'prop': {
+                        'operator': '==',
+                        'value': True
+                    }
+                }]
+            }]
+        }]}
+
 
 def get_detailed_description(task_details, text=None):
     if text is None:

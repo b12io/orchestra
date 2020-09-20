@@ -25,6 +25,9 @@ urlpatterns = [
     url(r'^worker_task_recent_todo_qas/$',
         views.worker_task_recent_todo_qas,
         name='worker_task_recent_todo_qas'),
+    url(r'^todolist_template/(?P<pk>[0-9]+)/import$',
+        views.ImportTodoListTemplateFromSpreadsheet.as_view(),
+        name='import_todo_list_template_from_spreadsheet'),
 ]
 
 router = routers.SimpleRouter()

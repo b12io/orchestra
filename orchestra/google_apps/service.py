@@ -27,7 +27,8 @@ class Service(object):
         http_auth = credentials.authorize(Http())
         return build('drive', 'v2', http=http_auth, cache_discovery=False)
 
-    def insert_file(self, title, description, parent_id, mime_type, filename):
+    def insert_file(self, title, description, parent_id, file_mime_type,
+                    google_mime_type, filename):
         """Insert new file.
 
         Args:
@@ -35,18 +36,18 @@ class Service(object):
           title: Title of the file to insert, including the extension.
           description: Description of the file to insert.
           parent_id: Parent folder's ID.
-          mime_type: MIME type of the file to insert.
+          file_mime_type: MIME type of the file to insert.
+          google_mime_type: MIME type of the file in Google Drive.
           filename: Filename of the file to insert.
         Returns:
           Inserted file metadata if successful, None otherwise.
         """
-        media_body = MediaFileUpload(filename, mimetype=mime_type,
+        media_body = MediaFileUpload(filename, mimetype=file_mime_type,
                                      resumable=True)
-
         body = {
             'title': title,
             'description': description,
-            'mimeType': mime_type
+            'mimeType': google_mime_type
         }
 
         # Set the parent folder.

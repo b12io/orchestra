@@ -1,12 +1,14 @@
+import csv
 import logging
 import os
 import re
+import requests
 import tempfile
+
 from collections import Counter
 from datetime import date
-
-import requests
 from django.conf import settings
+from io import StringIO
 
 from orchestra.google_apps.errors import FailedRequest
 from orchestra.google_apps.errors import GoogleDriveError
@@ -21,6 +23,9 @@ logger = logging.getLogger(__name__)
 _image_mimetype_regex = re.compile('(image/(?:jpg|jpeg|gif|png|svg))',
                                    re.IGNORECASE)
 TEAM_MESSAGES_TEMPLATE_ID = '1d0kIgq8G_Su6j5abP-tP6yJ2sp-sFDk6vZiREil0_70'
+GSPREAD_RE = re.compile('https://docs.google.com/spreadsheets/d/([^/]*)/.*')
+GSPREAD_EXPORT_URL = ('https://docs.google.com/spreadsheets/d/'
+                      '{}/export?format=csv')
 
 
 def _get_image_mimetype(response, title):
@@ -69,6 +74,7 @@ def add_image(service, folder_id, url):
     google_image = service.insert_file(title,
                                        'image',
                                        folder_id,
+                                       mimetype,
                                        mimetype,
                                        temp.name)
     os.unlink(temp.name)
@@ -217,6 +223,18 @@ def upload_file(parent_id, file_path, title, description, mimetype):
         description,
         parent_id,
         mimetype,
+        mimetype,
         file_path
     )
     return file_metadata
+
+
+def get_google_spreadsheet_as_csv(gdoc_url, reader=csv.DictReader):
+    matches = GSPREAD_RE.match(gdoc_url)
+    if matches is None:
+        raise ValueError(
+            '{} is not a valid Google Sheets URL'.format(gdoc_url))
+    export_url = GSPREAD_EXPORT_URL.format(matches.group(1))
+    response = requests.get(export_url)
+    return reader(
+        StringIO(response.content.decode('utf-8')), dialect=csv.excel)
