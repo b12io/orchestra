@@ -6,6 +6,7 @@ from jsonfield import JSONField
 from phonenumber_field.modelfields import PhoneNumberField
 from orchestra.models.core.mixins import CertificationMixin
 from orchestra.models.core.mixins import TodoListTemplateMixin
+from orchestra.models.core.mixins import TodoListTemplateImportRecordMixin
 from orchestra.models.core.mixins import PayRateMixin
 from orchestra.models.core.mixins import ProjectMixin
 from orchestra.models.core.mixins import StepMixin
@@ -592,7 +593,7 @@ class PayRate(PayRateMixin, models.Model):
     end_date = models.DateField(null=True, blank=True)
 
 
-class TodoListTemplate (TodoListTemplateMixin, BaseModel):
+class TodoListTemplate(TodoListTemplateMixin, BaseModel):
     """
     A todo template
 
@@ -623,6 +624,34 @@ class TodoListTemplate (TodoListTemplateMixin, BaseModel):
         related_name='creator', on_delete=models.SET_NULL)
     todos = JSONField(default={'items': []})
     conditional_property_function = JSONField(default={})
+
+
+class TodoListTemplateImportRecord(
+        TodoListTemplateImportRecordMixin, BaseModel):
+    """
+    A record that gets created every time a todo list template is imported.
+
+    Attributes:
+        todo_list_template (orchestra.models.TodoListTemplate):
+            The template that was overwritten
+        importer (django.contrib.auth.models.User):
+            Django user that imported the template
+        import_url (str):
+            The URL of the imported template
+
+    By way of `BaseModel`, this model also has `created_at`
+    (essentially, when did the user import?) and `is_deleted`.
+    """
+    class Meta:
+        app_label = 'orchestra'
+
+    todo_list_template = models.ForeignKey(
+        TodoListTemplate, null=True, blank=True,
+        on_delete=models.CASCADE)
+    importer = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, blank=True,
+        on_delete=models.SET_NULL)
+    import_url = models.URLField(null=True, blank=True)
 
 
 class Todo(TodoMixin, BaseModel):
