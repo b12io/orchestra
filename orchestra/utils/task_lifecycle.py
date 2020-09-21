@@ -1194,7 +1194,6 @@ def create_subsequent_tasks(project):
         project (orchestra.models.Project):
             The modified project object.
     """
-    end_project = False
     workflow_version = project.workflow_version
     all_steps = workflow_version.steps.all()
 
@@ -1204,6 +1203,7 @@ def create_subsequent_tasks(project):
     completed_step_slugs = set(completed_tasks.values_list('step__slug',
                                                            flat=True))
 
+    end_project = False
     machine_tasks_to_schedule = []
     for step in all_steps:
         end_project = end_project or (
