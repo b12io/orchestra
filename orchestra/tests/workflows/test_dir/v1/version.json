@@ -48,6 +48,7 @@
             "name": "Step 3",
             "description": "The third step",
             "is_human": true,
+            "completion_ends_project": true,
             "creation_depends_on": [
                 "s1"
             ],
