@@ -224,6 +224,6 @@ def _set_step_relations(step, step_data, relation_attr, relation_model,
         slug__in=relation_slugs, **model_filters))
     if len(relations) != len(relation_slugs):
         raise WorkflowError(
-            '{}.{} contains a non-existent slug.'
-            .format(step_data['slug'], relation_attr))
+		            '{}.{} contains a non-existent slug.'
+            		    .format(step_data['slug'], relation_attr))
     getattr(step, relation_attr).set(relations)
