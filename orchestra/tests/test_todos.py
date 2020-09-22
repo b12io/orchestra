@@ -241,6 +241,14 @@ class TodosEndpointTests(EndpointTestCase):
                 step=due_todo.step.slug),
         ], True)
 
+    def test_todo_deletion(self):
+        todo = TodoFactory(project=self.project, step=self.step)
+        deletion_url = reverse(
+            self.list_details_url_name,
+            kwargs={'pk': todo.id})
+        resp = self.request_client.delete(deletion_url)
+        self.assertEqual(resp.status_code, 204)
+
 
 class TodoQAEndpointTests(EndpointTestCase):
 
