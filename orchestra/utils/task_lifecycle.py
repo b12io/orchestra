@@ -475,7 +475,8 @@ def tasks_assigned_to_worker(worker):
             worker=worker,
             status=TaskAssignment.Status.PROCESSING)
         .exclude(
-            task__project__status__in=[Project.Status.PAUSED, Project.Status.COMPLETED])
+            task__project__status__in=[Project.Status.PAUSED,
+                                       Project.Status.COMPLETED])
         .order_by('-task__project__priority',
                   'task__project__start_datetime'))
 
@@ -488,7 +489,8 @@ def tasks_assigned_to_worker(worker):
         .exclude(
             task__status=Task.Status.COMPLETE)
         .exclude(
-            task__project__status__in=[Project.Status.PAUSED, Project.Status.COMPLETED])
+            task__project__status__in=[Project.Status.PAUSED,
+                                       Project.Status.COMPLETED])
         .order_by('-task__project__priority',
                   'task__project__start_datetime'))
 
@@ -510,7 +512,9 @@ def tasks_assigned_to_worker(worker):
     # recent 200 tasks.
     complete_task_assignments = (
         valid_task_assignments
-        .filter(Q(worker=worker) & (Q(task__status=Task.Status.COMPLETE) | Q(task__project__status=Project.Status.COMPLETED)))
+        .filter(Q(worker=worker) &
+                (Q(task__status=Task.Status.COMPLETE) |
+                 Q(task__project__status=Project.Status.COMPLETED)))
         .order_by('-task__project__priority',
                   '-task__project__start_datetime')[:200])
 
