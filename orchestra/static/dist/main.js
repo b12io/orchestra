@@ -66604,6 +66604,11 @@ function todoList(orchestraApi) {
           due_datetime: dueDate
         }).then(function (taskData) {
           todoList.todos.unshift(taskData);
+          // Reset form
+          todoList.newTodoStepSlug = null;
+          todoList.newTodoDescription = null;
+          todoList.newTodoStartDate = null;
+          todoList.newTodoDueDate = null;
           return taskData;
         });
       };
