@@ -181,7 +181,8 @@ class TimeEntryAdmin(AjaxSelectAdmin):
 
 @admin.register(Todo)
 class TodoAdmin(admin.ModelAdmin):
-    autocomplete_fields = ('task', 'parent_todo')
+    # TODO(murat): remove `task` with its removal from the model
+    autocomplete_fields = ('task', 'project', 'step', 'parent_todo')
     list_display = ('id', 'created_at', 'task', 'title', 'completed')
     ordering = ('-created_at',)
     search_fields = (
