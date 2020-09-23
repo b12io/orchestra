@@ -42,6 +42,8 @@ class IsAssociatedWithProject(permissions.BasePermission):
         if worker.is_project_admin():
             return True
         todo_id = request.data.get('todo')
+        if todo_id is None:
+            todo_id = view.kwargs.get('pk')
         project_id = request.data.get('project')
         if project_id is None:
             project_id = request.query_params.get('project')
