@@ -139,6 +139,8 @@ def load_workflow_version(version_data, workflow, force=False):
     old_submission_dependencies = {}
     for step_data in version_data['steps']:
         is_human = step_data.get('is_human', True)
+        completion_ends_project = step_data.get(
+            'completion_ends_project', False)
         step, step_created = Step.objects.update_or_create(
             slug=step_data['slug'],
             workflow_version=version,
@@ -146,6 +148,7 @@ def load_workflow_version(version_data, workflow, force=False):
                 'name': step_data['name'],
                 'description': step_data['description'],
                 'is_human': is_human,
+                'completion_ends_project': completion_ends_project,
                 'detailed_description_function': step_data.get(
                     'detailed_description_function', {}),
                 'execution_function': step_data.get('execution_function', {}),
