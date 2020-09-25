@@ -825,6 +825,7 @@ def assert_test_dir_v1_loaded(test_case, extra_step=False):
             'name': 'Step 3',
             'description': 'The third step',
             'is_human': True,
+            'completion_ends_project': True,
             'execution_function': {},
             'review_policy': {
                 'policy': 'sampled_review',
