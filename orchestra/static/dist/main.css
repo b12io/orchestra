@@ -25,7 +25,7 @@
  * This partial provides common variables and mixins useful for various view and
  * component styles.
  */
-.disable-select, .checklist-wrapper .toggle-completed, li.checklist-item .line-item .item-title input[type="text"].readonly, .new-item .line-item .item-title input[type="text"].readonly, li.checklist-item .item-tools, .new-item .item-tools {
+.disable-select, .checklist-wrapper .toggle-completed, li.checklist-item .line-item .item-title input.readonly[type="text"], .new-item .line-item .item-title input.readonly[type="text"], li.checklist-item .item-tools, .new-item .item-tools {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -1919,7 +1919,7 @@ a.logo {
 @charset "UTF-8";
 /*!
  * Pikaday
- * Copyright © 2014 David Bushell | BSD & MIT license | http://dbushell.com/
+ * Copyright © 2014 David Bushell | BSD & MIT license | https://dbushell.com/
  */
 .pika-single {
   z-index: 9999;
@@ -2065,15 +2065,19 @@ a.logo {
     border-radius: 3px; }
   .is-disabled .pika-button,
   .is-outside-current-month .pika-button {
-    pointer-events: none;
-    cursor: default;
     color: #999;
     opacity: .3; }
+  .is-disabled .pika-button {
+    pointer-events: none;
+    cursor: default; }
   .pika-button:hover {
     color: #fff;
     background: #ff8000;
     box-shadow: none;
     border-radius: 3px; }
+  .pika-button .is-selection-disabled {
+    pointer-events: none;
+    cursor: default; }
 
 .pika-week {
   font-size: 11px;
