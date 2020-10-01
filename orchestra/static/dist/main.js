@@ -66554,6 +66554,9 @@ exports.default = name;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 exports.default = todoList;
 
 var _lodash = __webpack_require__(4);
@@ -66724,16 +66727,19 @@ function todoList(orchestraApi) {
           return task.status !== 'Complete' && humanSteps.has(task.step_slug);
         });
 
-        // TODO(marcua): parallelize requests rather than chaining `then`s.
-        todoApi.list(todoList.projectId).then(function (todos) {
-          todoListTemplateApi.list().then(function (templates) {
-            todoQaApi.workerTaskRecentTodoQas(todoList.taskId).then(function (todoQas) {
-              todoList.todoQas = todoQas;
-              todoList.templates = templates;
-              todoList.todos = todoList.transformToTree(todos);
-              todoList.ready = true;
-            });
-          });
+        var p1 = todoListTemplateApi.list();
+        var p2 = todoQaApi.workerTaskRecentTodoQas(todoList.taskId);
+        var p3 = todoApi.list(todoList.projectId);
+        Promise.all([p1, p2, p3]).then(function (_ref) {
+          var _ref2 = _slicedToArray(_ref, 3),
+              templates = _ref2[0],
+              todoQas = _ref2[1],
+              todos = _ref2[2];
+
+          todoList.templates = templates;
+          todoList.todoQas = todoQas;
+          todoList.todos = todoList.transformToTree(todos);
+          todoList.ready = true;
         });
       });
     }
@@ -67118,7 +67124,7 @@ function todoApi($http) {
       });
     },
     list: function list(projectId) {
-      return $http.get(listCreate(projectId)).then(function (response) {
+      return $http.get(listCreate(projectId), { cache: true }).then(function (response) {
         return response.data;
       });
     },

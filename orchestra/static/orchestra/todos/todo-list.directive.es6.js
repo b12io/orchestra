@@ -154,16 +154,14 @@ export default function todoList (orchestraApi) {
             }, {})
           todoList.possibleTasks = Object.values(tasks).filter(task => task.status !== 'Complete' && humanSteps.has(task.step_slug))
 
-          // TODO(marcua): parallelize requests rather than chaining `then`s.
-          todoApi.list(todoList.projectId).then((todos) => {
-            todoListTemplateApi.list().then((templates) => {
-              todoQaApi.workerTaskRecentTodoQas(todoList.taskId).then((todoQas) => {
-                todoList.todoQas = todoQas
-                todoList.templates = templates
-                todoList.todos = todoList.transformToTree(todos)
-                todoList.ready = true
-              })
-            })
+          const p1 = todoListTemplateApi.list()
+          const p2 = todoQaApi.workerTaskRecentTodoQas(todoList.taskId)
+          const p3 = todoApi.list(todoList.projectId)
+          Promise.all([p1, p2, p3]).then(([templates, todoQas, todos]) => {
+            todoList.templates = templates
+            todoList.todoQas = todoQas
+            todoList.todos = todoList.transformToTree(todos)
+            todoList.ready = true
           })
         })
     }
