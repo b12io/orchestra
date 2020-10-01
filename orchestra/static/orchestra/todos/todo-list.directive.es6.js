@@ -158,8 +158,8 @@ export default function todoList (orchestraApi) {
           const p2 = todoQaApi.workerTaskRecentTodoQas(todoList.taskId)
           const p3 = todoApi.list(todoList.projectId)
           Promise.all([p1, p2, p3]).then((values) => {
-            todoList.todoQas = values[1]
             todoList.templates = values[0]
+            todoList.todoQas = values[1]
             todoList.todos = todoList.transformToTree(values[2])
             todoList.ready = true
           })
