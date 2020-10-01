@@ -66724,16 +66724,14 @@ function todoList(orchestraApi) {
           return task.status !== 'Complete' && humanSteps.has(task.step_slug);
         });
 
-        // TODO(marcua): parallelize requests rather than chaining `then`s.
-        todoApi.list(todoList.projectId).then(function (todos) {
-          todoListTemplateApi.list().then(function (templates) {
-            todoQaApi.workerTaskRecentTodoQas(todoList.taskId).then(function (todoQas) {
-              todoList.todoQas = todoQas;
-              todoList.templates = templates;
-              todoList.todos = todoList.transformToTree(todos);
-              todoList.ready = true;
-            });
-          });
+        var p1 = todoListTemplateApi.list();
+        var p2 = todoQaApi.workerTaskRecentTodoQas(todoList.taskId);
+        var p3 = todoApi.list(todoList.projectId);
+        Promise.all([p1, p2, p3]).then(function (values) {
+          todoList.templates = values[0];
+          todoList.todoQas = values[1];
+          todoList.todos = todoList.transformToTree(values[2]);
+          todoList.ready = true;
         });
       });
     }
@@ -67118,7 +67116,7 @@ function todoApi($http) {
       });
     },
     list: function list(projectId) {
-      return $http.get(listCreate(projectId)).then(function (response) {
+      return $http.get(listCreate(projectId), { cache: true }).then(function (response) {
         return response.data;
       });
     },
