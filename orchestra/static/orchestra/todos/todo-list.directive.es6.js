@@ -162,6 +162,7 @@ export default function todoList (orchestraApi) {
             todoList.todoQas = todoQas
             todoList.todos = todoList.transformToTree(todos)
             todoList.ready = true
+            $scope.$apply()
           })
         })
     }
