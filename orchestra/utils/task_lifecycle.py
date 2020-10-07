@@ -1198,7 +1198,7 @@ def create_subsequent_tasks(project):
             The modified project object.
     """
     workflow_version = project.workflow_version
-    all_steps = workflow_version.steps.all()
+    all_steps = workflow_version.steps.all().order_by('id')
 
     # get all completed tasks associated with a given project
     completed_tasks = Task.objects.filter(status=Task.Status.COMPLETE,
