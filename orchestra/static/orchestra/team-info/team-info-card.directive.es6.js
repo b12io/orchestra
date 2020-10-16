@@ -18,6 +18,7 @@ export default function teamInfoCard (orchestraApi) {
       teamInfoCard.projectStatus = teamInfoCard.taskAssignment.project.status
       teamInfoCard.step = teamInfoCard.taskAssignment.step
       teamInfoCard.isProjectAdmin = teamInfoCard.taskAssignment.is_project_admin
+      teamInfoCard.sentStaffBotRequest = {}
 
       teamInfoCard.loadTeamInfo = () => {
         orchestraApi.projectInformation(teamInfoCard.projectId)
@@ -63,6 +64,13 @@ export default function teamInfoCard (orchestraApi) {
             }
             window.alert(errorMessage)
           })
+      }
+
+      teamInfoCard.restaff = (taskId, stepSlug) => {
+        teamInfoCard.sentStaffBotRequest[stepSlug] = 'Sending request...'
+        orchestraApi.staffTask(taskId).then(() => {
+          teamInfoCard.sentStaffBotRequest[stepSlug] = 'StaffBot request sent'
+        })
       }
 
       teamInfoCard.togglePauseProject = () => {

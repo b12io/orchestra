@@ -47401,9 +47401,9 @@ function orchestraApi($http) {
       });
     },
 
-    staffTask: function staffTask(task) {
+    staffTask: function staffTask(taskId) {
       return $http.post(getApiUrl('staff_task'), {
-        'task_id': task.id
+        'task_id': taskId
       });
     },
 
@@ -62508,7 +62508,7 @@ function assignmentsVis(dataService, orchestraApi, iterationsVis, visUtils) {
         'class': 'btn btn-default btn-xs pull-right'
       }).text(assignmentsVis.getStaffButtonLabel).on('click', function (assignmentKey) {
         var assignment = dataService.assignmentFromKey(assignmentKey);
-        assignmentsVis.staffTask(assignment.task, d3.select(this));
+        assignmentsVis.staffTask(assignment.task.id, d3.select(this));
       });
     },
     assign_task: function assign_task(task, inputEl) {
@@ -62565,9 +62565,9 @@ function assignmentsVis(dataService, orchestraApi, iterationsVis, visUtils) {
       var assignment = dataService.assignmentFromKey(data);
       return assignment.worker.id ? 'Restaff' : 'Staff';
     },
-    staffTask: function staffTask(task, buttonEl) {
+    staffTask: function staffTask(taskId, buttonEl) {
       buttonEl.text('Sending request ...');
-      orchestraApi.staffTask(task).then(function () {
+      orchestraApi.staffTask(taskId).then(function () {
         buttonEl.text('StaffBot request sent');
       }, function () {
         var errorMessage = 'Error creating a StaffBot request.';
@@ -69157,6 +69157,7 @@ function teamInfoCard(orchestraApi) {
       teamInfoCard.projectStatus = teamInfoCard.taskAssignment.project.status;
       teamInfoCard.step = teamInfoCard.taskAssignment.step;
       teamInfoCard.isProjectAdmin = teamInfoCard.taskAssignment.is_project_admin;
+      teamInfoCard.sentStaffBotRequest = {};
 
       teamInfoCard.loadTeamInfo = function () {
         orchestraApi.projectInformation(teamInfoCard.projectId).then(function (response) {
@@ -69232,6 +69233,13 @@ function teamInfoCard(orchestraApi) {
         });
       };
 
+      teamInfoCard.restaff = function (taskId, stepSlug) {
+        teamInfoCard.sentStaffBotRequest[stepSlug] = 'Sending request...';
+        orchestraApi.staffTask(taskId).then(function () {
+          teamInfoCard.sentStaffBotRequest[stepSlug] = 'StaffBot request sent';
+        });
+      };
+
       teamInfoCard.togglePauseProject = function () {
         var newStatus = teamInfoCard.projectStatus === 'Paused' ? 'Active' : 'Paused';
 
@@ -69255,7 +69263,7 @@ function teamInfoCard(orchestraApi) {
 /* 248 */
 /***/ (function(module, exports) {
 
-module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Team info\n          <a class=\"btn\"\n             ng-if=\"teamInfoCard.isProjectAdmin\"\n             ng-href=\"project/{{teamInfoCard.projectId}}\"\n             target=\"_blank\">\n            Project Management\n          </a>\n          <a class=\"btn\"\n             ng-if=\"teamInfoCard.isProjectAdmin &&\n                    (teamInfoCard.projectStatus === 'Active'\n                    || teamInfoCard.projectStatus === 'Paused')\"\n             ng-click=\"teamInfoCard.togglePauseProject()\">\n             {{teamInfoCard.projectStatus == 'Paused' ? 'Unpause' : 'Pause'}} project\n          </a>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <table class=\"table table-striped\">\n          <thead>\n            <th>Role</th>\n            <th>Username</th>\n            <th>Name</th>\n            <th>Recorded time spent</th>\n            <th>Status</th>\n          </thead>\n          <tbody>\n            <tr ng-repeat=\"assignment in teamInfoCard.assignments\">\n              <td>{{assignment.role}}</td>\n              <td>{{assignment.worker.username}}</td>\n              <td>{{assignment.worker.first_name}} {{assignment.worker.last_name}}</td>\n              <td>{{assignment.recordedTime}}</td>\n              <td>\n                {{assignment.status}}\n                <button type=\"submit\"\n                        class=\"btn btn-default btn-sm\"\n                        ng-if=\"teamInfoCard.isProjectAdmin &&\n                               assignment.status == 'Processing' &&\n                               assignment.stepSlug != teamInfoCard.step.slug\"\n                        ng-click=\"teamInfoCard.submitTask(assignment.task_id)\">\n                  Submit\n                </button>\n              </td>\n            </tr>\n          </tbody>\n        </table>\n      </div>\n    </div>\n  </div>\n</section>\n";
+module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Team info\n          <a class=\"btn\"\n             ng-if=\"teamInfoCard.isProjectAdmin\"\n             ng-href=\"project/{{teamInfoCard.projectId}}\"\n             target=\"_blank\">\n            Project Management\n          </a>\n          <a class=\"btn\"\n             ng-if=\"teamInfoCard.isProjectAdmin &&\n                    (teamInfoCard.projectStatus === 'Active'\n                    || teamInfoCard.projectStatus === 'Paused')\"\n             ng-click=\"teamInfoCard.togglePauseProject()\">\n             {{teamInfoCard.projectStatus == 'Paused' ? 'Unpause' : 'Pause'}} project\n          </a>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <table class=\"table table-striped\">\n          <thead>\n            <th>Role</th>\n            <th>Username</th>\n            <th>Name</th>\n            <th>Recorded time spent</th>\n            <th>Status</th>\n          </thead>\n          <tbody>\n            <tr ng-repeat=\"assignment in teamInfoCard.assignments\">\n              <td>{{assignment.role}}</td>\n              <td>{{assignment.worker.username}}\n                <button\n\t\t\t\t\t\t\t\t\tclass=\"btn btn-default btn-xs pull-right dsu-pl-30\"\n                  ng-click=\"teamInfoCard.restaff(assignment.task_id, assignment.stepSlug)\">\n                  {{\n                    teamInfoCard.sentStaffBotRequest[assignment.stepSlug]\n                      ? teamInfoCard.sentStaffBotRequest[assignment.stepSlug]\n                      : 'Restaff'\n                  }}\n\t\t\t\t\t\t\t\t</button>\n              </td>\n              <td>{{assignment.worker.first_name}} {{assignment.worker.last_name}}</td>\n              <td>{{assignment.recordedTime}}</td>\n              <td>\n                {{assignment.status}}\n                <button type=\"submit\"\n                        class=\"btn btn-default btn-sm\"\n                        ng-if=\"teamInfoCard.isProjectAdmin &&\n                               assignment.status == 'Processing' &&\n                               assignment.stepSlug != teamInfoCard.step.slug\"\n                        ng-click=\"teamInfoCard.submitTask(assignment.task_id)\">\n                  Submit\n                </button>\n              </td>\n            </tr>\n          </tbody>\n        </table>\n      </div>\n    </div>\n  </div>\n</section>\n";
 
 /***/ }),
 /* 249 */

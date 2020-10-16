@@ -36,9 +36,9 @@ export default function orchestraApi ($http) {
       })
     },
 
-    staffTask: function (task) {
+    staffTask: function (taskId) {
       return $http.post(getApiUrl('staff_task'), {
-        'task_id': task.id
+        'task_id': taskId
       })
     },
 

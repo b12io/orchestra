@@ -33,7 +33,17 @@
           <tbody>
             <tr ng-repeat="assignment in teamInfoCard.assignments">
               <td>{{assignment.role}}</td>
-              <td>{{assignment.worker.username}}</td>
+              <td>{{assignment.worker.username}}
+                <button
+									class="btn btn-default btn-xs pull-right dsu-pl-30"
+                  ng-click="teamInfoCard.restaff(assignment.task_id, assignment.stepSlug)">
+                  {{
+                    teamInfoCard.sentStaffBotRequest[assignment.stepSlug]
+                      ? teamInfoCard.sentStaffBotRequest[assignment.stepSlug]
+                      : 'Restaff'
+                  }}
+								</button>
+              </td>
               <td>{{assignment.worker.first_name}} {{assignment.worker.last_name}}</td>
               <td>{{assignment.recordedTime}}</td>
               <td>

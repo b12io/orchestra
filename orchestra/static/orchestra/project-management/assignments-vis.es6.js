@@ -121,7 +121,7 @@ export default function assignmentsVis (dataService, orchestraApi, iterationsVis
         .text(assignmentsVis.getStaffButtonLabel)
         .on('click', function (assignmentKey) {
           var assignment = dataService.assignmentFromKey(assignmentKey)
-          assignmentsVis.staffTask(assignment.task, d3.select(this))
+          assignmentsVis.staffTask(assignment.task.id, d3.select(this))
         })
     },
     assign_task: function (task, inputEl) {
@@ -182,9 +182,9 @@ export default function assignmentsVis (dataService, orchestraApi, iterationsVis
       var assignment = dataService.assignmentFromKey(data)
       return assignment.worker.id ? 'Restaff' : 'Staff'
     },
-    staffTask: function (task, buttonEl) {
+    staffTask: function (taskId, buttonEl) {
       buttonEl.text('Sending request ...')
-      orchestraApi.staffTask(task)
+      orchestraApi.staffTask(taskId)
         .then(function () {
           buttonEl.text('StaffBot request sent')
         }, function () {
