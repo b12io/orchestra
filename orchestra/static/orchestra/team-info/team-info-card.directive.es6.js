@@ -70,6 +70,10 @@ export default function teamInfoCard (orchestraApi) {
         teamInfoCard.sentStaffBotRequest[stepSlug] = 'Sending request...'
         orchestraApi.staffTask(taskId).then(() => {
           teamInfoCard.sentStaffBotRequest[stepSlug] = 'StaffBot request sent'
+        }, () => {
+          var errorMessage = 'Error creating a StaffBot request.'
+          window.alert(errorMessage)
+          delete teamInfoCard.sentStaffBotRequest[stepSlug]
         })
       }
 

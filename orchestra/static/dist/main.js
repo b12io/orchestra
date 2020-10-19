@@ -69237,6 +69237,10 @@ function teamInfoCard(orchestraApi) {
         teamInfoCard.sentStaffBotRequest[stepSlug] = 'Sending request...';
         orchestraApi.staffTask(taskId).then(function () {
           teamInfoCard.sentStaffBotRequest[stepSlug] = 'StaffBot request sent';
+        }, function () {
+          var errorMessage = 'Error creating a StaffBot request.';
+          window.alert(errorMessage);
+          delete teamInfoCard.sentStaffBotRequest[stepSlug];
         });
       };
 
