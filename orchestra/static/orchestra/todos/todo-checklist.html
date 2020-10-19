@@ -40,7 +40,7 @@
       </div>
     </div>
   </div>
-  <ol ui-tree-nodes ng-model="todo.items" ng-class="{hidden: collapsed}">
+  <ol ui-tree-nodes ng-model="todo.items" ng-class="{hidden: collapsed}" ng-if="!collapsed">
     <li ng-repeat="todo in filterTodoList(todo.items, showSkipped)" ui-tree-node data-collapsed="isCollapsed(todo, showSkipped)" ng-include="'todoItemTemplate'"></li>
   </ol>
 </script>
