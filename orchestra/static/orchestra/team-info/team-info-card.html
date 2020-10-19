@@ -36,6 +36,7 @@
               <td>{{assignment.worker.username}}
                 <button
 									class="btn btn-default btn-xs pull-right dsu-pl-30"
+                  ng-if="teamInfoCard.isProjectAdmin && assignment.status !== 'Complete'"
                   ng-click="teamInfoCard.restaff(assignment.task_id, assignment.stepSlug)">
                   {{
                     teamInfoCard.sentStaffBotRequest[assignment.stepSlug]
