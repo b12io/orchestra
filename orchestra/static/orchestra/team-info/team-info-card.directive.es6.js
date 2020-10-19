@@ -19,6 +19,7 @@ export default function teamInfoCard (orchestraApi, helpers) {
       teamInfoCard.step = teamInfoCard.taskAssignment.step
       teamInfoCard.isProjectAdmin = teamInfoCard.taskAssignment.is_project_admin
       teamInfoCard.sentStaffBotRequest = {}
+      teamInfoCard.showUnassigned = false
 
       teamInfoCard.loadTeamInfo = () => {
         orchestraApi.projectInformation(teamInfoCard.projectId)
@@ -32,6 +33,7 @@ export default function teamInfoCard (orchestraApi, helpers) {
                 return result
               }, {})
             teamInfoCard.assignments = []
+            teamInfoCard.unassigned = []
             for (let stepSlug of humanSteps.values()) {
               const task = tasks[stepSlug]
               if (task) {
@@ -48,6 +50,15 @@ export default function teamInfoCard (orchestraApi, helpers) {
                     task_id: a.task
                   }
                 }))
+                if (task.assignments.length === 0) {
+                  teamInfoCard.unassigned.push({
+                    stepSlug,
+                    role: teamInfoCard.steps[stepSlug].name,
+                    recordedTime: '0h 0m',
+                    status: task.status,
+                    task_id: task.id
+                  })
+                }
               }
             }
           })
@@ -75,6 +86,10 @@ export default function teamInfoCard (orchestraApi, helpers) {
           window.alert(errorMessage)
           delete teamInfoCard.sentStaffBotRequest[stepSlug]
         })
+      }
+
+      teamInfoCard.toggleShowUnassigned = () => {
+        teamInfoCard.showUnassigned = !teamInfoCard.showUnassigned
       }
 
       teamInfoCard.togglePauseProject = () => {

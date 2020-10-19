@@ -59,6 +59,24 @@
                 </button>
               </td>
             </tr>
+            <tr>
+              <td colspan="5">
+                <a
+                  class="btn"
+                  ng-click="teamInfoCard.toggleShowUnassigned()">
+                  {{teamInfoCard.showUnassigned ? 'Hide unassigned' : 'Show unassigned' }}
+                </a>
+              </td>
+            </tr>
+            <tr
+              ng-if="teamInfoCard.showUnassigned"
+              ng-repeat="unassigned in teamInfoCard.unassigned">
+              <td>{{unassigned.role}}</td>
+              <td></td>
+              <td></td>
+              <td>{{unassigned.recordedTime}}</td>
+              <td>{{unassigned.status}}</td>
+            </tr>
           </tbody>
         </table>
       </div>
