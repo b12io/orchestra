@@ -28,7 +28,7 @@
     </form>
 
   </div>
-  <ol ui-tree-nodes ng-model="todo.items" ng-class="{hidden: collapsed}">
+  <ol ui-tree-nodes ng-model="todo.items" ng-class="{hidden: collapsed}" ng-if="!collapsed">
     <li ng-repeat="todo in filterTemplateTodos(todo.items)" ui-tree-node data-collapsed="true" ng-include="'todoQaItemTemplate'"></li>
   </ol>
 </script>
