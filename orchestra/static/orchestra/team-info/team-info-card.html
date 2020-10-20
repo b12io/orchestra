@@ -37,7 +37,9 @@
             <tr ng-repeat="assignment in teamInfoCard.assignments">
               <td>{{assignment.role}}</td>
               <td>
+                <div ng-if="!teamInfoCard.isTaskStaffable(assignment.task_status)">{{assignment.worker.username}}</div>
                 <input type="text"
+                  ng-if="teamInfoCard.isTaskStaffable(assignment.task_status)"
                   ng-keydown="$event.keyCode === 13 && teamInfoCard.handleKeydown(assignment.task_id, assignment.id, assignment.stepSlug, assignment.worker)"
                   ng-model="teamInfoCard.assignmentInput[assignment.stepSlug]" />
                 <button
