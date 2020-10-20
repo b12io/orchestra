@@ -36,7 +36,7 @@
               <td>{{assignment.worker.username}}
                 <button
 									class="btn btn-default btn-xs pull-right dsu-pl-30"
-                  ng-if="teamInfoCard.isProjectAdmin && assignment.status !== 'Complete'"
+                  ng-if="teamInfoCard.isProjectAdmin && assignment.task_status !== 'Complete'"
                   ng-click="teamInfoCard.restaff(assignment.task_id, assignment.stepSlug)">
                   {{
                     teamInfoCard.sentStaffBotRequest[assignment.stepSlug]
@@ -48,11 +48,11 @@
               <td>{{assignment.worker.first_name}} {{assignment.worker.last_name}}</td>
               <td>{{assignment.recordedTime}}</td>
               <td>
-                {{assignment.status}}
+                {{assignment.task_status}}
                 <button type="submit"
                         class="btn btn-default btn-sm"
                         ng-if="teamInfoCard.isProjectAdmin &&
-                               assignment.status == 'Processing' &&
+                               assignment.task_status == 'Processing' &&
                                assignment.stepSlug != teamInfoCard.step.slug"
                         ng-click="teamInfoCard.submitTask(assignment.task_id)">
                   Submit
