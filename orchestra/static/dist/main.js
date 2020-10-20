@@ -32520,6 +32520,10 @@ var _orchestra_apiEs = __webpack_require__(142);
 
 var _orchestra_apiEs2 = _interopRequireDefault(_orchestra_apiEs);
 
+var _helpersEs = __webpack_require__(275);
+
+var _helpersEs2 = _interopRequireDefault(_helpersEs);
+
 var _orchestraServicesEs = __webpack_require__(143);
 
 var _orchestraFiltersEs = __webpack_require__(144);
@@ -32550,9 +32554,10 @@ var _websiteIframeDirectiveEs2 = _interopRequireDefault(_websiteIframeDirectiveE
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var name = 'orchestra.common'; /* global angular */
+/* global angular */
 
-angular.module('orchestra.common', []).factory('orchestraService', _orchestraServicesEs.orchestraService).factory('orchestraTasks', _orchestraServicesEs.orchestraTasks).factory('orchestraApi', _orchestra_apiEs2.default).filter('capitalize', _orchestraFiltersEs.capitalize).filter('toArray', _orchestraFiltersEs.toArray).directive('orchestraChecklist', _checklistDirectiveEs2.default).directive('orchestraChecklistItem', _checklistItemDirectiveEs2.default).directive('orchestraQuill', _quillDirectiveEs2.default).directive('orchestraTeamMessages', _teamMessagesDirectiveEs2.default).directive('projectFolder', _projectFolderDirectiveEs2.default).directive('websiteIframe', _websiteIframeDirectiveEs2.default);
+var name = 'orchestra.common';
+angular.module('orchestra.common', []).factory('orchestraService', _orchestraServicesEs.orchestraService).factory('orchestraTasks', _orchestraServicesEs.orchestraTasks).factory('orchestraApi', _orchestra_apiEs2.default).factory('helpers', _helpersEs2.default).filter('capitalize', _orchestraFiltersEs.capitalize).filter('toArray', _orchestraFiltersEs.toArray).directive('orchestraChecklist', _checklistDirectiveEs2.default).directive('orchestraChecklistItem', _checklistItemDirectiveEs2.default).directive('orchestraQuill', _quillDirectiveEs2.default).directive('orchestraTeamMessages', _teamMessagesDirectiveEs2.default).directive('projectFolder', _projectFolderDirectiveEs2.default).directive('websiteIframe', _websiteIframeDirectiveEs2.default);
 
 exports.default = name;
 
@@ -69140,7 +69145,7 @@ var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function teamInfoCard(orchestraApi) {
+function teamInfoCard(orchestraApi, helpers) {
   'ngAnnotate';
 
   return {
@@ -69258,6 +69263,10 @@ function teamInfoCard(orchestraApi) {
         });
       };
 
+      teamInfoCard.isTaskStaffable = function (status) {
+        return helpers.isTaskStaffable(status);
+      };
+
       teamInfoCard.loadTeamInfo();
     }
   };
@@ -69267,7 +69276,7 @@ function teamInfoCard(orchestraApi) {
 /* 248 */
 /***/ (function(module, exports) {
 
-module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Team info\n          <a class=\"btn\"\n             ng-if=\"teamInfoCard.isProjectAdmin\"\n             ng-href=\"project/{{teamInfoCard.projectId}}\"\n             target=\"_blank\">\n            Project Management\n          </a>\n          <a class=\"btn\"\n             ng-if=\"teamInfoCard.isProjectAdmin &&\n                    (teamInfoCard.projectStatus === 'Active'\n                    || teamInfoCard.projectStatus === 'Paused')\"\n             ng-click=\"teamInfoCard.togglePauseProject()\">\n             {{teamInfoCard.projectStatus == 'Paused' ? 'Unpause' : 'Pause'}} project\n          </a>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <table class=\"table table-striped\">\n          <thead>\n            <th>Role</th>\n            <th>Username</th>\n            <th>Name</th>\n            <th>Recorded time spent</th>\n            <th>Status</th>\n          </thead>\n          <tbody>\n            <tr ng-repeat=\"assignment in teamInfoCard.assignments\">\n              <td>{{assignment.role}}</td>\n              <td>{{assignment.worker.username}}\n                <button\n\t\t\t\t\t\t\t\t\tclass=\"btn btn-default btn-xs pull-right dsu-pl-30\"\n                  ng-if=\"teamInfoCard.isProjectAdmin && assignment.task_status !== 'Complete'\"\n                  ng-click=\"teamInfoCard.restaff(assignment.task_id, assignment.stepSlug)\">\n                  {{\n                    teamInfoCard.sentStaffBotRequest[assignment.stepSlug]\n                      ? teamInfoCard.sentStaffBotRequest[assignment.stepSlug]\n                      : 'Restaff'\n                  }}\n\t\t\t\t\t\t\t\t</button>\n              </td>\n              <td>{{assignment.worker.first_name}} {{assignment.worker.last_name}}</td>\n              <td>{{assignment.recordedTime}}</td>\n              <td>\n                {{assignment.task_status}}\n                <button type=\"submit\"\n                        class=\"btn btn-default btn-sm\"\n                        ng-if=\"teamInfoCard.isProjectAdmin &&\n                               assignment.task_status == 'Processing' &&\n                               assignment.stepSlug != teamInfoCard.step.slug\"\n                        ng-click=\"teamInfoCard.submitTask(assignment.task_id)\">\n                  Submit\n                </button>\n              </td>\n            </tr>\n          </tbody>\n        </table>\n      </div>\n    </div>\n  </div>\n</section>\n";
+module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Team info\n          <a class=\"btn\"\n             ng-if=\"teamInfoCard.isProjectAdmin\"\n             ng-href=\"project/{{teamInfoCard.projectId}}\"\n             target=\"_blank\">\n            Project Management\n          </a>\n          <a class=\"btn\"\n             ng-if=\"teamInfoCard.isProjectAdmin &&\n                    (teamInfoCard.projectStatus === 'Active'\n                    || teamInfoCard.projectStatus === 'Paused')\"\n             ng-click=\"teamInfoCard.togglePauseProject()\">\n             {{teamInfoCard.projectStatus == 'Paused' ? 'Unpause' : 'Pause'}} project\n          </a>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <table class=\"table table-striped\">\n          <thead>\n            <th>Role</th>\n            <th>Username</th>\n            <th>Name</th>\n            <th>Recorded time spent</th>\n            <th>Status</th>\n          </thead>\n          <tbody>\n            <tr ng-repeat=\"assignment in teamInfoCard.assignments\">\n              <td>{{assignment.role}}</td>\n              <td>{{assignment.worker.username}}\n                <button\n\t\t\t\t\t\t\t\t\tclass=\"btn btn-default btn-xs pull-right dsu-pl-30\"\n                  ng-if=\"teamInfoCard.isProjectAdmin && teamInfoCard.isTaskStaffable(assignment.task_status)\"\n                  ng-click=\"teamInfoCard.restaff(assignment.task_id, assignment.stepSlug)\">\n                  {{\n                    teamInfoCard.sentStaffBotRequest[assignment.stepSlug]\n                      ? teamInfoCard.sentStaffBotRequest[assignment.stepSlug]\n                      : 'Restaff'\n                  }}\n\t\t\t\t\t\t\t\t</button>\n              </td>\n              <td>{{assignment.worker.first_name}} {{assignment.worker.last_name}}</td>\n              <td>{{assignment.recordedTime}}</td>\n              <td>\n                {{assignment.task_status}}\n                <button type=\"submit\"\n                        class=\"btn btn-default btn-sm\"\n                        ng-if=\"teamInfoCard.isProjectAdmin &&\n                               assignment.task_status == 'Processing' &&\n                               assignment.stepSlug != teamInfoCard.step.slug\"\n                        ng-click=\"teamInfoCard.submitTask(assignment.task_id)\">\n                  Submit\n                </button>\n              </td>\n            </tr>\n          </tbody>\n        </table>\n      </div>\n    </div>\n  </div>\n</section>\n";
 
 /***/ }),
 /* 249 */
@@ -69353,6 +69362,46 @@ module.exports = "<div class=\"timecard-view\" ng-if=\"!vm.dataLoading\">\n  <di
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"project-management\">\n  <div class=\"overlay\" ng-if=\"vis.dataService.loading\">\n    <div class=\"spinner\"></div>\n  </div>\n  <section class=\"section-panel\">\n    <div class=\"container-fluid\">\n      <div class=\"row padded\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <ui-select class=\"project-description\" ng-model=\"vis.dataService.currentProject\"\n              ng-change=\"vis.dataService.setSelectedProject()\"\n              ng-disabled=\"vis.dataService.loading\">\n            <ui-select-match>\n              <span ng-bind=\"projectDescription($select.selected)\"></span>\n            </ui-select-match>\n            <ui-select-choices repeat=\"item in (vis.dataService.allProjects | toArray | filter: $select.search) track by item.id\">\n              <span ng-bind=\"projectDescription(item)\"></span>\n            </ui-select-choices>\n          </ui-select>\n          <div class=\"project-actions\" ng-show=\"vis.dataService.currentProject.id\">\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.createSubsequentTasks()\" class=\"btn btn-default\">\n              Create subsequent tasks\n            </button>\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.showSlackActions()\" class=\"btn btn-default\">\n              Edit Slack users\n            </button>\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.showProjectData()\" class=\"btn btn-default\">\n              View project data\n            </button>\n            <a ng-href=\"{{vis.dataService.data.project.admin_url}}\" ng-disabled=\"vis.dataService.loading\" target=\"_blank\">\n              <button type=\"button\" class=\"btn btn-default\">View in admin</button>\n            </a>\n            <button type=\"button\" class=\"btn btn-default\"\n              ng-show=\"vis.dataService.currentProject.status === 'Paused'\n                || vis.dataService.currentProject.status === 'Active'\"\n              ng-click=\"vis.dataService.setCurrentProjectStatus(\n                vis.dataService.currentProject.status === 'Paused' ? 'Active' : 'Paused')\">\n              {{vis.dataService.currentProject.status === 'Paused' ? 'Unpause' : 'Pause'}} project\n            </button>\n            <button ng-click=\"vis.endProject()\" class=\"btn btn-danger\">Abort project</button>\n          </div>\n        </div>\n      </div>\n      <div class=\"row\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <div class=\"vis-wrapper\" ng-show=\"vis.dataService.currentProject.id\">\n            <div class=\"freeze-pane-left\">\n              <div class=\"scale-buttons\">\n                <button ng-click=\"vis.axis.relativeTime = !vis.axis.relativeTime; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  Switch to {{vis.axis.relativeTime ? 'local' : 'relative'}} time\n                </button>\n                <button ng-click=\"vis.params.scaleWidth = vis.params.scaleWidth / 1.1; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  -\n                </button>\n                <button ng-click=\"vis.params.scaleWidth = vis.params.scaleWidth * 1.1; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  +\n                </button>\n              </div>\n              <div class=\"task-names\"></div>\n            </div>\n            <div class=\"svg-wrapper\"></div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n</div>\n";
+
+/***/ }),
+/* 254 */,
+/* 255 */,
+/* 256 */,
+/* 257 */,
+/* 258 */,
+/* 259 */,
+/* 260 */,
+/* 261 */,
+/* 262 */,
+/* 263 */,
+/* 264 */,
+/* 265 */,
+/* 266 */,
+/* 267 */,
+/* 268 */,
+/* 269 */,
+/* 270 */,
+/* 271 */,
+/* 272 */,
+/* 273 */,
+/* 274 */,
+/* 275 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = helpers;
+function helpers() {
+  return {
+    isTaskStaffable: function isTaskStaffable(status) {
+      return status !== 'Complete' && status !== 'Aborted';
+    }
+  };
+}
 
 /***/ })
 /******/ ]);

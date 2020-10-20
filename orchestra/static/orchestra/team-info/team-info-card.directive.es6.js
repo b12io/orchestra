@@ -2,7 +2,7 @@ import { reduce } from 'lodash'
 import template from './team-info-card.html'
 import moment from 'moment-timezone'
 
-export default function teamInfoCard (orchestraApi) {
+export default function teamInfoCard (orchestraApi, helpers) {
   'ngAnnotate'
   return {
     template,
@@ -89,6 +89,10 @@ export default function teamInfoCard (orchestraApi) {
               teamInfoCard.projectStatus = data.status
             }
           })
+      }
+
+      teamInfoCard.isTaskStaffable = (status) => {
+        return helpers.isTaskStaffable(status)
       }
 
       teamInfoCard.loadTeamInfo()

@@ -1,6 +1,7 @@
 /* global angular */
 
 import orchestraApi from 'orchestra/common/js/orchestra_api.es6.js'
+import helpers from 'orchestra/common/js/helpers.es6.js'
 import {
   orchestraService,
   orchestraTasks
@@ -22,6 +23,7 @@ angular.module('orchestra.common', [])
   .factory('orchestraService', orchestraService)
   .factory('orchestraTasks', orchestraTasks)
   .factory('orchestraApi', orchestraApi)
+  .factory('helpers', helpers)
   .filter('capitalize', capitalize)
   .filter('toArray', toArray)
 
