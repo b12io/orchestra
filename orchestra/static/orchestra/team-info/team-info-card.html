@@ -42,10 +42,12 @@
                   ng-click="teamInfoCard.showReassignmentInput(assignment.stepSlug)">
                   {{assignment.worker.username}}
                 </div>
-                <input type="text"
-                  ng-if="teamInfoCard.displayReassignmentInput[assignment.stepSlug]"
-                  ng-keydown="$event.keyCode === 13 && teamInfoCard.handleKeydown(assignment.task_id, assignment.id, assignment.stepSlug, assignment.worker)"
-                  ng-model="teamInfoCard.assignmentInput[assignment.stepSlug]" />
+                <div>
+                  <input type="text"
+                    ng-if="teamInfoCard.displayReassignmentInput[assignment.stepSlug]"
+                    ng-keydown="$event.keyCode === 13 && teamInfoCard.handleKeydown(assignment.task_id, assignment.id, assignment.stepSlug, assignment.worker)"
+                    ng-model="teamInfoCard.assignmentInput[assignment.stepSlug]" />
+                </div>
                 <button
                   class="btn btn-default btn-xs"
                   ng-if="teamInfoCard.isProjectAdmin && teamInfoCard.isTaskStaffable(assignment.task_status)"
@@ -85,10 +87,12 @@
               ng-repeat="unassigned in teamInfoCard.unassigned">
               <td>{{unassigned.role}}</td>
               <td>
-                <input type="text"
-                  placeholder="Username"
-                  ng-keydown="$event.keyCode === 13 && teamInfoCard.handleKeydown(unassigned.task_id, '', unassigned.stepSlug, unassigned.worker)"
-                  ng-model="teamInfoCard.assignmentInput[unassigned.stepSlug]" />
+                <div>
+                  <input type="text"
+                    placeholder="Username"
+                    ng-keydown="$event.keyCode === 13 && teamInfoCard.handleKeydown(unassigned.task_id, '', unassigned.stepSlug, unassigned.worker)"
+                    ng-model="teamInfoCard.assignmentInput[unassigned.stepSlug]" />
+                </div>
                 <button
 									class="btn btn-default btn-xs"
                   ng-if="teamInfoCard.isProjectAdmin"
