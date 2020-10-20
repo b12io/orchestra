@@ -20,6 +20,8 @@ export default function teamInfoCard (orchestraApi, helpers) {
       teamInfoCard.isProjectAdmin = teamInfoCard.taskAssignment.is_project_admin
       teamInfoCard.sentStaffBotRequest = {}
       teamInfoCard.showUnassigned = false
+      teamInfoCard.assingmentInput = {}
+      teamInfoCard.loading = false
 
       teamInfoCard.loadTeamInfo = () => {
         orchestraApi.projectInformation(teamInfoCard.projectId)
@@ -51,9 +53,11 @@ export default function teamInfoCard (orchestraApi, helpers) {
                   }
                 }))
                 if (task.assignments.length === 0) {
+                  teamInfoCard.assingmentInput[stepSlug] = ''
                   teamInfoCard.unassigned.push({
                     stepSlug,
                     role: teamInfoCard.steps[stepSlug].name,
+                    worker: null,
                     recordedTime: '0h 0m',
                     status: task.status,
                     task_id: task.id
@@ -77,7 +81,7 @@ export default function teamInfoCard (orchestraApi, helpers) {
           })
       }
 
-      teamInfoCard.restaff = (taskId, stepSlug) => {
+      teamInfoCard.staff = (taskId, stepSlug) => {
         teamInfoCard.sentStaffBotRequest[stepSlug] = 'Sending request...'
         orchestraApi.staffTask(taskId).then(() => {
           teamInfoCard.sentStaffBotRequest[stepSlug] = 'StaffBot request sent'
@@ -86,6 +90,33 @@ export default function teamInfoCard (orchestraApi, helpers) {
           window.alert(errorMessage)
           delete teamInfoCard.sentStaffBotRequest[stepSlug]
         })
+      }
+
+      teamInfoCard.handleKeydown = (taskId, stepSlug, worker) => {
+        if (!worker) {
+          teamInfoCard.assignTask(taskId, stepSlug)
+        } else {
+          console.log('')
+        }
+      }
+
+      teamInfoCard.assignTask = (taskId, stepSlug) => {
+        teamInfoCard.loading = true
+        orchestraApi.assignTask(taskId, teamInfoCard.assingmentInput[stepSlug])
+          .then(function () {
+            delete teamInfoCard.assingmentInput[stepSlug]
+            teamInfoCard.loadTeamInfo()
+          }, function (response) {
+            teamInfoCard.assingmentInput[stepSlug] = ''
+            var errorMessage = 'Error assigning task.'
+            if (response.status === 400) {
+              errorMessage = response.data.message
+            }
+            window.alert(errorMessage)
+          })
+          .finally(function () {
+            teamInfoCard.loading = false
+          })
       }
 
       teamInfoCard.toggleShowUnassigned = () => {
