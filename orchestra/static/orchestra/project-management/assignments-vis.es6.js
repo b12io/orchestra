@@ -134,7 +134,7 @@ export default function assignmentsVis (dataService, orchestraApi, iterationsVis
         return
       }
       assignmentsVis.addingAssignment = true
-      orchestraApi.assignTask(task, inputEl.node().value)
+      orchestraApi.assignTask(task.id, inputEl.node().value)
         .then(function () {
           inputEl.node().blur()
           dataService.updateData()
@@ -160,7 +160,7 @@ export default function assignmentsVis (dataService, orchestraApi, iterationsVis
         return
       }
       assignment.reassigning = true
-      orchestraApi.reassignAssignment(assignment, inputEl.node().value)
+      orchestraApi.reassignAssignment(assignment.id, inputEl.node().value)
         .then(function () {
           assignment.worker.username = inputEl.node().value
           assignmentsVis.draw()
