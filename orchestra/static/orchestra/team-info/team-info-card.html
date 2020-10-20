@@ -33,15 +33,26 @@
           <tbody>
             <tr ng-repeat="assignment in teamInfoCard.assignments">
               <td>{{assignment.role}}</td>
-              <td>{{assignment.worker.username}}</td>
+              <td>{{assignment.worker.username}}
+                <button
+									class="btn btn-default btn-xs pull-right dsu-pl-30"
+                  ng-if="teamInfoCard.isProjectAdmin && teamInfoCard.isTaskStaffable(assignment.task_status)"
+                  ng-click="teamInfoCard.restaff(assignment.task_id, assignment.stepSlug)">
+                  {{
+                    teamInfoCard.sentStaffBotRequest[assignment.stepSlug]
+                      ? teamInfoCard.sentStaffBotRequest[assignment.stepSlug]
+                      : 'Restaff'
+                  }}
+								</button>
+              </td>
               <td>{{assignment.worker.first_name}} {{assignment.worker.last_name}}</td>
               <td>{{assignment.recordedTime}}</td>
               <td>
-                {{assignment.status}}
+                {{assignment.task_status}}
                 <button type="submit"
                         class="btn btn-default btn-sm"
                         ng-if="teamInfoCard.isProjectAdmin &&
-                               assignment.status == 'Processing' &&
+                               assignment.task_status == 'Processing' &&
                                assignment.stepSlug != teamInfoCard.step.slug"
                         ng-click="teamInfoCard.submitTask(assignment.task_id)">
                   Submit
