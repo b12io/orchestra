@@ -20,7 +20,8 @@ export default function teamInfoCard (orchestraApi, helpers) {
       teamInfoCard.isProjectAdmin = teamInfoCard.taskAssignment.is_project_admin
       teamInfoCard.sentStaffBotRequest = {}
       teamInfoCard.showUnassigned = false
-      teamInfoCard.assingmentInput = {}
+      teamInfoCard.displayReassignmentInput = {}
+      teamInfoCard.assignmentInput = {}
       teamInfoCard.loading = false
 
       teamInfoCard.loadTeamInfo = () => {
@@ -43,7 +44,8 @@ export default function teamInfoCard (orchestraApi, helpers) {
                   const workTime = moment.duration(a.recorded_work_time, 'seconds')
                   const workDayDisplay = workTime.days() > 0 ? `${workTime.days()}d ` : ''
                   const workTimeString = `${workDayDisplay}${workTime.hours()}h ${workTime.minutes()}m`
-                  teamInfoCard.assingmentInput[stepSlug] = a.worker.username
+                  teamInfoCard.assignmentInput[stepSlug] = a.worker.username
+                  teamInfoCard.displayReassignmentInput[stepSlug] = false
                   return {
                     stepSlug,
                     role: teamInfoCard.steps[stepSlug].name,
@@ -54,7 +56,7 @@ export default function teamInfoCard (orchestraApi, helpers) {
                   }
                 }))
                 if (task.assignments.length === 0) {
-                  teamInfoCard.assingmentInput[stepSlug] = ''
+                  teamInfoCard.assignmentInput[stepSlug] = ''
                   teamInfoCard.unassigned.push({
                     stepSlug,
                     role: teamInfoCard.steps[stepSlug].name,
@@ -103,12 +105,12 @@ export default function teamInfoCard (orchestraApi, helpers) {
 
       teamInfoCard.assignTask = (taskId, stepSlug) => {
         teamInfoCard.loading = true
-        orchestraApi.assignTask(taskId, teamInfoCard.assingmentInput[stepSlug])
+        orchestraApi.assignTask(taskId, teamInfoCard.assignmentInput[stepSlug])
           .then(function () {
-            delete teamInfoCard.assingmentInput[stepSlug]
+            delete teamInfoCard.assignmentInput[stepSlug]
             teamInfoCard.loadTeamInfo()
           }, function (response) {
-            teamInfoCard.assingmentInput[stepSlug] = ''
+            teamInfoCard.assignmentInput[stepSlug] = ''
             var errorMessage = 'Error assigning task.'
             if (response.status === 400) {
               errorMessage = response.data.message
@@ -122,10 +124,9 @@ export default function teamInfoCard (orchestraApi, helpers) {
 
       teamInfoCard.reassignAssignment = (taskId, assignmentId, stepSlug) => {
         teamInfoCard.loading = true
-        orchestraApi.reassignAssignment(assignmentId, teamInfoCard.assingmentInput[stepSlug])
+        orchestraApi.reassignAssignment(assignmentId, teamInfoCard.assignmentInput[stepSlug])
           .then(function () {
-            delete teamInfoCard.assingmentInput[stepSlug]
-            teamInfoCard.loadTeamInfo()
+            delete teamInfoCard.assignmentInput[stepSlug]
           }, function (response) {
             var errorMessage = 'Error reassigning worker.'
             if (response.status === 400) {
@@ -134,12 +135,17 @@ export default function teamInfoCard (orchestraApi, helpers) {
             window.alert(errorMessage)
           })
           .finally(function () {
+            teamInfoCard.loadTeamInfo()
             teamInfoCard.loading = false
           })
       }
 
       teamInfoCard.toggleShowUnassigned = () => {
         teamInfoCard.showUnassigned = !teamInfoCard.showUnassigned
+      }
+
+      teamInfoCard.showReassignmentInput = (stepSlug) => {
+        teamInfoCard.displayReassignmentInput[stepSlug] = true
       }
 
       teamInfoCard.togglePauseProject = () => {

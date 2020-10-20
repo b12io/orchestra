@@ -36,7 +36,17 @@
           <tbody>
             <tr ng-repeat="assignment in teamInfoCard.assignments">
               <td>{{assignment.role}}</td>
-              <td>{{assignment.worker.username}}
+              <td>
+                <div
+                  ng-if="!teamInfoCard.displayReassignmentInput[assignment.stepSlug]"
+                  ng-click="teamInfoCard.showReassignmentInput(assignment.stepSlug)">
+                  {{assignment.worker.username}}
+                </div>
+                <input type="text"
+                  class="pull-left"
+                  ng-if="teamInfoCard.displayReassignmentInput[assignment.stepSlug]"
+                  ng-keydown="$event.keyCode === 13 && teamInfoCard.handleKeydown(assignment.task_id, assignment.id, assignment.stepSlug, assignment.worker)"
+                  ng-model="teamInfoCard.assignmentInput[assignment.stepSlug]" />
                 <button
 									class="btn btn-default btn-xs pull-right dsu-pl-30"
                   ng-if="teamInfoCard.isProjectAdmin && teamInfoCard.isTaskStaffable(assignment.task_status)"
@@ -80,7 +90,7 @@
                   placeholder="Username"
                   class="pull-left"
                   ng-keydown="$event.keyCode === 13 && teamInfoCard.handleKeydown(unassigned.task_id, '', unassigned.stepSlug, unassigned.worker)"
-                  ng-model="teamInfoCard.assingmentInput[unassigned.stepSlug]" />
+                  ng-model="teamInfoCard.assignmentInput[unassigned.stepSlug]" />
                 <button
 									class="btn btn-default btn-xs pull-right dsu-pl-30"
                   ng-if="teamInfoCard.isProjectAdmin"
