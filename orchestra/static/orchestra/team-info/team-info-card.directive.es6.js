@@ -2,7 +2,7 @@ import { reduce } from 'lodash'
 import template from './team-info-card.html'
 import moment from 'moment-timezone'
 
-export default function teamInfoCard (orchestraApi) {
+export default function teamInfoCard (orchestraApi, helpers) {
   'ngAnnotate'
   return {
     template,
@@ -18,6 +18,7 @@ export default function teamInfoCard (orchestraApi) {
       teamInfoCard.projectStatus = teamInfoCard.taskAssignment.project.status
       teamInfoCard.step = teamInfoCard.taskAssignment.step
       teamInfoCard.isProjectAdmin = teamInfoCard.taskAssignment.is_project_admin
+      teamInfoCard.sentStaffBotRequest = {}
 
       teamInfoCard.loadTeamInfo = () => {
         orchestraApi.projectInformation(teamInfoCard.projectId)
@@ -43,7 +44,7 @@ export default function teamInfoCard (orchestraApi) {
                     role: teamInfoCard.steps[stepSlug].name,
                     worker: a.worker,
                     recordedTime: workTimeString,
-                    status: task.status,
+                    task_status: task.status,
                     task_id: a.task
                   }
                 }))
@@ -65,6 +66,17 @@ export default function teamInfoCard (orchestraApi) {
           })
       }
 
+      teamInfoCard.restaff = (taskId, stepSlug) => {
+        teamInfoCard.sentStaffBotRequest[stepSlug] = 'Sending request...'
+        orchestraApi.staffTask(taskId).then(() => {
+          teamInfoCard.sentStaffBotRequest[stepSlug] = 'StaffBot request sent'
+        }, () => {
+          var errorMessage = 'Error creating a StaffBot request.'
+          window.alert(errorMessage)
+          delete teamInfoCard.sentStaffBotRequest[stepSlug]
+        })
+      }
+
       teamInfoCard.togglePauseProject = () => {
         const newStatus = (teamInfoCard.projectStatus === 'Paused'
           ? 'Active' : 'Paused')
@@ -77,6 +89,10 @@ export default function teamInfoCard (orchestraApi) {
               teamInfoCard.projectStatus = data.status
             }
           })
+      }
+
+      teamInfoCard.isTaskStaffable = (status) => {
+        return helpers.isTaskStaffable(status)
       }
 
       teamInfoCard.loadTeamInfo()
