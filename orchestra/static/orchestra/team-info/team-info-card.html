@@ -51,7 +51,8 @@
                 <button
                   class="btn btn-default btn-xs"
                   ng-if="teamInfoCard.isProjectAdmin && teamInfoCard.isTaskStaffable(assignment.task_status)"
-                  ng-click="teamInfoCard.restaff(assignment.task_id, assignment.stepSlug)">
+                  ng-disabled="teamInfoCard.isBtnDisabled(assignment.stepSlug)"
+                  ng-click="teamInfoCard.staff(assignment.task_id, assignment.stepSlug)">
                   {{
                     teamInfoCard.sentStaffBotRequest[assignment.stepSlug]
                       ? teamInfoCard.sentStaffBotRequest[assignment.stepSlug]
@@ -95,6 +96,7 @@
                 </div>
                 <button
 									class="btn btn-default btn-xs"
+                  ng-disabled="teamInfoCard.isBtnDisabled(unassigned.stepSlug)"
                   ng-if="teamInfoCard.isProjectAdmin"
                   ng-click="teamInfoCard.staff(unassigned.task_id, unassigned.stepSlug)">
                   {{

@@ -166,6 +166,10 @@ export default function teamInfoCard (orchestraApi, helpers) {
         return helpers.isTaskStaffable(status)
       }
 
+      teamInfoCard.isBtnDisabled = (stepSlug) => {
+        return teamInfoCard.sentStaffBotRequest[stepSlug] && teamInfoCard.sentStaffBotRequest[stepSlug].length > 0
+      }
+
       teamInfoCard.loadTeamInfo()
     }
   }
