@@ -69397,8 +69397,8 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = helpers;
 function helpers() {
   return {
-    isTaskStaffable: function isTaskStaffable(status) {
-      return status !== 'Complete' && status !== 'Aborted';
+    isTaskStaffable: function isTaskStaffable(taskStatus) {
+      return taskStatus !== 'Complete' && taskStatus !== 'Aborted';
     }
   };
 }

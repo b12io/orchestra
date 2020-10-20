@@ -1,7 +1,7 @@
 export default function helpers () {
   return {
-    isTaskStaffable: function (status) {
-      return status !== 'Complete' && status !== 'Aborted'
+    isTaskStaffable: function (taskStatus) {
+      return taskStatus !== 'Complete' && taskStatus !== 'Aborted'
     }
   }
 }
