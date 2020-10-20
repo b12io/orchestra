@@ -43,12 +43,11 @@
                   {{assignment.worker.username}}
                 </div>
                 <input type="text"
-                  class="pull-left"
                   ng-if="teamInfoCard.displayReassignmentInput[assignment.stepSlug]"
                   ng-keydown="$event.keyCode === 13 && teamInfoCard.handleKeydown(assignment.task_id, assignment.id, assignment.stepSlug, assignment.worker)"
                   ng-model="teamInfoCard.assignmentInput[assignment.stepSlug]" />
                 <button
-									class="btn btn-default btn-xs pull-right dsu-pl-30"
+                  class="btn btn-default btn-xs"
                   ng-if="teamInfoCard.isProjectAdmin && teamInfoCard.isTaskStaffable(assignment.task_status)"
                   ng-click="teamInfoCard.restaff(assignment.task_id, assignment.stepSlug)">
                   {{
@@ -56,7 +55,7 @@
                       ? teamInfoCard.sentStaffBotRequest[assignment.stepSlug]
                       : 'Restaff'
                   }}
-								</button>
+                </button>
               </td>
               <td>{{assignment.worker.first_name}} {{assignment.worker.last_name}}</td>
               <td>{{assignment.recordedTime}}</td>
@@ -88,23 +87,22 @@
               <td>
                 <input type="text"
                   placeholder="Username"
-                  class="pull-left"
                   ng-keydown="$event.keyCode === 13 && teamInfoCard.handleKeydown(unassigned.task_id, '', unassigned.stepSlug, unassigned.worker)"
                   ng-model="teamInfoCard.assignmentInput[unassigned.stepSlug]" />
                 <button
-									class="btn btn-default btn-xs pull-right dsu-pl-30"
+									class="btn btn-default btn-xs"
                   ng-if="teamInfoCard.isProjectAdmin"
                   ng-click="teamInfoCard.staff(unassigned.task_id, unassigned.stepSlug)">
                   {{
-                    teamInfoCard.sentStaffBotRequest[assignment.stepSlug]
-                      ? teamInfoCard.sentStaffBotRequest[assignment.stepSlug]
+                    teamInfoCard.sentStaffBotRequest[unassigned.stepSlug]
+                      ? teamInfoCard.sentStaffBotRequest[unassigned.stepSlug]
                       : 'Staff'
                   }}
 								</button>
               </td>
               <td></td>
               <td>{{unassigned.recordedTime}}</td>
-              <td>{{unassigned.status}}</td>
+              <td>{{unassigned.task_status}}</td>
             </tr>
           </tbody>
         </table>

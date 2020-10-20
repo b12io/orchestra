@@ -62,7 +62,7 @@ export default function teamInfoCard (orchestraApi, helpers) {
                     role: teamInfoCard.steps[stepSlug].name,
                     worker: null,
                     recordedTime: '0h 0m',
-                    status: task.status,
+                    task_status: task.status,
                     task_id: task.id
                   })
                 }
