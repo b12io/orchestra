@@ -79,7 +79,7 @@
                 <input type="text"
                   placeholder="Username"
                   class="pull-left"
-                  ng-keydown="$event.keyCode === 13 && teamInfoCard.handleKeydown(unassigned.task_id, unassigned.stepSlug, unassigned.worker)"
+                  ng-keydown="$event.keyCode === 13 && teamInfoCard.handleKeydown(unassigned.task_id, '', unassigned.stepSlug, unassigned.worker)"
                   ng-model="teamInfoCard.assingmentInput[unassigned.stepSlug]" />
                 <button
 									class="btn btn-default btn-xs pull-right dsu-pl-30"

@@ -43,6 +43,7 @@ export default function teamInfoCard (orchestraApi, helpers) {
                   const workTime = moment.duration(a.recorded_work_time, 'seconds')
                   const workDayDisplay = workTime.days() > 0 ? `${workTime.days()}d ` : ''
                   const workTimeString = `${workDayDisplay}${workTime.hours()}h ${workTime.minutes()}m`
+                  teamInfoCard.assingmentInput[stepSlug] = a.worker.username
                   return {
                     stepSlug,
                     role: teamInfoCard.steps[stepSlug].name,
@@ -92,11 +93,11 @@ export default function teamInfoCard (orchestraApi, helpers) {
         })
       }
 
-      teamInfoCard.handleKeydown = (taskId, stepSlug, worker) => {
+      teamInfoCard.handleKeydown = (taskId, assignmentId, stepSlug, worker) => {
         if (!worker) {
           teamInfoCard.assignTask(taskId, stepSlug)
         } else {
-          console.log('')
+          teamInfoCard.reassignAssignment(taskId, assignmentId, stepSlug)
         }
       }
 
@@ -109,6 +110,24 @@ export default function teamInfoCard (orchestraApi, helpers) {
           }, function (response) {
             teamInfoCard.assingmentInput[stepSlug] = ''
             var errorMessage = 'Error assigning task.'
+            if (response.status === 400) {
+              errorMessage = response.data.message
+            }
+            window.alert(errorMessage)
+          })
+          .finally(function () {
+            teamInfoCard.loading = false
+          })
+      }
+
+      teamInfoCard.reassignAssignment = (taskId, assignmentId, stepSlug) => {
+        teamInfoCard.loading = true
+        orchestraApi.reassignAssignment(assignmentId, teamInfoCard.assingmentInput[stepSlug])
+          .then(function () {
+            delete teamInfoCard.assingmentInput[stepSlug]
+            teamInfoCard.loadTeamInfo()
+          }, function (response) {
+            var errorMessage = 'Error reassigning worker.'
             if (response.status === 400) {
               errorMessage = response.data.message
             }
