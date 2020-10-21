@@ -34,12 +34,12 @@ export default function teamInfoCard (orchestraApi, helpers) {
                 result[step.slug] = step
                 return result
               }, {})
-            teamInfoCard.assignments = []
+            let assignments = []
             teamInfoCard.unassigned = []
             for (let stepSlug of humanSteps.values()) {
               const task = tasks[stepSlug]
               if (task) {
-                teamInfoCard.assignments = teamInfoCard.assignments.concat(task.assignments.map(a => {
+                assignments = assignments.concat(task.assignments.map(a => {
                   const workTime = moment.duration(a.recorded_work_time, 'seconds')
                   const workDayDisplay = workTime.days() > 0 ? `${workTime.days()}d ` : ''
                   const workTimeString = `${workDayDisplay}${workTime.hours()}h ${workTime.minutes()}m`
@@ -67,6 +67,8 @@ export default function teamInfoCard (orchestraApi, helpers) {
                 }
               }
             }
+            const sortedStepSlugs = helpers.getSortedTasksSlugs(tasks)
+            teamInfoCard.assignments = helpers.getAssigmentsOrderedByList(sortedStepSlugs, assignments)
           })
       }
 
