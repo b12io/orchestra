@@ -37,15 +37,15 @@
             <tr ng-repeat="assignment in teamInfoCard.assignments">
               <td>{{assignment.role}}</td>
               <td>
-                <div ng-if="!teamInfoCard.isTaskStaffable(assignment.task_status)">{{assignment.worker.username}}</div>
+                <div ng-if="!teamInfoCard.isProjectAdmin || !teamInfoCard.isTaskStaffable(assignment.task_status)">{{assignment.worker.username}}</div>
                 <input type="text"
-                  ng-if="teamInfoCard.isTaskStaffable(assignment.task_status)"
-                  ng-keydown="$event.keyCode === 13 && teamInfoCard.handleKeydown(assignment.task_id, assignment.id, assignment.stepSlug, assignment.worker)"
+                  ng-if="teamInfoCard.isProjectAdmin && teamInfoCard.isTaskStaffable(assignment.task_status)"
+                  ng-keydown="$event.keyCode === 13 && teamInfoCard.handleAssignmentKeydown(assignment.task_id, assignment.id, assignment.stepSlug, assignment.worker)"
                   ng-model="teamInfoCard.assignmentInput[assignment.stepSlug]" />
                 <button
                   class="btn btn-default btn-xs"
                   ng-if="teamInfoCard.isProjectAdmin && teamInfoCard.isTaskStaffable(assignment.task_status)"
-                  ng-disabled="teamInfoCard.isBtnDisabled(assignment.stepSlug)"
+                  ng-disabled="teamInfoCard.isStaffBotRequestBtnDisabled(assignment.stepSlug)"
                   ng-click="teamInfoCard.staff(assignment.task_id, assignment.stepSlug)">
                   {{
                     teamInfoCard.sentStaffBotRequest[assignment.stepSlug]
@@ -73,7 +73,7 @@
                 <a
                   class="btn"
                   ng-click="teamInfoCard.toggleShowUnassigned()">
-                  {{teamInfoCard.showUnassigned ? 'Hide unassigned' : 'Show unassigned' }}
+                  {{teamInfoCard.showUnassigned ? 'Hide unassigned' : 'Show unassigned'}}
                 </a>
               </td>
             </tr>
@@ -84,19 +84,19 @@
               <td>
                 <input type="text"
                   placeholder="Username"
-                  ng-keydown="$event.keyCode === 13 && teamInfoCard.handleKeydown(unassigned.task_id, '', unassigned.stepSlug, unassigned.worker)"
+                  ng-keydown="$event.keyCode === 13 && teamInfoCard.handleAssignmentKeydown(unassigned.task_id, '', unassigned.stepSlug, unassigned.worker)"
                   ng-model="teamInfoCard.assignmentInput[unassigned.stepSlug]" />
                 <button
-									class="btn btn-default btn-xs"
-                  ng-disabled="teamInfoCard.isBtnDisabled(unassigned.stepSlug)"
-                  ng-if="teamInfoCard.isProjectAdmin"
+                  class="btn btn-default btn-xs"
+                  ng-disabled="teamInfoCard.isStaffBotRequestBtnDisabled(unassigned.stepSlug)"
+                  ng-if="teamInfoCard.isTaskStaffable(unassigned.task_status)"
                   ng-click="teamInfoCard.staff(unassigned.task_id, unassigned.stepSlug)">
                   {{
                     teamInfoCard.sentStaffBotRequest[unassigned.stepSlug]
                       ? teamInfoCard.sentStaffBotRequest[unassigned.stepSlug]
                       : 'Staff'
                   }}
-								</button>
+                </button>
               </td>
               <td></td>
               <td>{{unassigned.recordedTime}}</td>

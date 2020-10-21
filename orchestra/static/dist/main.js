@@ -69164,7 +69164,6 @@ function teamInfoCard(orchestraApi, helpers) {
       teamInfoCard.isProjectAdmin = teamInfoCard.taskAssignment.is_project_admin;
       teamInfoCard.sentStaffBotRequest = {};
       teamInfoCard.showUnassigned = false;
-      teamInfoCard.displayReassignmentInput = {};
       teamInfoCard.assignmentInput = {};
       teamInfoCard.loading = false;
 
@@ -69200,13 +69199,13 @@ function teamInfoCard(orchestraApi, helpers) {
                   var workDayDisplay = workTime.days() > 0 ? workTime.days() + 'd ' : '';
                   var workTimeString = '' + workDayDisplay + workTime.hours() + 'h ' + workTime.minutes() + 'm';
                   teamInfoCard.assignmentInput[stepSlug] = a.worker.username;
-                  teamInfoCard.displayReassignmentInput[stepSlug] = false;
                   return {
                     stepSlug: stepSlug,
                     role: teamInfoCard.steps[stepSlug].name,
                     worker: a.worker,
                     recordedTime: workTimeString,
                     task_status: task.status,
+                    id: a.id,
                     task_id: a.task
                   };
                 }));
@@ -69267,11 +69266,11 @@ function teamInfoCard(orchestraApi, helpers) {
         });
       };
 
-      teamInfoCard.handleKeydown = function (taskId, assignmentId, stepSlug, worker) {
+      teamInfoCard.handleAssignmentKeydown = function (taskId, assignmentId, stepSlug, worker) {
         if (!worker) {
           teamInfoCard.assignTask(taskId, stepSlug);
         } else {
-          teamInfoCard.reassignAssignment(taskId, assignmentId, stepSlug);
+          teamInfoCard.reassignAssignment(assignmentId, stepSlug);
         }
       };
 
@@ -69292,7 +69291,7 @@ function teamInfoCard(orchestraApi, helpers) {
         });
       };
 
-      teamInfoCard.reassignAssignment = function (taskId, assignmentId, stepSlug) {
+      teamInfoCard.reassignAssignment = function (assignmentId, stepSlug) {
         teamInfoCard.loading = true;
         orchestraApi.reassignAssignment(assignmentId, teamInfoCard.assignmentInput[stepSlug]).then(function () {
           delete teamInfoCard.assignmentInput[stepSlug];
@@ -69310,10 +69309,6 @@ function teamInfoCard(orchestraApi, helpers) {
 
       teamInfoCard.toggleShowUnassigned = function () {
         teamInfoCard.showUnassigned = !teamInfoCard.showUnassigned;
-      };
-
-      teamInfoCard.showReassignmentInput = function (stepSlug) {
-        teamInfoCard.displayReassignmentInput[stepSlug] = true;
       };
 
       teamInfoCard.togglePauseProject = function () {
@@ -69334,7 +69329,7 @@ function teamInfoCard(orchestraApi, helpers) {
         return helpers.isTaskStaffable(status);
       };
 
-      teamInfoCard.isBtnDisabled = function (stepSlug) {
+      teamInfoCard.isStaffBotRequestBtnDisabled = function (stepSlug) {
         return teamInfoCard.sentStaffBotRequest[stepSlug] && teamInfoCard.sentStaffBotRequest[stepSlug].length > 0;
       };
 
@@ -69347,7 +69342,7 @@ function teamInfoCard(orchestraApi, helpers) {
 /* 248 */
 /***/ (function(module, exports) {
 
-module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"overlay\" ng-if=\"teamInfoCard.loading\">\n    <div class=\"spinner\"></div>\n  </div>\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Team info\n          <a class=\"btn\"\n             ng-if=\"teamInfoCard.isProjectAdmin\"\n             ng-href=\"project/{{teamInfoCard.projectId}}\"\n             target=\"_blank\">\n            Project Management\n          </a>\n          <a class=\"btn\"\n             ng-if=\"teamInfoCard.isProjectAdmin &&\n                    (teamInfoCard.projectStatus === 'Active'\n                    || teamInfoCard.projectStatus === 'Paused')\"\n             ng-click=\"teamInfoCard.togglePauseProject()\">\n             {{teamInfoCard.projectStatus == 'Paused' ? 'Unpause' : 'Pause'}} project\n          </a>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <table class=\"table table-striped\">\n          <thead>\n            <th>Role</th>\n            <th>Username</th>\n            <th>Name</th>\n            <th>Recorded time spent</th>\n            <th>Status</th>\n          </thead>\n          <tbody>\n            <tr ng-repeat=\"assignment in teamInfoCard.assignments\">\n              <td>{{assignment.role}}</td>\n              <td>\n                <div ng-if=\"!teamInfoCard.isTaskStaffable(assignment.task_status)\">{{assignment.worker.username}}</div>\n                <input type=\"text\"\n                  ng-if=\"teamInfoCard.isTaskStaffable(assignment.task_status)\"\n                  ng-keydown=\"$event.keyCode === 13 && teamInfoCard.handleKeydown(assignment.task_id, assignment.id, assignment.stepSlug, assignment.worker)\"\n                  ng-model=\"teamInfoCard.assignmentInput[assignment.stepSlug]\" />\n                <button\n                  class=\"btn btn-default btn-xs\"\n                  ng-if=\"teamInfoCard.isProjectAdmin && teamInfoCard.isTaskStaffable(assignment.task_status)\"\n                  ng-disabled=\"teamInfoCard.isBtnDisabled(assignment.stepSlug)\"\n                  ng-click=\"teamInfoCard.staff(assignment.task_id, assignment.stepSlug)\">\n                  {{\n                    teamInfoCard.sentStaffBotRequest[assignment.stepSlug]\n                      ? teamInfoCard.sentStaffBotRequest[assignment.stepSlug]\n                      : 'Restaff'\n                  }}\n                </button>\n              </td>\n              <td>{{assignment.worker.first_name}} {{assignment.worker.last_name}}</td>\n              <td>{{assignment.recordedTime}}</td>\n              <td>\n                {{assignment.task_status}}\n                <button type=\"submit\"\n                        class=\"btn btn-default btn-sm\"\n                        ng-if=\"teamInfoCard.isProjectAdmin &&\n                               assignment.task_status == 'Processing' &&\n                               assignment.stepSlug != teamInfoCard.step.slug\"\n                        ng-click=\"teamInfoCard.submitTask(assignment.task_id)\">\n                  Submit\n                </button>\n              </td>\n            </tr>\n            <tr ng-if=\"teamInfoCard.isProjectAdmin\">\n              <td colspan=\"5\">\n                <a\n                  class=\"btn\"\n                  ng-click=\"teamInfoCard.toggleShowUnassigned()\">\n                  {{teamInfoCard.showUnassigned ? 'Hide unassigned' : 'Show unassigned' }}\n                </a>\n              </td>\n            </tr>\n            <tr\n              ng-if=\"teamInfoCard.showUnassigned\"\n              ng-repeat=\"unassigned in teamInfoCard.unassigned\">\n              <td>{{unassigned.role}}</td>\n              <td>\n                <input type=\"text\"\n                  placeholder=\"Username\"\n                  ng-keydown=\"$event.keyCode === 13 && teamInfoCard.handleKeydown(unassigned.task_id, '', unassigned.stepSlug, unassigned.worker)\"\n                  ng-model=\"teamInfoCard.assignmentInput[unassigned.stepSlug]\" />\n                <button\n\t\t\t\t\t\t\t\t\tclass=\"btn btn-default btn-xs\"\n                  ng-disabled=\"teamInfoCard.isBtnDisabled(unassigned.stepSlug)\"\n                  ng-if=\"teamInfoCard.isProjectAdmin\"\n                  ng-click=\"teamInfoCard.staff(unassigned.task_id, unassigned.stepSlug)\">\n                  {{\n                    teamInfoCard.sentStaffBotRequest[unassigned.stepSlug]\n                      ? teamInfoCard.sentStaffBotRequest[unassigned.stepSlug]\n                      : 'Staff'\n                  }}\n\t\t\t\t\t\t\t\t</button>\n              </td>\n              <td></td>\n              <td>{{unassigned.recordedTime}}</td>\n              <td>{{unassigned.task_status}}</td>\n            </tr>\n          </tbody>\n        </table>\n      </div>\n    </div>\n  </div>\n</section>\n";
+module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"overlay\" ng-if=\"teamInfoCard.loading\">\n    <div class=\"spinner\"></div>\n  </div>\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Team info\n          <a class=\"btn\"\n             ng-if=\"teamInfoCard.isProjectAdmin\"\n             ng-href=\"project/{{teamInfoCard.projectId}}\"\n             target=\"_blank\">\n            Project Management\n          </a>\n          <a class=\"btn\"\n             ng-if=\"teamInfoCard.isProjectAdmin &&\n                    (teamInfoCard.projectStatus === 'Active'\n                    || teamInfoCard.projectStatus === 'Paused')\"\n             ng-click=\"teamInfoCard.togglePauseProject()\">\n             {{teamInfoCard.projectStatus == 'Paused' ? 'Unpause' : 'Pause'}} project\n          </a>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <table class=\"table table-striped\">\n          <thead>\n            <th>Role</th>\n            <th>Username</th>\n            <th>Name</th>\n            <th>Recorded time spent</th>\n            <th>Status</th>\n          </thead>\n          <tbody>\n            <tr ng-repeat=\"assignment in teamInfoCard.assignments\">\n              <td>{{assignment.role}}</td>\n              <td>\n                <div ng-if=\"!teamInfoCard.isProjectAdmin || !teamInfoCard.isTaskStaffable(assignment.task_status)\">{{assignment.worker.username}}</div>\n                <input type=\"text\"\n                  ng-if=\"teamInfoCard.isProjectAdmin && teamInfoCard.isTaskStaffable(assignment.task_status)\"\n                  ng-keydown=\"$event.keyCode === 13 && teamInfoCard.handleAssignmentKeydown(assignment.task_id, assignment.id, assignment.stepSlug, assignment.worker)\"\n                  ng-model=\"teamInfoCard.assignmentInput[assignment.stepSlug]\" />\n                <button\n                  class=\"btn btn-default btn-xs\"\n                  ng-if=\"teamInfoCard.isProjectAdmin && teamInfoCard.isTaskStaffable(assignment.task_status)\"\n                  ng-disabled=\"teamInfoCard.isStaffBotRequestBtnDisabled(assignment.stepSlug)\"\n                  ng-click=\"teamInfoCard.staff(assignment.task_id, assignment.stepSlug)\">\n                  {{\n                    teamInfoCard.sentStaffBotRequest[assignment.stepSlug]\n                      ? teamInfoCard.sentStaffBotRequest[assignment.stepSlug]\n                      : 'Restaff'\n                  }}\n                </button>\n              </td>\n              <td>{{assignment.worker.first_name}} {{assignment.worker.last_name}}</td>\n              <td>{{assignment.recordedTime}}</td>\n              <td>\n                {{assignment.task_status}}\n                <button type=\"submit\"\n                        class=\"btn btn-default btn-sm\"\n                        ng-if=\"teamInfoCard.isProjectAdmin &&\n                               assignment.task_status == 'Processing' &&\n                               assignment.stepSlug != teamInfoCard.step.slug\"\n                        ng-click=\"teamInfoCard.submitTask(assignment.task_id)\">\n                  Submit\n                </button>\n              </td>\n            </tr>\n            <tr ng-if=\"teamInfoCard.isProjectAdmin\">\n              <td colspan=\"5\">\n                <a\n                  class=\"btn\"\n                  ng-click=\"teamInfoCard.toggleShowUnassigned()\">\n                  {{teamInfoCard.showUnassigned ? 'Hide unassigned' : 'Show unassigned'}}\n                </a>\n              </td>\n            </tr>\n            <tr\n              ng-if=\"teamInfoCard.showUnassigned\"\n              ng-repeat=\"unassigned in teamInfoCard.unassigned\">\n              <td>{{unassigned.role}}</td>\n              <td>\n                <input type=\"text\"\n                  placeholder=\"Username\"\n                  ng-keydown=\"$event.keyCode === 13 && teamInfoCard.handleAssignmentKeydown(unassigned.task_id, '', unassigned.stepSlug, unassigned.worker)\"\n                  ng-model=\"teamInfoCard.assignmentInput[unassigned.stepSlug]\" />\n                <button\n                  class=\"btn btn-default btn-xs\"\n                  ng-disabled=\"teamInfoCard.isStaffBotRequestBtnDisabled(unassigned.stepSlug)\"\n                  ng-if=\"teamInfoCard.isTaskStaffable(unassigned.task_status)\"\n                  ng-click=\"teamInfoCard.staff(unassigned.task_id, unassigned.stepSlug)\">\n                  {{\n                    teamInfoCard.sentStaffBotRequest[unassigned.stepSlug]\n                      ? teamInfoCard.sentStaffBotRequest[unassigned.stepSlug]\n                      : 'Staff'\n                  }}\n                </button>\n              </td>\n              <td></td>\n              <td>{{unassigned.recordedTime}}</td>\n              <td>{{unassigned.task_status}}</td>\n            </tr>\n          </tbody>\n        </table>\n      </div>\n    </div>\n  </div>\n</section>\n";
 
 /***/ }),
 /* 249 */
