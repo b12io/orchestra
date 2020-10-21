@@ -17,7 +17,7 @@ export default function helpers () {
       })
     },
 
-    orderAssigmentsUsingPattern: function (orderedListOfSlugs, assignmentDataList) {
+    orderAssigmentsUsingListOfSlugs: function (orderedListOfSlugs, assignmentDataList) {
       assignmentDataList.sort((a, b) => {
         return orderedListOfSlugs.indexOf(a.stepSlug) - orderedListOfSlugs.indexOf(b.stepSlug)
       })

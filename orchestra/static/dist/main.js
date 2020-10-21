@@ -47483,7 +47483,7 @@ function helpers() {
       });
     },
 
-    orderAssigmentsUsingPattern: function orderAssigmentsUsingPattern(orderedListOfSlugs, assignmentDataList) {
+    orderAssigmentsUsingListOfSlugs: function orderAssigmentsUsingListOfSlugs(orderedListOfSlugs, assignmentDataList) {
       assignmentDataList.sort(function (a, b) {
         return orderedListOfSlugs.indexOf(a.stepSlug) - orderedListOfSlugs.indexOf(b.stepSlug);
       });
@@ -69271,8 +69271,8 @@ function teamInfoCard(orchestraApi, helpers) {
           }
 
           var sortedStepSlugs = helpers.getSortedTasksSlugs(tasks);
-          helpers.orderAssigmentsUsingPattern(sortedStepSlugs, teamInfoCard.unassigned);
-          helpers.orderAssigmentsUsingPattern(sortedStepSlugs, teamInfoCard.assignments);
+          helpers.orderAssigmentsUsingListOfSlugs(sortedStepSlugs, teamInfoCard.unassigned);
+          helpers.orderAssigmentsUsingListOfSlugs(sortedStepSlugs, teamInfoCard.assignments);
         });
       };
 

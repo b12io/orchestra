@@ -68,8 +68,8 @@ export default function teamInfoCard (orchestraApi, helpers) {
               }
             }
             const sortedStepSlugs = helpers.getSortedTasksSlugs(tasks)
-            helpers.orderAssigmentsUsingPattern(sortedStepSlugs, teamInfoCard.unassigned)
-            helpers.orderAssigmentsUsingPattern(sortedStepSlugs, teamInfoCard.assignments)
+            helpers.orderAssigmentsUsingListOfSlugs(sortedStepSlugs, teamInfoCard.unassigned)
+            helpers.orderAssigmentsUsingListOfSlugs(sortedStepSlugs, teamInfoCard.assignments)
           })
       }
 
