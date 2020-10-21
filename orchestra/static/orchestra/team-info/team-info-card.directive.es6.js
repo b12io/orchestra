@@ -35,7 +35,7 @@ export default function teamInfoCard (orchestraApi, helpers) {
                 return result
               }, {})
             let assignments = []
-            teamInfoCard.unassigned = []
+            let unassigned = []
             for (let stepSlug of humanSteps.values()) {
               const task = tasks[stepSlug]
               if (task) {
@@ -56,7 +56,7 @@ export default function teamInfoCard (orchestraApi, helpers) {
                 }))
                 if (task.assignments.length === 0) {
                   teamInfoCard.assignmentInput[stepSlug] = ''
-                  teamInfoCard.unassigned.push({
+                  unassigned.push({
                     stepSlug,
                     role: teamInfoCard.steps[stepSlug].name,
                     worker: null,
@@ -68,6 +68,7 @@ export default function teamInfoCard (orchestraApi, helpers) {
               }
             }
             const sortedStepSlugs = helpers.getSortedTasksSlugs(tasks)
+            teamInfoCard.unassigned = helpers.getAssigmentsOrderedByList(sortedStepSlugs, unassigned)
             teamInfoCard.assignments = helpers.getAssigmentsOrderedByList(sortedStepSlugs, assignments)
           })
       }

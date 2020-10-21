@@ -69218,7 +69218,7 @@ function teamInfoCard(orchestraApi, helpers) {
             return result;
           }, {});
           var assignments = [];
-          teamInfoCard.unassigned = [];
+          var unassigned = [];
           var _iteratorNormalCompletion = true;
           var _didIteratorError = false;
           var _iteratorError = undefined;
@@ -69246,7 +69246,7 @@ function teamInfoCard(orchestraApi, helpers) {
                 }));
                 if (task.assignments.length === 0) {
                   teamInfoCard.assignmentInput[stepSlug] = '';
-                  teamInfoCard.unassigned.push({
+                  unassigned.push({
                     stepSlug: stepSlug,
                     role: teamInfoCard.steps[stepSlug].name,
                     worker: null,
@@ -69277,6 +69277,7 @@ function teamInfoCard(orchestraApi, helpers) {
           }
 
           var sortedStepSlugs = helpers.getSortedTasksSlugs(tasks);
+          teamInfoCard.unassigned = helpers.getAssigmentsOrderedByList(sortedStepSlugs, unassigned);
           teamInfoCard.assignments = helpers.getAssigmentsOrderedByList(sortedStepSlugs, assignments);
         });
       };
