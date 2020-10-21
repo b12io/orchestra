@@ -47483,16 +47483,10 @@ function helpers() {
       });
     },
 
-    getAssigmentsOrderedByList: function getAssigmentsOrderedByList(orderedListOfSlugs, assignmentDataList) {
-      return orderedListOfSlugs.reduce(function (acc, slug) {
-        var found = assignmentDataList.filter(function (a) {
-          return a.stepSlug === slug;
-        });
-        if (found.length > 0) {
-          acc.push(found[0]);
-        }
-        return acc;
-      }, []);
+    orderAssigmentsUsingPattern: function orderAssigmentsUsingPattern(orderedListOfSlugs, assignmentDataList) {
+      assignmentDataList.sort(function (a, b) {
+        return orderedListOfSlugs.indexOf(a.stepSlug) - orderedListOfSlugs.indexOf(b.stepSlug);
+      });
     }
   };
 }
@@ -69217,8 +69211,8 @@ function teamInfoCard(orchestraApi, helpers) {
             result[step.slug] = step;
             return result;
           }, {});
-          var assignments = [];
-          var unassigned = [];
+          teamInfoCard.assignments = [];
+          teamInfoCard.unassigned = [];
           var _iteratorNormalCompletion = true;
           var _didIteratorError = false;
           var _iteratorError = undefined;
@@ -69229,7 +69223,7 @@ function teamInfoCard(orchestraApi, helpers) {
 
               var task = tasks[stepSlug];
               if (task) {
-                assignments = assignments.concat(task.assignments.map(function (a) {
+                teamInfoCard.assignments = teamInfoCard.assignments.concat(task.assignments.map(function (a) {
                   var workTime = _momentTimezone2.default.duration(a.recorded_work_time, 'seconds');
                   var workDayDisplay = workTime.days() > 0 ? workTime.days() + 'd ' : '';
                   var workTimeString = '' + workDayDisplay + workTime.hours() + 'h ' + workTime.minutes() + 'm';
@@ -69246,7 +69240,7 @@ function teamInfoCard(orchestraApi, helpers) {
                 }));
                 if (task.assignments.length === 0) {
                   teamInfoCard.assignmentInput[stepSlug] = '';
-                  unassigned.push({
+                  teamInfoCard.unassigned.push({
                     stepSlug: stepSlug,
                     role: teamInfoCard.steps[stepSlug].name,
                     worker: null,
@@ -69277,8 +69271,8 @@ function teamInfoCard(orchestraApi, helpers) {
           }
 
           var sortedStepSlugs = helpers.getSortedTasksSlugs(tasks);
-          teamInfoCard.unassigned = helpers.getAssigmentsOrderedByList(sortedStepSlugs, unassigned);
-          teamInfoCard.assignments = helpers.getAssigmentsOrderedByList(sortedStepSlugs, assignments);
+          helpers.orderAssigmentsUsingPattern(sortedStepSlugs, teamInfoCard.unassigned);
+          helpers.orderAssigmentsUsingPattern(sortedStepSlugs, teamInfoCard.assignments);
         });
       };
 

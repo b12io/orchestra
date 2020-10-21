@@ -17,14 +17,10 @@ export default function helpers () {
       })
     },
 
-    getAssigmentsOrderedByList: function (orderedListOfSlugs, assignmentDataList) {
-      return orderedListOfSlugs.reduce((acc, slug) => {
-        const found = assignmentDataList.filter(a => a.stepSlug === slug)
-        if (found.length > 0) {
-          acc.push(found[0])
-        }
-        return acc
-      }, [])
+    orderAssigmentsUsingPattern: function (orderedListOfSlugs, assignmentDataList) {
+      assignmentDataList.sort((a, b) => {
+        return orderedListOfSlugs.indexOf(a.stepSlug) - orderedListOfSlugs.indexOf(b.stepSlug)
+      })
     }
   }
 }

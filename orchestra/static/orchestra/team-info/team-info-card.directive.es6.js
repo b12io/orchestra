@@ -34,12 +34,12 @@ export default function teamInfoCard (orchestraApi, helpers) {
                 result[step.slug] = step
                 return result
               }, {})
-            let assignments = []
-            let unassigned = []
+            teamInfoCard.assignments = []
+            teamInfoCard.unassigned = []
             for (let stepSlug of humanSteps.values()) {
               const task = tasks[stepSlug]
               if (task) {
-                assignments = assignments.concat(task.assignments.map(a => {
+                teamInfoCard.assignments = teamInfoCard.assignments.concat(task.assignments.map(a => {
                   const workTime = moment.duration(a.recorded_work_time, 'seconds')
                   const workDayDisplay = workTime.days() > 0 ? `${workTime.days()}d ` : ''
                   const workTimeString = `${workDayDisplay}${workTime.hours()}h ${workTime.minutes()}m`
@@ -56,7 +56,7 @@ export default function teamInfoCard (orchestraApi, helpers) {
                 }))
                 if (task.assignments.length === 0) {
                   teamInfoCard.assignmentInput[stepSlug] = ''
-                  unassigned.push({
+                  teamInfoCard.unassigned.push({
                     stepSlug,
                     role: teamInfoCard.steps[stepSlug].name,
                     worker: null,
@@ -68,8 +68,8 @@ export default function teamInfoCard (orchestraApi, helpers) {
               }
             }
             const sortedStepSlugs = helpers.getSortedTasksSlugs(tasks)
-            teamInfoCard.unassigned = helpers.getAssigmentsOrderedByList(sortedStepSlugs, unassigned)
-            teamInfoCard.assignments = helpers.getAssigmentsOrderedByList(sortedStepSlugs, assignments)
+            helpers.orderAssigmentsUsingPattern(sortedStepSlugs, teamInfoCard.unassigned)
+            helpers.orderAssigmentsUsingPattern(sortedStepSlugs, teamInfoCard.assignments)
           })
       }
 
