@@ -22,17 +22,17 @@ export default function orchestraApi ($http) {
       })
     },
 
-    assignTask: function (task, workerUsername) {
+    assignTask: function (taskId, workerUsername) {
       return $http.post(getApiUrl('assign_task'), {
         'worker_username': workerUsername,
-        'task_id': task.id
+        'task_id': taskId
       })
     },
 
-    reassignAssignment: function (assignment, workerUsername) {
+    reassignAssignment: function (assignmentId, workerUsername) {
       return $http.post(getApiUrl('reassign_assignment'), {
         'worker_username': workerUsername,
-        'assignment_id': assignment.id
+        'assignment_id': assignmentId
       })
     },
 

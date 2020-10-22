@@ -1,6 +1,4 @@
-let d3 = require('d3')
-
-export default function dataService ($location, $rootScope, $route, orchestraApi) {
+export default function dataService ($location, $rootScope, $route, orchestraApi, helpers) {
   /**
    * Service to share and manipulate project management data across
    * visualization components.
@@ -116,12 +114,7 @@ export default function dataService ($location, $rootScope, $route, orchestraApi
       }
 
       var dataService = this
-      this.timeSortedSlugs = Object.keys(this.data[dataService.currentProject.id].tasks).sort(function (a, b) {
-        var previousTask = dataService.data[dataService.currentProject.id].tasks[a]
-        var nextTask = dataService.data[dataService.currentProject.id].tasks[b]
-        return d3.ascending(new Date(previousTask.start_datetime),
-          new Date(nextTask.start_datetime))
-      })
+      this.timeSortedSlugs = helpers.getSortedTasksSlugs(this.data[dataService.currentProject.id].tasks)
     },
     taskFromKey: function (key) {
       /**
