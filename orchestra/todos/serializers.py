@@ -85,6 +85,7 @@ class BulkTodoSerializer(serializers.ModelSerializer):
     }
 
     step = StepField()
+    additional_data = serializers.JSONField()
 
     # TODO(murat): Remove this validation when project
     # becomes a required field in models

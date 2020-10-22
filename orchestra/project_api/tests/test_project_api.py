@@ -521,7 +521,13 @@ class TestTodoApiViewset(EndpointTestCase):
         data = {
             'title': 'Testing create action',
             'project': self.project.id,
-            'step': self.step.slug
+            'step': self.step.slug,
+            'additional_data': {
+                'some_key': 1,
+                'other_key': None,
+                'some_str': 'test',
+                'some_bool': False
+            }
         }
         resp = self.request_client.post(
             self.list_url, data=json.dumps(data),
@@ -541,7 +547,13 @@ class TestTodoApiViewset(EndpointTestCase):
             {
                 'title': 'Testing title {}'.format(x),
                 'project': self.project.id,
-                'step': self.step.slug
+                'step': self.step.slug,
+                'additional_data': {
+                    'some_key': 1,
+                    'other_key': None,
+                    'some_str': 'test',
+                    'some_bool': False
+                }
             } for x in range(10)
         ]
         resp = self.request_client.post(
