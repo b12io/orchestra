@@ -20,6 +20,7 @@ from orchestra.models import Todo
 from orchestra.models import TodoQA
 from orchestra.models import TodoListTemplate
 from orchestra.todos.forms import ImportTodoListTemplateFromSpreadsheetForm
+from orchestra.todos.filters import TodoFilterBackend
 from orchestra.todos.serializers import BulkTodoSerializer
 from orchestra.todos.serializers import BulkTodoSerializerWithoutQA
 from orchestra.todos.serializers import BulkTodoSerializerWithQA
@@ -134,7 +135,7 @@ class GenericTodoViewset(ModelViewSet):
     classes can select their own.
     """
     serializer_class = BulkTodoSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (TodoFilterBackend, filters.DjangoFilterBackend)
     filterset_fields = ('project', 'step__slug',)
     queryset = Todo.objects.select_related('step', 'qa').all()
 
