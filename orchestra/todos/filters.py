@@ -6,7 +6,9 @@ class TodoFilterBackend(filters.BaseFilterBackend):
         params = request.query_params.dict()
         key_values = {}
         for field, value in params.items():
-            if isinstance(value, str) and value.isdigit():
+            if value == 'None':
+                value = None
+            elif isinstance(value, str) and value.isdigit():
                 try:
                     key_values[field] = int(value)
                 except ValueError:
