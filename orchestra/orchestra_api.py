@@ -122,6 +122,7 @@ def get_todos(project_id, step_slug=None, **filters):
 
 def update_todos(updated_todos):
     response = _make_api_request('patch', 'todo-api',
+                                 headers={'Content-type':'application/json'},
                                  data=json.dumps(updated_todos))
     return json.loads(response.text)
 
