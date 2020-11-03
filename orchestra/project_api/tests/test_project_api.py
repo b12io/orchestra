@@ -641,8 +641,9 @@ class TestTodoApiViewset(EndpointTestCase):
             }),
             content_type='application/json')
         self.assertEqual(resp.status_code, 400)
-        self.assertEqual(resp.json()['project'],
-                         ['project should be supplied.'])
+        self.assertEqual(
+            resp.json()['project'],
+            ['if step is given, project should also be supplied.'])
 
     def test_destroy_functionality(self):
         all_todos_count = Todo.objects.count()
