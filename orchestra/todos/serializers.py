@@ -93,11 +93,9 @@ class BulkTodoSerializer(serializers.ModelSerializer):
         step = data.get('step')
         project = data.get('project')
         if step is not None and project is None:
-            raise serializers.ValidationError(
-                {'project': [
-                    'if step is given, project should also be supplied.']
-                }
-            )
+            raise serializers.ValidationError({
+                'project': [
+                    'if step is given, project should also be supplied.']})
         return data
 
     def _set_step_to_validated_data(self, validated_data):
