@@ -87,11 +87,13 @@ class BulkTodoSerializer(serializers.ModelSerializer):
     step = StepField()
     additional_data = serializers.JSONField(required=False)
 
+    def _is_patch(self):
+        return self.context['request'].method == 'PATCH'
+
     # TODO(murat): Remove this validation when project
     # becomes a required field in models
     def validate(self, data):
-        is_patch_request = self.context['request'].method == 'PATCH'
-        if data.get('project') is None and not is_patch_request:
+        if data.get('project') is None and not self._is_patch():
             raise serializers.ValidationError(
                 {'project': ['project should be supplied.']}
             )
@@ -112,6 +114,8 @@ class BulkTodoSerializer(serializers.ModelSerializer):
         return instance
 
     def update(self, instance, validated_data):
+        if not self._is_patch():
+            validated_data = self._set_step_to_validated_data(validated_data)
         for k, v in validated_data.items():
             setattr(instance, k, v)
 
