@@ -1,9 +1,8 @@
-from jsonfield import JSONField
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
-from django.contrib.postgres.fields import JSONField as PostgresJSONField
 from djmoney.models.fields import MoneyField
+from jsonfield import JSONField
 from phonenumber_field.modelfields import PhoneNumberField
 from orchestra.models.core.mixins import CertificationMixin
 from orchestra.models.core.mixins import TodoListTemplateMixin
@@ -719,7 +718,7 @@ class Todo(TodoMixin, BaseModel):
     activity_log = JSONField(default={'actions': []})
     status = models.IntegerField(
         null=True, blank=True, choices=Status.choices())
-    additional_data = PostgresJSONField(default=dict)
+    additional_data = JSONField(default=dict)
 
 
 class TodoQA(TodoQAMixin, BaseModel):
