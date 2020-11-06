@@ -101,6 +101,16 @@ def _convert_filters_to_query_params(filters_dict):
     return res
 
 
+def build_url_params(project_id, step_slug, **filters):
+    project_param = 'project={}'.format(project_id)
+    step_slug_param = '&step__slug={}'.format(
+        step_slug) if step_slug is not None else ''
+    additional_filters = _convert_filters_to_query_params(filters)
+    query_params = '?{}{}{}'.format(
+        project_param, step_slug_param, additional_filters)
+    return query_params
+
+
 def get_todos(project_id, step_slug=None, **filters):
     """
     project_id: int
@@ -109,13 +119,7 @@ def get_todos(project_id, step_slug=None, **filters):
     """
     if project_id is None:
         raise OrchestraError('project_id is required')
-    project_param = 'project={}'.format(project_id)
-    step_slug_param = '&step__slug={}'.format(
-        step_slug) if step_slug is not None else ''
-    additional_filters = _convert_filters_to_query_params(filters)
-    query_params = '?{}{}{}'.format(
-        project_param, step_slug_param, additional_filters)
-
+    query_params = build_url_params(project_id, step_slug, **filters)
     response = _make_api_request('get', 'todo-api', query_params)
     return json.loads(response.text)
 
