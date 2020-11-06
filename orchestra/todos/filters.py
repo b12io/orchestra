@@ -4,7 +4,9 @@ from rest_framework import filters
 class QueryParamsFilterBackend(filters.BaseFilterBackend):
     """
     Takes queryparams from a URL, serializes into a python data structure
-    and passes it as a queryset arguments
+    and passes it as a queryset arguments.
+    Note: this doesn't support nested__fields, unless they are explicitly
+    specified in a serializer beign used in the view.
     """
     def _get_filter_kwargs(self, view, params):
         serializer = view.get_serializer(data=params)
