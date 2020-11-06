@@ -102,7 +102,7 @@ def _convert_filters_to_query_params(filters_dict):
 
 
 def build_url_params(project_id, step_slug, **filters):
-    project_param = 'project={}'.format(project_id)
+    project_param = 'project__id={}'.format(project_id)
     step_slug_param = '&step__slug={}'.format(
         step_slug) if step_slug is not None else ''
     additional_filters = _convert_filters_to_query_params(filters)
