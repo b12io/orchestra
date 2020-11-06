@@ -101,6 +101,13 @@ def _convert_filters_to_query_params(filters_dict):
     return res
 
 
+def get_todos_by_ids(ids):
+    response = _make_api_request('post', 'todo-api/get_todos_by_ids',
+                                 headers={'Content-type': 'application/json'},
+                                 data=json.dumps(ids))
+    return json.loads(response.text)
+
+
 def build_url_params(project_id, step_slug, **filters):
     project_param = 'project__id={}'.format(project_id)
     step_slug_param = '&step__slug={}'.format(

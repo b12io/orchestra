@@ -4,6 +4,8 @@ from urllib.parse import urlunsplit
 
 from django.urls import reverse
 from jsonview.exceptions import BadRequest
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import WorkerCertificationError
@@ -164,3 +166,12 @@ class TodoApiViewset(GenericTodoViewset):
     """
     permission_classes = (IsSignedUser,)
     authentication_classes = (OrchestraProjectAPIAuthentication,)
+
+    @action(detail=False, methods=['post'])
+    def get_todos_by_ids(self, request):
+        ids = request.data
+        if isinstance(ids, list) and len(ids) > 0:
+            qs = self.get_queryset(ids)
+            serializer = self.get_serializer(qs, many=True)
+            return Response(serializer.data)
+        return Response([])
