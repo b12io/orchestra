@@ -12,7 +12,6 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from jsonview.exceptions import BadRequest
-from django_filters import rest_framework as filters
 
 from orchestra.core.errors import TodoListTemplateValidationError
 from orchestra.models import Task
@@ -135,8 +134,8 @@ class GenericTodoViewset(ModelViewSet):
     classes can select their own.
     """
     serializer_class = BulkTodoSerializer
-    filter_backends = (QueryParamsFilterBackend, filters.DjangoFilterBackend)
-    filterset_fields = ('project', 'step__slug',)
+    filter_backends = (QueryParamsFilterBackend,)
+    filterset_fields = ('project__id', 'step__slug',)
     queryset = Todo.objects.select_related('step', 'qa').all()
 
     def get_serializer(self, *args, **kwargs):
