@@ -14,19 +14,6 @@ class QueryParamsFilterBackend(filters.BaseFilterBackend):
     This issue can be fixed when we migrate to Django 3.1
     and convert additional_data from django-jsonfields to the native one.
     """
-    def _serialize_data_type(self, value):
-        if value in ('True', 'False', 'None'):
-            # `literal_eval` converts stringified Python data types
-            # into actual data types, e.g. 'True' -> True
-            # It cannot run arbitrary Python code like 'print(123)'
-            return literal_eval(value)
-        elif isinstance(value, str) and value.isdigit():
-            try:
-                return int(value)
-            except ValueError:
-                return float(value)
-        return value
-
     def _get_filter_kwargs(self, view, params):
         serializer = view.get_serializer(data=params)
         serializer.is_valid()
@@ -37,12 +24,22 @@ class QueryParamsFilterBackend(filters.BaseFilterBackend):
         if hasattr(view, 'filterset_fields'):
             for field in view.filterset_fields:
                 if field in params and field not in qs_kwargs:
-                    serialized_value = self._serialize_data_type(params[field])
-                    filterset_kwargs[field] = serialized_value
+                    filterset_kwargs[field] = params[field]
         return filterset_kwargs
 
+    def _get_params(self, request):
+        qparams = request.query_params
+        # If the query_params contains a list
+        # .dict() will only return the last value
+        params = qparams.dict()
+        lists_keys = [x[0] for x in qparams.lists()]
+        for key in lists_keys:
+            # Write the actual list against the key
+            params[key] = qparams.getlist(key)
+        return params
+
     def filter_queryset(self, request, queryset, view):
-        params = request.query_params.dict()
+        params = self._get_params(request)
         qs_kwargs = self._get_filter_kwargs(view, params)
         filterset_kwargs = self._get_filterset_fields_kwargs(
             view, params, qs_kwargs)
