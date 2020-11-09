@@ -8,8 +8,8 @@ from orchestra.tests.helpers.fixtures import ProjectFactory
 from orchestra.orchestra_api import build_url_params
 from orchestra.todos.filters import QueryParamsFilterBackend
 from orchestra.todos.serializers import TodoQASerializer
-from orchestra.todos.serializers import BulkTodoSerializer
 from orchestra.tests.helpers import OrchestraTransactionTestCase
+from orchestra.todos.views import GenericTodoViewset
 
 
 factory = APIRequestFactory()
@@ -19,13 +19,6 @@ class DummyView(ModelViewSet):
     model = TodoQA
     serializer_class = TodoQASerializer
     queryset = TodoQA.objects.all()
-
-
-class DummyView2(ModelViewSet):
-    model = Todo
-    serializer_class = BulkTodoSerializer
-    queryset = Todo.objects.all()
-    filterset_fields = ('project__id',)
 
 
 class QueryParamsFilterBackendTests(OrchestraTransactionTestCase):
@@ -50,17 +43,25 @@ class QueryParamsFilterBackendTests(OrchestraTransactionTestCase):
         self.assertEqual(qs_kwargs, {})
 
     def test_only_serializer_fields_are_passed(self):
-        comment = 'Some comment'
-        todo_id = 123
+        """
+        In GenericTodoViewset we have the following filterset_fields:
+        filterset_fields = ('project__id', 'step__slug',)
+        A field which is not specified in it or in the view's
+        serializer fields cannot be passed as a filter args
+        """
+        title = 'Some title'
+        project_id = 123
         url_params = build_url_params(
-            111,
+            project_id,
             None,
             **{
-                'todo': todo_id,
-                'comment': comment,
+                'title': title,
                 'nonexistent_field': True})
-        qs_kwargs, _ = self._get_qs_kwargs(DummyView, url_params)
-        self.assertEqual(qs_kwargs, {'todo': str(todo_id), 'comment': comment})
+        qs_kwargs, filterset_fields_kwargs = self._get_qs_kwargs(
+            GenericTodoViewset, url_params)
+        qs_kwargs.update(filterset_fields_kwargs)
+        self.assertEqual(
+            qs_kwargs, {'project__id': project_id, 'title': title})
 
     def test_dangerous_sql(self):
         project = ProjectFactory()
@@ -75,7 +76,7 @@ class QueryParamsFilterBackendTests(OrchestraTransactionTestCase):
             **{'additional_data__sql': dangerous_sql}
         )
         qs_kwargs, filterset_fields_kwargs = self._get_qs_kwargs(
-            DummyView2, url_params)
+            GenericTodoViewset, url_params)
         qs_kwargs.update(filterset_fields_kwargs)
         # qs_kwargs doesn't contain additional_data__sql field
         self.assertEqual(qs_kwargs, {'project__id': project.id})
@@ -85,7 +86,7 @@ class QueryParamsFilterBackendTests(OrchestraTransactionTestCase):
             None,
             **{'title': dangerous_sql})
         qs_kwargs, filterset_fields_kwargs = self._get_qs_kwargs(
-            DummyView2, url_params)
+            GenericTodoViewset, url_params)
         qs_kwargs.update(filterset_fields_kwargs)
         todos = Todo.objects.filter(**qs_kwargs)
         self.assertEqual(
