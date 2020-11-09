@@ -138,7 +138,7 @@ class GenericTodoViewset(ModelViewSet):
     # Note: additional_data__nested_field is not supported in filterset_fields
     # This issue can be fixed when we migrate to Django 3.1
     # and convert additional_data from django-jsonfields to the native one.
-    filterset_fields = ('project__id', 'step__slug',)
+    filterset_fields = ('project__id', 'step__slug', 'id__in')
     queryset = Todo.objects.select_related('step', 'qa').all()
 
     def get_serializer(self, *args, **kwargs):
