@@ -9,6 +9,10 @@ class QueryParamsFilterBackend(filters.BaseFilterBackend):
     and passes it as a queryset arguments.
     Note: this doesn't support nested__fields. To support them,
     add `filterset_fields` iterable to the view.
+    Note: nested__field lookup in JSONField is not supported even if added
+    to the `filterset_fields`.
+    This issue can be fixed when we migrate to Django 3.1
+    and convert additional_data from django-jsonfields to the native one.
     """
     def _serialize_data_type(self, value):
         if value in ('True', 'False', 'None'):

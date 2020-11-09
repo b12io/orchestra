@@ -116,6 +116,8 @@ def get_todos(project_id, step_slug=None, **filters):
     project_id: int
     step_slug: str
     filters: dict. Example: {'some_fk_field__slug': 'cool_slug'}
+    See GenericTodoViewset and QueryParamsFilterBackend
+    to get more info on filtering.
     """
     if project_id is None:
         raise OrchestraError('project_id is required')
