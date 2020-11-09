@@ -101,6 +101,7 @@ class TodoAPITests(TestCase):
 
         filtering_by_ids = [todo1.id, todo2.id]
         res = get_todos(None, None, **{'id__in': filtering_by_ids})
+        self.assertEqual(len(res), 2)
         for todo in res:
             self.assertTrue(todo['id'] in filtering_by_ids)
 
