@@ -120,7 +120,7 @@ class TodosEndpointTests(EndpointTestCase):
 
     def _verify_todos_list(self, project_id, expected_todos, success):
         resp = self.request_client.get(self.list_create_url,
-                                       {'project': project_id})
+                                       {'project__id': project_id})
         if success:
             self.assertEqual(resp.status_code, 200)
             data = load_encoded_json(resp.content)

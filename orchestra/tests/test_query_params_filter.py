@@ -61,7 +61,7 @@ class QueryParamsFilterBackendTests(OrchestraTransactionTestCase):
             GenericTodoViewset, url_params)
         qs_kwargs.update(filterset_fields_kwargs)
         self.assertEqual(
-            qs_kwargs, {'project__id': project_id, 'title': title})
+            qs_kwargs, {'project__id': str(project_id), 'title': title})
 
     def test_dangerous_sql(self):
         project = ProjectFactory()
@@ -79,7 +79,7 @@ class QueryParamsFilterBackendTests(OrchestraTransactionTestCase):
             GenericTodoViewset, url_params)
         qs_kwargs.update(filterset_fields_kwargs)
         # qs_kwargs doesn't contain additional_data__sql field
-        self.assertEqual(qs_kwargs, {'project__id': project.id})
+        self.assertEqual(qs_kwargs, {'project__id': str(project.id)})
 
         url_params = build_url_params(
             project.id,
@@ -90,5 +90,6 @@ class QueryParamsFilterBackendTests(OrchestraTransactionTestCase):
         qs_kwargs.update(filterset_fields_kwargs)
         todos = Todo.objects.filter(**qs_kwargs)
         self.assertEqual(
-            qs_kwargs, {'project__id': project.id, 'title': dangerous_sql})
+            qs_kwargs,
+            {'project__id': str(project.id), 'title': dangerous_sql})
         self.assertTrue(todos.count, 0)

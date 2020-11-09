@@ -1,6 +1,7 @@
 import json
 import datetime
 from unittest.mock import patch
+from urllib.parse import urlencode
 
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
@@ -574,7 +575,7 @@ class TestTodoApiViewset(EndpointTestCase):
         self.assertEqual(resp.status_code, 200)
 
     def test_get_list_of_todos_with_filters(self):
-        url_with_project_filter = '{}?project={}'.format(
+        url_with_project_filter = '{}?project__id={}'.format(
             self.list_url, self.project.id)
         resp = self.request_client.get(url_with_project_filter)
         self.assertEqual(resp.status_code, 200)
@@ -587,11 +588,21 @@ class TestTodoApiViewset(EndpointTestCase):
         self.assertEqual(len(resp.json()), 1)
         self.assertEqual(resp.json()[0]['step'], self.todo_with_step.step.slug)
 
-        url_with_filters = '{}?project={}&step__slug={}'.format(
+        url_with_filters = '{}?project__id={}&step__slug={}'.format(
             self.list_url, self.project.id, self.todo_with_step.step.slug)
         resp = self.request_client.get(url_with_filters)
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()[0]['step'], self.todo_with_step.step.slug)
+
+        ids_to_filter_by = [self.todo.id, self.todo_with_step.id]
+        url_with_filters = '{}?&{}'.format(
+            self.list_url,
+            urlencode({'id__in': ids_to_filter_by}))
+        resp = self.request_client.get(url_with_filters)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.json()), 2)
+        for todo in resp.json():
+            self.assertTrue(todo['id'] in ids_to_filter_by)
 
     @patch('orchestra.todos.views.notify_single_todo_update')
     def test_update_functionality(self, mock_notify):
