@@ -14,7 +14,6 @@ from orchestra.orchestra_api import create_todos
 from orchestra.orchestra_api import get_todos
 from orchestra.orchestra_api import update_todos
 from orchestra.orchestra_api import delete_todos
-from orchestra.orchestra_api import get_todos_by_ids
 from orchestra.orchestra_api import OrchestraError
 
 
@@ -100,6 +99,11 @@ class TodoAPITests(TestCase):
         with self.assertRaisesMessage(OrchestraError, msg):
             get_todos(None)
 
+        filtering_by_ids = [todo1.id, todo2.id]
+        res = get_todos(None, None, **{'id__in': filtering_by_ids})
+        for todo in res:
+            self.assertTrue(todo['id'] in filtering_by_ids)
+
     @patch('orchestra.orchestra_api.requests')
     def test_update_todos(self, mock_request):
         # This converts `requests.patch` into DRF's `APIClient.patch`
@@ -162,28 +166,3 @@ class TodoAPITests(TestCase):
         left_todos = Todo.objects.all()
         self.assertEqual(left_todos.count(), 1)
         self.assertEqual(left_todos[0].id, todo4.id)
-
-    @patch('orchestra.orchestra_api.requests')
-    def test_get_todos_by_ids(self, mock_request):
-        # This converts `requests.post` into DRF's `APIClient.post`
-        # To make it testable
-        def post(url, *args, **kwargs):
-            kw = kwargs.get('data', '')
-            data = json.loads(kw)
-            return_value = self.request_client.post(url, data, format='json')
-            return_value.text = json.dumps(return_value.data)
-            return return_value
-
-        mock_request.post = post
-        todo1 = TodoFactory(step=self.step, project=self.project)
-        todo2 = TodoFactory(step=self.step, project=self.project)
-
-        ids = [todo1.id, todo2.id]
-        result = get_todos_by_ids(ids)
-        self.assertEqual(len(result), 2)
-        for r in result:
-            self.assertTrue(r['id'] in ids)
-
-        ids = 'a random stuff instead of a list of ids'
-        result = get_todos_by_ids(ids)
-        self.assertEqual(len(result), 0)

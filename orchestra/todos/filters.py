@@ -11,7 +11,8 @@ class QueryParamsFilterBackend(filters.BaseFilterBackend):
     add `filterset_fields` iterable to the view.
     """
     def _serialize_data_type(self, value):
-        if value in ('True', 'False', 'None'):
+        is_array = value.startswith('[') and value.endswith(']')
+        if value in ('True', 'False', 'None') or is_array:
             # `literal_eval` converts stringified Python data types
             # into actual data types, e.g. 'True' -> True
             # It cannot run arbitrary Python code like 'print(123)'

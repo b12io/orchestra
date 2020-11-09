@@ -135,7 +135,7 @@ class GenericTodoViewset(ModelViewSet):
     """
     serializer_class = BulkTodoSerializer
     filter_backends = (QueryParamsFilterBackend,)
-    filterset_fields = ('project__id', 'step__slug',)
+    filterset_fields = ('project__id', 'step__slug', 'id__in')
     queryset = Todo.objects.select_related('step', 'qa').all()
 
     def get_serializer(self, *args, **kwargs):
