@@ -28,14 +28,9 @@ class QueryParamsFilterBackend(filters.BaseFilterBackend):
         return filterset_kwargs
 
     def _get_params(self, request):
-        qparams = request.query_params
-        # If the query_params contains a list
-        # .dict() will only return the last value
-        params = qparams.dict()
-        lists_keys = [x[0] for x in qparams.lists()]
-        for key in lists_keys:
-            # Write the actual list against the key
-            params[key] = qparams.getlist(key)
+        params = {}
+        for key, value in request.query_params.items():
+            params[key] = literal_eval(value)
         return params
 
     def filter_queryset(self, request, queryset, view):

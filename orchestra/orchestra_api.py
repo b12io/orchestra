@@ -96,10 +96,10 @@ def create_todos(todos):
 
 
 def build_url_params(project_id, step_slug, **filters):
-    project_param = 'project__id={}'.format(project_id)
+    project_param = 'project__id={}'.format(project_id) if project_id else ''
     step_slug_param = '&step__slug={}'.format(
         step_slug) if step_slug is not None else ''
-    additional_filters = '&{}'.format(urlencode(filters, doseq=True))
+    additional_filters = '&{}'.format(urlencode(filters))
     query_params = '?{}{}{}'.format(
         project_param, step_slug_param, additional_filters)
     return query_params
