@@ -8,6 +8,7 @@ import json
 import logging
 from datetime import datetime
 from time import mktime
+from urllib.parse import urlencode
 from wsgiref.handlers import format_date_time
 
 import requests
@@ -94,18 +95,11 @@ def create_todos(todos):
     return json.loads(response.text)
 
 
-def _convert_filters_to_query_params(filters_dict):
-    res = ''
-    for filter_key, value in filters_dict.items():
-        res += '&{}={}'.format(filter_key, value)
-    return res
-
-
 def build_url_params(project_id, step_slug, **filters):
     project_param = 'project__id={}'.format(project_id)
     step_slug_param = '&step__slug={}'.format(
         step_slug) if step_slug is not None else ''
-    additional_filters = _convert_filters_to_query_params(filters)
+    additional_filters = '&{}'.format(urlencode(filters, doseq=True))
     query_params = '?{}{}{}'.format(
         project_param, step_slug_param, additional_filters)
     return query_params
@@ -119,7 +113,7 @@ def get_todos(project_id, step_slug=None, **filters):
     See GenericTodoViewset and QueryParamsFilterBackend
     to get more info on filtering.
     """
-    if project_id is None:
+    if project_id is None and 'id__in' not in filters:
         raise OrchestraError('project_id is required')
     query_params = build_url_params(project_id, step_slug, **filters)
     response = _make_api_request('get', 'todo-api', query_params)
