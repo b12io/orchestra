@@ -1,7 +1,6 @@
 import json
 import datetime
 from unittest.mock import patch
-from urllib.parse import urlencode
 
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
@@ -473,7 +472,7 @@ class ProjectAPIAuthTestCase(OrchestraTestCase):
             (SignedUser(), 'b'))
 
 
-class TestTodoApiViewset(EndpointTestCase):
+class TestTodoApiViewsetTests(EndpointTestCase):
     def setUp(self):
         super().setUp()
         self.request_client = APIClient(enforce_csrf_checks=True)
@@ -595,9 +594,9 @@ class TestTodoApiViewset(EndpointTestCase):
         self.assertEqual(resp.json()[0]['step'], self.todo_with_step.step.slug)
 
         ids_to_filter_by = [self.todo.id, self.todo_with_step.id]
-        url_with_filters = '{}?&{}'.format(
+        url_with_filters = '{}?&q={}'.format(
             self.list_url,
-            urlencode({'id__in': ids_to_filter_by}))
+            json.dumps({'id__in': ids_to_filter_by}))
         resp = self.request_client.get(url_with_filters)
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.json()), 2)
