@@ -30,7 +30,7 @@ class QueryParamsFilterBackendTests(OrchestraTransactionTestCase):
         view.request = request
         view.format_kwarg = {}
         backend = QueryParamsFilterBackend()
-        params = request.query_params.dict()
+        params = backend._get_params(request, view)
         qs_kwargs = backend._get_filter_kwargs(view, params)
         filterset_fields_kwargs = backend._get_filterset_fields_kwargs(
             view, params, qs_kwargs)
