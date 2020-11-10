@@ -8,7 +8,6 @@ import json
 import logging
 from datetime import datetime
 from time import mktime
-from urllib.parse import urlencode
 from wsgiref.handlers import format_date_time
 
 import requests
@@ -99,7 +98,7 @@ def build_url_params(project_id, step_slug, **filters):
     project_param = 'project__id={}'.format(project_id) if project_id else ''
     step_slug_param = '&step__slug={}'.format(
         step_slug) if step_slug is not None else ''
-    additional_filters = '&{}'.format(urlencode(filters))
+    additional_filters = '&q={}'.format(json.dumps(filters))
     query_params = '?{}{}{}'.format(
         project_param, step_slug_param, additional_filters)
     return query_params
