@@ -128,6 +128,7 @@ class BulkTodoSerializer(serializers.ModelSerializer):
             'id',
             'created_at',
             'title',
+            'details',
             'parent_todo',
             'template',
             'completed',
