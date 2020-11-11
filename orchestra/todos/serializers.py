@@ -141,7 +141,8 @@ class BulkTodoSerializer(serializers.ModelSerializer):
             'step',
             'order',
             'status',
-            'additional_data')
+            'additional_data',
+            'is_deleted')
         read_only_fields = ('id',)
         list_serializer_class = TodoBulkCreateListSerializer
 
