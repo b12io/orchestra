@@ -41,7 +41,7 @@ def _todo_data(title, completed,
                skipped_datetime=None, start_by=None,
                due=None, parent_todo=None, template=None,
                activity_log=str({'actions': []}), qa=None,
-               project=None, step=None):
+               project=None, step=None, details=None, is_deleted=False):
     return {
         'completed': completed,
         'title': title,
@@ -57,7 +57,9 @@ def _todo_data(title, completed,
         'project': project,
         'section': None,
         'status': None,
-        'step': step
+        'step': step,
+        'details': details,
+        'is_deleted': is_deleted
     }
 
 
