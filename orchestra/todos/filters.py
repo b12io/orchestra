@@ -43,7 +43,7 @@ class QueryParamsFilterBackend(filters.BaseFilterBackend):
         """
         Here we get JSON encoded params and encode them into Python objects.
         """
-        params = request.query_params.dict()
+        params = request.query_params.copy().dict()
         json_params = params.pop(self._get_query_params_prefix(view), '{}')
         converted = json.loads(json_params)
         params.update(converted)
