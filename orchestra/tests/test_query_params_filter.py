@@ -31,16 +31,14 @@ class QueryParamsFilterBackendTests(OrchestraTransactionTestCase):
         view.format_kwarg = {}
         backend = QueryParamsFilterBackend()
         params = backend._get_params(request, view)
-        qs_kwargs = backend._get_filter_kwargs(view, params)
-        filterset_fields_kwargs = backend._get_filterset_fields_kwargs(
-            view, params, qs_kwargs)
-        return qs_kwargs, filterset_fields_kwargs
+        kwargs = backend._get_kwargs(view, params)
+        return kwargs
 
     def test_random_key_values(self):
         url_params = build_url_params(
             123, 'slug', **{'some_random_key': 'some_value'})
-        qs_kwargs, _ = self._get_qs_kwargs(DummyView, url_params)
-        self.assertEqual(qs_kwargs, {})
+        kwargs = self._get_qs_kwargs(DummyView, url_params)
+        self.assertEqual(kwargs, {})
 
     def test_only_serializer_fields_are_passed(self):
         """
@@ -57,11 +55,10 @@ class QueryParamsFilterBackendTests(OrchestraTransactionTestCase):
             **{
                 'title': title,
                 'nonexistent_field': True})
-        qs_kwargs, filterset_fields_kwargs = self._get_qs_kwargs(
+        kwargs = self._get_qs_kwargs(
             GenericTodoViewset, url_params)
-        qs_kwargs.update(filterset_fields_kwargs)
         self.assertEqual(
-            qs_kwargs, {'project__id': str(project_id), 'title': title})
+            kwargs, {'project__id': str(project_id), 'title': title})
 
     def test_dangerous_sql(self):
         project = ProjectFactory()
@@ -75,21 +72,19 @@ class QueryParamsFilterBackendTests(OrchestraTransactionTestCase):
             None,
             **{'additional_data__sql': dangerous_sql}
         )
-        qs_kwargs, filterset_fields_kwargs = self._get_qs_kwargs(
+        kwargs = self._get_qs_kwargs(
             GenericTodoViewset, url_params)
-        qs_kwargs.update(filterset_fields_kwargs)
-        # qs_kwargs doesn't contain additional_data__sql field
-        self.assertEqual(qs_kwargs, {'project__id': str(project.id)})
+        # kwargs doesn't contain additional_data__sql field
+        self.assertEqual(kwargs, {'project__id': str(project.id)})
 
         url_params = build_url_params(
             project.id,
             None,
             **{'title': dangerous_sql})
-        qs_kwargs, filterset_fields_kwargs = self._get_qs_kwargs(
+        kwargs = self._get_qs_kwargs(
             GenericTodoViewset, url_params)
-        qs_kwargs.update(filterset_fields_kwargs)
-        todos = Todo.objects.filter(**qs_kwargs)
+        todos = Todo.objects.filter(**kwargs)
         self.assertEqual(
-            qs_kwargs,
+            kwargs,
             {'project__id': str(project.id), 'title': dangerous_sql})
         self.assertTrue(todos.count, 0)

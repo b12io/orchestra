@@ -49,10 +49,14 @@ class QueryParamsFilterBackend(filters.BaseFilterBackend):
         params.update(converted)
         return params
 
-    def filter_queryset(self, request, queryset, view):
-        params = self._get_params(request, view)
+    def _get_kwargs(self, view, params):
         qs_kwargs = self._get_filter_kwargs(view, params)
         filterset_kwargs = self._get_filterset_fields_kwargs(
             view, params, qs_kwargs)
         qs_kwargs.update(filterset_kwargs)
-        return queryset.filter(**qs_kwargs)
+        return qs_kwargs
+
+    def filter_queryset(self, request, queryset, view):
+        params = self._get_params(request, view)
+        kwargs = self._get_kwargs(view, params)
+        return queryset.filter(**kwargs)
