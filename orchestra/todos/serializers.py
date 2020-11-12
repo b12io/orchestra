@@ -85,14 +85,17 @@ class BulkTodoSerializer(serializers.ModelSerializer):
     }
 
     step = StepField()
+    additional_data = serializers.JSONField(required=False)
 
     # TODO(murat): Remove this validation when project
     # becomes a required field in models
     def validate(self, data):
-        if data.get('project') is None:
-            raise serializers.ValidationError(
-                {'project': ['project should be supplied.']}
-            )
+        step = data.get('step')
+        project = data.get('project')
+        if step is not None and project is None:
+            raise serializers.ValidationError({
+                'project': [
+                    'if step is given, project should also be supplied.']})
         return data
 
     def _set_step_to_validated_data(self, validated_data):
@@ -110,7 +113,8 @@ class BulkTodoSerializer(serializers.ModelSerializer):
         return instance
 
     def update(self, instance, validated_data):
-        validated_data = self._set_step_to_validated_data(validated_data)
+        if validated_data.get('step') is not None:
+            validated_data = self._set_step_to_validated_data(validated_data)
         for k, v in validated_data.items():
             setattr(instance, k, v)
 
@@ -124,6 +128,7 @@ class BulkTodoSerializer(serializers.ModelSerializer):
             'id',
             'created_at',
             'title',
+            'details',
             'parent_todo',
             'template',
             'completed',
@@ -136,7 +141,8 @@ class BulkTodoSerializer(serializers.ModelSerializer):
             'step',
             'order',
             'status',
-            'additional_data')
+            'additional_data',
+            'is_deleted')
         read_only_fields = ('id',)
         list_serializer_class = TodoBulkCreateListSerializer
 

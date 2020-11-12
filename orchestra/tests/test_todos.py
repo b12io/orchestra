@@ -41,7 +41,7 @@ def _todo_data(title, completed,
                skipped_datetime=None, start_by=None,
                due=None, parent_todo=None, template=None,
                activity_log=str({'actions': []}), qa=None,
-               project=None, step=None):
+               project=None, step=None, details=None, is_deleted=False):
     return {
         'completed': completed,
         'title': title,
@@ -52,12 +52,14 @@ def _todo_data(title, completed,
         'activity_log': activity_log,
         'skipped_datetime': skipped_datetime,
         'qa': qa,
-        'additional_data': '{}',
+        'additional_data': {},
         'order': None,
         'project': project,
         'section': None,
         'status': None,
-        'step': step
+        'step': step,
+        'details': details,
+        'is_deleted': is_deleted
     }
 
 
@@ -120,7 +122,7 @@ class TodosEndpointTests(EndpointTestCase):
 
     def _verify_todos_list(self, project_id, expected_todos, success):
         resp = self.request_client.get(self.list_create_url,
-                                       {'project': project_id})
+                                       {'project__id': project_id})
         if success:
             self.assertEqual(resp.status_code, 200)
             data = load_encoded_json(resp.content)

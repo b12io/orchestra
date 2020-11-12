@@ -44,9 +44,11 @@ class IsAssociatedWithProject(permissions.BasePermission):
         todo_id = request.data.get('todo')
         if todo_id is None:
             todo_id = view.kwargs.get('pk')
-        project_id = request.data.get('project')
+        project_id = request.data.get(
+            'project') or request.data.get('project__id')
         if project_id is None:
-            project_id = request.query_params.get('project')
+            project_id = request.query_params.get(
+                'project') or request.query_params.get('project__id')
         if project_id is None and todo_id is not None:
             project_id = Todo.objects.get(id=todo_id).project.id
         return worker.assignments.filter(task__project__id=project_id).exists()

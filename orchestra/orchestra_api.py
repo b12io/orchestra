@@ -89,24 +89,40 @@ def get_project_information(project_ids):
 
 def create_todos(todos):
     response = _make_api_request('post', 'todo-api',
+                                 headers={'Content-type': 'application/json'},
                                  data=json.dumps(todos))
     return json.loads(response.text)
 
 
-def get_todos(project_id, step_slug=None):
-    if project_id is None:
-        raise OrchestraError('project_id is required')
-    project_param = 'project={}'.format(project_id)
+def build_url_params(project_id, step_slug, **filters):
+    project_param = 'project__id={}'.format(project_id) if project_id else ''
     step_slug_param = '&step__slug={}'.format(
         step_slug) if step_slug is not None else ''
-    query_params = '?{}{}'.format(project_param, step_slug_param)
+    additional_filters = '&q={}'.format(
+        json.dumps(filters)) if filters else ''
+    query_params = '?{}{}{}'.format(
+        project_param, step_slug_param, additional_filters)
+    return query_params
 
+
+def get_todos(project_id, step_slug=None, **filters):
+    """
+    project_id: int
+    step_slug: str
+    filters: dict. Example: {'some_fk_field__slug': 'cool_slug'}
+    See GenericTodoViewset and QueryParamsFilterBackend
+    to get more info on filtering.
+    """
+    if project_id is None and 'id__in' not in filters:
+        raise OrchestraError('project_id is required')
+    query_params = build_url_params(project_id, step_slug, **filters)
     response = _make_api_request('get', 'todo-api', query_params)
     return json.loads(response.text)
 
 
 def update_todos(updated_todos):
     response = _make_api_request('patch', 'todo-api',
+                                 headers={'Content-type': 'application/json'},
                                  data=json.dumps(updated_todos))
     return json.loads(response.text)
 
