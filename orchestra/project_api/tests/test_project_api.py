@@ -472,7 +472,7 @@ class ProjectAPIAuthTestCase(OrchestraTestCase):
             (SignedUser(), 'b'))
 
 
-class TestTodoApiViewset(EndpointTestCase):
+class TestTodoApiViewsetTests(EndpointTestCase):
     def setUp(self):
         super().setUp()
         self.request_client = APIClient(enforce_csrf_checks=True)
@@ -521,7 +521,13 @@ class TestTodoApiViewset(EndpointTestCase):
         data = {
             'title': 'Testing create action',
             'project': self.project.id,
-            'step': self.step.slug
+            'step': self.step.slug,
+            'additional_data': {
+                'some_key': 1,
+                'other_key': None,
+                'some_str': 'test',
+                'some_bool': False
+            }
         }
         resp = self.request_client.post(
             self.list_url, data=json.dumps(data),
@@ -541,7 +547,13 @@ class TestTodoApiViewset(EndpointTestCase):
             {
                 'title': 'Testing title {}'.format(x),
                 'project': self.project.id,
-                'step': self.step.slug
+                'step': self.step.slug,
+                'additional_data': {
+                    'some_key': 1,
+                    'other_key': None,
+                    'some_str': 'test',
+                    'some_bool': False
+                }
             } for x in range(10)
         ]
         resp = self.request_client.post(
@@ -561,13 +573,14 @@ class TestTodoApiViewset(EndpointTestCase):
         resp = self.request_client.get(detail_url)
         self.assertEqual(resp.status_code, 200)
 
-    def test_get_list_of_todos_with_filters(self):
-        url_with_project_filter = '{}?project={}'.format(
+    def test_get_list_of_todos_with_filters_project_id(self):
+        url_with_project_filter = '{}?project__id={}'.format(
             self.list_url, self.project.id)
         resp = self.request_client.get(url_with_project_filter)
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.json()), 2)
 
+    def test_get_list_of_todos_with_filters_step_slug(self):
         url_with_step_filter = '{}?step__slug={}'.format(
             self.list_url, self.todo_with_step.step.slug)
         resp = self.request_client.get(url_with_step_filter)
@@ -575,11 +588,33 @@ class TestTodoApiViewset(EndpointTestCase):
         self.assertEqual(len(resp.json()), 1)
         self.assertEqual(resp.json()[0]['step'], self.todo_with_step.step.slug)
 
-        url_with_filters = '{}?project={}&step__slug={}'.format(
+    def test_get_list_of_todos_with_filters_project_id_and_step_slug(self):
+        url_with_filters = '{}?project__id={}&step__slug={}'.format(
             self.list_url, self.project.id, self.todo_with_step.step.slug)
         resp = self.request_client.get(url_with_filters)
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()[0]['step'], self.todo_with_step.step.slug)
+
+    def test_get_list_of_todos_with_filters_todo_ids(self):
+        # Filter by existing todo ids
+        ids_to_filter_by = [self.todo.id, self.todo_with_step.id]
+        url_with_filters = '{}?&q={}'.format(
+            self.list_url,
+            json.dumps({'id__in': ids_to_filter_by}))
+        resp = self.request_client.get(url_with_filters)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.json()), 2)
+        for todo in resp.json():
+            self.assertTrue(todo['id'] in ids_to_filter_by)
+
+        # Filter by non-existent id
+        ids_to_filter_by = [112233445589]
+        url_with_filters = '{}?&q={}'.format(
+            self.list_url,
+            json.dumps({'id__in': ids_to_filter_by}))
+        resp = self.request_client.get(url_with_filters)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.json()), 0)
 
     @patch('orchestra.todos.views.notify_single_todo_update')
     def test_update_functionality(self, mock_notify):
@@ -629,8 +664,9 @@ class TestTodoApiViewset(EndpointTestCase):
             }),
             content_type='application/json')
         self.assertEqual(resp.status_code, 400)
-        self.assertEqual(resp.json()['project'],
-                         ['project should be supplied.'])
+        self.assertEqual(
+            resp.json()['project'],
+            ['if step is given, project should also be supplied.'])
 
     def test_destroy_functionality(self):
         all_todos_count = Todo.objects.count()
