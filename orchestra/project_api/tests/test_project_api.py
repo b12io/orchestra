@@ -603,6 +603,16 @@ class TestTodoApiViewsetTests(EndpointTestCase):
         for todo in resp.json():
             self.assertTrue(todo['id'] in ids_to_filter_by)
 
+        # Filter by non-existent id
+        ids_to_filter_by = [112233445589]
+        url_with_filters = '{}?&q={}'.format(
+            self.list_url,
+            json.dumps({'id__in': ids_to_filter_by}))
+        resp = self.request_client.get(url_with_filters)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.json()), 0)
+
+
     @patch('orchestra.todos.views.notify_single_todo_update')
     def test_update_functionality(self, mock_notify):
         todo1 = TodoFactory(
