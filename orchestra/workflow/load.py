@@ -162,6 +162,8 @@ def load_workflow_version(version_data, workflow, force=False):
                     'creation_policy',
                     get_default_creation_policy()),
                 'user_interface': step_data.get('user_interface', {}),
+                'assignable_hours_function': step_data.get(
+                    'assignable_hours_function', {}),
             }
         )
         if not step_created:
