@@ -201,7 +201,7 @@ class StaffingTestCase(OrchestraTestCase):
                          StaffBotRequest.Status.SENDING_INQUIRIES.value)
 
         address_staffing_requests(worker_batch_size=1,
-                               frequency=timedelta(minutes=0))
+                                  frequency=timedelta(minutes=0))
         mock_slack.assert_not_called()
         request.refresh_from_db()
         self.assertEqual(request.status,
@@ -213,7 +213,7 @@ class StaffingTestCase(OrchestraTestCase):
             2)
 
         address_staffing_requests(worker_batch_size=1,
-                               frequency=timedelta(minutes=0))
+                                  frequency=timedelta(minutes=0))
         self.assertEqual(mock_slack.call_count, 1)
         mock_slack.reset()
 
@@ -226,7 +226,7 @@ class StaffingTestCase(OrchestraTestCase):
 
         # marked as closed and no new request inquiries sent.
         address_staffing_requests(worker_batch_size=1,
-                               frequency=timedelta(minutes=0))
+                                  frequency=timedelta(minutes=0))
         self.assertTrue(mock_slack.called)
         request.refresh_from_db()
         self.assertEqual(request.status,
@@ -265,7 +265,7 @@ class StaffingTestCase(OrchestraTestCase):
         excluded = []
         for worker in (worker3, self.worker, worker2):
             address_staffing_requests(worker_batch_size=1,
-                                   frequency=timedelta(minutes=0))
+                                      frequency=timedelta(minutes=0))
             inquiries = (
                 StaffingRequestInquiry.objects
                 .filter(request=request)
@@ -304,7 +304,7 @@ class StaffingTestCase(OrchestraTestCase):
     def test_get_available_request(self, mock_slack):
         # Close all open requests so new worker doesn't receive them.
         address_staffing_requests(worker_batch_size=2,
-                               frequency=timedelta(minutes=0))
+                                  frequency=timedelta(minutes=0))
 
         self.assertEqual(len(get_available_requests(self.worker)), 1)
 
@@ -325,7 +325,7 @@ class StaffingTestCase(OrchestraTestCase):
         request2.task.step.required_certifications.add(self.certification)
 
         address_staffing_requests(worker_batch_size=2,
-                               frequency=timedelta(minutes=0))
+                                  frequency=timedelta(minutes=0))
         inquiry1 = (
             StaffingRequestInquiry.objects
             .filter(communication_preference__worker=self.worker)
@@ -483,7 +483,7 @@ class StaffingTestCase(OrchestraTestCase):
             StaffBotRequest.Status.DONE_SENDING_INQUIRIES)
 
         address_staffing_requests(worker_batch_size=1,
-                               frequency=timedelta(minutes=20))
+                                  frequency=timedelta(minutes=20))
         # Inquiries increase by two because we send a Slack and an
         # email notification.  `last_inquiry_sent` is None on new
         # tasks, so we send this batch regardless of frequency.
@@ -492,7 +492,7 @@ class StaffingTestCase(OrchestraTestCase):
             2)
 
         address_staffing_requests(worker_batch_size=2,
-                               frequency=timedelta(minutes=20))
+                                  frequency=timedelta(minutes=20))
         # Don't send more inquiries, since it hasn't been 20 minutes.
         self.assertEqual(
             StaffingRequestInquiry.objects.filter(request=request).count(),
@@ -501,14 +501,14 @@ class StaffingTestCase(OrchestraTestCase):
         request.last_inquiry_sent = timezone.now() - timedelta(minutes=21)
         request.save()
         address_staffing_requests(worker_batch_size=2,
-                               frequency=timedelta(minutes=20))
+                                  frequency=timedelta(minutes=20))
         # Send two email and two slack inquiries since it's been 21 minutes.
         self.assertEqual(
             StaffingRequestInquiry.objects.filter(request=request).count(),
             6)
 
         address_staffing_requests(worker_batch_size=10,
-                               frequency=timedelta(minutes=20))
+                                  frequency=timedelta(minutes=20))
         # Don't send more inquiries, since it hasn't been 20 minutes.
         self.assertEqual(
             StaffingRequestInquiry.objects.filter(request=request).count(),
@@ -517,7 +517,7 @@ class StaffingTestCase(OrchestraTestCase):
         request.last_inquiry_sent = timezone.now() - timedelta(minutes=21)
         request.save()
         address_staffing_requests(worker_batch_size=10,
-                               frequency=timedelta(minutes=20))
+                                  frequency=timedelta(minutes=20))
         # Send remaining inquiries, since enough time has passed.
         self.assertEqual(
             StaffingRequestInquiry.objects.filter(request=request).count(),
@@ -526,7 +526,7 @@ class StaffingTestCase(OrchestraTestCase):
         request.last_inquiry_sent = timezone.now() - timedelta(minutes=21)
         request.save()
         address_staffing_requests(worker_batch_size=10,
-                               frequency=timedelta(minutes=20))
+                                  frequency=timedelta(minutes=20))
         # We're all out of workers to whom we'd like to send inquiries.
         self.assertEqual(
             StaffingRequestInquiry.objects.filter(request=request).count(),
