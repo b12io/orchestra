@@ -121,19 +121,54 @@ def check_responses_complete(request):
              .format(request.task)))
 
 
-def send_staffing_requests(
+def address_staffing_requests(
         worker_batch_size=settings.ORCHESTRA_STAFFBOT_WORKER_BATCH_SIZE,
         frequency=settings.ORCHESTRA_STAFFBOT_BATCH_FREQUENCY):
     staffbot = StaffBot()
     cutoff_datetime = timezone.now() - frequency
     requests = (
         StaffBotRequest.objects
-        .filter(status=StaffBotRequest.Status.SENDING_INQUIRIES.value)
+        .filter(status__in=[
+            StaffBotRequest.Status.SENDING_INQUIRIES.value,
+            StaffBotRequest.Status.DONE_SENDING_INQUIRIES.value])
         .filter(Q(last_inquiry_sent__isnull=True) |
-                Q(last_inquiry_sent__lte=cutoff_datetime)))
+                Q(last_inquiry_sent__lte=cutoff_datetime))
+        .order_by('-task__project__priority', 'created_at'))
 
     for request in requests:
-        send_request_inquiries(staffbot, request, worker_batch_size)
+        staff_or_send_request_inquiries(staffbot, request, worker_batch_size)
+
+
+def _is_worker_assignable(worker, task, required_role):
+    try:
+        check_worker_allowed_new_assignment(worker)
+        if (is_worker_certified_for_task(worker, task,
+                                         required_role,
+                                         require_staffbot_enabled=True)
+                and not task.is_worker_assigned(worker)):
+            return True
+    except TaskStatusError:
+        pass
+    except TaskAssignmentError:
+        pass
+    return False
+
+
+def _attempt_to_staff(staffbot, request, worker_certifications):
+    successfully_staffed = False
+    required_role = get_role_from_counter(request.required_role_counter)
+    attempted_workers = set()
+    for certification in worker_certifications:
+        worker = certification.worker
+        if worker.id in attempted_workers:
+            continue
+        attempted_workers.add(worker.id)
+        if _is_worker_assignable(worker, request.task, required_role):
+            # TODO(marcua): Assign the worker.
+            successfully_staffed = True
+            break
+
+    return successfully_staffed
 
 
 def _send_request_inquiries(staffbot, request, worker_batch_size,
@@ -141,28 +176,16 @@ def _send_request_inquiries(staffbot, request, worker_batch_size,
     inquiries_sent = 0
     required_role = get_role_from_counter(request.required_role_counter)
     contacted_workers = set()
-
     for certification in worker_certifications:
-        try:
-            worker = certification.worker
-            if worker.id in contacted_workers:
-                continue
-
-            contacted_workers.add(worker.id)
-            check_worker_allowed_new_assignment(worker)
-            if (is_worker_certified_for_task(worker, request.task,
-                                             required_role,
-                                             require_staffbot_enabled=True) and
-                    not request.task.is_worker_assigned(worker)):
-                staffbot.send_task_to_worker(worker, request)
-                inquiries_sent += 1
-            if inquiries_sent >= worker_batch_size:
-                break
-
-        except TaskStatusError:
-            pass
-        except TaskAssignmentError:
-            pass
+        worker = certification.worker
+        if worker.id in contacted_workers:
+            continue
+        contacted_workers.add(worker.id)
+        if _is_worker_assignable(worker, request.task, required_role):
+            staffbot.send_task_to_worker(worker, request)
+            inquiries_sent += 1
+        if inquiries_sent >= worker_batch_size:
+            break
 
     # check whether all inquiries have been sent out.
     if inquiries_sent < worker_batch_size:
@@ -175,7 +198,7 @@ def _send_request_inquiries(staffbot, request, worker_batch_size,
     request.save()
 
 
-def send_request_inquiries(staffbot, request, worker_batch_size):
+def staff_or_send_request_inquiries(staffbot, request, worker_batch_size):
     # Get Workers that haven't already received an inquiry.
     workers_with_inquiries = (StaffingRequestInquiry.objects.filter(
         request=request).distinct().values_list(
@@ -187,14 +210,23 @@ def send_request_inquiries(staffbot, request, worker_batch_size):
     worker_certifications = (
         WorkerCertification
         .objects
-        .exclude(worker__id__in=workers_with_inquiries)
         .filter(role=required_role,
                 task_class=WorkerCertification.TaskClass.REAL,
                 certification__in=(request.task
                                    .step.required_certifications.all()))
         .order_by('-staffing_priority', '?'))
-    _send_request_inquiries(staffbot, request, worker_batch_size,
-                            worker_certifications)
+    uninquired_worker_certifications = (
+        worker_certifications
+        .exclude(worker__id__in=workers_with_inquiries))
+    successfully_staffed = _attempt_to_staff(
+        staffbot, request, worker_certifications)
+    sending_inquiries = StaffBotRequest.Status.SENDING_INQUIRIES.value
+    if ((not successfully_staffed)
+            and (request.status == sending_inquiries)):
+        _send_request_inquiries(staffbot,
+                                request,
+                                worker_batch_size,
+                                uninquired_worker_certifications)
 
 
 def get_available_requests(worker):

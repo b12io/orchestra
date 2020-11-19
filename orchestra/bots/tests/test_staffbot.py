@@ -8,7 +8,7 @@ from orchestra.bots.errors import SlackUserUnauthorized
 from orchestra.bots.staffbot import StaffBot
 from orchestra.bots.tests.fixtures import get_mock_slack_data
 from orchestra.communication.mail import html_from_plaintext
-from orchestra.communication.staffing import send_staffing_requests
+from orchestra.communication.staffing import address_staffing_requests
 from orchestra.models import CommunicationPreference
 from orchestra.models import StaffBotRequest
 from orchestra.models import StaffingRequestInquiry
@@ -66,7 +66,7 @@ class StaffBotTest(OrchestraTestCase):
             text=command,
             user_id=self.worker.slack_user_id)
         bot.dispatch(data)
-        send_staffing_requests(worker_batch_size=20,
+        address_staffing_requests(worker_batch_size=20,
                                frequency=timedelta(minutes=0))
         self.assertEqual(StaffingRequestInquiry.objects.filter(
             communication_preference__worker_id=worker,
