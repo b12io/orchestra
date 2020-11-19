@@ -11,6 +11,7 @@ from orchestra.bots.errors import StaffingResponseException
 from orchestra.bots.staffbot import StaffBot
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import TaskStatusError
+from orchestra.models import CommunicationPreference
 from orchestra.models import StaffBotRequest
 from orchestra.models import StaffingRequestInquiry
 from orchestra.models import StaffingResponse
@@ -154,17 +155,35 @@ def _is_worker_assignable(worker, task, required_role):
     return False
 
 
-def _attempt_to_staff(staffbot, request, worker_certifications):
+def _can_worker_do_more_work_today(worker, task):
+    return False
+
+
+def _attempt_to_automatically_staff(staffbot, request, worker_certifications):
     successfully_staffed = False
     required_role = get_role_from_counter(request.required_role_counter)
     attempted_workers = set()
+    new_task_available_type = (
+        CommunicationPreference.CommunicationType.NEW_TASK_AVAILABLE.value)
+    previously_opted_in_method = (
+        StaffingRequestInquiry.CommunicationMethod.PREVIOUSLY_OPTED_IN.value)
     for certification in worker_certifications:
         worker = certification.worker
         if worker.id in attempted_workers:
             continue
         attempted_workers.add(worker.id)
-        if _is_worker_assignable(worker, request.task, required_role):
-            # TODO(marcua): Assign the worker.
+        if (_is_worker_assignable(worker, request.task, required_role)
+                and _can_worker_do_more_work_today(worker, request.task)):
+            communication_preference = (
+                CommunicationPreference.objects.get(
+                    communication_type=new_task_available_type,
+                    worker=worker))
+            staffing_request_inquiry = StaffingRequestInquiry.objects.create(
+                communication_preference=communication_preference,
+                communication_method=previously_opted_in_method,
+                request=request)
+            handle_staffing_response(
+                worker, staffing_request_inquiry.id, is_available=True)
             successfully_staffed = True
             break
 
@@ -218,7 +237,7 @@ def staff_or_send_request_inquiries(staffbot, request, worker_batch_size):
     uninquired_worker_certifications = (
         worker_certifications
         .exclude(worker__id__in=workers_with_inquiries))
-    successfully_staffed = _attempt_to_staff(
+    successfully_staffed = _attempt_to_automatically_staff(
         staffbot, request, worker_certifications)
     sending_inquiries = StaffBotRequest.Status.SENDING_INQUIRIES.value
     if ((not successfully_staffed)
