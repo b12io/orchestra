@@ -1,5 +1,6 @@
 from annoying.functions import get_object_or_None
 from collections import defaultdict
+from datetime import timedelta
 from django.conf import settings
 from django.urls import reverse
 from django.db import transaction
@@ -18,6 +19,7 @@ from orchestra.models import StaffingResponse
 from orchestra.models import Task
 from orchestra.models import TaskAssignment
 from orchestra.models import Worker
+from orchestra.models import WorkerAvailability
 from orchestra.models import WorkerCertification
 from orchestra.utils.notifications import message_experts_slack_group
 from orchestra.utils.notifications import message_internal_slack_group
@@ -155,8 +157,38 @@ def _is_worker_assignable(worker, task, required_role):
     return False
 
 
-def _can_worker_do_more_work_today(worker, task):
-    return False
+def _can_handle_more_work_today(worker, task):
+    can_handle_more_hours = False
+    today = timezone.now().date()
+    today_abbreviation = ['mon', 'tues', 'wed', 'thurs', 'fri', 'sat', 'sun'][
+        today.weekday()]
+    availability = WorkerAvailability.objects.filter(
+        worker=worker,
+        week=WorkerAvailability.first_day_of_this_week).first()
+    task_hours = task.get_assignable_hours()
+    if availability is not None and task_hours is not None:
+        desired_hours = getattr(
+            availability, 'hours_available_{}'.format(today_abbreviation))
+        responses = StaffingResponse.objects.get(
+            request_inquiry__request__communication_preferences__worker=worker,
+            is_winner=True,
+            created_at__gte=today,
+            created_at__lt=today + timedelta(days=1)
+        )
+        hours_assigned = (
+            response.request_inquiry.request.task.get_assignable_hours()
+            for response in responses)
+        hours_assigned = [
+            hours for hours in hours_assigned if hours is not None]
+        max_tasks = settings.ORCHESTRA_MAX_AUTOSTAFF_TASKS_PER_DAY
+        # TODO(marcua): Do we really want to do min(timecard_hours_worked,
+        # hours_assigned)? I can't tell if I'm being intellectually lazy
+        # or if it's clearer to say "Tell us how many hours of new work
+        # you'd ideally be assigned each day."
+        can_handle_more_hours = (
+            (len(hours_assigned) + 1 <= max_tasks)
+            and (sum(hours_assigned) + task_hours <= desired_hours))
+    return can_handle_more_hours
 
 
 def _attempt_to_automatically_staff(staffbot, request, worker_certifications):
@@ -173,7 +205,7 @@ def _attempt_to_automatically_staff(staffbot, request, worker_certifications):
             continue
         attempted_workers.add(worker.id)
         if (_is_worker_assignable(worker, request.task, required_role)
-                and _can_worker_do_more_work_today(worker, request.task)):
+                and _can_handle_more_work_today(worker, request.task)):
             communication_preference = (
                 CommunicationPreference.objects.get(
                     communication_type=new_task_available_type,
@@ -186,7 +218,6 @@ def _attempt_to_automatically_staff(staffbot, request, worker_certifications):
                 worker, staffing_request_inquiry.id, is_available=True)
             successfully_staffed = True
             break
-
     return successfully_staffed
 
 
