@@ -1,4 +1,3 @@
-from datetime import timedelta
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
@@ -18,9 +17,10 @@ from orchestra.models.core.mixins import TodoMixin
 from orchestra.models.core.mixins import TodoQAMixin
 from orchestra.models.core.mixins import WorkerCertificationMixin
 from orchestra.models.core.mixins import WorkerMixin
-from orchestra.models.core.mixins import WorkerPreferencesMixin
+from orchestra.models.core.mixins import WorkerAvailabilityMixin
 from orchestra.models.core.mixins import WorkflowMixin
 from orchestra.models.core.mixins import WorkflowVersionMixin
+from orchestra.utils.datetime_utils import first_day_of_the_week
 from orchestra.utils.models import BaseModel
 from orchestra.utils.models import ChoicesEnum
 
@@ -303,16 +303,16 @@ class WorkerCertification(WorkerCertificationMixin, models.Model):
     staffing_priority = models.IntegerField(default=0)
 
 
-class WorkerPreferences(WorkerPreferencesMixin, BaseModel):
+class WorkerAvailability(WorkerAvailabilityMixin, BaseModel):
     """
-    WorkPreferences describe a worker's availabilty for work in a given week.
+    WorkerAvailability describe a worker's availabilty for work in a given week.
 
     Attributes:
         worker (orchestra.models.Worker):
-            The worker these preferences belong to.
+            The worker who is available during this week.
         week (datetime.date):
-            The week these preferences apply during. Preferences are active for
-            a 7-day period following the date stored in this field.
+            The week during which the worker is available. Availability is
+            active for a 7-day period following the date stored in this field.
         hours_available_mon (float):
             The number of hours the worker is available to work on Monday of
             the week.
@@ -332,7 +332,7 @@ class WorkerPreferences(WorkerPreferencesMixin, BaseModel):
             The number of hours the worker is available to work on Saturday of
             the week.
         hours_available_sun (float):
-            The number of hours the worker is available to work on Sundayof
+            The number of hours the worker is available to work on Sunday of
             the week.
     """
 
@@ -340,19 +340,17 @@ class WorkerPreferences(WorkerPreferencesMixin, BaseModel):
 
     # The Monday (day 0) of the week these preferences apply for.
     # Default computes the Monday of the current week.
-    def first_day_of_this_week():
-        now = timezone.now()
-        return (now - timedelta(days=now.weekday())).date()
-    week = models.DateField(default=first_day_of_this_week)
+    week = models.DateField(default=first_day_of_the_week)
 
     # Hours available for each day of the week
-    hours_available_mon = models.FloatField(default=0)
-    hours_available_tues = models.FloatField(default=0)
-    hours_available_wed = models.FloatField(default=0)
-    hours_available_thurs = models.FloatField(default=0)
-    hours_available_fri = models.FloatField(default=0)
-    hours_available_sat = models.FloatField(default=0)
-    hours_available_sun = models.FloatField(default=0)
+    hours_available_mon = models.FloatField(default=0, verbose_name="Monday")
+    hours_available_tues = models.FloatField(default=0, verbose_name="Tuesday")
+    hours_available_wed = models.FloatField(default=0, verbose_name="Wednesday")
+    hours_available_thurs = models.FloatField(
+        default=0, verbose_name="Thursday")
+    hours_available_fri = models.FloatField(default=0, verbose_name="Friday")
+    hours_available_sat = models.FloatField(default=0, verbose_name="Saturday")
+    hours_available_sun = models.FloatField(default=0, verbose_name="Sunday")
 
 
 class Project(ProjectMixin, models.Model):

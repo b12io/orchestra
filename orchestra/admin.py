@@ -33,7 +33,7 @@ from orchestra.models import TodoListTemplate
 from orchestra.models import TodoListTemplateImportRecord
 from orchestra.models import Worker
 from orchestra.models import WorkerCertification
-from orchestra.models import WorkerPreferences
+from orchestra.models import WorkerAvailability
 from orchestra.models import Workflow
 from orchestra.models import WorkflowVersion
 from orchestra.todos.import_export import export_to_spreadsheet
@@ -280,8 +280,8 @@ class WorkerCertificationAdmin(AjaxSelectAdmin):
     list_filter = ('task_class', 'role')
 
 
-@admin.register(WorkerPreferences)
-class WorkerPreferencesAdmin(admin.ModelAdmin):
+@admin.register(WorkerAvailability)
+class WorkerAvailabilityAdmin(admin.ModelAdmin):
     list_display = ('id', 'worker', 'week',)
     search_fields = ('worker__user__username', 'worker__user__email',)
     autocomplete_fields = ('worker',)

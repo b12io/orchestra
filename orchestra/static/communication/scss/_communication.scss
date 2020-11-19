@@ -18,7 +18,6 @@
 .staffing-container {
   font-size: 1.2em;
   .card {
-    height: initial;
 
     h2 {
       padding: 125px 0px 125px 0px;
@@ -52,5 +51,14 @@
         width: 15%;
       }
     }
+  }
+
+  .available-tasks {
+    .card {
+      height: initial;
+    }
+  }
+
+  .availability-forms {
   }
 }

@@ -9,7 +9,7 @@ from orchestra.models.core.models import SanityCheck
 from orchestra.models.core.models import Step
 from orchestra.models.core.models import Worker
 from orchestra.models.core.models import WorkerCertification
-from orchestra.models.core.models import WorkerPreferences
+from orchestra.models.core.models import WorkerAvailability
 from orchestra.models.core.models import Project
 from orchestra.models.core.models import Task
 from orchestra.models.core.models import TaskAssignment
@@ -35,7 +35,7 @@ __all__ = [
     'Step',
     'Worker',
     'WorkerCertification',
-    'WorkerPreferences',
+    'WorkerAvailability',
     'Project',
     'Task',
     'TaskAssignment',

@@ -9,7 +9,43 @@
 
 {% block main %}
 <div class="container-fluid main-content staffing-container">
-  <div class="col-lg-12">
+  <!-- Worker availability settings -->
+  <div class="col-lg-12 availability-forms">
+    <div class="card">
+      <h3>Your availability</h3>
+      <div class="col-lg-6">
+        <h4>This week</h4>
+        <table>
+          {% for field in this_week_availability_form %}
+          <tr class="fieldWrapper">
+            <td>
+              {{ field.errors }}
+              {{ field.label_tag }}
+            </td>
+            <td>{{ field }} hours<td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div class="col-lg-6">
+        <h4>Next week</h4>
+        <table>
+          {% for field in next_week_availability_form %}
+          <tr class="fieldWrapper">
+            <td>
+              {{ field.errors }}
+              {{ field.label_tag }}
+            </td>
+            <td>{{ field }} hours<td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table of available tasks -->
+  <div class="col-lg-12 available-tasks">
     <div class="card">
       {% if requests|length > 0 %}
       <table class="table">

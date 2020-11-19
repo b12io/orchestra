@@ -27,6 +27,10 @@
             "review_policy": {
                 "policy": "no_review"
             },
+            "assignable_hours_function": {
+              "path": "v2.machine.assignable_hours",
+              "kwargs": {}
+            },
             "user_interface": {
                 "angular_module": "test_dir.v2.s2",
                 "angular_directive": "s2",
