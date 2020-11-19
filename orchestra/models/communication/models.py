@@ -98,7 +98,7 @@ class StaffBotRequest(StaffBotRequestMixin, BaseModel):
     """
     class RequestCause(ChoicesEnum):
         USER = 'user'
-        AUTOSTAFF = 'autostaff'
+        TASK_POLICY = 'task policy'
         RESTAFF = 'restaff'
 
     class Status(ChoicesEnum):
@@ -128,12 +128,16 @@ class StaffingRequestInquiry(StaffingRequestInquiryMixin, BaseModel):
         request (orchestra.models.StaffBotRequest):
             Request object associated with inquiry
         communication_method (CommunicationMethod):
-            Method by which a worker is going to be contacted
+            Method by which a worker is going to be contacted. If a worker has
+            specified availability for automatic task assignment, we create an
+            inquiry with a communication method of 'already opted in', since we
+            don't actually need to reach out to the worker.
     """
 
     class CommunicationMethod(ChoicesEnum):
         SLACK = 'slack'
         EMAIL = 'email'
+        PREVIOUSLY_OPTED_IN = 'already opted in'
 
     request = models.ForeignKey(StaffBotRequest,
                                 on_delete=models.CASCADE,
