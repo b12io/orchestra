@@ -35,6 +35,7 @@ __all__ = [
     'Step',
     'Worker',
     'WorkerCertification',
+    'WorkerPreferences',
     'Project',
     'Task',
     'TaskAssignment',

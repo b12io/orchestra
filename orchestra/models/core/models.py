@@ -168,6 +168,13 @@ class Step(StepMixin, models.Model):
         todolist_templates_to_apply ([orchestra.models.TodoListTemplate]):
             TodoListTemplates to automatically apply to the todolist of this
             step (only valid for human steps).
+        completion_ends_project (bool):
+            If True, submitting the task associated with this step will mark
+            the entire project as completed.
+        assignable_hours_function (str):
+            A JSON blob used to determine how many hours of human work are
+            expected to be required to complete this step. Used to estimate
+            workload when automatically assigning tasks.
     """
     # General fields
     created_at = models.DateTimeField(default=timezone.now)
@@ -201,6 +208,7 @@ class Step(StepMixin, models.Model):
     todolist_templates_to_apply = models.ManyToManyField('TodoListTemplate',
                                                          blank=True)
     completion_ends_project = models.BooleanField(default=False)
+    assignable_hours_function = JSONField(default={})
 
     class Meta:
         app_label = 'orchestra'
