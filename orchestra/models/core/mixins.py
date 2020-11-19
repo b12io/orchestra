@@ -105,6 +105,12 @@ class WorkerCertificationMixin(object):
         super().save(*args, **kwargs)
 
 
+class WorkerPreferencesMixin(object):
+
+    def __str__(self):
+        return '{} - {}'.format(self.worker.user.username, self.week)
+
+
 class ProjectMixin(object):
 
     def __str__(self):
