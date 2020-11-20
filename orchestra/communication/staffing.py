@@ -22,6 +22,7 @@ from orchestra.models import Worker
 from orchestra.models import WorkerAvailability
 from orchestra.models import WorkerCertification
 from orchestra.utils.datetime_utils import first_day_of_the_week
+from orchestra.utils.datetime_utils import time_entry_hours_worked
 from orchestra.utils.notifications import message_experts_slack_group
 from orchestra.utils.notifications import message_internal_slack_group
 from orchestra.utils.task_lifecycle import assign_task
@@ -176,19 +177,29 @@ def _can_handle_more_work_today(worker, task):
             created_at__gte=today,
             created_at__lt=today + timedelta(days=1)
         )
-        hours_assigned = (
-            response.request_inquiry.request.task.get_assignable_hours()
-            for response in responses)
         hours_assigned = [
-            hours for hours in hours_assigned if hours is not None]
+            (response.request_inquiry.request.task.get_assignable_hours(),
+             response.request_inquiry.request.task)
+            for response in responses]
+        hours_assigned = [
+            (hours, task) for (hours, task) in hours_assigned
+            if hours is not None]
         max_tasks = settings.ORCHESTRA_MAX_AUTOSTAFF_TASKS_PER_DAY
-        # TODO(marcua): Do we really want to do min(timecard_hours_worked,
-        # hours_assigned)? I can't tell if I'm being intellectually lazy
-        # or if it's clearer to say "Tell us how many hours of new work
-        # you'd ideally be assigned each day."
+        # To estimate how much someone worked today, we add:
+        # - the number of assignable hours they were assigned today
+        # - the number of hours they tracked (excluding work completed
+        #   on today's newly assigned work, to avoid double-counting)
+        # We do not attempt to estimate the amount of "unexpected" work,
+        #   like iteration time on an old project the expert has learned
+        #   about over Slack but hasn't yet logged for the day.
+        sum_hours_assigned = sum(hours for (hours, task) in hours_assigned)
+        sum_hours_worked = time_entry_hours_worked(today, worker, exclude=[
+            task for (hours, task) in hours_assigned])
         can_handle_more_hours = (
             (len(hours_assigned) + 1 <= max_tasks)
-            and (sum(hours_assigned) + task_hours <= desired_hours))
+            and (sum_hours_assigned
+                 + sum_hours_worked
+                 + task_hours <= desired_hours))
     return can_handle_more_hours
 
 

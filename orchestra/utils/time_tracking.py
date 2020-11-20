@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.db.models import Sum
 from django.utils import timezone
 
 from orchestra.core.errors import TimerError
@@ -131,3 +132,15 @@ def get_timer_current_duration(worker):
     if timer.start_time is None:
         return None
     return timezone.now() - timer.start_time
+
+
+def time_entry_hours_worked(today, worker, excluded_tasks=None):
+    if excluded_tasks is None:
+        excluded_tasks = []
+    aggregate_time = (
+        TimeEntry.objects
+        .filter(date=today)
+        .filter(worker=worker)
+        .exclude(assignment__task__in=excluded_tasks)
+        .annotate(sum_time_worked=Sum('time_worked')))
+    return aggregate_time.sum_time_worked.total_seconds() / 3600.0
