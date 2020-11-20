@@ -1,9 +1,12 @@
+from datetime import timedelta
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
 from django.forms import modelformset_factory
 from django.shortcuts import render
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 from registration.models import RegistrationProfile
@@ -16,6 +19,10 @@ from orchestra.accounts.forms import UserForm
 from orchestra.accounts.forms import WorkerForm
 from orchestra.models import CommunicationPreference
 from orchestra.models import Worker
+from orchestra.models import WorkerAvailability
+from orchestra.models.core.forms import WorkerAvailabilityForm
+from orchestra.utils.datetime_utils import first_day_of_the_week
+
 
 UserModel = get_user_model()
 
@@ -162,3 +169,53 @@ class CommunicationPreferenceSettingsView(WorkerViewMixin):
             'comm_pref_formset': comm_pref_formset,
             'success': success,
         })
+
+class AvailabilitySettingsView(WorkerViewMixin):
+    template_name = 'accounts/availability_settings.html'
+    form_class = WorkerAvailabilityForm
+
+    def set_context_data(self, request, *args, **kwargs):
+        super().set_context_data(request, *args, **kwargs)
+        now = timezone.now()
+        self.this_week = first_day_of_the_week(now)
+        self.next_week = first_day_of_the_week(now + timedelta(days=7))
+        this_week_availability = WorkerAvailability.objects.filter(
+            worker=self.worker, week=self.this_week).first()
+        next_week_availability = WorkerAvailability.objects.filter(
+            worker=self.worker, week=self.next_week).first()
+        this_week_prefix = 'this_week'
+        next_week_prefix = 'next_week'
+        self.this_week_form = WorkerAvailabilityForm(
+            data=request.POST or None, prefix=this_week_prefix,
+            instance=this_week_availability)
+        self.next_week_form = WorkerAvailabilityForm(
+            data=request.POST or None, prefix=next_week_prefix,
+            instance=next_week_availability)
+
+    def _render(self, request, **kwargs):
+        kwargs.update({
+            'this_week_availability_form': self.this_week_form,
+            'next_week_availability_form': self.next_week_form
+        })
+        return render(request, self.template_name, kwargs)
+
+    def _update_form(self, form, week):
+        success = form.is_valid()
+        if success:
+            # Set private fields we didn't send to the frontend
+            form.instance.worker = self.worker
+            form.instance.week = week
+            form.save()
+        return success
+
+    def get(self, request, *args, **kwargs):
+        return self._render(request)
+
+    def post(self, request, *args, **kwargs):
+        this_week_success = self._update_form(
+            self.this_week_form, self.this_week)
+        next_week_success = self._update_form(
+            self.next_week_form, self.next_week)
+
+        return self._render(
+            request, sucess=this_week_success and next_week_success)

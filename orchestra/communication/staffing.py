@@ -22,7 +22,7 @@ from orchestra.models import Worker
 from orchestra.models import WorkerAvailability
 from orchestra.models import WorkerCertification
 from orchestra.utils.datetime_utils import first_day_of_the_week
-from orchestra.utils.datetime_utils import time_entry_hours_worked
+# from orchestra.utils.datetime_utils import time_entry_hours_worked
 from orchestra.utils.notifications import message_experts_slack_group
 from orchestra.utils.notifications import message_internal_slack_group
 from orchestra.utils.task_lifecycle import assign_task

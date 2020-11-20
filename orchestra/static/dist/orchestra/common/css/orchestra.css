@@ -199,6 +199,26 @@ a.logo {
 .account-settings #id_phone_1 {
   width: 70%; }
 
+.account-settings .availability-forms {
+  display: flex;
+  justify-content: space-between; }
+
+.account-settings .availability-form input {
+  max-width: 100px; }
+
+.account-settings .availability-form td {
+  text-align: right;
+  padding: 0 12px 6px 0; }
+
+.account-settings .availability-form label {
+  margin-bottom: 0;
+  font-size: 13px;
+  font-weight: 400; }
+
+.account-settings .availability-form__heading {
+  font-size: 14px;
+  font-weight: 600; }
+
 .communication-container {
   text-align: center; }
   .communication-container .card {

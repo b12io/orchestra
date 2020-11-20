@@ -1,0 +1,59 @@
+{% extends "orchestra/base.html" %}
+{% load staticfiles %}
+{% load widget_tweaks %}
+
+{% block title %}Communication Preference Settings{% endblock %}
+
+{% block main %}
+<div class="main-content login-wrap account-settings container-fluid">
+  <div class="row">
+    <div class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 col-xs-12">
+      {% include "accounts/settings-tabs.html" with availability_settings="selected" %}
+      <div class="card">
+        <form action="{% url 'orchestra:availability_settings' %}" method="post">
+          {% csrf_token %}
+          <div class="container-fluid">
+            <div class="row availability-forms">
+              <div class="availability-form">
+                <div class="availability-form__heading">This week</div>
+                <table>
+                  {% for field in this_week_availability_form %}
+                  <tr>
+                    <td>
+                      {{ field.errors }}
+                      {{ field.label_tag }}
+                    </td>
+                    <td>{{ field }} hours<td>
+                  </tr>
+                  {% endfor %}
+                </table>
+              </div>
+              <div class="availability-form">
+                <div class="availability-form__heading">Next week</div>
+                <table>
+                  {% for field in next_week_availability_form %}
+                  <tr>
+                    <td>
+                      {{ field.errors }}
+                      {{ field.label_tag }}
+                    </td>
+                    <td>{{ field }} hours<td>
+                  </tr>
+                  {% endfor %}
+                </table>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-12">
+                <div class="account-actions">
+                  <button type="submit" class="btn btn-primary">Update availability</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
