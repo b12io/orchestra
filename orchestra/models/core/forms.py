@@ -1,21 +1,14 @@
 from django.conf import settings
 from django.forms import FloatField
 from django.forms import ModelForm
-from django.forms import ValidationError
 
 from orchestra.models import WorkerAvailability
 
 
 class DailyAvailabilityField(FloatField):
-    def validate(self, value):
-        super().validate(value)
-        max_hours = settings.ORCHESTRA_MAX_AUTOSTAFF_HOURS_PER_DAY
-        if value < 0 or value >= max_hours:
-            raise ValidationError(
-                _('Hours must be between 0 and %(max_hours)s'),
-                code='invalid_hours',
-                params={'max_hours': max_hours},
-            )
+    def __init__(self, *args, **kwargs):
+        max_value = settings.ORCHESTRA_MAX_AUTOSTAFF_HOURS_PER_DAY
+        super().__init__(*args, min_value=0, max_value=max_value, **kwargs)
 
 
 class WorkerAvailabilityForm(ModelForm):
