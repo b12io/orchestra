@@ -27,10 +27,6 @@
     table {
       table-layout: fixed;
 
-      td:first-child, th:first-child {
-        padding-left: 20px;
-      }
-
       .row-project {
         width: 15%;
       }
@@ -57,8 +53,45 @@
     .card {
       height: initial;
     }
+
+    table {
+      td:first-child, th:first-child {
+        padding-left: 20px;
+      }
+    }
   }
 
   .availability-forms {
+    .card {
+      padding: 20px;
+      height: 320px;
+    }
+
+    h3 {
+      margin-bottom: 14px;
+    }
+
+    h4 {
+      margin-bottom: 12px;
+    }
+
+    .availability-form {
+      float: left;
+      padding-right: 64px;
+      font-size: 14px;
+
+      input {
+        max-width: 100px;
+      }
+    }
+
+    td {
+      text-align: right;
+      padding: 0 12px 6px 0;
+    }
+
+    label {
+      margin-bottom: 0;
+    }
   }
 }

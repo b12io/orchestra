@@ -11,37 +11,43 @@
 <div class="container-fluid main-content staffing-container">
   <!-- Worker availability settings -->
   <div class="col-lg-12 availability-forms">
-    <div class="card">
-      <h3>Your availability</h3>
-      <div class="col-lg-6">
-        <h4>This week</h4>
-        <table>
-          {% for field in this_week_availability_form %}
-          <tr class="fieldWrapper">
-            <td>
-              {{ field.errors }}
-              {{ field.label_tag }}
-            </td>
-            <td>{{ field }} hours<td>
-          </tr>
-          {% endfor %}
-        </table>
+    <form method="post">
+      {% csrf_token %}
+      <div class="card">
+        <h3>Your availability</h3>
+        <div class="availability-form">
+          <h4>This week</h4>
+          <table>
+            {% for field in this_week_availability_form %}
+            <tr class="fieldWrapper">
+              <td>
+                {{ field.errors }}
+                {{ field.label_tag }}
+              </td>
+              <td>{{ field }} hours<td>
+            </tr>
+            {% endfor %}
+          </table>
+        </div>
+        <div class="availability-form">
+          <h4>Next week</h4>
+          <table>
+            {% for field in next_week_availability_form %}
+            <tr class="fieldWrapper">
+              <td>
+                {{ field.errors }}
+                {{ field.label_tag }}
+              </td>
+              <td>{{ field }} hours<td>
+            </tr>
+            {% endfor %}
+          </table>
+        </div>
+        <div>
+          <input type="submit" value="Save and refresh" class="btn btn-primary btn-lg/" >
+        </div>
       </div>
-      <div class="col-lg-6">
-        <h4>Next week</h4>
-        <table>
-          {% for field in next_week_availability_form %}
-          <tr class="fieldWrapper">
-            <td>
-              {{ field.errors }}
-              {{ field.label_tag }}
-            </td>
-            <td>{{ field }} hours<td>
-          </tr>
-          {% endfor %}
-        </table>
-      </div>
-    </div>
+    </form>
   </div>
 
   <!-- Table of available tasks -->
