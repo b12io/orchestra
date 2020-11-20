@@ -52,10 +52,9 @@ class WorkerForm(forms.ModelForm):
 
 class CommunicationPreferenceForm(forms.ModelForm):
     methods = BitFormField()
-    communication_type = forms.IntegerField(required=False)
 
     class Meta:
         model = CommunicationPreference
-        fields = ('methods', 'communication_type')
+        fields = ('methods',)
         exclude = ('worker', 'is_deleted',
                    'created_at')

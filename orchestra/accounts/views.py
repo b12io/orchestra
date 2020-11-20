@@ -141,7 +141,7 @@ class CommunicationPreferenceSettingsView(WorkerViewMixin):
 
     def set_method_choices(self, formset):
         for form in formset:
-            comm_type = form.initial.get('communication_type')
+            comm_type = form.instance.communication_type
             choices = self.method_choices.get(comm_type,
                                               self.default_choices)
             form.fields['methods'] = BitFormField(choices=self.default_choices,
@@ -161,7 +161,6 @@ class CommunicationPreferenceSettingsView(WorkerViewMixin):
             data=request.POST)
         self.set_method_choices(comm_pref_formset)
         success = comm_pref_formset.is_valid()
-
         if success:
             comm_pref_formset.save()
         return render(request, self.template_name, {
