@@ -337,7 +337,8 @@ class WorkerAvailability(WorkerAvailabilityMixin, BaseModel):
             the week.
     """
 
-    worker = models.ForeignKey(Worker, on_delete=models.CASCADE)
+    worker = models.ForeignKey(Worker, on_delete=models.CASCADE,
+                               related_name='availabilities')
 
     # The Monday (day 0) of the week these preferences apply for.
     # Default computes the Monday of the current week.

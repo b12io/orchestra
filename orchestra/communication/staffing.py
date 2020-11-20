@@ -277,11 +277,14 @@ def staff_or_send_request_inquiries(staffbot, request, worker_batch_size):
                 certification__in=(request.task
                                    .step.required_certifications.all()))
         .order_by('-staffing_priority', '?'))
+    available_worker_certifications = (
+        worker_certifications
+        .filter(worker__availabilities__week=first_day_of_the_week()))
     uninquired_worker_certifications = (
         worker_certifications
         .exclude(worker__id__in=workers_with_inquiries))
     successfully_staffed = _attempt_to_automatically_staff(
-        staffbot, request, worker_certifications)
+        staffbot, request, available_worker_certifications)
     sending_inquiries = StaffBotRequest.Status.SENDING_INQUIRIES.value
     if ((not successfully_staffed)
             and (request.status == sending_inquiries)):
