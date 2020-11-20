@@ -22,6 +22,89 @@
   to {
     transform: rotate(360deg); } }
 
+.hijacked-warning {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 50px;
+  padding: 5px 10px;
+  position: fixed; }
+  .hijacked-warning__message {
+    font-size: 14px;
+    line-height: 16px;
+    text-align: left;
+    font-weight: normal; }
+    .hijacked-warning__message span {
+      font-weight: bold; }
+  .hijacked-warning__actions {
+    display: flex;
+    justify-content: flex-end; }
+  .hijacked-warning__show {
+    display: none;
+    align-items: center;
+    background: #ae9e49;
+    position: absolute;
+    right: 10px;
+    top: 100%;
+    border-radius: 0 0 6px 6px;
+    padding: 3px 9px;
+    cursor: pointer; }
+    .hijacked-warning__show path {
+      fill: #000; }
+    .hijacked-warning__show span {
+      font-size: 11px;
+      line-height: 11px;
+      text-transform: uppercase;
+      font-weight: bold;
+      margin-left: 5px;
+      color: #000;
+      letter-spacing: 1px; }
+  .hijacked-warning__button {
+    margin: 0 0 0 10px;
+    box-sizing: border-box;
+    font-size: 14px;
+    line-height: 20px;
+    position: relative;
+    display: inline-block;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    user-select: none;
+    transition: all 0.1s ease-in-out;
+    text-decoration: none;
+    background: #ffffff;
+    border-radius: 3px;
+    color: #4d4d4d;
+    padding: 4px 16px;
+    cursor: pointer;
+    border: 1px solid #ae9e49; }
+    .hijacked-warning__button:hover {
+      background: #fcfcfc; }
+    .hijacked-warning__button:focus, .hijacked-warning__button:active {
+      border-color: #ae9e49;
+      box-shadow: inset 0px 0px 0px 1px #ae9e49;
+      outline: none;
+      text-decoration: none;
+      position: relative;
+      z-index: 10; }
+  .hijacked-warning ~ #container {
+    padding-top: 50px; }
+    .hijacked-warning ~ #container .header {
+      top: 50px; }
+    .hijacked-warning ~ #container .timecard-view {
+      top: 150px; }
+
+.hijack-message-hidden .hijacked-warning {
+  top: -44px; }
+  .hijack-message-hidden .hijacked-warning__show {
+    display: flex; }
+  .hijack-message-hidden .hijacked-warning ~ #container {
+    padding-top: 6px; }
+    .hijack-message-hidden .hijacked-warning ~ #container .header {
+      top: 6px; }
+    .hijack-message-hidden .hijacked-warning ~ #container .timecard-view {
+      top: 106px; }
+
 .timer {
   font-size: 18px; }
   .timer .popover-toggle {

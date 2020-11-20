@@ -74,3 +74,124 @@ $main-font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helveti
      transform:rotate(360deg);
   }
 }
+
+// styles related to the hijack banner
+.hijacked-warning {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 50px;
+  padding: 5px 10px;
+  position: fixed;
+
+  &__message {
+    font-size: 14px;
+    line-height: 16px;
+    text-align: left;
+    font-weight: normal;
+
+    span {
+      font-weight: bold;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  &__show {
+    display: none;
+    align-items: center;
+    background: #ae9e49;
+    position: absolute;
+    right: 10px;
+    top: 100%;
+    border-radius: 0 0 6px 6px;
+    padding: 3px 9px;
+    cursor: pointer;
+
+    path {
+      fill: #000;
+    }
+
+    span {
+      font-size: 11px;
+      line-height: 11px;
+      text-transform: uppercase;
+      font-weight: bold;
+      margin-left: 5px;
+      color: #000;
+      letter-spacing: 1px;
+    }
+  }
+
+  &__button {
+    margin: 0 0 0 10px;
+    box-sizing: border-box;
+    font-size: 14px;
+    line-height: 20px;
+    position: relative;
+    display: inline-block;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    user-select: none;
+    transition: all 0.1s ease-in-out;
+    text-decoration: none;
+    background: #ffffff;
+    border-radius: 3px;
+    color: #4d4d4d;
+    padding: 4px 16px;
+    cursor: pointer;
+    border: 1px solid #ae9e49;
+
+    &:hover {
+      background: #fcfcfc;
+    }
+
+    &:focus,
+    &:active {
+      border-color: #ae9e49;
+      box-shadow: inset 0px 0px 0px 1px #ae9e49;
+      outline: none;
+      text-decoration: none;
+      position: relative;
+      z-index: 10;
+    }
+  }
+
+  ~ #container {
+    padding-top: 50px;
+
+    .header {
+      top: 50px;
+    }
+
+    .timecard-view {
+      top: 150px;
+    }
+  }
+}
+
+.hijack-message-hidden {
+  .hijacked-warning {
+    top: -44px;
+
+    &__show {
+      display: flex;
+    }
+
+    ~ #container {
+      padding-top: 6px;
+
+      .header {
+        top: 6px;
+      }
+
+      .timecard-view {
+        top: 106px;
+      }
+    }
+  }
+}
