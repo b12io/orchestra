@@ -217,5 +217,6 @@ class AvailabilitySettingsView(WorkerViewMixin):
         next_week_success = self._update_form(
             self.next_week_form, self.next_week)
 
+        print(this_week_success, next_week_success)
         return self._render(
             request, sucess=this_week_success and next_week_success)

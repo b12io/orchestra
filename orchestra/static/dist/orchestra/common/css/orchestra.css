@@ -206,7 +206,7 @@ a.logo {
 .account-settings .availability-form input {
   max-width: 100px; }
 
-.account-settings .availability-form td {
+.account-settings .availability-form td:first-child {
   text-align: right;
   padding: 0 12px 6px 0; }
 
