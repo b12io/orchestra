@@ -305,7 +305,8 @@ class WorkerCertification(WorkerCertificationMixin, models.Model):
 
 class WorkerAvailability(WorkerAvailabilityMixin, BaseModel):
     """
-    WorkerAvailability describe a worker's availabilty for work in a given week.
+    WorkerAvailability describes a worker's availabilty for work
+    in a given week.
 
     Attributes:
         worker (orchestra.models.Worker):
@@ -343,14 +344,15 @@ class WorkerAvailability(WorkerAvailabilityMixin, BaseModel):
     week = models.DateField(default=first_day_of_the_week)
 
     # Hours available for each day of the week
-    hours_available_mon = models.FloatField(default=0, verbose_name="Monday")
-    hours_available_tues = models.FloatField(default=0, verbose_name="Tuesday")
-    hours_available_wed = models.FloatField(default=0, verbose_name="Wednesday")
+    hours_available_mon = models.FloatField(default=0, verbose_name='Monday')
+    hours_available_tues = models.FloatField(default=0, verbose_name='Tuesday')
+    hours_available_wed = models.FloatField(
+        default=0, verbose_name='Wednesday')
     hours_available_thurs = models.FloatField(
-        default=0, verbose_name="Thursday")
-    hours_available_fri = models.FloatField(default=0, verbose_name="Friday")
-    hours_available_sat = models.FloatField(default=0, verbose_name="Saturday")
-    hours_available_sun = models.FloatField(default=0, verbose_name="Sunday")
+        default=0, verbose_name='Thursday')
+    hours_available_fri = models.FloatField(default=0, verbose_name='Friday')
+    hours_available_sat = models.FloatField(default=0, verbose_name='Saturday')
+    hours_available_sun = models.FloatField(default=0, verbose_name='Sunday')
 
 
 class Project(ProjectMixin, models.Model):
