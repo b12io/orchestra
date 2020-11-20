@@ -21,6 +21,7 @@ from orchestra.models import TaskAssignment
 from orchestra.models import Worker
 from orchestra.models import WorkerAvailability
 from orchestra.models import WorkerCertification
+from orchestra.utils.datetime_utils import first_day_of_the_week
 from orchestra.utils.notifications import message_experts_slack_group
 from orchestra.utils.notifications import message_internal_slack_group
 from orchestra.utils.task_lifecycle import assign_task
@@ -164,7 +165,7 @@ def _can_handle_more_work_today(worker, task):
         today.weekday()]
     availability = WorkerAvailability.objects.filter(
         worker=worker,
-        week=WorkerAvailability.first_day_of_this_week).first()
+        week=first_day_of_the_week()).first()
     task_hours = task.get_assignable_hours()
     if availability is not None and task_hours is not None:
         desired_hours = getattr(
