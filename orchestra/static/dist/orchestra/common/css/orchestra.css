@@ -230,42 +230,24 @@ a.logo {
 
 .staffing-container {
   font-size: 1.2em; }
-  .staffing-container .card h2 {
-    padding: 125px 0px 125px 0px;
-    text-align: center; }
-  .staffing-container .card table {
-    table-layout: fixed; }
-    .staffing-container .card table .row-project {
-      width: 15%; }
-    .staffing-container .card table .row-project-description {
-      width: 20%; }
-    .staffing-container .card table .row-task {
-      width: 20%; }
-    .staffing-container .card table .row-details {
-      width: 20%; }
-    .staffing-container .card table .row-created-at {
-      width: 10%; }
-    .staffing-container .card table .row-actions {
-      width: 15%; }
-  .staffing-container .available-tasks .card {
+  .staffing-container .card {
     height: initial; }
-  .staffing-container .available-tasks table td:first-child, .staffing-container .available-tasks table th:first-child {
-    padding-left: 20px; }
-  .staffing-container .availability-forms .card {
-    padding: 20px;
-    height: 320px; }
-  .staffing-container .availability-forms h3 {
-    margin-bottom: 14px; }
-  .staffing-container .availability-forms h4 {
-    margin-bottom: 12px; }
-  .staffing-container .availability-forms .availability-form {
-    float: left;
-    padding-right: 64px;
-    font-size: 14px; }
-    .staffing-container .availability-forms .availability-form input {
-      max-width: 100px; }
-  .staffing-container .availability-forms td {
-    text-align: right;
-    padding: 0 12px 6px 0; }
-  .staffing-container .availability-forms label {
-    margin-bottom: 0; }
+    .staffing-container .card h2 {
+      padding: 125px 0px 125px 0px;
+      text-align: center; }
+    .staffing-container .card table {
+      table-layout: fixed; }
+      .staffing-container .card table td:first-child, .staffing-container .card table th:first-child {
+        padding-left: 20px; }
+      .staffing-container .card table .row-project {
+        width: 15%; }
+      .staffing-container .card table .row-project-description {
+        width: 20%; }
+      .staffing-container .card table .row-task {
+        width: 20%; }
+      .staffing-container .card table .row-details {
+        width: 20%; }
+      .staffing-container .card table .row-created-at {
+        width: 10%; }
+      .staffing-container .card table .row-actions {
+        width: 15%; }
