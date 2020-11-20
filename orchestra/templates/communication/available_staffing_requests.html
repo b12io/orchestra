@@ -54,7 +54,7 @@
           <th class="row-project-description">Project description</th>
           <th class="row-task">Task</th>
           <th class="row-details">Details</th>
-          <th class="row-created-at">Task created at</th>
+          <th class="row-created-at">Available since</th>
           <th class="row-actions">Actions</th>
         </tr>
         {% for request in requests %}
@@ -63,7 +63,7 @@
           <td>{{ request.project_description }}</td>
           <td>{% if request.role_counter > 0 %}[Review] {% endif %}{{ request.step_description }}</td>
           <td>{{ request.detailed_description | safe }}</td>
-          <td>{{ request.task.start_datetime|date:"m/d/Y H:i" }}</td>
+          <td>{{ request.available_datetime|date:"m/d/Y H:i" }}</td>
           <td>
             <a href="{{ request.accept_url }}" class="btn btn-primary btn-sm" role="button">Accept</a>
             <a href="{{ request.reject_url }}" class="btn btn-primary btn-sm" role="button">Ignore</a>

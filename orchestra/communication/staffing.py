@@ -296,7 +296,7 @@ def get_available_requests(worker):
         StaffingRequestInquiry.objects
         .filter(request__in=remaining_requests)
         .filter(communication_preference__worker=worker)
-        .order_by('request__task__start_datetime'))
+        .order_by('request__created_at'))
     # Because we might send multiple request inquiries to the same
     # worker for the same request (e.g., email and slack), we
     # deduplicate the inquiries so that we will return at most one

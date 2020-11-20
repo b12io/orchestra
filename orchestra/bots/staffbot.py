@@ -296,7 +296,7 @@ class StaffBot(BaseBot):
             'workflow_description': workflow_description,
             'project_description': project_description,
             'detailed_description': detailed_description,
-            'task': staffbot_request.task
+            'available_datetime': staffbot_request.created_at
         }
 
     def _get_staffing_request_message(self, staffing_request_inquiry,
