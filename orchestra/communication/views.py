@@ -66,9 +66,11 @@ def available_staffing_requests(request):
     next_week_prefix = 'next_week'
 
     this_week_form = WorkerAvailabilityForm(
-        data=request.POST or None, prefix=this_week_prefix, instance=this_week_availability)
+        data=request.POST or None, prefix=this_week_prefix,
+        instance=this_week_availability)
     next_week_form = WorkerAvailabilityForm(
-        data=request.POST or None, prefix=next_week_prefix, instance=next_week_availability)
+        data=request.POST or None, prefix=next_week_prefix,
+        instance=next_week_availability)
 
     # If this was a POST submittion, update the forms with the latest data.
     if request.method == 'POST':
