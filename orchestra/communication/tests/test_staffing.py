@@ -343,13 +343,12 @@ class StaffingTestCase(OrchestraTestCase):
 
         # Tasks should be sorted by start_datetime in ascending order.
 
-        first_task, second_task, third_task = (
-            available_requests[0]['task'], available_requests[1]['task'],
-            available_requests[2]['task'])
-        self.assertLess(
-            first_task.start_datetime, second_task.start_datetime)
-        self.assertLess(
-            second_task.start_datetime, third_task.start_datetime)
+        first_available, second_available, third_available = (
+            available_requests[0]['available_datetime'],
+            available_requests[1]['available_datetime'],
+            available_requests[2]['available_datetime'])
+        self.assertLess(first_available, second_available)
+        self.assertLess(second_available, third_available)
 
         # `self.worker` will lose an available task (they accept it),
         # whereas `worker2` is unchanged.
