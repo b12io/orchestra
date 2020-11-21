@@ -193,8 +193,9 @@ def _can_handle_more_work_today(worker, task):
         #   like iteration time on an old project the expert has learned
         #   about over Slack but hasn't yet logged for the day.
         sum_hours_assigned = sum(hours for (hours, task) in hours_assigned)
-        sum_hours_worked = time_entry_hours_worked(today, worker, exclude=[
-            task for (hours, task) in hours_assigned])
+        sum_hours_worked = time_entry_hours_worked(
+            today, worker, excluded_tasks=[
+                task for (hours, task) in hours_assigned])
         can_handle_more_hours = (
             (len(hours_assigned) + 1 <= max_tasks)
             and (sum_hours_assigned

@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.db import transaction
 from django.db.models import Sum
 from django.utils import timezone
@@ -142,5 +144,6 @@ def time_entry_hours_worked(today, worker, excluded_tasks=None):
         .filter(date=today)
         .filter(worker=worker)
         .exclude(assignment__task__in=excluded_tasks)
-        .annotate(sum_time_worked=Sum('time_worked')))
-    return aggregate_time.sum_time_worked.total_seconds() / 3600.0
+        .aggregate(sum_time_worked=Sum('time_worked')))
+    total_duration = aggregate_time['sum_time_worked'] or timedelta(seconds=0)
+    return total_duration.total_seconds() / 3600.0

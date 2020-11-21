@@ -68,12 +68,13 @@ def get_slack_user_id(slack_username):
 def add_worker_to_project_team(worker, project):
     slack = OrchestraSlackService()
     try:
-        user_id = slack.users.get_user_id(worker.slack_username)
-        response = slack.groups.invite(project.slack_group_id, user_id)
+        slack_user_id = worker.slack_user_id
+        response = slack.groups.invite(
+            project.slack_group_id, slack_user_id)
         if not response.body.get('already_in_group'):
             welcome_message = (
-                '<@{}|{}> has been added to the team. '
-                'Welcome aboard!').format(user_id, worker.slack_username)
+                '<@{}> has been added to the team. '
+                'Welcome aboard!').format(slack_user_id)
             slack.chat.post_message(project.slack_group_id, welcome_message)
     except SlackError:
         logger.exception('Slack API Error')

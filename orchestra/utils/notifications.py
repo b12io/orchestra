@@ -162,11 +162,10 @@ def _notify_slack_status_change(task, current_worker, slack_api_key,
         Task.Status.COMPLETE: 'Task has been completed.',
         Task.Status.ABORTED: 'Task has been aborted.',
     }
-    slack_username = getattr(current_worker, 'slack_username', None)
     worker_string = current_worker.user.username if current_worker else None
-    if current_worker and slack_username and with_user_mention:
-        user_id = slack.users.get_user_id(slack_username)
-        worker_string += ' (<@{}|{}>)'.format(user_id, slack_username)
+    slack_user_id = current_worker.slack_user_id if current_worker else None
+    if slack_user_id and with_user_mention:
+        worker_string += ' (<@{}>)'.format(slack_user_id)
     slack_message = ('*{}*\n'
                      '>>>'
                      'Current worker: {}'
