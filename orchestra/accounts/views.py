@@ -169,6 +169,7 @@ class CommunicationPreferenceSettingsView(WorkerViewMixin):
             'success': success,
         })
 
+
 class AvailabilitySettingsView(WorkerViewMixin):
     template_name = 'accounts/availability_settings.html'
     form_class = WorkerAvailabilityForm

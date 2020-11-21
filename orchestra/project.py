@@ -1,5 +1,3 @@
-from django.conf import settings
-
 from orchestra.communication.slack import create_project_slack_group
 from orchestra.google_apps.convenience import create_project_google_folder
 from orchestra.models import Project
