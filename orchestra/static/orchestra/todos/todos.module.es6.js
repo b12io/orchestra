@@ -10,9 +10,10 @@ import todoApi from 'orchestra/todos/todos.service.es6.js'
 import todoListTemplateApi from 'orchestra/todos/todolist-template.service.es6.js'
 import todoQaApi from 'orchestra/todos/todo-qas.service.es6.js'
 import 'angular-ui-tree'
+import 'angular-linkify'
 
 const name = 'orchestra.todos'
-angular.module(name, ['ui.select', 'ngSanitize', 'ui.tree', common])
+angular.module(name, ['ui.select', 'ngSanitize', 'ui.tree', 'linkify', common])
   .directive('todoList', todoList)
   .directive('todoChecklist', todoChecklist)
   .directive('todoQa', todoQa)
