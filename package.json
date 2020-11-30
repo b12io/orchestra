@@ -7,6 +7,7 @@
   "devDependencies": {
     "angular-smart-table": "2.1.11",
     "angular-ui-tree": "2.22.6",
+    "angular-linkify": "2.0.0",
     "babel-core": "^6.14.0",
     "babel-loader": "7.1.1",
     "babel-plugin-angularjs-annotate": "0.10.0",
