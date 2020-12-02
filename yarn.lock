@@ -148,11 +148,6 @@ amdefine@>=0.0.4:
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
-angular-linkify@2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/angular-linkify/-/angular-linkify-2.0.0.tgz#5c156667216110df6d19a9a7ced973445712dd22"
-  integrity sha1-XBVmZyFhEN9tGamnztlzRFcS3SI=
-
 angular-smart-table@2.1.11:
   version "2.1.11"
   resolved "https://registry.yarnpkg.com/angular-smart-table/-/angular-smart-table-2.1.11.tgz#d0ca625f5bfb873bf3748ab861c82892e42ddfa2"
