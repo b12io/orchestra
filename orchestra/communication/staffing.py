@@ -208,6 +208,7 @@ def get_available_requests(worker):
         .filter(inquiries__communication_preference__worker=worker)
         .exclude(status=StaffBotRequest.Status.CLOSED.value)
         .exclude(task__project__status=Project.Status.COMPLETED)
+        .exclude(task__project__status=Project.Status.ABORTED)
         .exclude(task__status=Task.Status.COMPLETE)
         .exclude(task__status=Task.Status.ABORTED)
         .exclude(inquiries__responses__in=worker_provided_responses)
