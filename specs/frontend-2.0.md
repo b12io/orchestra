@@ -1,5 +1,3 @@
-(Trying something new and writing tech specs/roadmappy ideas in public. Yay community!)
-
 Elena, Elston, Aditya, Ashley, and marcua have all discussed various aspects of Orchestra’s frontend 2.0. Elena speficially has been working on a super-awesome tech spec for bringing us to a modernized React-based codebase. marcua wanted to summarize some ideas he's discussed with Ashley and Aditya that likely won’t change Elena's implementation details, but will likely influence how we prioritize the multiple releases of the implementation.
 
 * In terms of releasing a new Orchestra frontend in pieces, we can release the new Orchestra app at /orchestra2/app/ while maintaining the old one at /orchestra/app/.
