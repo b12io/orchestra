@@ -35,7 +35,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django_gulp',
     'django.contrib.staticfiles',
-    'kronos',
 )
 
 # django-gulp settings
