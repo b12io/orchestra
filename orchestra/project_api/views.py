@@ -4,12 +4,14 @@ from urllib.parse import urlunsplit
 
 from django.urls import reverse
 from jsonview.exceptions import BadRequest
+from rest_framework import generics
 
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import WorkerCertificationError
 from orchestra.models import Project
 from orchestra.models import WorkerCertification
 from orchestra.models import Workflow
+from orchestra.models import TodoListTemplate
 from orchestra.project import create_project_with_tasks
 from orchestra.project_api.api import get_project_information
 from orchestra.utils.decorators import api_endpoint
@@ -19,6 +21,7 @@ from orchestra.utils.notifications import message_experts_slack_group
 from orchestra.project_api.auth import OrchestraProjectAPIAuthentication
 from orchestra.project_api.auth import IsSignedUser
 from orchestra.todos.views import GenericTodoViewset
+from orchestra.todos.serializers import TodoListTemplateSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -164,3 +167,11 @@ class TodoApiViewset(GenericTodoViewset):
     """
     permission_classes = (IsSignedUser,)
     authentication_classes = (OrchestraProjectAPIAuthentication,)
+
+
+class TodoTemplatesList(generics.ListAPIView):
+    permission_classes = (IsSignedUser,)
+    authentication_classes = (OrchestraProjectAPIAuthentication,)
+
+    serializer_class = TodoListTemplateSerializer
+    queryset = TodoListTemplate.objects.all()
