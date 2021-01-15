@@ -6,15 +6,52 @@ from rest_framework.test import APIClient
 
 from orchestra.models import Todo
 from orchestra.tests.helpers.fixtures import TodoFactory
+from orchestra.tests.helpers.fixtures import TodoListTemplateFactory
 from orchestra.tests.helpers.fixtures import StepFactory
 from orchestra.tests.helpers.fixtures import ProjectFactory
 from orchestra.tests.helpers.fixtures import WorkflowVersionFactory
 from orchestra.project_api.auth import SignedUser
 from orchestra.orchestra_api import create_todos
 from orchestra.orchestra_api import get_todos
+from orchestra.orchestra_api import get_todo_templates
 from orchestra.orchestra_api import update_todos
 from orchestra.orchestra_api import delete_todos
 from orchestra.orchestra_api import OrchestraError
+
+
+class TodoTemplatesAPITests(TestCase):
+    def setUp(self):
+        super().setUp()
+        self.request_client = APIClient(enforce_csrf_checks=True)
+        self.request_client.force_authenticate(user=SignedUser())
+        
+    @patch('orchestra.orchestra_api.requests')
+    def test_get_todo_templates(self, mock_request):
+        # This converts `requests.get` into DRF's `APIClient.get`
+        # To make it testable
+        def get(url, *args, **kwargs):
+            return_value = self.request_client.get(url, format='json')
+            return_value.text = json.dumps(return_value.data)
+            return return_value
+
+        mock_request.get = get
+
+        template1 = TodoListTemplateFactory()
+        template2 = TodoListTemplateFactory()
+
+        # Get template1 and template2
+        res = get_todo_templates()
+        self.assertEqual(len(res), 2)
+        expected_ids = [template1.id, template2.id]
+        for r in res:
+            self.assertIn(r['id'], expected_ids)
+
+
+        # # Get newly created template3
+        template3 = TodoListTemplateFactory()
+        res = get_todo_templates()
+        self.assertEqual(len(res), 3)
+        self.assertEqual(res[2]['id'], template3.id)
 
 
 class TodoAPITests(TestCase):
