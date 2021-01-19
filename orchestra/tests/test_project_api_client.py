@@ -14,6 +14,7 @@ from orchestra.project_api.auth import SignedUser
 from orchestra.orchestra_api import create_todos
 from orchestra.orchestra_api import get_todos
 from orchestra.orchestra_api import get_todo_templates
+from orchestra.orchestra_api import create_todos_from_template
 from orchestra.orchestra_api import update_todos
 from orchestra.orchestra_api import delete_todos
 from orchestra.orchestra_api import OrchestraError
@@ -24,7 +25,18 @@ class TodoTemplatesAPITests(TestCase):
         super().setUp()
         self.request_client = APIClient(enforce_csrf_checks=True)
         self.request_client.force_authenticate(user=SignedUser())
-        
+
+        self.todolist_template_slug = 'test_todolist_template_slug'
+        self.todolist_template_name = 'test_todolist_template_name'
+        self.todolist_template_description = \
+            'test_todolist_template_description'
+        self.workflow_version = WorkflowVersionFactory()
+        self.step = StepFactory(
+            slug='step-slug',
+            workflow_version=self.workflow_version)
+        self.project = ProjectFactory(
+            workflow_version=self.workflow_version)
+
     @patch('orchestra.orchestra_api.requests')
     def test_get_todo_templates(self, mock_request):
         # This converts `requests.get` into DRF's `APIClient.get`
@@ -46,12 +58,52 @@ class TodoTemplatesAPITests(TestCase):
         for r in res:
             self.assertIn(r['id'], expected_ids)
 
-
         # # Get newly created template3
         template3 = TodoListTemplateFactory()
         res = get_todo_templates()
         self.assertEqual(len(res), 3)
         self.assertEqual(res[2]['id'], template3.id)
+
+    @patch('orchestra.orchestra_api.requests')
+    def test_create_todos_from_template(self, mock_request):
+        # This converts `requests.post` into DRF's `APIClient.post`
+        # To make it testable
+        def post(url, *args, **kwargs):
+            kw = kwargs.get('data', '')
+            data = json.loads(kw)
+            return_value = self.request_client.post(url, data, format='json')
+            return_value.text = json.dumps(return_value.json())
+            return return_value
+
+        todolist_template = TodoListTemplateFactory(
+            slug=self.todolist_template_slug,
+            name=self.todolist_template_name,
+            description=self.todolist_template_description,
+            todos={'items': [{
+                'id': 1,
+                'description': 'todo parent',
+                'project': self.project.id,
+                'step': self.step.slug,
+                'items': [{
+                    'id': 2,
+                    'project': self.project.id,
+                    'step': self.step.slug,
+                    'description': 'todo child',
+                    'items': []
+                }]
+            }]},
+        )
+
+        mock_request.post = post
+        result = create_todos_from_template(
+            self.todolist_template_slug,
+            self.project.id,
+            self.step.slug)
+        self.assertEqual(result['success'], True)
+        self.assertEqual(len(result['todos']), 3)
+        for t in result['todos']:
+            self.assertEqual(t['template'], todolist_template.id)
+            self.assertEqual(t['section'], None)
 
 
 class TodoAPITests(TestCase):

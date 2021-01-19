@@ -11,6 +11,7 @@ from orchestra.core.errors import WorkerCertificationError
 from orchestra.models import Project
 from orchestra.models import WorkerCertification
 from orchestra.models import Workflow
+from orchestra.models import Todo
 from orchestra.models import TodoListTemplate
 from orchestra.project import create_project_with_tasks
 from orchestra.project_api.api import get_project_information
@@ -22,6 +23,8 @@ from orchestra.project_api.auth import OrchestraProjectAPIAuthentication
 from orchestra.project_api.auth import IsSignedUser
 from orchestra.todos.views import GenericTodoViewset
 from orchestra.todos.serializers import TodoListTemplateSerializer
+from orchestra.todos.serializers import BulkTodoSerializerWithoutQA
+from orchestra.todos.api import add_todolist_template
 
 logger = logging.getLogger(__name__)
 
@@ -158,6 +161,48 @@ def message_project_team(request):
         ).format(project)
         raise BadRequest(error_message)
     return {'success': True}
+
+
+@api_endpoint(methods=['POST'],
+              permissions=(IsSignedUser,),
+              logger=logger,
+              auths=(OrchestraProjectAPIAuthentication,))
+def create_todos_from_template(request):
+    """
+    Endpoint for creating todos in a project.
+    Payload example:
+    {
+        'todolist_template_slug': 'some-template-slug-123',
+        'step_slug': 'some-step-slug-123',
+        'project_id': 'some-project-id-123'
+    }
+    """
+    data = load_encoded_json(request.body)
+    try:
+        todolist_template_slug = data['todolist_template_slug']
+        step_slug = data['step_slug']
+        project_id = data['project_id']
+        add_todolist_template(todolist_template_slug, project_id, step_slug)
+        todos = Todo.objects.filter(
+            template__slug=todolist_template_slug,
+            project__id=project_id,
+            step__slug=step_slug).order_by('-created_at')
+        serializer = BulkTodoSerializerWithoutQA(todos, many=True)
+        return {
+            'success': True,
+            'todos': serializer.data
+        }
+    except KeyError:
+        text = ('An object with `template_slug`, `step_slug`,'
+                ' and `project_id` attributes should be supplied')
+        raise BadRequest(text)
+    except Exception as e:
+        return {
+            'success': False,
+            'errors': {
+                'error': str(e)
+            }
+        }
 
 
 class TodoApiViewset(GenericTodoViewset):
