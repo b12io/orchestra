@@ -10,6 +10,7 @@ from orchestra.project_api.views import workflow_types
 from orchestra.project_api.views import message_project_team
 from orchestra.project_api.views import TodoApiViewset
 from orchestra.project_api.views import TodoTemplatesList
+from orchestra.project_api.views import create_todos_from_template
 from orchestra.views import TimeEntryDetail
 from orchestra.views import TimeEntryList
 from orchestra.views import dashboard_tasks
@@ -91,6 +92,9 @@ urlpatterns = [
     url(r'^project/todo_templates/$',
         TodoTemplatesList.as_view(),
         name='todo_templates'),
+    url(r'^project/create_todos_from_template/$',
+        create_todos_from_template,
+        name='create_todos_from_template'),
 ]
 
 router = routers.SimpleRouter()
