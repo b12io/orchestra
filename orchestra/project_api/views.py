@@ -183,7 +183,9 @@ def create_todos_from_template(request):
         todolist_template_slug = data['todolist_template_slug']
         step_slug = data['step_slug']
         project_id = data['project_id']
-        add_todolist_template(todolist_template_slug, project_id, step_slug)
+        additional_data = data['additional_data']
+        add_todolist_template(todolist_template_slug, project_id,
+                              step_slug, additional_data)
         todos = Todo.objects.filter(
             template__slug=todolist_template_slug,
             project__id=project_id,
