@@ -214,11 +214,12 @@ def todo_sections_starting_order(request):
     data = load_encoded_json(request.body)
     try:
         project_id = data['project_id']
+        sections = Todo.objects.filter(
+            project__id=project_id
+        ).values('section').annotate(starting_order=Count('section'))
         return {
-            t['section']: t['starting_order']
-            for t in Todo.objects.filter(project__id=project_id)
-                        .values('section')
-                        .annotate(starting_order=Count('section'))
+            s['section']: s['starting_order']
+            for s in sections
         }
     except KeyError:
         text = ('An object `project_id` attributes should be supplied')

@@ -274,7 +274,7 @@ class TodoAPITests(TestCase):
         TodoFactory(step=self.step, project=self.project, section=section2)
         TodoFactory(step=self.step, project=self.project, section=section2)
         TodoFactory(step=self.step, project=self.project, section=section3)
-        
+
         res = get_todo_sections_starting_order(self.project.id)
         self.assertEqual(res.get(section1, 0), 3)
         self.assertEqual(res.get(section2, 0), 2)
