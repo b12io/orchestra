@@ -96,15 +96,20 @@ class TodoTemplatesAPITests(TestCase):
         )
 
         mock_request.post = post
+        additional_data = {
+            'some_additional_data': 'value'
+        }
         result = create_todos_from_template(
             self.todolist_template_slug,
             self.project.id,
-            self.step.slug)
+            self.step.slug,
+            additional_data)
         self.assertEqual(result['success'], True)
         self.assertEqual(len(result['todos']), 3)
         for t in result['todos']:
             self.assertEqual(t['template'], todolist_template.id)
             self.assertEqual(t['section'], None)
+            self.assertEqual(t['additional_data'], additional_data)
 
 
 class TodoAPITests(TestCase):
