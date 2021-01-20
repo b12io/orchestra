@@ -111,6 +111,93 @@ class TodoTemplatesAPITests(TestCase):
             self.assertEqual(t['section'], None)
             self.assertEqual(t['additional_data'], additional_data)
 
+    @patch('orchestra.orchestra_api.requests')
+    def test_create_todos_from_template_key_error(self, mock_request):
+        # This converts `requests.post` into DRF's `APIClient.post`
+        # To make it testable
+        def post(url, *args, **kwargs):
+            kw = kwargs.get('data', '')
+            data = json.loads(kw)
+            return_value = self.request_client.post(url, data, format='json')
+            return_value.text = json.dumps(return_value.json())
+            return return_value
+
+        TodoListTemplateFactory(
+            slug=self.todolist_template_slug,
+            name=self.todolist_template_name,
+            description=self.todolist_template_description,
+            todos={'items': [{
+                'id': 1,
+                'description': 'todo parent',
+                'project': self.project.id,
+                'step': self.step.slug,
+                'items': [{
+                    'id': 2,
+                    'project': self.project.id,
+                    'step': self.step.slug,
+                    'description': 'todo child',
+                    'items': []
+                }]
+            }]},
+        )
+
+        mock_request.post = post
+        additional_data = {
+            'some_additional_data': 'value'
+        }
+        result = create_todos_from_template(
+            self.todolist_template_slug,
+            self.project.id,
+            None,
+            additional_data)
+        err_msg = ('An object with `template_slug`, `step_slug`,'
+                   ' and `project_id` attributes should be supplied')
+        self.assertEqual(result['success'], False)
+        self.assertEqual(len(result['errors']), 1)
+        self.assertEqual(result['errors']['error'], err_msg)
+
+    @patch('orchestra.orchestra_api.requests')
+    def test_create_todos_from_template_unknown_step_slug(self, mock_request):
+        # This converts `requests.post` into DRF's `APIClient.post`
+        # To make it testable
+        def post(url, *args, **kwargs):
+            kw = kwargs.get('data', '')
+            data = json.loads(kw)
+            return_value = self.request_client.post(url, data, format='json')
+            return_value.text = json.dumps(return_value.json())
+            return return_value
+
+        TodoListTemplateFactory(
+            slug=self.todolist_template_slug,
+            name=self.todolist_template_name,
+            description=self.todolist_template_description,
+            todos={'items': [{
+                'id': 1,
+                'description': 'todo parent',
+                'project': self.project.id,
+                'step': self.step.slug,
+                'items': [{
+                    'id': 2,
+                    'project': self.project.id,
+                    'step': self.step.slug,
+                    'description': 'todo child',
+                    'items': []
+                }]
+            }]},
+        )
+
+        mock_request.post = post
+        additional_data = {
+            'some_additional_data': 'value'
+        }
+        result = create_todos_from_template(
+            self.todolist_template_slug,
+            self.project.id,
+            'unknown-step-slug',
+            additional_data)
+        self.assertEqual(result['success'], False)
+        self.assertEqual(len(result['errors']), 1)
+
 
 class TodoAPITests(TestCase):
     def setUp(self):
