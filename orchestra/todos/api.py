@@ -89,6 +89,10 @@ def _add_template_todo(
                 conditional_props, template_todo.get('skip_if', []))
             skipped_datetime = timezone.now() if to_skip else None
 
+        if skipped_datetime:
+            status = Todo.Status.DECLINED.value
+        else:
+            status = Todo.Status.PENDING.value
         todo = Todo(
             project=project,
             step=step,
@@ -96,6 +100,7 @@ def _add_template_todo(
             template=todolist_template,
             parent_todo=parent_todo,
             skipped_datetime=skipped_datetime,
+            status=status,
             additional_data=additional_data
         )
         todo.save()
