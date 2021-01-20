@@ -176,29 +176,33 @@ def create_todos_from_template(request):
         'todolist_template_slug': 'some-template-slug-123',
         'step_slug': 'some-step-slug-123',
         'project_id': 'some-project-id-123'
+        'additional_data': {
+            'some_key': 'some_value'
+        }
     }
     """
     data = load_encoded_json(request.body)
     try:
-        todolist_template_slug = data['todolist_template_slug']
-        step_slug = data['step_slug']
-        project_id = data['project_id']
-        additional_data = data['additional_data']
-        add_todolist_template(todolist_template_slug, project_id,
-                              step_slug, additional_data)
-        todos = Todo.objects.filter(
-            template__slug=todolist_template_slug,
-            project__id=project_id,
-            step__slug=step_slug).order_by('-created_at')
-        serializer = BulkTodoSerializerWithoutQA(todos, many=True)
-        return {
-            'success': True,
-            'todos': serializer.data
-        }
-    except KeyError:
-        text = ('An object with `template_slug`, `step_slug`,'
-                ' and `project_id` attributes should be supplied')
-        raise BadRequest(text)
+        todolist_template_slug = data.get('todolist_template_slug')
+        step_slug = data.get('step_slug')
+        project_id = data.get('project_id')
+        additional_data = data.get('additional_data')
+        if step_slug and project_id and todolist_template_slug:
+            add_todolist_template(todolist_template_slug, project_id,
+                                  step_slug, additional_data)
+            todos = Todo.objects.filter(
+                template__slug=todolist_template_slug,
+                project__id=project_id,
+                step__slug=step_slug).order_by('-created_at')
+            serializer = BulkTodoSerializerWithoutQA(todos, many=True)
+            return {
+                'success': True,
+                'todos': serializer.data
+            }
+        else:
+            text = ('An object with `template_slug`, `step_slug`,'
+                    ' and `project_id` attributes should be supplied')
+            raise Exception(text)
     except Exception as e:
         return {
             'success': False,
