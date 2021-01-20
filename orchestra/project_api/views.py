@@ -3,6 +3,7 @@ from urllib.parse import urlparse
 from urllib.parse import urlunsplit
 
 from django.urls import reverse
+from django.db.models import Count
 from jsonview.exceptions import BadRequest
 from rest_framework import generics
 
@@ -195,6 +196,32 @@ def create_todos_from_template(request):
     except KeyError:
         text = ('An object with `template_slug`, `step_slug`,'
                 ' and `project_id` attributes should be supplied')
+        raise BadRequest(text)
+    except Exception as e:
+        return {
+            'success': False,
+            'errors': {
+                'error': str(e)
+            }
+        }
+
+
+@api_endpoint(methods=['POST'],
+              permissions=(IsSignedUser,),
+              logger=logger,
+              auths=(OrchestraProjectAPIAuthentication,))
+def todo_sections_starting_order(request):
+    data = load_encoded_json(request.body)
+    try:
+        project_id = data['project_id']
+        return {
+            t['section']: t['starting_order']
+            for t in Todo.objects.filter(project__id=project_id)
+                        .values('section')
+                        .annotate(starting_order=Count('section'))
+        }
+    except KeyError:
+        text = ('An object `project_id` attributes should be supplied')
         raise BadRequest(text)
     except Exception as e:
         return {
