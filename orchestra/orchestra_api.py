@@ -153,6 +153,15 @@ def message_project_team(project_id, message):
     return json.loads(response.text)
 
 
+def get_todo_sections_starting_order(project_id):
+    data = {
+        'project_id': project_id,
+    }
+    response = _make_api_request('post', 'todo_sections_starting_order',
+                                 data=json.dumps(data))
+    return json.loads(response.text)
+
+
 def get_todo_templates():
     response = _make_api_request('get', 'todo_templates')
     return json.loads(response.text)
