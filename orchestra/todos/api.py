@@ -36,7 +36,8 @@ def add_todolist_template(todolist_template_slug, project_id,
         step=step,
         title=todolist_template.name,
         template=todolist_template,
-        additional_data=additional_data
+        additional_data=additional_data,
+        status = Todo.Status.PENDING.value
     )
     root_todo.save()
 

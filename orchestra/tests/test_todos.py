@@ -42,6 +42,12 @@ def _todo_data(title, completed,
                due=None, parent_todo=None, template=None,
                activity_log=str({'actions': []}), qa=None,
                project=None, step=None, details=None, is_deleted=False):
+    if skipped_datetime:
+        status = Todo.Status.DECLINED.value
+    elif completed:
+        status = Todo.Status.COMPLETED.value
+    else:
+        status = Todo.Status.PENDING.value
     return {
         'completed': completed,
         'title': title,
@@ -56,7 +62,7 @@ def _todo_data(title, completed,
         'order': None,
         'project': project,
         'section': None,
-        'status': None,
+        'status': status,
         'step': step,
         'details': details,
         'is_deleted': is_deleted
@@ -581,6 +587,7 @@ class TodoTemplateEndpointTests(EndpointTestCase):
                        project=self.project.id,
                        step=self.step.slug),
         ]
+        print(expected_todos)
         for todo, expected_todo in zip(todos, expected_todos):
             self._verify_todo_content(todo, expected_todo)
 
