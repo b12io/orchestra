@@ -143,7 +143,8 @@ class TodosEndpointTests(EndpointTestCase):
         resp = self.request_client.post(self.list_create_url, {
             'project': project,
             'step': step.slug,
-            'title': self.todo_title})
+            'title': self.todo_title,
+            'status': Todo.Status.PENDING.value})
         if success:
             self.assertEqual(resp.status_code, 201)
             self.assertEqual(Todo.objects.all().count(), num_todos + 1)
@@ -216,7 +217,8 @@ class TodosEndpointTests(EndpointTestCase):
             project=self.project,
             step=self.step,
             start_by_datetime=self.deadline,
-            title=START_TITLE)
+            title=START_TITLE,
+            status=Todo.Status.PENDING.value)
 
         self._verify_todos_list(start_by_todo.project.id, [
             _todo_data(
@@ -236,7 +238,8 @@ class TodosEndpointTests(EndpointTestCase):
             project=self.project,
             step=self.step,
             due_datetime=self.deadline,
-            title=DUE_TITLE)
+            title=DUE_TITLE,
+            status=Todo.Status.PENDING.value)
 
         self._verify_todos_list(due_todo.project.id, [
             _todo_data(
