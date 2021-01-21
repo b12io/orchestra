@@ -587,7 +587,6 @@ class TodoTemplateEndpointTests(EndpointTestCase):
                        project=self.project.id,
                        step=self.step.slug),
         ]
-        print(expected_todos)
         for todo, expected_todo in zip(todos, expected_todos):
             self._verify_todo_content(todo, expected_todo)
 
