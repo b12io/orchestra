@@ -239,6 +239,32 @@ def todo_sections_starting_order(request):
         }
 
 
+@api_endpoint(methods=['POST'],
+              permissions=(IsSignedUser,),
+              logger=logger,
+              auths=(OrchestraProjectAPIAuthentication,))
+def todo_sections_starting_order(request):
+    data = load_encoded_json(request.body)
+    try:
+        project_id = data['project_id']
+        return {
+            t['section']: t['starting_order']
+            for t in Todo.objects.filter(project__id=project_id)
+                        .values('section')
+                        .annotate(starting_order=Count('section'))
+        }
+    except KeyError:
+        text = ('An object `project_id` attributes should be supplied')
+        raise BadRequest(text)
+    except Exception as e:
+        return {
+            'success': False,
+            'errors': {
+                'error': str(e)
+            }
+        }
+
+
 class TodoApiViewset(GenericTodoViewset):
     """
     This viewset inherits from GenericTodoViewset and used by
