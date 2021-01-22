@@ -3,7 +3,6 @@ from urllib.parse import urlparse
 from urllib.parse import urlunsplit
 
 from django.urls import reverse
-from django.db.models import Count
 from jsonview.exceptions import BadRequest
 from rest_framework import generics
 

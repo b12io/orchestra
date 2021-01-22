@@ -15,7 +15,6 @@ from orchestra.orchestra_api import create_todos
 from orchestra.orchestra_api import get_todos
 from orchestra.orchestra_api import get_todo_templates
 from orchestra.orchestra_api import create_todos_from_template
-from orchestra.orchestra_api import get_todo_sections_starting_order
 from orchestra.orchestra_api import update_todos
 from orchestra.orchestra_api import delete_todos
 from orchestra.orchestra_api import OrchestraError
