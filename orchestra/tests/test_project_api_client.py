@@ -15,7 +15,6 @@ from orchestra.orchestra_api import create_todos
 from orchestra.orchestra_api import get_todos
 from orchestra.orchestra_api import get_todo_templates
 from orchestra.orchestra_api import create_todos_from_template
-from orchestra.orchestra_api import get_todo_sections_starting_order
 from orchestra.orchestra_api import update_todos
 from orchestra.orchestra_api import delete_todos
 from orchestra.orchestra_api import OrchestraError
@@ -343,32 +342,3 @@ class TodoAPITests(TestCase):
         left_todos = Todo.objects.all()
         self.assertEqual(left_todos.count(), 1)
         self.assertEqual(left_todos[0].id, todo4.id)
-
-    @patch('orchestra.orchestra_api.requests')
-    def test_get_todo_sections_starting_order(self, mock_request):
-        # This converts `requests.post` into DRF's `APIClient.post`
-        # To make it testable
-        def post(url, *args, **kwargs):
-            kw = kwargs.get('data', '')
-            data = json.loads(kw)
-            return_value = self.request_client.post(url, data, format='json')
-            return_value.text = json.dumps(return_value.json())
-            return return_value
-
-        mock_request.post = post
-
-        section1 = 'Section 1'
-        section2 = 'Section 2'
-        section3 = 'Section 3'
-        TodoFactory(step=self.step, project=self.project, section=section1)
-        TodoFactory(step=self.step, project=self.project, section=section1)
-        TodoFactory(step=self.step, project=self.project, section=section1)
-        TodoFactory(step=self.step, project=self.project, section=section2)
-        TodoFactory(step=self.step, project=self.project, section=section2)
-        TodoFactory(step=self.step, project=self.project, section=section3)
-
-        res = get_todo_sections_starting_order(self.project.id)
-        self.assertEqual(res.get(section1, 0), 3)
-        self.assertEqual(res.get(section2, 0), 2)
-        self.assertEqual(res.get(section3, 0), 1)
-        self.assertEqual(res.get('new section', 0), 0)
