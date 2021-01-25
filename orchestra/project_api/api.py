@@ -110,7 +110,9 @@ def _traverse_step_graph(graph, workflow_version):
         current_step = Step.objects.get(
             workflow_version=workflow_version,
             slug=current_node)
-        steps.append({'slug': current_node,
+        steps.append({
+                      'id': current_step.id,
+                      'slug': current_node,
                       'description': current_step.description,
                       'is_human': current_step.is_human,
                       'name': current_step.name})
