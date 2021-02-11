@@ -791,7 +791,7 @@ class Todo(TodoMixin, BaseModel):
         on_delete=models.SET_NULL)
     activity_log = JSONField(default={'actions': []})
     status = models.IntegerField(
-        null=True, blank=True, choices=Status.choices())
+        default=Status.PENDING.value, choices=Status.choices())
     additional_data = JSONField(default=dict)
 
 
