@@ -1,5 +1,4 @@
 from django.db import transaction
-from django.utils import timezone
 import logging
 import operator
 from pydoc import locate
@@ -83,14 +82,13 @@ def _add_template_todo(
         additional_data):
     remove = _to_exclude(conditional_props, template_todo.get('remove_if', []))
     if not remove:
-        if parent_todo.skipped_datetime:
-            skipped_datetime = parent_todo.skipped_datetime
+        if parent_todo.status == Todo.Status.DECLINED.value:
+            to_skip = True
         else:
             to_skip = _to_exclude(
                 conditional_props, template_todo.get('skip_if', []))
-            skipped_datetime = timezone.now() if to_skip else None
 
-        if skipped_datetime:
+        if to_skip:
             status = Todo.Status.DECLINED.value
         else:
             status = Todo.Status.PENDING.value
@@ -100,7 +98,6 @@ def _add_template_todo(
             title=template_todo['description'],
             template=todolist_template,
             parent_todo=parent_todo,
-            skipped_datetime=skipped_datetime,
             status=status,
             additional_data=additional_data
         )

@@ -2,7 +2,6 @@ import copy
 import csv
 import json
 
-from django.utils import timezone
 from dateutil.parser import parse
 from django.urls import reverse
 from io import StringIO
@@ -37,26 +36,18 @@ from orchestra.todos.serializers import TodoListTemplateSerializer
 from orchestra.utils.load_json import load_encoded_json
 
 
-def _todo_data(title, completed,
-               skipped_datetime=None, start_by=None,
+def _todo_data(title, status=Todo.Status.PENDING.value,
+               start_by=None,
                due=None, parent_todo=None, template=None,
                activity_log=str({'actions': []}), qa=None,
                project=None, step=None, details=None, is_deleted=False):
-    if skipped_datetime:
-        status = Todo.Status.DECLINED.value
-    elif completed:
-        status = Todo.Status.COMPLETED.value
-    else:
-        status = Todo.Status.PENDING.value
     return {
-        'completed': completed,
         'title': title,
         'template': template,
         'parent_todo': parent_todo,
         'start_by_datetime': start_by,
         'due_datetime': due,
         'activity_log': activity_log,
-        'skipped_datetime': skipped_datetime,
         'qa': qa,
         'additional_data': {},
         'order': None,
@@ -151,7 +142,7 @@ class TodosEndpointTests(EndpointTestCase):
             todo = load_encoded_json(resp.content)
             self._verify_todo_content(
                 todo, _todo_data(
-                    self.todo_title, False, project=project, step=step.slug))
+                    self.todo_title, project=project, step=step.slug))
             self.assertTrue(mock_notify.called)
         else:
             self.assertEqual(resp.status_code, 403)
@@ -166,7 +157,7 @@ class TodosEndpointTests(EndpointTestCase):
         resp = self.request_client.put(
             list_details_url,
             json.dumps(_todo_data(
-                title, True,
+                title, status=Todo.Status.COMPLETED.value,
                 project=self.project.id, step=self.step.slug)),
             content_type='application/json')
         updated_todo = BulkTodoSerializerWithoutQA(
@@ -175,7 +166,7 @@ class TodosEndpointTests(EndpointTestCase):
             self.assertEqual(resp.status_code, 200)
             self._verify_todo_content(
                 updated_todo, _todo_data(
-                    title, True,
+                    title, status=Todo.Status.COMPLETED.value,
                     project=self.project.id,
                     step=self.step.slug))
             self.assertTrue(mock_notify.called)
@@ -190,7 +181,6 @@ class TodosEndpointTests(EndpointTestCase):
         self._verify_todos_list(self.project.id,
                                 [_todo_data(
                                     self.todo_title,
-                                    False,
                                     project=self.project.id,
                                     step=self.step.slug)],
                                 True)
@@ -223,10 +213,9 @@ class TodosEndpointTests(EndpointTestCase):
         self._verify_todos_list(start_by_todo.project.id, [
             _todo_data(
                 START_TITLE,
-                False,
-                None,
-                self.deadline.strftime('%Y-%m-%dT%H:%M:%SZ'),
-                None,
+                status=Todo.Status.PENDING.value,
+                start_by=self.deadline.strftime('%Y-%m-%dT%H:%M:%SZ'),
+                due=None,
                 project=start_by_todo.project.id,
                 step=start_by_todo.step.slug)
         ], True)
@@ -244,10 +233,8 @@ class TodosEndpointTests(EndpointTestCase):
         self._verify_todos_list(due_todo.project.id, [
             _todo_data(
                 DUE_TITLE,
-                False,
-                None,
-                None,
-                self.deadline.strftime('%Y-%m-%dT%H:%M:%SZ'),
+                start_by=None,
+                due=self.deadline.strftime('%Y-%m-%dT%H:%M:%SZ'),
                 project=due_todo.project.id,
                 step=due_todo.step.slug),
         ], True)
@@ -533,10 +520,7 @@ class TodoTemplateEndpointTests(EndpointTestCase):
         todo = dict(todo)
         created_at = todo.pop('created_at')
         todo_id = todo.pop('id')
-        todo_skipped = bool(todo.pop('skipped_datetime', None))
-        expected_skipped = bool(expected_todo.pop('skipped_datetime', None))
 
-        self.assertEqual(todo_skipped, expected_skipped)
         self.assertEqual(todo, expected_todo)
         self.assertGreater(len(created_at), 0)
         self.assertGreaterEqual(todo_id, 0)
@@ -575,18 +559,18 @@ class TodoTemplateEndpointTests(EndpointTestCase):
         self.assertEqual(Todo.objects.all().count(), num_todos + 3)
         todos = load_encoded_json(resp.content)
         expected_todos = [
-            _todo_data('todo child', False,
+            _todo_data('todo child',
                        template=todolist_template.id,
                        parent_todo=todos[1]['id'],
                        project=self.project.id,
                        step=self.step.slug),
-            _todo_data('todo parent', False,
+            _todo_data('todo parent',
                        template=todolist_template.id,
                        parent_todo=todos[2]['id'],
                        project=self.project.id,
                        step=self.step.slug),
             _todo_data(self.todolist_template_name,
-                       False, template=todolist_template.id,
+                       template=todolist_template.id,
                        project=self.project.id,
                        step=self.step.slug),
         ]
@@ -702,19 +686,19 @@ class TodoTemplateEndpointTests(EndpointTestCase):
         todos = load_encoded_json(resp.content)
 
         expected_todos = [
-            _todo_data('todo child 2', False,
+            _todo_data('todo child 2',
                        template=todolist_template.id,
                        parent_todo=todos[1]['id'],
-                       skipped_datetime=timezone.now(),
+                       status=Todo.Status.DECLINED.value,
                        project=self.project.id,
                        step=self.step.slug),
-            _todo_data('todo parent 2', False,
+            _todo_data('todo parent 2',
                        template=todolist_template.id,
                        parent_todo=todos[2]['id'],
                        project=self.project.id,
                        step=self.step.slug),
             _todo_data(self.todolist_template_name,
-                       False, template=todolist_template.id,
+                       template=todolist_template.id,
                        project=self.project.id,
                        step=self.step.slug),
         ]

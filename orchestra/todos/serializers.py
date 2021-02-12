@@ -131,8 +131,6 @@ class BulkTodoSerializer(serializers.ModelSerializer):
             'details',
             'parent_todo',
             'template',
-            'completed',
-            'skipped_datetime',
             'start_by_datetime',
             'due_datetime',
             'activity_log',

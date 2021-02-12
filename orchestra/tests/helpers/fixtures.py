@@ -17,6 +17,7 @@ from orchestra.models import StaffingRequestInquiry
 from orchestra.models import StaffingResponse
 from orchestra.models import Step
 from orchestra.models import Task
+from orchestra.models import Todo
 from orchestra.models import TaskAssignment
 from orchestra.models import TodoListTemplate
 from orchestra.models import WorkerCertification
@@ -240,7 +241,7 @@ class TimeEntryFactory(factory.django.DjangoModelFactory):
 
 class TodoFactory(factory.django.DjangoModelFactory):
     task = factory.SubFactory(TaskFactory)
-    completed = False
+    status = Todo.Status.PENDING.value
     title = factory.Sequence(
         lambda n: 'Title {}'.format(n))
     start_by_datetime = None

@@ -1,6 +1,6 @@
 from django.test import TestCase
-from django.utils import timezone
 
+from orchestra.models import Todo
 from orchestra.tests.helpers.fixtures import UserFactory
 from orchestra.tests.helpers.fixtures import TodoFactory
 from orchestra.tests.helpers.fixtures import StepFactory
@@ -20,13 +20,12 @@ class ViewHelpersTests(TestCase):
         self.old_todo = TodoFactory(
             title=self.old_title,
             details=self.old_details,
-            completed=False,
             project=project,
             step=step)
         self.new_todo = TodoFactory(
             title=self.new_title,
             details=self.new_details,
-            completed=True,
+            status=Todo.Status.COMPLETED.value,
             project=project,
             step=step)
         self.sender = UserFactory()
@@ -57,7 +56,7 @@ class ViewHelpersTests(TestCase):
         new_todo = TodoFactory(
             title=self.old_title,
             details=self.old_details,
-            completed=True)
+            status=Todo.Status.COMPLETED.value)
         msg = get_update_message(self.old_todo, new_todo, self.sender)
         expected_msg = '{} has updated `{}`: marked complete'.format(
             self.sender.username, new_todo.title)
@@ -67,8 +66,7 @@ class ViewHelpersTests(TestCase):
         new_todo = TodoFactory(
             title=self.old_title,
             details=self.old_details,
-            completed=False,
-            skipped_datetime=timezone.now())
+            status=Todo.Status.DECLINED.value)
         msg = get_update_message(self.old_todo, new_todo, self.sender)
         expected_msg = '{} has updated `{}`: marked not relevant'.format(
             self.sender.username, new_todo.title)

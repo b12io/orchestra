@@ -1,6 +1,7 @@
 from rest_framework import permissions
 
 from orchestra.models import Step
+from orchestra.models import Todo
 from orchestra.models import Worker
 from orchestra.project_api.auth import SignedUser
 from orchestra.utils.notifications import message_experts_slack_group
@@ -33,11 +34,17 @@ def get_relevance_and_completion_changes(old_todo, new_todo):
     # When activity_log is updated, `todo_change = ''`
     # to avoid triggering any slack messages
     todo_change = ''
-    if old_todo.completed != new_todo.completed:
-        todo_change = 'complete' if new_todo.completed else 'incomplete'
-    elif old_todo.skipped_datetime != new_todo.skipped_datetime:
-        todo_change = 'not relevant' \
-            if new_todo.skipped_datetime else 'relevant'
+    if new_todo.status != old_todo.status:
+        if new_todo.status == Todo.Status.COMPLETED.value and \
+                old_todo.status == Todo.Status.PENDING.value:
+            todo_change = 'complete'
+        if new_todo.status == Todo.Status.PENDING.value and \
+                old_todo.status == Todo.Status.COMPLETED.value:
+            todo_change = 'incomplete'
+        if new_todo.status == Todo.Status.DECLINED.value:
+            todo_change = 'not relevant'
+        if old_todo.status == Todo.Status.DECLINED.value:
+            todo_change = 'relevant'
     return todo_change
 
 
