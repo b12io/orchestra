@@ -43,7 +43,7 @@ class ViewHelpersTests(TestCase):
         expected_msg = (
             '{} has updated `{}`: marked complete, '
             'changed title and details'
-            ).format(self.sender.username, self.new_todo.title)
+        ).format(self.sender.username, self.new_todo.title)
         self.assertEqual(msg, expected_msg)
 
         # Reversing the change
@@ -51,7 +51,7 @@ class ViewHelpersTests(TestCase):
         expected_msg = (
             '{} has updated `{}`: marked incomplete, '
             'changed title and details'
-            ).format(self.sender.username, self.old_todo.title)
+        ).format(self.sender.username, self.old_todo.title)
         self.assertEqual(msg, expected_msg)
 
     def test_fields_updated_completed_without_sender(self):
@@ -59,7 +59,7 @@ class ViewHelpersTests(TestCase):
         expected_msg = (
             '`{}` has been updated: marked complete, '
             'changed title and details'
-            ).format(self.new_todo.title)
+        ).format(self.new_todo.title)
         self.assertEqual(msg, expected_msg)
 
         # Reversing the change
@@ -67,7 +67,7 @@ class ViewHelpersTests(TestCase):
         expected_msg = (
             '`{}` has been updated: marked incomplete, '
             'changed title and details'
-            ).format(self.old_todo.title)
+        ).format(self.old_todo.title)
         self.assertEqual(msg, expected_msg)
 
     def test_fields_not_updated_completed(self):
@@ -136,7 +136,8 @@ class ViewHelpersTests(TestCase):
 
     @patch('orchestra.utils.common_helpers.message_experts_slack_group')
     def test_notify_single_todo_update(self, mock_slack):
-        notify_single_todo_update(self.sender.username, self.old_todo, self.new_todo)
+        notify_single_todo_update(
+            self.sender.username, self.old_todo, self.new_todo)
         self.assertEqual(mock_slack.call_count, 1)
 
         parent_todo = TodoFactory(title='Parent todo')
