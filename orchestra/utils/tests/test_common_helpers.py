@@ -1,4 +1,5 @@
 from django.test import TestCase
+from unittest.mock import patch
 
 from orchestra.models import Todo
 from orchestra.tests.helpers.fixtures import UserFactory
@@ -6,6 +7,7 @@ from orchestra.tests.helpers.fixtures import TodoFactory
 from orchestra.tests.helpers.fixtures import StepFactory
 from orchestra.tests.helpers.fixtures import ProjectFactory
 from orchestra.utils.common_helpers import get_update_message
+from orchestra.utils.common_helpers import notify_single_todo_update
 
 
 class ViewHelpersTests(TestCase):
@@ -131,3 +133,21 @@ class ViewHelpersTests(TestCase):
             '{} has updated `{}`: changed title').format(
             self.sender.username, new_todo.title)
         self.assertEqual(msg, expected_msg)
+    
+    @patch('orchestra.utils.common_helpers.message_experts_slack_group')
+    def test_notify_single_todo_update(self, mock_slack):
+        notify_single_todo_update(self.sender, self.old_todo, self.new_todo)
+        self.assertEqual(mock_slack.call_count, 0)
+
+        parent_todo = TodoFactory(title='Parent todo')
+        old_todo = TodoFactory(
+            title=self.old_title,
+            parent_todo=parent_todo,
+            details=self.old_details)
+        new_todo = TodoFactory(
+            title=self.new_title,
+            parent_todo=parent_todo,
+            details=self.new_details)
+
+        notify_single_todo_update(self.sender, old_todo, new_todo)
+        self.assertEqual(mock_slack.call_count, 1)
