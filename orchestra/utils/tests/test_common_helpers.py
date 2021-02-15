@@ -137,7 +137,7 @@ class ViewHelpersTests(TestCase):
     @patch('orchestra.utils.common_helpers.message_experts_slack_group')
     def test_notify_single_todo_update(self, mock_slack):
         notify_single_todo_update(self.sender, self.old_todo, self.new_todo)
-        self.assertEqual(mock_slack.call_count, 0)
+        self.assertEqual(mock_slack.call_count, 1)
 
         parent_todo = TodoFactory(title='Parent todo')
         old_todo = TodoFactory(
@@ -150,4 +150,4 @@ class ViewHelpersTests(TestCase):
             details=self.new_details)
 
         notify_single_todo_update(self.sender, old_todo, new_todo)
-        self.assertEqual(mock_slack.call_count, 1)
+        self.assertEqual(mock_slack.call_count, 0)
