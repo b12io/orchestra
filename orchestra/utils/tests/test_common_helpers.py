@@ -82,7 +82,7 @@ class ViewHelpersTests(TestCase):
         # Reversing the change
         msg = get_update_message(self.new_todo, self.old_todo)
         expected_msg = (
-            '`{}` has been updated: marked complete, '
+            '`{}` has been updated: marked incomplete, '
             'changed title and details'
             ).format(self.old_todo.title)
         self.assertEqual(msg, expected_msg)
