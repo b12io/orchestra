@@ -133,7 +133,7 @@ class ViewHelpersTests(TestCase):
             '{} has updated `{}`: changed title').format(
             self.sender.username, new_todo.title)
         self.assertEqual(msg, expected_msg)
-    
+
     @patch('orchestra.utils.common_helpers.message_experts_slack_group')
     def test_notify_single_todo_update(self, mock_slack):
         notify_single_todo_update(self.sender, self.old_todo, self.new_todo)
