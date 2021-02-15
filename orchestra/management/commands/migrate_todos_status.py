@@ -13,10 +13,10 @@ class Command(BaseCommand):
     def bulk_update_todo_status(self, queryset, status):
         num_rows = queryset.count()
         logger.info('Started updating %s todos with status = %s',
-            num_rows, status)
+                    num_rows, status)
         queryset.only('id', 'status').update(status=status)
         logger.info('Finished updating %s todos with status = %s',
-            num_rows, status)
+                    num_rows, status)
 
     def handle(self, *args, **options):
         # declined todos
