@@ -38,12 +38,12 @@ def get_relevance_and_completion_changes(old_todo, new_todo):
         if new_todo.status == Todo.Status.COMPLETED.value and \
                 old_todo.status == Todo.Status.PENDING.value:
             todo_change = 'complete'
-        if new_todo.status == Todo.Status.PENDING.value and \
+        elif new_todo.status == Todo.Status.PENDING.value and \
                 old_todo.status == Todo.Status.COMPLETED.value:
             todo_change = 'incomplete'
-        if new_todo.status == Todo.Status.DECLINED.value:
+        elif new_todo.status == Todo.Status.DECLINED.value:
             todo_change = 'not relevant'
-        if old_todo.status == Todo.Status.DECLINED.value:
+        elif old_todo.status == Todo.Status.DECLINED.value:
             todo_change = 'relevant'
     return todo_change
 
