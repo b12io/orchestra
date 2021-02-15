@@ -150,5 +150,5 @@ class ViewHelpersTests(TestCase):
             parent_todo=parent_todo,
             details=self.new_details)
 
-        notify_single_todo_update(self.sender.username, old_todo, new_todo)
+        notify_single_todo_update(self.sender.id, old_todo, new_todo)
         self.assertEqual(mock_slack.call_count, 0)
