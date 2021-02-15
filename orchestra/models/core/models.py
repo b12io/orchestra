@@ -780,7 +780,7 @@ class Todo(TodoMixin, BaseModel):
     details = models.TextField(null=True, blank=True)
     section = models.CharField(max_length=255, null=True, blank=True)
     order = models.IntegerField(null=True, blank=True)
-    # DEPRECATED FIELD. [Use status instead.]
+    # DEPRECATED FIELD. Use status instead.
     completed = models.BooleanField(default=False)
     start_by_datetime = models.DateTimeField(null=True, blank=True)
     due_datetime = models.DateTimeField(null=True, blank=True)
