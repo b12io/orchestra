@@ -2,6 +2,7 @@ from django.test import TestCase
 from unittest.mock import patch
 
 from orchestra.models import Todo
+from orchestra.tests.helpers.fixtures import WorkerFactory
 from orchestra.tests.helpers.fixtures import UserFactory
 from orchestra.tests.helpers.fixtures import TodoFactory
 from orchestra.tests.helpers.fixtures import StepFactory
@@ -13,7 +14,7 @@ from orchestra.utils.common_helpers import notify_single_todo_update
 class ViewHelpersTests(TestCase):
     def setUp(self):
         super().setUp()
-        project = ProjectFactory()
+        self.project = ProjectFactory()
         step = StepFactory()
         self.old_title = 'Old title'
         self.new_title = 'New title'
@@ -22,13 +23,13 @@ class ViewHelpersTests(TestCase):
         self.old_todo = TodoFactory(
             title=self.old_title,
             details=self.old_details,
-            project=project,
+            project=self.project,
             step=step)
         self.new_todo = TodoFactory(
             title=self.new_title,
             details=self.new_details,
             status=Todo.Status.COMPLETED.value,
-            project=project,
+            project=self.project,
             step=step)
         self.sender = UserFactory()
 
@@ -136,19 +137,42 @@ class ViewHelpersTests(TestCase):
 
     @patch('orchestra.utils.common_helpers.message_experts_slack_group')
     def test_notify_single_todo_update(self, mock_slack):
+        # Level 0 todos
+        WorkerFactory(user=self.sender)
         notify_single_todo_update(
-            self.sender.username, self.old_todo, self.new_todo)
+            self.sender, self.old_todo, self.new_todo)
         self.assertEqual(mock_slack.call_count, 1)
 
-        parent_todo = TodoFactory(title='Parent todo')
+        # Level 1 todos
+        parent_todo_level_1 = TodoFactory(title='Parent todo')
         old_todo = TodoFactory(
             title=self.old_title,
-            parent_todo=parent_todo,
+            parent_todo=parent_todo_level_1,
+            project=self.project,
             details=self.old_details)
         new_todo = TodoFactory(
             title=self.new_title,
-            parent_todo=parent_todo,
+            parent_todo=parent_todo_level_1,
+            project=self.project,
             details=self.new_details)
 
-        notify_single_todo_update(self.sender.id, old_todo, new_todo)
-        self.assertEqual(mock_slack.call_count, 0)
+        notify_single_todo_update(self.sender, old_todo, new_todo)
+        self.assertEqual(mock_slack.call_count, 2)
+
+        # Level 2 todos
+        parent_todo_level_2 = TodoFactory(
+            title='Parent todo',
+            parent_todo=parent_todo_level_1)
+        old_todo = TodoFactory(
+            title=self.old_title,
+            parent_todo=parent_todo_level_2,
+            project=self.project,
+            details=self.old_details)
+        new_todo = TodoFactory(
+            title=self.new_title,
+            parent_todo=parent_todo_level_2,
+            project=self.project,
+            details=self.new_details)
+
+        notify_single_todo_update(self.sender, old_todo, new_todo)
+        self.assertEqual(mock_slack.call_count, 2)
