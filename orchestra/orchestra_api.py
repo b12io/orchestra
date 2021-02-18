@@ -151,3 +151,21 @@ def message_project_team(project_id, message):
     response = _make_api_request('post', 'message_project_team',
                                  data=json.dumps(data))
     return json.loads(response.text)
+
+
+def get_todo_templates():
+    response = _make_api_request('get', 'todo_templates')
+    return json.loads(response.text)
+
+
+def create_todos_from_template(todolist_template_slug, project_id,
+                               step_slug, additional_data):
+    data = {
+        'todolist_template_slug': todolist_template_slug,
+        'project_id': project_id,
+        'step_slug': step_slug,
+        'additional_data': additional_data,
+    }
+    response = _make_api_request('post', 'create_todos_from_template',
+                                 data=json.dumps(data))
+    return json.loads(response.text)

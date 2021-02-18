@@ -17,6 +17,7 @@ from orchestra.models import StaffBotRequest
 from orchestra.models import StaffingRequestInquiry
 from orchestra.models import StaffingResponse
 from orchestra.models import Task
+from orchestra.models import Project
 from orchestra.models import TaskAssignment
 from orchestra.models import Worker
 from orchestra.models import WorkerAvailability
@@ -304,6 +305,8 @@ def get_available_requests(worker):
         StaffBotRequest.objects
         .filter(inquiries__communication_preference__worker=worker)
         .exclude(status=StaffBotRequest.Status.CLOSED.value)
+        .exclude(task__project__status=Project.Status.COMPLETED)
+        .exclude(task__project__status=Project.Status.ABORTED)
         .exclude(task__status=Task.Status.COMPLETE)
         .exclude(task__status=Task.Status.ABORTED)
         .exclude(inquiries__responses__in=worker_provided_responses)

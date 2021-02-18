@@ -22,18 +22,22 @@ OPERATORS = {
 
 
 @transaction.atomic
-def add_todolist_template(todolist_template_slug, project_id, step_slug):
+def add_todolist_template(todolist_template_slug, project_id,
+                          step_slug, additional_data=None):
     todolist_template = TodoListTemplate.objects.get(
         slug=todolist_template_slug)
 
     project = Project.objects.get(id=project_id)
     step = get_step_by_project_id_and_step_slug(project_id, step_slug)
     template_todos = todolist_template.todos.get('items', [])
+    additional_data = additional_data if additional_data else {}
     root_todo = Todo(
         project=project,
         step=step,
         title=todolist_template.name,
-        template=todolist_template
+        template=todolist_template,
+        additional_data=additional_data,
+        status=Todo.Status.PENDING.value
     )
     root_todo.save()
 
@@ -49,7 +53,7 @@ def add_todolist_template(todolist_template_slug, project_id, step_slug):
     for template_todo in template_todos:
         _add_template_todo(
             template_todo, todolist_template,
-            root_todo, project, step, cond_props)
+            root_todo, project, step, cond_props, additional_data)
 
 
 def _to_exclude(props, conditions):
@@ -75,26 +79,33 @@ def _to_exclude(props, conditions):
 
 def _add_template_todo(
         template_todo, todolist_template,
-        parent_todo, project, step, conditional_props):
+        parent_todo, project, step, conditional_props,
+        additional_data):
     remove = _to_exclude(conditional_props, template_todo.get('remove_if', []))
     if not remove:
         if parent_todo.skipped_datetime:
             skipped_datetime = parent_todo.skipped_datetime
         else:
             to_skip = _to_exclude(
-                    conditional_props, template_todo.get('skip_if', []))
+                conditional_props, template_todo.get('skip_if', []))
             skipped_datetime = timezone.now() if to_skip else None
 
+        if skipped_datetime:
+            status = Todo.Status.DECLINED.value
+        else:
+            status = Todo.Status.PENDING.value
         todo = Todo(
             project=project,
             step=step,
             title=template_todo['description'],
             template=todolist_template,
             parent_todo=parent_todo,
-            skipped_datetime=skipped_datetime
+            skipped_datetime=skipped_datetime,
+            status=status,
+            additional_data=additional_data
         )
         todo.save()
         for template_todo_item in template_todo.get('items', []):
             _add_template_todo(
                 template_todo_item, todolist_template, todo,
-                project, step, conditional_props)
+                project, step, conditional_props, additional_data)
