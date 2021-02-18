@@ -3,9 +3,11 @@
   <a href="{% url 'orchestra:account_settings' %}" class="btn btn-primary {{ account_settings }}">
     {% trans 'Account settings' %}
   </a>
+  {% if worker.max_autostaff_hours_per_day > 0 %}
   <a href="{% url 'orchestra:availability_settings' %}" class="btn btn-primary {{ availability_settings }}">
     {% trans 'Work availability' %}
   </a>
+  {% endif %}
   <a href="{% url 'orchestra:communication_preference_settings' %}" class="btn btn-primary {{ communication_preference_settings }}">
     {% trans 'Notifications' %}
   </a>

@@ -27,7 +27,7 @@ class UserForm(forms.ModelForm):
 
 class DailyAvailabilityField(forms.FloatField):
     def __init__(self, *args, **kwargs):
-        max_value = settings.ORCHESTRA_MAX_AUTOSTAFF_HOURS_PER_DAY
+        max_value = 24  # only 24 hours in a day!
         super().__init__(*args, min_value=0, max_value=max_value, **kwargs)
 
 

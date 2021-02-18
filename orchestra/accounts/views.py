@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
 from django.forms import modelformset_factory
+from django.http import Http404
 from django.shortcuts import render
 from django.utils import timezone
 from django.utils.decorators import method_decorator
@@ -98,6 +99,7 @@ class AccountSettingsView(WorkerViewMixin):
         return render(request, self.template_name, {
             'user_form': user_form,
             'worker_form': worker_form,
+            'worker': self.worker,
         })
 
     def post(self, request, *args, **kwargs):
@@ -114,6 +116,7 @@ class AccountSettingsView(WorkerViewMixin):
         return render(request, self.template_name, {
             'user_form': user_form,
             'worker_form': worker_form,
+            'worker': self.worker,
             'success': success,
         })
 
@@ -154,6 +157,7 @@ class CommunicationPreferenceSettingsView(WorkerViewMixin):
         return render(request, self.template_name, {
             'form_data': zip(comm_pref_formset, self.descriptions),
             'comm_pref_formset': comm_pref_formset,
+            'worker': self.worker,
         })
 
     def post(self, request, *args, **kwargs):
@@ -166,6 +170,7 @@ class CommunicationPreferenceSettingsView(WorkerViewMixin):
         return render(request, self.template_name, {
             'form_data': zip(comm_pref_formset, self.descriptions),
             'comm_pref_formset': comm_pref_formset,
+            'worker': self.worker,
             'success': success,
         })
 
@@ -195,7 +200,8 @@ class AvailabilitySettingsView(WorkerViewMixin):
     def _render(self, request, **kwargs):
         kwargs.update({
             'this_week_availability_form': self.this_week_form,
-            'next_week_availability_form': self.next_week_form
+            'next_week_availability_form': self.next_week_form,
+            'worker': self.worker,
         })
         return render(request, self.template_name, kwargs)
 
@@ -209,9 +215,15 @@ class AvailabilitySettingsView(WorkerViewMixin):
         return success
 
     def get(self, request, *args, **kwargs):
+        if self.worker.max_autostaff_hours_per_day <= 0:
+            raise Http404('Availability settings are not available')
+
         return self._render(request)
 
     def post(self, request, *args, **kwargs):
+        if self.worker.max_autostaff_hours_per_day <= 0:
+            raise Http404('Availability settings are not available')
+
         this_week_success = self._update_form(
             self.this_week_form, self.this_week)
         next_week_success = self._update_form(
