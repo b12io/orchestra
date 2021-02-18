@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
+from django.conf import settings
 from phonenumber_field.formfields import PhoneNumberField
 from phonenumber_field.widgets import PhoneNumberPrefixWidget
 
@@ -7,6 +8,8 @@ from orchestra.accounts.bitformfield import BitFormField
 from orchestra.communication.slack import get_slack_user_id
 from orchestra.models import CommunicationPreference
 from orchestra.models import Worker
+from orchestra.models import WorkerAvailability
+
 
 UserModel = get_user_model()
 
@@ -20,6 +23,27 @@ class UserForm(forms.ModelForm):
         fields = ('first_name', 'last_name')
         # TODO(joshblum): support change email
         exclude = ('is_staff', 'is_active', 'date_joined', 'username', 'email')
+
+
+class DailyAvailabilityField(forms.FloatField):
+    def __init__(self, *args, **kwargs):
+        max_value = settings.ORCHESTRA_MAX_AUTOSTAFF_HOURS_PER_DAY
+        super().__init__(*args, min_value=0, max_value=max_value, **kwargs)
+
+
+class WorkerAvailabilityForm(forms.ModelForm):
+    class Meta:
+        model = WorkerAvailability
+        fields = (
+            'hours_available_mon',
+            'hours_available_tues',
+            'hours_available_wed',
+            'hours_available_thurs',
+            'hours_available_fri',
+            'hours_available_sat',
+            'hours_available_sun',
+        )
+        field_classes = {field: DailyAvailabilityField for field in fields}
 
 
 class WorkerForm(forms.ModelForm):

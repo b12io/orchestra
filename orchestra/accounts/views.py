@@ -16,11 +16,11 @@ from orchestra.accounts import signals
 from orchestra.accounts.bitformfield import BitFormField
 from orchestra.accounts.forms import CommunicationPreferenceForm
 from orchestra.accounts.forms import UserForm
+from orchestra.accounts.forms import WorkerAvailabilityForm
 from orchestra.accounts.forms import WorkerForm
 from orchestra.models import CommunicationPreference
 from orchestra.models import Worker
 from orchestra.models import WorkerAvailability
-from orchestra.models.core.forms import WorkerAvailabilityForm
 from orchestra.utils.datetime_utils import first_day_of_the_week
 
 
