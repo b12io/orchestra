@@ -230,6 +230,8 @@ class Worker(WorkerMixin, models.Model):
             The worker's Slack id if Slack integration is enabled.
         phone (str):
             The worker's phone number
+        max_autostaff_hours_per_day (float):
+            The maximum hours of work to auto-assign the worker in a single day.
     """
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -237,6 +239,7 @@ class Worker(WorkerMixin, models.Model):
     slack_username = models.CharField(max_length=200, blank=True, null=True)
     slack_user_id = models.CharField(max_length=200, blank=True, null=True)
     phone = PhoneNumberField(null=True)
+    max_autostaff_hours_per_day = models.FloatField(blank=True, default=0)
 
     class Meta:
         app_label = 'orchestra'
