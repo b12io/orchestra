@@ -355,6 +355,12 @@ class WorkerAvailability(WorkerAvailabilityMixin, BaseModel):
     hours_available_sat = models.FloatField(default=0, verbose_name='Saturday')
     hours_available_sun = models.FloatField(default=0, verbose_name='Sunday')
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=('worker', 'week'), name='uniq_worker_week')
+        ]
+
 
 class Project(ProjectMixin, models.Model):
     """
