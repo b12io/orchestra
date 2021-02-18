@@ -198,7 +198,7 @@ def _notify_internal_slack_status_change(
     _notify_slack_status_change(
         task, current_worker,
         settings.SLACK_INTERNAL_API_KEY,
-        settings.SLACK_INTERNAL_NOTIFICATION_CHANNEL
+        settings.SLACK_INTERNAL_NOTIFICATION_CHANNEL,
         staffing_request_inquiry=staffing_request_inquiry)
 
 
