@@ -165,7 +165,7 @@ def _notify_slack_status_change(task, current_worker, slack_api_key,
         StaffingRequestInquiry.CommunicationMethod.PREVIOUSLY_OPTED_IN)
     is_auto_staffed = (staffing_request_inquiry
                        and staffing_request_inquiry.communication_method
-                       == auto_staff_method)
+                       == auto_staff_method.value)
     processing_status_message = (
         'Task has been auto-staffed to a worker.'
         if is_auto_staffed else
