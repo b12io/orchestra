@@ -6,6 +6,7 @@ from django.urls import reverse
 from orchestra.communication.mail import send_mail
 from orchestra.communication.slack import OrchestraSlackService
 from orchestra.models import CommunicationPreference
+from orchestra.models import StaffingRequestInquiry
 from orchestra.models import Task
 from orchestra.models import Project
 from orchestra.utils.decorators import run_if
@@ -14,7 +15,8 @@ from orchestra.utils.task_properties import current_assignment
 
 
 # TODO(jrbotros): design HTML template
-def notify_status_change(task, previous_status=None):
+def notify_status_change(
+        task, previous_status=None, staffing_request_inquiry=None):
     """
     Notify workers after task has changed state
     """
@@ -85,9 +87,13 @@ def notify_status_change(task, previous_status=None):
                                assignment.worker.user.email]
         }
 
-    _notify_internal_slack_status_change(task, current_worker)
+    _notify_internal_slack_status_change(
+        task, current_worker,
+        staffing_request_inquiry=staffing_request_inquiry)
     if task.project.slack_group_id:
-        _notify_experts_slack_status_change(task, current_worker)
+        _notify_experts_slack_status_change(
+            task, current_worker,
+            staffing_request_inquiry=staffing_request_inquiry)
 
     if message_info is not None:
         message_info['message'] += _task_information(task)
@@ -152,10 +158,20 @@ def _task_information(task, with_slack_link=True):
 
 def _notify_slack_status_change(task, current_worker, slack_api_key,
                                 slack_channel, with_slack_link=True,
-                                with_user_mention=False):
+                                with_user_mention=False,
+                                staffing_request_inquiry=None):
     slack = OrchestraSlackService(slack_api_key)
+    auto_staff_method = (
+        StaffingRequestInquiry.CommunicationMethod.PREVIOUSLY_OPTED_IN)
+    is_auto_staffed = (staffing_request_inquiry
+                       and staffing_request_inquiry.communication_method
+                       == auto_staff_method)
+    processing_status_message = (
+        'Task has been auto-staffed to a worker.'
+        if is_auto_staffed else
+        'Task has been picked up by a worker.')
     slack_statuses = {
-        Task.Status.PROCESSING: 'Task has been picked up by a worker.',
+        Task.Status.PROCESSING: processing_status_message,
         Task.Status.PENDING_REVIEW: 'Task is awaiting review.',
         Task.Status.REVIEWING: 'Task is under review.',
         Task.Status.POST_REVIEW_PROCESSING: 'Task was returned by reviewer.',
@@ -177,19 +193,25 @@ def _notify_slack_status_change(task, current_worker, slack_api_key,
 
 
 @run_if('ORCHESTRA_SLACK_INTERNAL_ENABLED')
-def _notify_internal_slack_status_change(task, current_worker):
-    _notify_slack_status_change(task, current_worker,
-                                settings.SLACK_INTERNAL_API_KEY,
-                                settings.SLACK_INTERNAL_NOTIFICATION_CHANNEL)
+def _notify_internal_slack_status_change(
+        task, current_worker, staffing_request_inquiry=None):
+    _notify_slack_status_change(
+        task, current_worker,
+        settings.SLACK_INTERNAL_API_KEY,
+        settings.SLACK_INTERNAL_NOTIFICATION_CHANNEL
+        staffing_request_inquiry=staffing_request_inquiry)
 
 
 @run_if('ORCHESTRA_SLACK_EXPERTS_ENABLED')
-def _notify_experts_slack_status_change(task, current_worker):
-    _notify_slack_status_change(task, current_worker,
-                                settings.SLACK_EXPERTS_API_KEY,
-                                task.project.slack_group_id,
-                                with_slack_link=False,
-                                with_user_mention=True)
+def _notify_experts_slack_status_change(
+        task, current_worker, staffing_request_inquiry=None):
+    _notify_slack_status_change(
+        task, current_worker,
+        settings.SLACK_EXPERTS_API_KEY,
+        task.project.slack_group_id,
+        with_slack_link=False,
+        with_user_mention=True,
+        staffing_request_inquiry=staffing_request_inquiry)
 
 
 @run_if('ORCHESTRA_SLACK_EXPERTS_ENABLED')
