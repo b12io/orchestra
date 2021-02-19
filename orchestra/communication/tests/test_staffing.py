@@ -347,7 +347,6 @@ class StaffingTestCase(OrchestraTestCase):
         self.assertEqual(
             total_inquiries + 1, StaffingRequestInquiry.objects.count())
 
-
     @patch('orchestra.communication.staffing.message_experts_slack_group')
     def test_handle_staffing_response_all_rejected(self, mock_slack):
         worker2 = WorkerFactory()
