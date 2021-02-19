@@ -23,8 +23,13 @@ from orchestra.tests.helpers.fixtures import CommunicationPreferenceFactory
 from orchestra.tests.helpers.fixtures import StaffBotRequestFactory
 from orchestra.tests.helpers.fixtures import StaffingRequestInquiryFactory
 from orchestra.tests.helpers.fixtures import StaffingResponseFactory
+from orchestra.tests.helpers.fixtures import WorkerAvailabilityFactory
 from orchestra.tests.helpers.fixtures import WorkerCertificationFactory
 from orchestra.tests.helpers.fixtures import WorkerFactory
+
+
+def _get_assignable_hours_for_task(task_data):
+    return 3
 
 
 class StaffingTestCase(OrchestraTestCase):
@@ -47,6 +52,7 @@ class StaffingTestCase(OrchestraTestCase):
         self.staffing_request_inquiry \
             .request.task.step.required_certifications.add(
                 self.certification)
+        self.staffing_request = self.staffing_request_inquiry.request
         super().setUp()
 
     def test_handle_staffing_response_invalid_request(self):
@@ -235,12 +241,22 @@ class StaffingTestCase(OrchestraTestCase):
             StaffingRequestInquiry.objects.filter(request=request).count(),
             4)
 
+    @patch('orchestra.communication.staffing.handle_staffing_response')
     @patch('orchestra.communication.staffing.message_experts_slack_group')
-    def test_send_staffing_request_priorities(self, mock_slack):
+    def test_address_staffing_request_priorities(
+            self, mock_slack, mock_handle):
+
+        request = self.staffing_request
+        request.task.step.assignable_hours_function = {
+            'path': ('orchestra.communication.tests'
+                     '.test_staffing._get_assignable_hours_for_task')
+        }
+        request.task.step.save()
 
         worker2 = WorkerFactory()
         WorkerCertificationFactory(worker=worker2,
-                                   staffing_priority=-1)
+                                   staffing_priority=-1,
+                                   certification=self.certification)
 
         CommunicationPreferenceFactory(
             worker=worker2,
@@ -250,30 +266,81 @@ class StaffingTestCase(OrchestraTestCase):
 
         worker3 = WorkerFactory()
         WorkerCertificationFactory(worker=worker3,
-                                   staffing_priority=1)
+                                   staffing_priority=1,
+                                   certification=self.certification)
         CommunicationPreferenceFactory(
             worker=worker3,
             communication_type=(
                 CommunicationPreference.CommunicationType
                 .NEW_TASK_AVAILABLE.value))
 
-        request = StaffBotRequestFactory()
         self.assertEqual(request.status,
                          StaffBotRequest.Status.SENDING_INQUIRIES.value)
 
         # Workers should be contacted in priority order.
-        excluded = []
-        for worker in (worker3, self.worker, worker2):
+        excluded = [self.worker]
+        for worker in (worker3, worker2):
             address_staffing_requests(worker_batch_size=1,
                                       frequency=timedelta(minutes=0))
             inquiries = (
                 StaffingRequestInquiry.objects
                 .filter(request=request)
                 .exclude(communication_preference__worker__in=excluded))
+            # One inquiry for each communication method
+            self.assertEqual(inquiries.count(), 2)
             for inquiry in inquiries:
                 self.assertEqual(worker.id,
                                  inquiry.communication_preference.worker.id)
             excluded.append(worker)
+
+        def _set_hours_available(availability, hours):
+            for day in ['mon', 'tues', 'wed', 'thurs', 'fri', 'sat', 'sun']:
+                setattr(availability, 'hours_available_{}'.format(day), hours)
+            availability.save()
+
+        total_inquiries = StaffingRequestInquiry.objects.count()
+        # The highest-priority Worker to be has availability but has
+        # already done enough work today, so shouldn't be
+        # automatically assigned the task.
+        worker3_availability = WorkerAvailabilityFactory(worker=worker3)
+        # TODO(marcua): set hours to 4, assign make current task be 3
+        # hours and previously assigned task 3.
+        _set_hours_available(worker3_availability, 2)
+        address_staffing_requests(worker_batch_size=1,
+                                  frequency=timedelta(minutes=0))
+        mock_handle.assert_not_called()
+
+        # Despite wanting work, their maximum hours aren't high
+        # enough, so they aren't assigned.
+        _set_hours_available(worker3_availability, 7)
+        address_staffing_requests(worker_batch_size=1,
+                                  frequency=timedelta(minutes=0))
+        mock_handle.assert_not_called()
+
+        # The highest-priority Worker has availability! Assign them work.
+        worker3.max_autostaff_hours_per_day = 8
+        worker3.save()
+        address_staffing_requests(worker_batch_size=1,
+                                  frequency=timedelta(minutes=0))
+        previously_opted_in_method = (
+            StaffingRequestInquiry.CommunicationMethod
+            .PREVIOUSLY_OPTED_IN.value)
+        inquiries = StaffingRequestInquiry.objects.filter(
+            communication_preference__worker=worker,
+            communication_method=previously_opted_in_method
+        )
+        self.assertEqual(inquiries.count(), 1)
+        mock_handle.assert_called_once_with(
+            worker, inquiries.first().id, is_available=True)
+
+        # The next-highest priority Worker to be who has availability should
+        # be automatically assigned the next task.
+
+        # No new inquiries were created while autostaffing.
+        # TODO(marcua): Or were there -> do we make one to say "we were autostaffed!?"
+        self.assertEqual(
+            total_inquiries, StaffingRequestInquiry.objects.count())
+
 
     @patch('orchestra.communication.staffing.message_experts_slack_group')
     def test_handle_staffing_response_all_rejected(self, mock_slack):
