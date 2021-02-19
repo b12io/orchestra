@@ -172,7 +172,7 @@ def _can_handle_more_work_today(worker, task):
     if availability is not None and task_hours is not None:
         desired_hours = getattr(
             availability, 'hours_available_{}'.format(today_abbreviation), 0)
-        desired_hours = min(desired_hours, worker.max_autostaff_hours_per_day)
+        allowed_hours = min(desired_hours, worker.max_autostaff_hours_per_day)
         responses = StaffingResponse.objects.filter(
             request_inquiry__communication_preference__worker=worker,
             is_winner=True,
@@ -202,7 +202,7 @@ def _can_handle_more_work_today(worker, task):
             (len(hours_assigned) + 1 <= max_tasks)
             and (sum_hours_assigned
                  + sum_hours_worked
-                 + task_hours <= desired_hours))
+                 + task_hours <= allowed_hours))
     return can_handle_more_hours
 
 
