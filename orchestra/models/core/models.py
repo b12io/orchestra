@@ -231,8 +231,9 @@ class Worker(WorkerMixin, models.Model):
         phone (str):
             The worker's phone number
         max_autostaff_hours_per_day (float):
-            The maximum hours of work to auto-assign the worker
-            in a single day.
+            An upper bound on the hours of new work the Worker can
+            be assigned per day. This is further bounded by work
+            already completed today or already auto-assigned today.
     """
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

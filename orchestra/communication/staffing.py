@@ -173,6 +173,15 @@ def _can_handle_more_work_today(worker, task):
         desired_hours = getattr(
             availability, 'hours_available_{}'.format(today_abbreviation), 0)
         allowed_hours = min(desired_hours, worker.max_autostaff_hours_per_day)
+        # Because we're looking at StaffingResponse objects to
+        # determine assigned tasks for a worker, we don't consider
+        # tasks that were assigned manually without an open StaffBot
+        # request. For example, we ignore tasks staffed by directly
+        # typing a worker's username into the projman interface when
+        # an open StaffBot request does not exist for the task. In
+        # practice, such situations are rare (new tasks tend to be
+        # auto-StaffBotted), and when the situations arise, it's
+        # unclear what the estimate for the assignable hours is.
         responses = StaffingResponse.objects.filter(
             request_inquiry__communication_preference__worker=worker,
             is_winner=True,
@@ -289,6 +298,13 @@ def staff_or_send_request_inquiries(staffbot, request, worker_batch_size):
     successfully_staffed = _attempt_to_automatically_staff(
         staffbot, request, available_worker_certifications)
     sending_inquiries = StaffBotRequest.Status.SENDING_INQUIRIES.value
+    # We consider StaffBotRequests that are done sending inquiries
+    # when auto-staffing, since it's possible for a worker to have new
+    # auto-staffing availability for a request that has already been
+    # sent to them (e.g., the day after receiving a request, their new
+    # availability kicks in). Once we reach the branch below, we only
+    # want to send new request inquiries for requests that aren't
+    # `DONE_SENDING_INQUIRIES`.
     if ((not successfully_staffed)
             and (request.status == sending_inquiries)):
         _send_request_inquiries(staffbot,
