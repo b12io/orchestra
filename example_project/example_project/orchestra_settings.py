@@ -78,9 +78,6 @@ def setup_orchestra(settings_module_name):
     # The maximum number of tasks to auto-assign to a worker in a single day.
     settings.ORCHESTRA_MAX_AUTOSTAFF_TASKS_PER_DAY = 4
 
-    # The maximum numbers of hours to auto-assign to a worker in a single day.
-    settings.ORCHESTRA_MAX_AUTOSTAFF_HOURS_PER_DAY = 8
-
     # S3 bucket name to upload images to
     settings.EDITOR_IMAGE_BUCKET_NAME = 'CHANGEME'
 
