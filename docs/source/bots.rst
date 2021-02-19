@@ -12,7 +12,7 @@ Overview
 --------
 
 ``StaffBot`` provides a simple way to ask/automatically staff a group
-of ``Workers`` if they would like to work on a particular
+of ``Workers`` to work on a particular
 ``Task``. The goal is reduce the human load when finding a ``Worker``
 for a ``Task``. ``StaffBot`` staffing begins in one of two ways:
 
@@ -43,7 +43,7 @@ descending order of priority.
 
 To staff a task, ``StaffBot`` considers candidate ``Workers`` who have
 ``WorkerCertification`` objects for that task. It narrows those
-``Workers`` ones with the ``WorkerCertification.staffbot_enabled``
+``Workers`` to ones with the ``WorkerCertification.staffbot_enabled``
 field set to ``True`` (it is ``True`` by default). If there are
 multiple candidate ``Workers``, Orchestra prioritizes in descending
 order of the ``WorkerCertification.staffing_priority`` integer field
