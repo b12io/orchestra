@@ -203,7 +203,6 @@ def _can_handle_more_work_today(worker, task):
             and (sum_hours_assigned
                  + sum_hours_worked
                  + task_hours <= desired_hours))
-        print('many questions', sum_hours_assigned, sum_hours_worked, can_handle_more_hours, desired_hours, len(hours_assigned), max_tasks)
     return can_handle_more_hours
 
 

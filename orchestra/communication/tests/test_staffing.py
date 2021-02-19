@@ -326,12 +326,12 @@ class StaffingTestCase(OrchestraTestCase):
             StaffingRequestInquiry.CommunicationMethod
             .PREVIOUSLY_OPTED_IN.value)
         inquiries = StaffingRequestInquiry.objects.filter(
-            communication_preference__worker=worker,
+            communication_preference__worker=worker3,
             communication_method=previously_opted_in_method
         )
         self.assertEqual(inquiries.count(), 1)
         mock_handle.assert_called_once_with(
-            worker, inquiries.first().id, is_available=True)
+            worker3, inquiries.first().id, is_available=True)
 
         # The next-highest priority Worker to be who has availability should
         # be automatically assigned the next task.
@@ -339,7 +339,7 @@ class StaffingTestCase(OrchestraTestCase):
         # No new inquiries were created while autostaffing.
         # TODO(marcua): Or were there -> do we make one to say "we were autostaffed!?"
         self.assertEqual(
-            total_inquiries, StaffingRequestInquiry.objects.count())
+            total_inquiries + 1, StaffingRequestInquiry.objects.count())
 
 
     @patch('orchestra.communication.staffing.message_experts_slack_group')
