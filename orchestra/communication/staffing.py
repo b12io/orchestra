@@ -203,6 +203,7 @@ def _can_handle_more_work_today(worker, task):
             and (sum_hours_assigned
                  + sum_hours_worked
                  + task_hours <= desired_hours))
+        print('sanity-checking', sum_hours_assigned, sum_hours_worked, task_hours)
     return can_handle_more_hours
 
 

@@ -23,6 +23,7 @@ from orchestra.tests.helpers.fixtures import CommunicationPreferenceFactory
 from orchestra.tests.helpers.fixtures import StaffBotRequestFactory
 from orchestra.tests.helpers.fixtures import StaffingRequestInquiryFactory
 from orchestra.tests.helpers.fixtures import StaffingResponseFactory
+from orchestra.tests.helpers.fixtures import TimeEntryFactory
 from orchestra.tests.helpers.fixtures import WorkerAvailabilityFactory
 from orchestra.tests.helpers.fixtures import WorkerCertificationFactory
 from orchestra.tests.helpers.fixtures import WorkerFactory
@@ -299,23 +300,34 @@ class StaffingTestCase(OrchestraTestCase):
             availability.save()
 
         total_inquiries = StaffingRequestInquiry.objects.count()
-        # The highest-priority Worker to be has availability but has
-        # already done enough work today, so shouldn't be
-        # automatically assigned the task.
-        worker3_availability = WorkerAvailabilityFactory(worker=worker3)
-        # TODO(marcua): set hours to 4, assign make current task be 3
-        # hours and previously assigned task 3.
-        _set_hours_available(worker3_availability, 2)
-        address_staffing_requests(worker_batch_size=1,
-                                  frequency=timedelta(minutes=0))
-        mock_handle.assert_not_called()
+        # The highest-priority Worker has availability (4 hours) but has
+        # already done 2 hours of work today, so shouldn't be
+        # automatically assigned the task which is estimated to take 3 hours.
 
-        # Despite wanting work, their maximum hours aren't high
-        # enough, so they aren't assigned.
-        _set_hours_available(worker3_availability, 7)
+        # TODO(marcua): Update this to include previously assigned
+        # hours as well (on a task assigned today).
+        worker3_availability = WorkerAvailabilityFactory(worker=worker3)
+        _set_hours_available(worker3_availability, 4)
+        worker3.max_autostaff_hours_per_day = 4
+        worker3.save()
+        TimeEntryFactory(worker=worker3,
+                         date=timezone.now().date(),
+                         time_worked=timedelta(hours=2))
         address_staffing_requests(worker_batch_size=1,
                                   frequency=timedelta(minutes=0))
         mock_handle.assert_not_called()
+        self.assertEqual(
+            total_inquiries, StaffingRequestInquiry.objects.count())
+
+        # Despite wanting 6 hours of work, and the estimate of worked
+        # hours and new hours being 5, their maximum allowed hours
+        # aren't high enough, so they aren't assigned.
+        _set_hours_available(worker3_availability, 6)
+        address_staffing_requests(worker_batch_size=1,
+                                  frequency=timedelta(minutes=0))
+        mock_handle.assert_not_called()
+        self.assertEqual(
+            total_inquiries, StaffingRequestInquiry.objects.count())
 
         # The highest-priority Worker has availability! Assign them work.
         worker3.max_autostaff_hours_per_day = 8
@@ -332,12 +344,6 @@ class StaffingTestCase(OrchestraTestCase):
         self.assertEqual(inquiries.count(), 1)
         mock_handle.assert_called_once_with(
             worker3, inquiries.first().id, is_available=True)
-
-        # The next-highest priority Worker to be who has availability should
-        # be automatically assigned the next task.
-
-        # No new inquiries were created while autostaffing.
-        # TODO(marcua): Or were there -> do we make one to say "we were autostaffed!?"
         self.assertEqual(
             total_inquiries + 1, StaffingRequestInquiry.objects.count())
 
