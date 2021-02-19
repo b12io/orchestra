@@ -8,14 +8,7 @@
 <div class="main-content login-wrap account-settings container-fluid">
   <div class="row">
     <div class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 col-xs-12">
-      {% if success %}
-      <div class="alert alert-info alert-dismissible" role="alert">
-        {{ success_message|default:"Successfully updated preferences!" }}
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      {% endif %}
+      {% include "accounts/success.html" %}
       {% include "accounts/settings-tabs.html" with account_settings="selected" %}
       <div class="card">
         <form action="{% url 'orchestra:account_settings' %}" method="post">
