@@ -959,6 +959,10 @@ def assert_test_dir_v2_loaded(test_case):
                     'test_dir/v2/s2/js/directives.js',
                 ],
             },
+            'assignable_hours_function': {
+                'path': 'v2.machine.assignable_hours',
+                'kwargs': {}
+            },
         })
     test_case.assertEqual(list(step2.required_certifications.all()),
                           [Certification.objects.get(
