@@ -17,8 +17,10 @@ from orchestra.models.core.mixins import TodoMixin
 from orchestra.models.core.mixins import TodoQAMixin
 from orchestra.models.core.mixins import WorkerCertificationMixin
 from orchestra.models.core.mixins import WorkerMixin
+from orchestra.models.core.mixins import WorkerAvailabilityMixin
 from orchestra.models.core.mixins import WorkflowMixin
 from orchestra.models.core.mixins import WorkflowVersionMixin
+from orchestra.utils.datetime_utils import first_day_of_the_week
 from orchestra.utils.models import BaseModel
 from orchestra.utils.models import ChoicesEnum
 
@@ -166,6 +168,13 @@ class Step(StepMixin, models.Model):
         todolist_templates_to_apply ([orchestra.models.TodoListTemplate]):
             TodoListTemplates to automatically apply to the todolist of this
             step (only valid for human steps).
+        completion_ends_project (bool):
+            If True, submitting the task associated with this step will mark
+            the entire project as completed.
+        assignable_hours_function (str):
+            A JSON blob used to determine how many hours of human work are
+            expected to be required to complete this step. Used to estimate
+            workload when automatically assigning tasks.
     """
     # General fields
     created_at = models.DateTimeField(default=timezone.now)
@@ -199,6 +208,7 @@ class Step(StepMixin, models.Model):
     todolist_templates_to_apply = models.ManyToManyField('TodoListTemplate',
                                                          blank=True)
     completion_ends_project = models.BooleanField(default=False)
+    assignable_hours_function = JSONField(default={})
 
     class Meta:
         app_label = 'orchestra'
@@ -220,6 +230,10 @@ class Worker(WorkerMixin, models.Model):
             The worker's Slack id if Slack integration is enabled.
         phone (str):
             The worker's phone number
+        max_autostaff_hours_per_day (float):
+            An upper bound on the hours of new work the Worker can
+            be assigned per day. This is further bounded by work
+            already completed today or already auto-assigned today.
     """
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -227,6 +241,7 @@ class Worker(WorkerMixin, models.Model):
     slack_username = models.CharField(max_length=200, blank=True, null=True)
     slack_user_id = models.CharField(max_length=200, blank=True, null=True)
     phone = PhoneNumberField(null=True)
+    max_autostaff_hours_per_day = models.FloatField(blank=True, default=0)
 
     class Meta:
         app_label = 'orchestra'
@@ -291,6 +306,65 @@ class WorkerCertification(WorkerCertificationMixin, models.Model):
     role = models.IntegerField(choices=ROLE_CHOICES)
     staffbot_enabled = models.BooleanField(default=True)
     staffing_priority = models.IntegerField(default=0)
+
+
+class WorkerAvailability(WorkerAvailabilityMixin, BaseModel):
+    """
+    WorkerAvailability describes a worker's availabilty for work
+    in a given week.
+
+    Attributes:
+        worker (orchestra.models.Worker):
+            The worker who is available during this week.
+        week (datetime.date):
+            The week during which the worker is available. Availability is
+            active for a 7-day period following the date stored in this field.
+        hours_available_mon (float):
+            The number of hours the worker is available to work on Monday of
+            the week.
+        hours_available_tues (float):
+            The number of hours the worker is available to work on Tuesday of
+            the week.
+        hours_available_wed (float):
+            The number of hours the worker is available to work on Wednesday of
+            the week.
+        hours_available_thurs (float):
+            The number of hours the worker is available to work on Thursday of
+            the week.
+        hours_available_fri (float):
+            The number of hours the worker is available to work on Friday of
+            the week.
+        hours_available_sat (float):
+            The number of hours the worker is available to work on Saturday of
+            the week.
+        hours_available_sun (float):
+            The number of hours the worker is available to work on Sunday of
+            the week.
+    """
+
+    worker = models.ForeignKey(Worker, on_delete=models.CASCADE,
+                               related_name='availabilities')
+
+    # The Monday (day 0) of the week these preferences apply for.
+    # Default computes the Monday of the current week.
+    week = models.DateField(default=first_day_of_the_week)
+
+    # Hours available for each day of the week
+    hours_available_mon = models.FloatField(default=0, verbose_name='Monday')
+    hours_available_tues = models.FloatField(default=0, verbose_name='Tuesday')
+    hours_available_wed = models.FloatField(
+        default=0, verbose_name='Wednesday')
+    hours_available_thurs = models.FloatField(
+        default=0, verbose_name='Thursday')
+    hours_available_fri = models.FloatField(default=0, verbose_name='Friday')
+    hours_available_sat = models.FloatField(default=0, verbose_name='Saturday')
+    hours_available_sun = models.FloatField(default=0, verbose_name='Sunday')
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=('worker', 'week'), name='uniq_worker_week')
+        ]
 
 
 class Project(ProjectMixin, models.Model):

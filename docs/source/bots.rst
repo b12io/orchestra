@@ -8,89 +8,93 @@ Below, we'll walk through the various bots available in Orchestra.
 StaffBot
 *********
 
-Setup
------
+Overview
+--------
 
-``StaffBot`` provides a simple way to ask a group of ``Workers`` if they would
-like to work on a particular ``Task``. The goal is reduce the human load when
-finding a ``Worker`` for  a ``Task``. ``StaffBot`` allows a user to interact
-with Orchestra via `Slack`_ or can be configured to automatically find
-``Workers`` for a ``Task`` when it is available by setting up an `Assignment
-Policy`_.
+``StaffBot`` provides a simple way to ask/automatically staff a group
+of ``Workers`` to work on a particular
+``Task``. The goal is reduce the human load when finding a ``Worker``
+for a ``Task``. ``StaffBot`` staffing begins in one of two ways:
 
-``StaffBot`` works by reaching out to qualified ``Workers`` and offering them a
-``Task`` to work on. ``Workers`` can then either accept or reject the task (via
-Slack or email) and start working on it.
+* A user clicks on the ``Staff`` button in the project management or
+  team information card in the Orchestra user interface.
+* A ``Task`` has an `Assignment Policy`_ that calls on StaffBot.
+  allows a user to interact with Orchestra.
+
+Once ``StaffBot`` becomes aware of a task to be staffed, it tries
+staffing qualified ``Workers`` in two ways:
+
+* First, it looks for ``Workers`` who have requested work hours in the
+  ``Work availability`` tab of their account settings but have not yet
+  worked or been assigned their desired number of hours of work that
+  day. It automatically assigns these workers the highest-priority
+  tasks for which they are qualified.
+* If a task can not be automatically assigned to a ``Worker``,
+  ``StaffBot`` reaches out to qualified ``Workers`` and offers them a
+  ``Task`` to work on via Slack/email and the ``Available tasks``
+  interface. ``Workers`` can then either accept or reject the task and
+  start working on it.
 
 
-Slack
+Logic
 =====
+When multiple tasks can be staffed, Orchestra prioritizes them in
+descending order of priority.
 
-To interact with ``StaffBot`` via Slack, you first need to configure a `Slack
-Slash Command <https://api.slack.com/slash-commands>`_. Below is a sample
-configuration for the ``/staffbot`` command.
+To staff a task, ``StaffBot`` considers candidate ``Workers`` who have
+``WorkerCertification`` objects for that task. It narrows those
+``Workers`` to ones with the ``WorkerCertification.staffbot_enabled``
+field set to ``True`` (it is ``True`` by default). If there are
+multiple candidate ``Workers``, Orchestra prioritizes in descending
+order of the ``WorkerCertification.staffing_priority`` integer field
+(``0`` by default). If ``Workers`` have the same
+``staffing_priority``, ``StaffBot`` will prioritize them randomly.
 
+In priority order, ``StaffBot`` first looks for any ``Worker`` that
+has a ``WorkerAvailability`` for today. It considers three numbers:
 
-.. image:: ../static/img/bots/slash_command_config_token.png
-.. image:: ../static/img/bots/slash_command_autocomplete.png
+* The number of hours the ``Worker`` is estimated to work that day if
+  the task is assigned to them. This is the sum of the number of hours
+  the ``Worker`` has tracked on their timecard, any hours it has already
+  assigned the ``Worker`` that day, and the estimate of hours of work
+  for this ``Task`` (estimated by the ``Task.assignable_hours_function``).
+* The number of hours the ``Worker`` can work. This is the minimum of
+  ``Worker.max_autostaff_hours_per_day`` (the ``Worker``'s assignable
+  limit) and ``WorkerAvailability.hours_available_DAY`` (the maximum
+  hours the ``Worker`` requested for the day).
+* The maximum number of automatically assignable tasks per
+  ``Worker`` per day
+  (``settings.ORCHESTRA_MAX_AUTOSTAFF_TASKS_PER_DAY``), which is a
+  failsafe to make sure an error doesn't cause an out-of-control
+  assignment condition.
 
-Once the command is created, copy the token for the command into your project
-settings as follows: ``ORCHESTRA_SLACK_STAFFBOT_TOKEN = 'your-token-here'``.
-The token is used to authenticated requests sent to the staffbot url. It is
-important to keep this token secret since otherwise anyone may make a ``HTTP
-POST`` and execute the staffing logic!
+If the hours the ``Worker`` can work is greater than the hours the
+``Worker`` is estimated to work including this new ``Task`` (and the
+number of tasks assigned to them isn't more than the day's maximum),
+the ``Task`` will be automatically assigned to the ``Worker``.
 
-In addition to the ``ORCHESTRA_SLACK_STAFFBOT_TOKEN`` setting, you can further
-restrict access to the endpoint by specifying the following::
-
- STAFFBOT_CONFIG = {
-            'allowed_team_ids': ['allowed_team_ids'],
-            'allowed_team_domains': ['allowed_domains'],
-            'allowed_channel_ids': ['allowed_channel_ids'],
-            'allowed_channel_names': ['allowed_channel_names'],
-            'allowed_user_ids': ['allowed_user_ids'],
-            'allowed_user_names': ['allowed_user_names'],
-            'allowed_commands': ['allowed_commands'],
-        }
-
-``StaffBot`` will use the ``STAFFBOT_CONFIG`` to filter messages that do not
-match items in the list. If a parameter is not specified, all values are
-accepted by default.
-
-Once this configuration is complete, you can test it by typing
-``/staffbot staff <task-id>`` where ``<task-id>`` is an unassigned
-task id.  By default, ``StaffBot`` will reach out to ``Workers`` who
-have the appropriate ``WorkerCertification`` for the task you are
-staffing, in batches of
-``settings.ORCHESTRA_STAFFBOT_WORKER_BATCH_SIZE Workers`` every
-``settings.ORCHESTRA_STAFFBOT_BATCH_FREQUENCY`` time units (the
-frequency is a ``datetime.timedelta`` object).
-
-``StaffBot`` looks at two fields when prioritizing ``Workers`` to
-reach out to when a task is available.  The
-``WorkerCertification.staffbot_enabled`` field (``True`` by default)
-tells ``StaffBot`` whether to reach out to a ``Worker`` because they
-have a given certification.  If you set it to ``False``, the
-``Worker`` will still be able to pick up tasks requiring certification
-(e.g., you can still manually assign tasks to that ``Worker``), but
-``StaffBot`` will not reach out to them for those tasks.  The
-``WorkerCertification.staffing_priority`` integer field (``0`` by default) helps
-``StaffBot`` prioritize amongst certified ``Workers``.  If ``Workers``
-have the same ``staffing_priority``, ``StaffBot`` will prioritize them
-randomly.
+If no ``Worker`` meets the automatic staffing condition, then
+``StaffBot`` sends requests to ``Workers`` to see if any prefer to
+pick up tasks rather than be automatically assigned a
+Task. Specifically, it sends requests in order of
+``staffing_priority`` to
+``settings.ORCHESTRA_STAFFBOT_WORKER_BATCH_SIZE`` ``Workers`` every
+``settings.ORCHESTRA_STAFFBOT_BATCH_FREQUENCY``. These requests are
+send via Slack and email, and appear in the ``Available tasks`` list
+in the Orchestra user interface.
 
 Utility functions
 =================
 There are several utility functions to help operationalize ``StaffBot``. You should call these through ``cron`` or some other scheduling utility:
 
-* ``orchestra.communication.staffing.send_staffing_requests`` looks for tasks that can be staffed and reaches out to the next set of ``settings.ORCHESTRA_STAFFBOT_WORKER_BATCH_SIZE`` workers every ``settings.ORCHESTRA_STAFFBOT_BATCH_FREQUENCY``.
+* ``orchestra.communication.staffing.address_staffing_requests`` runs the automatic staffing and staffing request functionality described above.
 * ``orchestra.communication.staffing.remind_workers_about_available_tasks`` sends a reminder to any worker who has unclaimed task still available.
 * ``orchestra.communication.staffing.warn_staffing_team_about_unstaffed_tasks`` warns administrators on the internal Slack channel ``ORCHESTRA_STAFFBOT_STAFFING_GROUP_ID`` about tasks that have not been staffed for more than ``ORCHESTRA_STAFFBOT_STAFFING_MIN_TIME``.
 
 Assignment Policy
 ================
 
-``StaffBot`` can also automatically staff projects by specifying an Assignment
+``StaffBot`` can automatically staff projects by specifying an Assignment
 Policy. Orchestra supports custom logic for assigning ``Workers`` to tasks, and
 ``StaffBot`` leverages this by asking qualified ``Workers`` if they would like
 to work on a ``Task`` as soon as the ``Task`` is available. To specify the

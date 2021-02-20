@@ -26,7 +26,7 @@
             <button type="button" ng-disabled="vis.dataService.loading" ng-click="vis.showProjectData()" class="btn btn-default">
               View project data
             </button>
-            <a ng-href="{{vis.dataService.data.project.admin_url}}" ng-disabled="vis.dataService.loading" target="_blank">
+            <a ng-href="/vip/orchestra/project/{{vis.dataService.currentProject.id}}/change" ng-disabled="vis.dataService.loading" target="_blank">
               <button type="button" class="btn btn-default">View in admin</button>
             </a>
             <button type="button" class="btn btn-default"

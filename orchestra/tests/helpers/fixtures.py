@@ -24,6 +24,7 @@ from orchestra.models import Workflow
 from orchestra.models import WorkflowVersion
 from orchestra.tests.helpers.iterations import verify_iterations
 from orchestra.tests.helpers.workflow import workflow_fixtures
+from orchestra.utils.datetime_utils import first_day_of_the_week
 from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.task_lifecycle import submit_task
 from orchestra.utils.task_properties import assignment_history
@@ -159,6 +160,13 @@ class WorkerFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = 'orchestra.Worker'
+
+
+class WorkerAvailabilityFactory(factory.django.DjangoModelFactory):
+    week = factory.LazyFunction(first_day_of_the_week)
+
+    class Meta:
+        model = 'orchestra.WorkerAvailability'
 
 
 class CertificationFactory(factory.django.DjangoModelFactory):

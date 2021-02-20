@@ -7,6 +7,8 @@ from orchestra.accounts.bitformfield import BitFormField
 from orchestra.communication.slack import get_slack_user_id
 from orchestra.models import CommunicationPreference
 from orchestra.models import Worker
+from orchestra.models import WorkerAvailability
+
 
 UserModel = get_user_model()
 
@@ -20,6 +22,27 @@ class UserForm(forms.ModelForm):
         fields = ('first_name', 'last_name')
         # TODO(joshblum): support change email
         exclude = ('is_staff', 'is_active', 'date_joined', 'username', 'email')
+
+
+class DailyAvailabilityField(forms.FloatField):
+    def __init__(self, *args, **kwargs):
+        max_value = 24  # only 24 hours in a day!
+        super().__init__(*args, min_value=0, max_value=max_value, **kwargs)
+
+
+class WorkerAvailabilityForm(forms.ModelForm):
+    class Meta:
+        model = WorkerAvailability
+        fields = (
+            'hours_available_mon',
+            'hours_available_tues',
+            'hours_available_wed',
+            'hours_available_thurs',
+            'hours_available_fri',
+            'hours_available_sat',
+            'hours_available_sun',
+        )
+        field_classes = {field: DailyAvailabilityField for field in fields}
 
 
 class WorkerForm(forms.ModelForm):
@@ -52,10 +75,9 @@ class WorkerForm(forms.ModelForm):
 
 class CommunicationPreferenceForm(forms.ModelForm):
     methods = BitFormField()
-    communication_type = forms.IntegerField(required=False)
 
     class Meta:
         model = CommunicationPreference
-        fields = ('methods', 'communication_type')
+        fields = ('methods',)
         exclude = ('worker', 'is_deleted',
                    'created_at')

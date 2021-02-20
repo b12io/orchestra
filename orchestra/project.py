@@ -1,5 +1,3 @@
-from django.conf import settings
-
 from orchestra.communication.slack import create_project_slack_group
 from orchestra.google_apps.convenience import create_project_google_folder
 from orchestra.models import Project
@@ -25,9 +23,6 @@ def create_project_with_tasks(workflow_slug,
                                      task_class=task_class)
 
     create_project_google_folder(project)
-
-    if settings.PRODUCTION or settings.STAGING:
-        create_project_slack_group(project)
-
+    create_project_slack_group(project)
     create_subsequent_tasks(project)
     return project

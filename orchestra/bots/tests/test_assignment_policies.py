@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from orchestra.communication.staffing import send_staffing_requests
+from orchestra.communication.staffing import address_staffing_requests
 from orchestra.models import Iteration
 from orchestra.models import StaffBotRequest
 from orchestra.models import StaffingRequestInquiry
@@ -21,14 +21,14 @@ class StaffBotAutoAssignTestCase(OrchestraTestCase):
     @patch('orchestra.bots.staffbot.send_mail')
     @patch('orchestra.bots.staffbot.StaffBot._send_staffing_request_by_slack')
     def test_preassign_workers(self, mock_mail, mock_slack):
-        request_cause = StaffBotRequest.RequestCause.AUTOSTAFF.value
+        request_cause = StaffBotRequest.RequestCause.TASK_POLICY.value
         staffing_request_count = StaffingRequestInquiry.objects.filter(
             request__request_cause=request_cause).count()
         project = self.projects['staffbot_assignment_policy']
 
         # Create first task in test project
         create_subsequent_tasks(project)
-        send_staffing_requests()
+        address_staffing_requests()
         self.assertEqual(project.tasks.count(), 1)
         # Assign initial task to worker 0
         initial_task = assign_task(self.workers[0].id,

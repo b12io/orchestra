@@ -7,6 +7,7 @@ from django.utils import timezone
 
 from orchestra.communication.slack import OrchestraSlackService
 from orchestra.models import Project
+from orchestra.models import Worker
 from orchestra.project_api.api import get_project_information
 
 logger = logging.getLogger(__name__)
@@ -51,7 +52,7 @@ def project_management_information(project_id):
 
 def edit_slack_membership(project_id, username, action):
     slack = OrchestraSlackService()
-    slack_user_id = slack.users.get_user_id(username)
+    slack_user_id = Worker.objects.get(user__username=username).slack_user_id
     slack_group_id = Project.objects.get(id=project_id).slack_group_id
     if action == 'add':
         slack.groups.invite(slack_group_id, slack_user_id)

@@ -1,0 +1,8 @@
+{% if success %}
+<div class="alert alert-info alert-dismissible" role="alert">
+  {{ success_message|default:"Successfully updated preferences!" }}
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+{% endif %}

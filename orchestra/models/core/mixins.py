@@ -105,6 +105,12 @@ class WorkerCertificationMixin(object):
         super().save(*args, **kwargs)
 
 
+class WorkerAvailabilityMixin(object):
+
+    def __str__(self):
+        return '{} - {}'.format(self.worker.user.username, self.week)
+
+
 class ProjectMixin(object):
 
     def __str__(self):
@@ -134,6 +140,21 @@ class TaskMixin(object):
         """
         return self.assignments.filter(worker=worker).exists()
 
+    def _execute_function_from_step_json(
+            self, function_json_attr, exc_return_val=None, extra_kwargs=None):
+        from orchestra.utils.task_lifecycle import (
+            get_task_details)
+        function_json = getattr(self.step, function_json_attr)
+        path = function_json.get('path')
+        kwargs = function_json.get('kwargs', {})
+        if extra_kwargs is not None:
+            kwargs.update(extra_kwargs)
+        try:
+            function = locate(path)
+            return function(get_task_details(self.id), **kwargs)
+        except Exception:
+            return exc_return_val
+
     def get_detailed_description(self, extra_kwargs=None):
         """
         This function uses a step's `description_function` field to generate
@@ -146,17 +167,25 @@ class TaskMixin(object):
             detailed_description (str):
                 Dynamic message describing the task.
         """
-        from orchestra.utils.task_lifecycle import (
-            get_task_details)
-        path = self.step.detailed_description_function.get('path')
-        kwargs = self.step.detailed_description_function.get('kwargs', {})
-        if extra_kwargs is not None:
-            kwargs.update(extra_kwargs)
-        try:
-            function = locate(path)
-            return function(get_task_details(self.id), **kwargs)
-        except Exception:
-            return ''
+        return self._execute_function_from_step_json(
+            'detailed_description_function', '', extra_kwargs)
+
+    def get_assignable_hours(self, extra_kwargs=None):
+        """
+        This function uses a step's `assignable_hours_function` field to
+        generate an estimate of the hours needed to complete this task.
+
+        Args:
+            extra_kwargs (dict):
+                Additional (dynamic) kwargs that will be passed to the
+                description function.
+        Returns:
+            assignable_hours (float):
+                Number of hours needed to complete the task, or None if no
+                estimate is available.
+        """
+        return self._execute_function_from_step_json(
+            'assignable_hours_function', None, extra_kwargs)
 
     def save(self, *args, **kwargs):
         validate_json('tags', TagListSchema,

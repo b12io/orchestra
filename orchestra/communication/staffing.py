@@ -1,5 +1,6 @@
 from annoying.functions import get_object_or_None
 from collections import defaultdict
+from datetime import timedelta
 from django.conf import settings
 from django.urls import reverse
 from django.db import transaction
@@ -11,6 +12,7 @@ from orchestra.bots.errors import StaffingResponseException
 from orchestra.bots.staffbot import StaffBot
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import TaskStatusError
+from orchestra.models import CommunicationPreference
 from orchestra.models import StaffBotRequest
 from orchestra.models import StaffingRequestInquiry
 from orchestra.models import StaffingResponse
@@ -18,7 +20,10 @@ from orchestra.models import Task
 from orchestra.models import Project
 from orchestra.models import TaskAssignment
 from orchestra.models import Worker
+from orchestra.models import WorkerAvailability
 from orchestra.models import WorkerCertification
+from orchestra.utils.datetime_utils import first_day_of_the_week
+from orchestra.utils.time_tracking import time_entry_hours_worked
 from orchestra.utils.notifications import message_experts_slack_group
 from orchestra.utils.notifications import message_internal_slack_group
 from orchestra.utils.task_lifecycle import assign_task
@@ -122,19 +127,126 @@ def check_responses_complete(request):
              .format(request.task)))
 
 
-def send_staffing_requests(
+def address_staffing_requests(
         worker_batch_size=settings.ORCHESTRA_STAFFBOT_WORKER_BATCH_SIZE,
         frequency=settings.ORCHESTRA_STAFFBOT_BATCH_FREQUENCY):
     staffbot = StaffBot()
     cutoff_datetime = timezone.now() - frequency
     requests = (
         StaffBotRequest.objects
-        .filter(status=StaffBotRequest.Status.SENDING_INQUIRIES.value)
+        .filter(status__in=[
+            StaffBotRequest.Status.SENDING_INQUIRIES.value,
+            StaffBotRequest.Status.DONE_SENDING_INQUIRIES.value])
         .filter(Q(last_inquiry_sent__isnull=True) |
-                Q(last_inquiry_sent__lte=cutoff_datetime)))
+                Q(last_inquiry_sent__lte=cutoff_datetime))
+        .order_by('-task__project__priority', 'created_at'))
 
     for request in requests:
-        send_request_inquiries(staffbot, request, worker_batch_size)
+        staff_or_send_request_inquiries(staffbot, request, worker_batch_size)
+
+
+def _is_worker_assignable(worker, task, required_role):
+    try:
+        check_worker_allowed_new_assignment(worker)
+        if (is_worker_certified_for_task(worker, task,
+                                         required_role,
+                                         require_staffbot_enabled=True)
+                and not task.is_worker_assigned(worker)):
+            return True
+    except TaskStatusError:
+        pass
+    except TaskAssignmentError:
+        pass
+    return False
+
+
+def _can_handle_more_work_today(worker, task):
+    can_handle_more_hours = False
+    today = timezone.now().date()
+    today_abbreviation = ['mon', 'tues', 'wed', 'thurs', 'fri', 'sat', 'sun'][
+        today.weekday()]
+    availability = WorkerAvailability.objects.filter(
+        worker=worker,
+        week=first_day_of_the_week()).first()
+    task_hours = task.get_assignable_hours()
+    if availability is not None and task_hours is not None:
+        desired_hours = getattr(
+            availability, 'hours_available_{}'.format(today_abbreviation), 0)
+        allowed_hours = min(desired_hours, worker.max_autostaff_hours_per_day)
+        # Because we're looking at StaffingResponse objects to
+        # determine assigned tasks for a worker, we don't consider
+        # tasks that were assigned manually without an open StaffBot
+        # request. For example, we ignore tasks staffed by directly
+        # typing a worker's username into the projman interface when
+        # an open StaffBot request does not exist for the task. In
+        # practice, such situations are rare (new tasks tend to be
+        # auto-StaffBotted), and when the situations arise, it's
+        # unclear what the estimate for the assignable hours is.
+        responses = StaffingResponse.objects.filter(
+            request_inquiry__communication_preference__worker=worker,
+            is_winner=True,
+            created_at__gte=today,
+            created_at__lt=today + timedelta(days=1)
+        )
+        # Create a dictionary to deduplicate tasks if a Worker is
+        # reassigned the same task multiple times.
+        hours_assigned = {
+            response.request_inquiry.request.task.id:
+            (response.request_inquiry.request.task.get_assignable_hours(),
+             response.request_inquiry.request.task)
+            for response in responses
+        }
+        hours_assigned = [
+            (hours, task) for (hours, task) in hours_assigned.values()
+            if hours is not None]
+        max_tasks = settings.ORCHESTRA_MAX_AUTOSTAFF_TASKS_PER_DAY
+        # To estimate how much someone worked today, we add:
+        # - the number of assignable hours they were assigned today
+        # - the number of hours they tracked (excluding work completed
+        #   on today's newly assigned work, to avoid double-counting)
+        # We do not attempt to estimate the amount of "unexpected" work,
+        #   like iteration time on an old project the expert has learned
+        #   about over Slack but hasn't yet logged for the day.
+        sum_hours_assigned = sum(hours for (hours, task) in hours_assigned)
+        sum_hours_worked = time_entry_hours_worked(
+            today, worker, excluded_tasks=[
+                task for (hours, task) in hours_assigned])
+        can_handle_more_hours = (
+            (len(hours_assigned) + 1 <= max_tasks)
+            and (sum_hours_assigned
+                 + sum_hours_worked
+                 + task_hours <= allowed_hours))
+    return can_handle_more_hours
+
+
+def _attempt_to_automatically_staff(staffbot, request, worker_certifications):
+    successfully_staffed = False
+    required_role = get_role_from_counter(request.required_role_counter)
+    attempted_workers = set()
+    new_task_available_type = (
+        CommunicationPreference.CommunicationType.NEW_TASK_AVAILABLE.value)
+    previously_opted_in_method = (
+        StaffingRequestInquiry.CommunicationMethod.PREVIOUSLY_OPTED_IN.value)
+    for certification in worker_certifications:
+        worker = certification.worker
+        if worker.id in attempted_workers:
+            continue
+        attempted_workers.add(worker.id)
+        if (_is_worker_assignable(worker, request.task, required_role)
+                and _can_handle_more_work_today(worker, request.task)):
+            communication_preference = (
+                CommunicationPreference.objects.get(
+                    communication_type=new_task_available_type,
+                    worker=worker))
+            staffing_request_inquiry = StaffingRequestInquiry.objects.create(
+                communication_preference=communication_preference,
+                communication_method=previously_opted_in_method,
+                request=request)
+            handle_staffing_response(
+                worker, staffing_request_inquiry.id, is_available=True)
+            successfully_staffed = True
+            break
+    return successfully_staffed
 
 
 def _send_request_inquiries(staffbot, request, worker_batch_size,
@@ -142,28 +254,16 @@ def _send_request_inquiries(staffbot, request, worker_batch_size,
     inquiries_sent = 0
     required_role = get_role_from_counter(request.required_role_counter)
     contacted_workers = set()
-
     for certification in worker_certifications:
-        try:
-            worker = certification.worker
-            if worker.id in contacted_workers:
-                continue
-
-            contacted_workers.add(worker.id)
-            check_worker_allowed_new_assignment(worker)
-            if (is_worker_certified_for_task(worker, request.task,
-                                             required_role,
-                                             require_staffbot_enabled=True) and
-                    not request.task.is_worker_assigned(worker)):
-                staffbot.send_task_to_worker(worker, request)
-                inquiries_sent += 1
-            if inquiries_sent >= worker_batch_size:
-                break
-
-        except TaskStatusError:
-            pass
-        except TaskAssignmentError:
-            pass
+        worker = certification.worker
+        if worker.id in contacted_workers:
+            continue
+        contacted_workers.add(worker.id)
+        if _is_worker_assignable(worker, request.task, required_role):
+            staffbot.send_task_to_worker(worker, request)
+            inquiries_sent += 1
+        if inquiries_sent >= worker_batch_size:
+            break
 
     # check whether all inquiries have been sent out.
     if inquiries_sent < worker_batch_size:
@@ -176,7 +276,7 @@ def _send_request_inquiries(staffbot, request, worker_batch_size,
     request.save()
 
 
-def send_request_inquiries(staffbot, request, worker_batch_size):
+def staff_or_send_request_inquiries(staffbot, request, worker_batch_size):
     # Get Workers that haven't already received an inquiry.
     workers_with_inquiries = (StaffingRequestInquiry.objects.filter(
         request=request).distinct().values_list(
@@ -188,14 +288,33 @@ def send_request_inquiries(staffbot, request, worker_batch_size):
     worker_certifications = (
         WorkerCertification
         .objects
-        .exclude(worker__id__in=workers_with_inquiries)
         .filter(role=required_role,
                 task_class=WorkerCertification.TaskClass.REAL,
                 certification__in=(request.task
                                    .step.required_certifications.all()))
         .order_by('-staffing_priority', '?'))
-    _send_request_inquiries(staffbot, request, worker_batch_size,
-                            worker_certifications)
+    available_worker_certifications = (
+        worker_certifications
+        .filter(worker__availabilities__week=first_day_of_the_week()))
+    uninquired_worker_certifications = (
+        worker_certifications
+        .exclude(worker__id__in=workers_with_inquiries))
+    successfully_staffed = _attempt_to_automatically_staff(
+        staffbot, request, available_worker_certifications)
+    sending_inquiries = StaffBotRequest.Status.SENDING_INQUIRIES.value
+    # We consider StaffBotRequests that are done sending inquiries
+    # when auto-staffing, since it's possible for a worker to have new
+    # auto-staffing availability for a request that has already been
+    # sent to them (e.g., the day after receiving a request, their new
+    # availability kicks in). Once we reach the branch below, we only
+    # want to send new request inquiries for requests that aren't
+    # `DONE_SENDING_INQUIRIES`.
+    if ((not successfully_staffed)
+            and (request.status == sending_inquiries)):
+        _send_request_inquiries(staffbot,
+                                request,
+                                worker_batch_size,
+                                uninquired_worker_certifications)
 
 
 def get_available_requests(worker):
@@ -217,7 +336,7 @@ def get_available_requests(worker):
         StaffingRequestInquiry.objects
         .filter(request__in=remaining_requests)
         .filter(communication_preference__worker=worker)
-        .order_by('request__task__start_datetime'))
+        .order_by('-request__task__project__priority', 'request__created_at'))
     # Because we might send multiple request inquiries to the same
     # worker for the same request (e.g., email and slack), we
     # deduplicate the inquiries so that we will return at most one

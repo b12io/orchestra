@@ -1,5 +1,9 @@
 .account-settings {
 
+  .alert {
+    margin-top: -70px;
+  }
+
   a:hover, a:focus, a:visited {
     color: #FFF;
     text-decoration: none;
@@ -75,5 +79,32 @@
 
   #id_phone_1 {
     width: 70%;
+  }
+
+  .availability-forms {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .availability-form {
+    input {
+      max-width: 100px;
+    }
+
+    td:first-child {
+      text-align: right;
+      padding: 0 12px 6px 0;
+    }
+
+    label {
+      margin-bottom: 0;
+      font-size: 13px;
+      font-weight: 400;
+    }
+
+    &__heading {
+      font-size: 14px;
+      font-weight: 600;
+    }
   }
 }
