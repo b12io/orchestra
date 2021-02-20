@@ -188,12 +188,16 @@ def _can_handle_more_work_today(worker, task):
             created_at__gte=today,
             created_at__lt=today + timedelta(days=1)
         )
-        hours_assigned = [
+        # Create a dictionary to deduplicate tasks if a Worker is
+        # reassigned the same task multiple times.
+        hours_assigned = {
+            response.request_inquiry.request.task.id:
             (response.request_inquiry.request.task.get_assignable_hours(),
              response.request_inquiry.request.task)
-            for response in responses]
+            for response in responses
+        }
         hours_assigned = [
-            (hours, task) for (hours, task) in hours_assigned
+            (hours, task) for (hours, task) in hours_assigned.values()
             if hours is not None]
         max_tasks = settings.ORCHESTRA_MAX_AUTOSTAFF_TASKS_PER_DAY
         # To estimate how much someone worked today, we add:
