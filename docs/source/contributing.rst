@@ -12,10 +12,8 @@ First, if you find a bug in the code or documentation, check out
 our `open issues <https://github.com/b12io/orchestra/issues>`_ and
 `pull requests <https://github.com/b12io/orchestra/pulls>`_ to see if
 we're already aware of the problem. Also feel free to reach out to us on
-`gitter <https://gitter.im/b12io/orchestra>`_ to answer questions at
-any time, or `subscribe to the Orchestra mailing list
-<https://groups.google.com/forum/#!forum/orchestra-devel>`_ for longer
-conversations.
+the `discussion forum <https://github.com/b12io/orchestra/discussions>`_
+to ask questions or make suggestions.
 
 If you've uncovered something new, please `create an issue
 <https://github.com/b12io/orchestra/issues>`_ describing the problem.

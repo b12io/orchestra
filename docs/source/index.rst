@@ -13,8 +13,8 @@ Welcome to Orchestra!
 .. image:: https://img.shields.io/pypi/l/orchestra.svg?maxAge=2592000
   :target: https://github.com/b12io/orchestra/blob/master/LICENSE
 
-.. image:: https://img.shields.io/gitter/room/nwjs/nw.js.svg?maxAge=2592000
-  :target: https://gitter.im/b12io/orchestra
+.. image:: https://img.shields.io/badge/forum-GH%20Discussions-brightgreen
+  :target: https://github.com/b12io/orchestra/discussions
 
 `Orchestra <https://github.com/b12io/orchestra>`_ is an open source
 system to orchestrate teams of experts as they complete complex projects with
