@@ -23,7 +23,7 @@ a look at some of these resources:
 
 * [Orchestra website](http://orchestra.b12.io)
 * [A blog post introducing Orchestra v0.1.0 to the world](https://blog.b12.io/introducing-orchestra-23bace45d4a7)
-* [Engaging in the discussion forum](https://github.com/b12io/orchestra/discussions)
+* [Engage in the discussion forum](https://github.com/b12io/orchestra/discussions)
 
 # About B12
 [B12](http://b12.io/) has open sourced Orchestra as part
