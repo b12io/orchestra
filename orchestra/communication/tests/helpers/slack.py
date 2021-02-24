@@ -25,7 +25,7 @@ class MockSlacker(MagicMock):
 
     def populate_preexisting_groups(self):
         for group_name in PREEXISTING_GROUPS:
-            self.conversations.create(group_name)
+            self.conversations.create(group_name, is_private=True)
 
     def get_messages(self, group_id):
         return MOCK_SLACK_API_DATA['channels'][group_id]['messages']
@@ -97,13 +97,10 @@ class Conversations(BaseAPI):
     def invite(self, group_id, user_id):
         self._validate_group(group_id=group_id)
         self._validate_user(user_id=user_id)
-
-        already_in_group = True
         if user_id not in MOCK_SLACK_API_DATA['channels'][group_id]['users']:
             # Slacker API does not raise an error if user already present
             MOCK_SLACK_API_DATA['channels'][group_id]['users'].append(user_id)
-            already_in_group = False
-        return self.Response({'already_in_group': already_in_group})
+        return self.Response({})
 
     def info(self, group_id):
         self._validate_group(group_id=group_id)

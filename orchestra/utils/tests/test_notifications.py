@@ -262,7 +262,7 @@ class BasicNotificationsTestCase(OrchestraTestCase):
 
         for group_name in ('ketchup-3-sales-1', 'bongo-bash723581-3',
                            'bongo-bash723581-4'):
-            self.slack.conversations.create(group_name)
+            self.slack.conversations.create(group_name, is_private=True)
 
         project = self.projects['reject_rev_proj']
 
