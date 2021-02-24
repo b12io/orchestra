@@ -53,7 +53,7 @@ class OrchestraSlackService(object):
         if not api_key:
             api_key = settings.SLACK_EXPERTS_API_KEY
         self._service = Slacker(api_key)
-        for attr_name in ('chat', 'groups', 'users'):
+        for attr_name in ('chat', 'conversations', 'users'):
             setattr(self, attr_name, getattr(self._service, attr_name))
 
 
@@ -69,17 +69,14 @@ def add_worker_to_project_team(worker, project):
     slack = OrchestraSlackService()
     try:
         slack_user_id = worker.slack_user_id
-        response = slack.groups.invite(
+        slack.conversations.invite(
             project.slack_group_id, slack_user_id)
-        if not response.body.get('already_in_group'):
-            welcome_message = (
-                '<@{}> has been added to the team. '
-                'Welcome aboard!').format(slack_user_id)
-            slack.chat.post_message(project.slack_group_id, welcome_message)
+        welcome_message = (
+            '<@{}> has been added to the team. '
+            'Welcome aboard!').format(slack_user_id)
+        slack.chat.post_message(project.slack_group_id, welcome_message)
     except SlackError:
         logger.exception('Slack API Error')
-        # TODO(jrbotros): for now, using slack on a per-worker basis is
-        # optional; we'll want to rethink this in the future
 
 
 @run_if('ORCHESTRA_SLACK_EXPERTS_ENABLED')
@@ -88,12 +85,16 @@ def create_project_slack_group(project):
     Create slack channel for project team communication
     """
     slack = OrchestraSlackService()
-    response = slack.groups.create(_project_slack_group_name(project))
-    project.slack_group_id = response.body['group']['id']
-    slack.groups.set_topic(project.slack_group_id, project.short_description)
-    slack.groups.set_purpose(project.slack_group_id,
-                             'Discussing work on `{}`'.format(
-                                 project.short_description))
+    response = slack.conversations.create(
+        _project_slack_group_name(project),
+        is_private=True)
+    project.slack_group_id = response.body['channel']['id']
+    slack.conversations.set_topic(
+        project.slack_group_id, project.short_description)
+    slack.conversations.set_purpose(
+        project.slack_group_id,
+        'Discussing work on `{}`'.format(
+            project.short_description))
     project.save()
 
     # Message out project folder id.
@@ -113,7 +114,7 @@ def archive_project_slack_group(project):
     """
     slack = OrchestraSlackService()
     try:
-        response = slack.groups.archive(project.slack_group_id)
+        response = slack.conversations.archive(project.slack_group_id)
         if response:
             is_archived = response.body.get('ok')
             if not is_archived:
@@ -130,10 +131,10 @@ def unarchive_project_slack_group(project):
     """
     slack = OrchestraSlackService()
     try:
-        group_info = slack.groups.info(project.slack_group_id)
-        is_archived = group_info.body.get('group', {}).get('is_archived')
+        group_info = slack.conversations.info(project.slack_group_id)
+        is_archived = group_info.body.get('channel', {}).get('is_archived')
         if is_archived:
-            response = slack.groups.unarchive(project.slack_group_id)
+            response = slack.conversations.unarchive(project.slack_group_id)
             if response:
                 is_unarchived = response.body.get('ok')
                 if not is_unarchived:
@@ -160,11 +161,13 @@ def _project_slack_group_name(project):
     # slugifying the project short description.
     descriptor = slugify(project.short_description)[:16].strip('-')
     slack = OrchestraSlackService()
-    groups = {group['name'] for group in slack.groups.list().body['groups']}
+    channels = {
+        channel['name']
+        for channel in slack.conversations.list().body['channels']}
     while True:
         # Add 4 characters of randomness (~1.68 million permutations).
         name = '{}-{}'.format(descriptor, _random_string())
-        if name not in groups:
+        if name not in channels:
             break
     return name
 

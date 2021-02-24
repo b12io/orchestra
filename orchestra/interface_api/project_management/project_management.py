@@ -55,8 +55,8 @@ def edit_slack_membership(project_id, username, action):
     slack_user_id = Worker.objects.get(user__username=username).slack_user_id
     slack_group_id = Project.objects.get(id=project_id).slack_group_id
     if action == 'add':
-        slack.groups.invite(slack_group_id, slack_user_id)
+        slack.conversations.invite(slack_group_id, slack_user_id)
     elif action == 'remove':
-        slack.groups.kick(slack_group_id, slack_user_id)
+        slack.conversations.kick(slack_group_id, slack_user_id)
     else:
         raise Exception('Action not found.')

@@ -260,8 +260,9 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
         self.assertEqual(task.status, Task.Status.COMPLETE)
 
     @override_settings(ORCHESTRA_SLACK_EXPERTS_ENABLED=True)
-    @patch('orchestra.communication.tests.helpers.slack.Groups.unarchive')
-    @patch('orchestra.communication.tests.helpers.slack.Groups.archive')
+    @patch(
+        'orchestra.communication.tests.helpers.slack.Conversations.unarchive')
+    @patch('orchestra.communication.tests.helpers.slack.Conversations.archive')
     def test_unarchive_slack_channel_api(self, mock_archive, mock_unarchive):
         project = self.projects['single_human_step']
         create_subsequent_tasks(project)
