@@ -8,7 +8,7 @@ PREEXISTING_GROUPS = [settings.SLACK_INTERNAL_NOTIFICATION_CHANNEL]
 
 
 MOCK_SLACK_API_DATA = {
-    'groups': {},
+    'channels': {},
     'users': {},
     'invited': [],
 }
@@ -18,20 +18,20 @@ class MockSlacker(MagicMock):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.data = MOCK_SLACK_API_DATA
-        self.groups = Groups()
+        self.conversations = Conversations()
         self.chat = Chat()
         self.users = Users()
         self.populate_preexisting_groups()
 
     def populate_preexisting_groups(self):
         for group_name in PREEXISTING_GROUPS:
-            self.groups.create(group_name)
+            self.conversations.create(group_name)
 
     def get_messages(self, group_id):
-        return MOCK_SLACK_API_DATA['groups'][group_id]['messages']
+        return MOCK_SLACK_API_DATA['channels'][group_id]['messages']
 
     def clear(self):
-        MOCK_SLACK_API_DATA['groups'].clear()
+        MOCK_SLACK_API_DATA['channels'].clear()
         MOCK_SLACK_API_DATA['users'].clear()
         MOCK_SLACK_API_DATA['invited'][:] = []
         self.populate_preexisting_groups()
@@ -44,7 +44,7 @@ class BaseAPI(object):
             self.body = body
 
     def _group_exists(self, group_id):
-        return MOCK_SLACK_API_DATA['groups'].get(group_id, None) is not None
+        return MOCK_SLACK_API_DATA['channels'].get(group_id, None) is not None
 
     def _user_exists(self, user_id):
         return MOCK_SLACK_API_DATA['users'].get(user_id, None) is not None
@@ -79,10 +79,10 @@ class BaseAPI(object):
         }
 
 
-class Groups(BaseAPI):
-    def create(self, group_name):
-        group_id = str(len(MOCK_SLACK_API_DATA['groups']))
-        MOCK_SLACK_API_DATA['groups'][group_id] = {
+class Conversations(BaseAPI):
+    def create(self, group_name, is_private=False):
+        group_id = str(len(MOCK_SLACK_API_DATA['channels']))
+        MOCK_SLACK_API_DATA['channels'][group_id] = {
             'id': group_id,
             'users': [],
             'messages': [],
@@ -91,7 +91,7 @@ class Groups(BaseAPI):
             'name': group_name.strip('#'),
         }
         return self.Response({
-            'group': MOCK_SLACK_API_DATA['groups'][group_id]
+            'channel': MOCK_SLACK_API_DATA['channels'][group_id]
         })
 
     def invite(self, group_id, user_id):
@@ -99,9 +99,9 @@ class Groups(BaseAPI):
         self._validate_user(user_id=user_id)
 
         already_in_group = True
-        if user_id not in MOCK_SLACK_API_DATA['groups'][group_id]['users']:
+        if user_id not in MOCK_SLACK_API_DATA['channels'][group_id]['users']:
             # Slacker API does not raise an error if user already present
-            MOCK_SLACK_API_DATA['groups'][group_id]['users'].append(user_id)
+            MOCK_SLACK_API_DATA['channels'][group_id]['users'].append(user_id)
             already_in_group = False
         return self.Response({'already_in_group': already_in_group})
 
@@ -109,7 +109,7 @@ class Groups(BaseAPI):
         self._validate_group(group_id=group_id)
         return self.Response({
             'ok': True,
-            'group': {
+            'channel': {
                 'id': group_id,
                 'is_archived': True
             }
@@ -119,26 +119,26 @@ class Groups(BaseAPI):
         self._validate_group(group_id=group_id)
         self._validate_user(user_id=user_id)
 
-        if user_id not in MOCK_SLACK_API_DATA['groups'][group_id]['users']:
+        if user_id not in MOCK_SLACK_API_DATA['channels'][group_id]['users']:
             raise slacker.Error('User does not belong to group.')
 
         # Slacker API does not raise an error if user already present
-        MOCK_SLACK_API_DATA['groups'][group_id]['users'].remove(user_id)
+        MOCK_SLACK_API_DATA['channels'][group_id]['users'].remove(user_id)
 
     def set_topic(self, group_id, topic):
         self._validate_group(group_id=group_id)
-        MOCK_SLACK_API_DATA['groups'][group_id]['topic'] = topic
+        MOCK_SLACK_API_DATA['channels'][group_id]['topic'] = topic
 
     def set_purpose(self, group_id, purpose):
         if not self._group_exists(group_id):
             raise slacker.Error('Group not found.')
 
-        MOCK_SLACK_API_DATA['groups'][group_id]['purpose'] = purpose
+        MOCK_SLACK_API_DATA['channels'][group_id]['purpose'] = purpose
 
     def list(self):
         return self.Response({
             'ok': True,
-            'groups': list(MOCK_SLACK_API_DATA['groups'].values())
+            'channels': list(MOCK_SLACK_API_DATA['channels'].values())
         })
 
     def archive(self, group_id):
@@ -158,12 +158,12 @@ class Chat(BaseAPI):
     def post_message(self, group_identifier, text, parse='none'):
         if group_identifier.startswith('#'):
             groups = [
-                group for group in MOCK_SLACK_API_DATA['groups'].values()
+                group for group in MOCK_SLACK_API_DATA['channels'].values()
                 if group['name'] == group_identifier.strip('#')]
             group_identifier = groups[0]['id']
         self._validate_group(group_id=group_identifier)
         MOCK_SLACK_API_DATA[
-            'groups'][group_identifier]['messages'].append(text)
+            'channels'][group_identifier]['messages'].append(text)
 
 
 class Users(BaseAPI):

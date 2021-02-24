@@ -31,7 +31,7 @@ class BasicNotificationsTestCase(OrchestraTestCase):
         project = self.projects['empty_project']
         internal_name = settings.SLACK_INTERNAL_NOTIFICATION_CHANNEL.strip('#')
         internal_groups = [
-            group for group in self.slack.groups.list().body['groups']
+            group for group in self.slack.conversations.list().body['channels']
             if group['name'] == internal_name]
         internal_group_id = internal_groups[0]['id']
         internal_slack_messages = self.slack.get_messages(internal_group_id)
@@ -262,7 +262,7 @@ class BasicNotificationsTestCase(OrchestraTestCase):
 
         for group_name in ('ketchup-3-sales-1', 'bongo-bash723581-3',
                            'bongo-bash723581-4'):
-            self.slack.groups.create(group_name)
+            self.slack.conversations.create(group_name)
 
         project = self.projects['reject_rev_proj']
 

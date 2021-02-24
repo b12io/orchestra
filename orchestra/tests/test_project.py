@@ -39,7 +39,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
 
     @override_settings(ORCHESTRA_SLACK_EXPERTS_ENABLED=True)
     def test_create_project_slack_group(self):
-        groups = self.slack.data['groups']
+        groups = self.slack.data['channels']
         num_groups = len(groups)
         project = ProjectFactory(
             workflow_version=self.workflow_versions['test_workflow'])
@@ -51,7 +51,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         self.assertEqual(group_id, project.slack_group_id)
 
     @override_settings(ORCHESTRA_SLACK_EXPERTS_ENABLED=True)
-    @patch('orchestra.communication.tests.helpers.slack.Groups.archive')
+    @patch('orchestra.communication.tests.helpers.slack.Conversations.archive')
     def test_complete_all_tasks_slack_annoucement(self, mock_slack_archive):
         project = self.projects['single_human_step']
         create_subsequent_tasks(project)
@@ -67,7 +67,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         self.assertTrue(mock_slack_archive.called)
 
     @override_settings(ORCHESTRA_SLACK_EXPERTS_ENABLED=True)
-    @patch('orchestra.communication.tests.helpers.slack.Groups.archive')
+    @patch('orchestra.communication.tests.helpers.slack.Conversations.archive')
     def test_completion_ends_project_true(self, mock_slack_archive):
         project = self.projects['test_human_and_machine']
         create_subsequent_tasks(project)
@@ -91,7 +91,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         self.assertTrue(mock_slack_archive.called)
 
     @override_settings(ORCHESTRA_SLACK_EXPERTS_ENABLED=True)
-    @patch('orchestra.communication.tests.helpers.slack.Groups.archive')
+    @patch('orchestra.communication.tests.helpers.slack.Conversations.archive')
     def test_completion_ends_project_false(self, mock_slack_archive):
         project = self.projects['test_human_and_machine']
         create_subsequent_tasks(project)
