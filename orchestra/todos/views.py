@@ -149,7 +149,7 @@ class GenericTodoViewset(ModelViewSet):
 
     def get_queryset(self, ids=None):
         queryset = super().get_queryset()
-        if ids:
+        if ids is not None:
             queryset = queryset.filter(id__in=ids)
         return queryset.order_by('-created_at')
 
