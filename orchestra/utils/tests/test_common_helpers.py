@@ -55,28 +55,12 @@ class ViewHelpersTests(TestCase):
         ).format(self.sender.username, self.old_todo.title)
         self.assertEqual(msg, expected_msg)
 
-        # Reversing the change
-        msg = get_update_message(self.new_todo, self.old_todo, self.sender)
-        expected_msg = (
-            '{} has updated `{}`: marked incomplete, '
-            'changed title and details'
-        ).format(self.sender.username, self.old_todo.title)
-        self.assertEqual(msg, expected_msg)
-
     def test_fields_updated_completed_without_sender(self):
         msg = get_update_message(self.old_todo, self.new_todo)
         expected_msg = (
             '`{}` has been updated: marked complete, '
             'changed title and details'
         ).format(self.new_todo.title)
-        self.assertEqual(msg, expected_msg)
-
-        # Reversing the change
-        msg = get_update_message(self.new_todo, self.old_todo)
-        expected_msg = (
-            '`{}` has been updated: marked incomplete, '
-            'changed title and details'
-        ).format(self.old_todo.title)
         self.assertEqual(msg, expected_msg)
 
         # Reversing the change
