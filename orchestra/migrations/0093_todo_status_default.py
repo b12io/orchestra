@@ -7,7 +7,7 @@ import orchestra.models.core.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('orchestra', '0091_auto_20210121_1952'),
+        ('orchestra', '0092_autostaff_updates'),
     ]
 
     operations = [
@@ -17,3 +17,4 @@ class Migration(migrations.Migration):
             field=models.IntegerField(choices=[(0, 'pending'), (1, 'completed'), (2, 'declined')], default=0),
         ),
     ]
+
