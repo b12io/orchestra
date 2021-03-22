@@ -4,6 +4,11 @@ import './todo-checklist.scss'
 import 'angular-ui-tree/dist/angular-ui-tree.css'
 
 import moment from 'moment-timezone'
+import {
+  PENDING_STATUS,
+  COMPLETED_STATUS,
+  DECLINED_STATUS
+} from './constants.es6.js'
 
 export default function todoChecklist () {
   return {
@@ -24,6 +29,8 @@ export default function todoChecklist () {
       steps: '<'
     },
     link: (scope, elem, attrs) => {
+      scope.COMPLETED_STATUS = COMPLETED_STATUS
+
       scope.isNonEmptyString = (str) => {
         return str !== null && str !== undefined && str !== ''
       }
@@ -34,7 +41,7 @@ export default function todoChecklist () {
       }
 
       scope.isInDanger = (todo) => {
-        return (!todo.completed && moment.isBeforeNowBy(todo.due_datetime, 1, 'days')) || (scope.todoQas[todo.title] && scope.todoQas[todo.title].approved === false)
+        return (todo.status === PENDING_STATUS && moment.isBeforeNowBy(todo.due_datetime, 1, 'days')) || (scope.todoQas[todo.title] && scope.todoQas[todo.title].approved === false)
       }
 
       scope.isSkipped = (todo) => {
@@ -42,7 +49,7 @@ export default function todoChecklist () {
         if (todo.items) {
           items = filter(todo.items, scope.isSkipped)
         }
-        return (todo.skipped_datetime != null && (!todo.items || todo.items.length === 0)) || items.length > 0
+        return (todo.status === DECLINED_STATUS && (!todo.items || todo.items.length === 0)) || items.length > 0
       }
 
       scope.isNotSkipped = (todo) => {
@@ -50,7 +57,7 @@ export default function todoChecklist () {
         if (todo.items) {
           items = filter(todo.items, scope.isNotSkipped)
         }
-        return (todo.skipped_datetime == null && (!todo.items || todo.items.length === 0)) || items.length > 0
+        return (todo.status !== DECLINED_STATUS && (!todo.items || todo.items.length === 0)) || items.length > 0
       }
 
       scope.isCollapsed = (todo, showSkipped) => {

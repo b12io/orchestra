@@ -2,6 +2,11 @@ import { reduce, defaults } from 'lodash'
 import template from './todo-list.html'
 import moment from 'moment-timezone'
 import './todo-list.scss'
+import {
+  PENDING_STATUS,
+  COMPLETED_STATUS,
+  DECLINED_STATUS
+} from './constants.es6.js'
 
 export default function todoList (orchestraApi) {
   'ngAnnotate'
@@ -26,12 +31,11 @@ export default function todoList (orchestraApi) {
       todoList.templates = []
       todoList.todoQas = []
 
-      const createTodo = (title, completed, startDate, dueDate) => {
+      const createTodo = (title, startDate, dueDate) => {
         todoApi.create({
           project: todoList.projectId,
           step: todoList.newTodoStepSlug,
           title,
-          completed,
           start_by_datetime: startDate,
           due_datetime: dueDate
         }).then((taskData) => {
@@ -62,7 +66,6 @@ export default function todoList (orchestraApi) {
         const due = todoList.getUTCDateTimeString(todoList.newTodoDueDate)
 
         createTodo(todoList.newTodoDescription,
-          false,
           start,
           due
         ).then((taskData) => {
@@ -84,7 +87,8 @@ export default function todoList (orchestraApi) {
       }
 
       todoList.updateTodo = (todo) => {
-        todoList.addActionToTodoActivityLog(todo, todo.completed ? 'complete' : 'incomplete')
+        todo.status = todo.status === PENDING_STATUS ? COMPLETED_STATUS : PENDING_STATUS
+        todoList.addActionToTodoActivityLog(todo, todo.status === COMPLETED_STATUS ? 'complete' : 'incomplete')
         todoApi.update(todo)
       }
 
@@ -111,8 +115,8 @@ export default function todoList (orchestraApi) {
       }
 
       todoList.skipTodo = (todo) => {
-        todo.skipped_datetime = todoList.getUTCDateTimeString(moment())
-        todoList.addActionToTodoActivityLog(todo, 'skip', todo.skipped_datetime)
+        todo.status = DECLINED_STATUS
+        todoList.addActionToTodoActivityLog(todo, 'skip', todoList.getUTCDateTimeString(moment()))
         if (todo.items) {
           todo.items.forEach(todoList.skipTodo)
         }
@@ -120,7 +124,7 @@ export default function todoList (orchestraApi) {
       }
 
       todoList.unskipTodo = (todo) => {
-        todo.skipped_datetime = null
+        todo.status = PENDING_STATUS
         todoList.addActionToTodoActivityLog(todo, 'unskip')
         if (todo.items) {
           todo.items.forEach(todoList.unskipTodo)

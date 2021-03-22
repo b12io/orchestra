@@ -737,7 +737,7 @@ class Todo(TodoMixin, BaseModel):
         task (orchestra.models.Task):
             The given task the Todo is attached to.
         completed (boolean):
-            Whether the todo has been completed.
+            Whether the todo has been completed (DEPRECATED).
         title (str):
             A text description of the Todo.
         start_by_datetime (datetime.datetime):
@@ -745,7 +745,7 @@ class Todo(TodoMixin, BaseModel):
         due_datetime (datetime.datetime):
             The time the todo is due
         skipped_datetime (datetime.datetime):
-            The time the todo was skipped
+            The time the todo was skipped (DEPRECATED).
         parent_todo (orchestra.models.Todo):
             The parent todo item
         template (orchestra.models.TodoListTemplate)
@@ -780,9 +780,11 @@ class Todo(TodoMixin, BaseModel):
     details = models.TextField(null=True, blank=True)
     section = models.CharField(max_length=255, null=True, blank=True)
     order = models.IntegerField(null=True, blank=True)
+    # DEPRECATED FIELD. Use status instead.
     completed = models.BooleanField(default=False)
     start_by_datetime = models.DateTimeField(null=True, blank=True)
     due_datetime = models.DateTimeField(null=True, blank=True)
+    # DEPRECATED FIELD. Use status instead.
     skipped_datetime = models.DateTimeField(null=True, blank=True)
     parent_todo = models.ForeignKey(
         'self', null=True, related_name='parent', on_delete=models.CASCADE)
@@ -791,7 +793,7 @@ class Todo(TodoMixin, BaseModel):
         on_delete=models.SET_NULL)
     activity_log = JSONField(default={'actions': []})
     status = models.IntegerField(
-        null=True, blank=True, choices=Status.choices())
+        default=Status.PENDING.value, choices=Status.choices())
     additional_data = JSONField(default=dict)
 
 

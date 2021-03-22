@@ -2,6 +2,10 @@ import { filter } from 'lodash'
 import template from './todo-qa-list.html'
 import './todo-qa-list.scss'
 
+import {
+  DECLINED_STATUS
+} from './constants.es6.js'
+
 export default function todoQaList () {
   return {
     template,
@@ -13,6 +17,7 @@ export default function todoQaList () {
       updateTodoQaComment: '='
     },
     link: (scope, elem, attrs) => {
+      scope.DECLINED_STATUS = DECLINED_STATUS
       scope.updatedComments = {}
       scope.onCommentChange = (todo) => {
         todo.qa.comment = todo.qa.comment.trim()

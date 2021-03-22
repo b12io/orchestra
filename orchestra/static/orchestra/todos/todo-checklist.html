@@ -2,8 +2,8 @@
   <div ui-tree-handle class="tree-node tree-node-content">
     <input type="checkbox"
            ng-hide="showSkipped"
-           ng-model="todo.completed"
-           ng-change="updateTodo(todo)">
+           ng-checked="todo.status === COMPLETED_STATUS"
+           ng-click="updateTodo(todo)">
     <label ng-class="{'text-danger': isInDanger(todo)}">
       <span ng-click="toggleTodo(todo, this)">
         <i aria-hidden="true" ng-if="todo.items && todo.items.length > 0" data-nodrag
@@ -14,7 +14,7 @@
             'fa-caret-down': !collapsed
           }"></i>
         <i class="fa fa-circle-o" aria-hidden="true" ng-if="(!todo.items || todo.items.length === 0) && showSkipped" data-nodrag></i>
-        <span ng-hide="!todo.items || todo.items.length < 1 || showSkipped">[{{ ( filterTodoList(todo.items, showSkipped) | filter: { completed: true } ).length }}/{{ filterTodoList(todo.items, showSkipped).length }}] </span>
+        <span ng-hide="!todo.items || todo.items.length < 1 || showSkipped">[{{ ( filterTodoList(todo.items, showSkipped) | filter: { status: COMPLETED_STATUS } ).length }}/{{ filterTodoList(todo.items, showSkipped).length }}] </span>
         <span class="todo__role">{{steps[todo.step].name}}:&nbsp;</span>
         <span class="todo__description" ng-bind-html="todo.title | linky:'_blank'"></span>
         <span ng-class="{'todo__dates': true, 'todo__dates-danger': isInDanger(todo)}">
