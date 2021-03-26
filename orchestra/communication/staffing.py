@@ -127,12 +127,21 @@ def check_responses_complete(request):
              .format(request.task)))
 
 
+def _exclude_inactive_staffbot_requests(request_queryset):
+    return (request_queryset
+            .exclude(status=StaffBotRequest.Status.CLOSED.value)
+            .exclude(task__project__status=Project.Status.COMPLETED)
+            .exclude(task__project__status=Project.Status.ABORTED)
+            .exclude(task__status=Task.Status.COMPLETE)
+            .exclude(task__status=Task.Status.ABORTED))
+
+
 def address_staffing_requests(
         worker_batch_size=settings.ORCHESTRA_STAFFBOT_WORKER_BATCH_SIZE,
         frequency=settings.ORCHESTRA_STAFFBOT_BATCH_FREQUENCY):
     staffbot = StaffBot()
     cutoff_datetime = timezone.now() - frequency
-    requests = (
+    requests = _exclude_inactive_staffbot_requests(
         StaffBotRequest.objects
         .filter(status__in=[
             StaffBotRequest.Status.SENDING_INQUIRIES.value,
@@ -322,14 +331,9 @@ def get_available_requests(worker):
     # winner or for which they have not already replied.
     worker_provided_responses = StaffingResponse.objects.filter(
         request_inquiry__communication_preference__worker=worker)
-    remaining_requests = (
+    remaining_requests = _exclude_inactive_staffbot_requests(
         StaffBotRequest.objects
         .filter(inquiries__communication_preference__worker=worker)
-        .exclude(status=StaffBotRequest.Status.CLOSED.value)
-        .exclude(task__project__status=Project.Status.COMPLETED)
-        .exclude(task__project__status=Project.Status.ABORTED)
-        .exclude(task__status=Task.Status.COMPLETE)
-        .exclude(task__status=Task.Status.ABORTED)
         .exclude(inquiries__responses__in=worker_provided_responses)
         .distinct())
     inquiries = (
