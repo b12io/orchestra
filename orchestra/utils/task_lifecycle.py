@@ -549,7 +549,7 @@ def tasks_assigned_to_worker(worker):
             next_todo_dict = {}
             should_be_active = False
             if state in ('returned', 'in_progress'):
-                # TODO(aditya): Temporarily we are filtering todos
+                # TODO(aditya): Temporarily we are filtering out todos
                 # with section values. Remove this comment once we
                 # figure out a long term logic.
                 next_todo = (
