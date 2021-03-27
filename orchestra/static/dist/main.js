@@ -66751,7 +66751,12 @@ function todoList(orchestraApi) {
 
       todoList.transformToTree = function (todos) {
         var nodes = {};
-        return todos.filter(function (obj) {
+        // TODO(aditya): Temporarily we are filtering out todos
+        // with section values. Remove this comment once we
+        // figure out a long term logic
+        return todos.filter(function (todo) {
+          return !todo.section;
+        }).filter(function (obj) {
           nodes[obj.id] = (0, _lodash.defaults)(obj, nodes[obj.id], { items: [] });
           obj.parent_todo && (nodes[obj.parent_todo] = nodes[obj.parent_todo] || { items: [] })['items'].push(obj);
 

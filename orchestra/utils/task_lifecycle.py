@@ -30,6 +30,7 @@ from orchestra.core.errors import WorkerCertificationError
 from orchestra.models import Iteration
 from orchestra.models import Project
 from orchestra.models import Task
+from orchestra.models import Todo
 from orchestra.models import TaskAssignment
 from orchestra.models import Worker
 from orchestra.models import WorkerCertification
@@ -548,11 +549,15 @@ def tasks_assigned_to_worker(worker):
             next_todo_dict = {}
             should_be_active = False
             if state in ('returned', 'in_progress'):
+                # TODO(aditya): Temporarily we are filtering out todos
+                # with section values. Remove this comment once we
+                # figure out a long term logic.
                 next_todo = (
                     task_assignment.task.todos
                     .filter(
-                        completed=False,
-                        template=None
+                        status=Todo.Status.PENDING.value,
+                        template=None,
+                        section__isnull=True
                     ).annotate(
                         todo_order=Case(
                             When(
@@ -590,9 +595,13 @@ def tasks_assigned_to_worker(worker):
                         'start_by_datetime': start_str,
                         'due_datetime': due_str
                     }
+                # TODO(aditya): Temporarily we are filtering out todos
+                # with section values. Remove this comment once we
+                # figure out a long term logic.
                 num_non_template_todos = (
                     task_assignment.task.todos
-                    .filter(template=None).count())
+                    .filter(template=None,
+                            section__isnull=True).count())
                 # If a task has no todos (complete or incomplete)
                 # assigned to it, then by default the task would be
                 # marked as pending. When a task is first created and
