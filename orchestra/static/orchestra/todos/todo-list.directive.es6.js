@@ -138,7 +138,7 @@ export default function todoList (orchestraApi) {
 
       todoList.transformToTree = (todos) => {
         var nodes = {}
-        // TODO(aditya): Temporarily we are filtering todos
+        // TODO(aditya): Temporarily we are filtering out todos
         // with section values. Remove this comment once we
         // figure out a long term logic
         return todos.filter(todo => !todo.section).filter(function (obj) {
