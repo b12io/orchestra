@@ -595,7 +595,7 @@ def tasks_assigned_to_worker(worker):
                         'start_by_datetime': start_str,
                         'due_datetime': due_str
                     }
-                # TODO(aditya): Temporarily we are filtering todos
+                # TODO(aditya): Temporarily we are filtering out todos
                 # with section values. Remove this comment once we
                 # figure out a long term logic.     
                 num_non_template_todos = (
