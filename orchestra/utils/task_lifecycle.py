@@ -597,11 +597,11 @@ def tasks_assigned_to_worker(worker):
                     }
                 # TODO(aditya): Temporarily we are filtering out todos
                 # with section values. Remove this comment once we
-                # figure out a long term logic.     
+                # figure out a long term logic.
                 num_non_template_todos = (
                     task_assignment.task.todos
-                    .filter(template=None, section__isnull=True
-                    ).count())
+                    .filter(template=None,
+                            section__isnull=True).count())
                 # If a task has no todos (complete or incomplete)
                 # assigned to it, then by default the task would be
                 # marked as pending. When a task is first created and
