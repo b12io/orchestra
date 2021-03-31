@@ -541,6 +541,9 @@ def tasks_assigned_to_worker(worker):
 
     tasks_assigned = []
     time_now = timezone.now()
+    pending_todos_filter = Q(status=Todo.Status.PENDING.value)
+    non_template_todo_filter = Q(template=None)
+    null_section_todo_filter = Q(section__isnull=True) | Q(section='')
     for state, task_assignments in iter(task_assignments_overview.items()):
         for task_assignment in task_assignments:
             step = task_assignment.task.step
@@ -555,9 +558,9 @@ def tasks_assigned_to_worker(worker):
                 next_todo = (
                     task_assignment.task.todos
                     .filter(
-                        status=Todo.Status.PENDING.value,
-                        template=None,
-                        section__isnull=True
+                        pending_todos_filter &
+                        non_template_todo_filter &
+                        null_section_todo_filter
                     ).annotate(
                         todo_order=Case(
                             When(
@@ -600,8 +603,10 @@ def tasks_assigned_to_worker(worker):
                 # figure out a long term logic.
                 num_non_template_todos = (
                     task_assignment.task.todos
-                    .filter(template=None,
-                            section__isnull=True).count())
+                    .filter(
+                        non_template_todo_filter &
+                        null_section_todo_filter
+                    ).count())
                 # If a task has no todos (complete or incomplete)
                 # assigned to it, then by default the task would be
                 # marked as pending. When a task is first created and
