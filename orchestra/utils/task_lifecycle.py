@@ -543,7 +543,7 @@ def tasks_assigned_to_worker(worker):
     time_now = timezone.now()
     pending_todos_filter = Q(status=Todo.Status.PENDING.value)
     non_template_todo_filter = Q(template=None)
-    null_section_todo_filter = Q(section__isnull=True) | Q(section='')
+    no_section_todo_filter = Q(section__isnull=True) | Q(section='')
     for state, task_assignments in iter(task_assignments_overview.items()):
         for task_assignment in task_assignments:
             step = task_assignment.task.step
