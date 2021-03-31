@@ -560,7 +560,7 @@ def tasks_assigned_to_worker(worker):
                     .filter(
                         pending_todos_filter &
                         non_template_todo_filter &
-                        null_section_todo_filter
+                        no_section_todo_filter
                     ).annotate(
                         todo_order=Case(
                             When(
