@@ -185,11 +185,10 @@ class GenericTodoViewset(ModelViewSet):
             old_data, QuerySet) else [old_data]
         data = serializer.save()
         todos = data if isinstance(data, list) else [data]
-        for idx, todo in enumerate(todos):
-            if isinstance(todo, Todo):
-                old_todo = old_todos[idx]
+        for old_todo, new_todo in zip(old_todos, todos):
+            if isinstance(new_todo, Todo):
                 notify_single_todo_update(
-                    self.request.user, old_todo, todo)
+                    self.request.user, old_todo, new_todo)
 
     def perform_create(self, serializer):
         data = serializer.save()
