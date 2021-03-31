@@ -15,7 +15,6 @@ from rest_framework.decorators import action
 from jsonview.exceptions import BadRequest
 from django.db.models.query import QuerySet
 
-
 from orchestra.core.errors import TodoListTemplateValidationError
 from orchestra.models import Task
 from orchestra.models import Todo
