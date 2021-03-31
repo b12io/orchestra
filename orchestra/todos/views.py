@@ -1,4 +1,5 @@
 import logging
+import copy
 
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
@@ -12,6 +13,8 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from jsonview.exceptions import BadRequest
+from django.db.models.query import QuerySet
+
 
 from orchestra.core.errors import TodoListTemplateValidationError
 from orchestra.models import Task
@@ -178,16 +181,23 @@ class GenericTodoViewset(ModelViewSet):
         return self.put(request, *args, **kwargs)
 
     def perform_update(self, serializer):
-        todo = serializer.save()
-        if isinstance(todo, Todo):
-            old_todo = self.get_object()
-            notify_single_todo_update(
-                self.request.user, old_todo, todo)
+        old_data = copy.deepcopy(serializer.instance)
+        old_todos = list(old_data) if isinstance(
+            old_data, QuerySet) else [old_data]
+        data = serializer.save()
+        todos = data if isinstance(data, list) else [data]
+        for idx, todo in enumerate(todos):
+            if isinstance(todo, Todo):
+                old_todo = old_todos[idx]
+                notify_single_todo_update(
+                    self.request.user, old_todo, todo)
 
     def perform_create(self, serializer):
-        todo = serializer.save()
-        if isinstance(todo, Todo):
-            notify_todo_created(todo, self.request.user)
+        data = serializer.save()
+        todos = data if isinstance(data, list) else [data]
+        for todo in todos:
+            if isinstance(todo, Todo):
+                notify_todo_created(todo, self.request.user)
 
 
 class TodoViewset(GenericTodoViewset):
