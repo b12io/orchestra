@@ -68,7 +68,6 @@ def index(request):
     orchestra_arguments = {
         'angular_modules': [],
         'angular_directives': defaultdict(lambda: defaultdict(lambda: {})),
-        'enable_new_task_buttons': settings.ORCHESTRA_ENABLE_NEW_TASK_BUTTONS,
     }
 
     for step in Step.objects.filter(is_human=True):

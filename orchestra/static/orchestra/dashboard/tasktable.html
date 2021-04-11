@@ -10,28 +10,7 @@
             <i ng-show="vm.collapsed" class="fa fa-angle-down"></i>
           </span>
           {{vm.tasktable.label}} ({{ vm.tasktable.tasks.length || 0 }})
-          <button type="button"
-                    ng-if="vm.enableNewTaskButtons"
-                    ng-click="vm.newTask('entry_level')"
-                    ng-class="{'disabled': vm.orchestraTasks.preventNew ||
-                                           vm.noTaskTimer}"
-                    class="btn btn-primary btn-new-entry-task">
-              New delivery task
-            </button>
-            <button type="button"
-                    ng-if="vm.orchestraTasks.reviewerStatus &&
-                           vm.enableNewTaskButtons"
-                    ng-click="vm.newTask('reviewer')"
-                    ng-class="{'disabled': vm.orchestraTasks.preventNew ||
-                                           vm.noTaskTimer}"
-                    class="btn btn-primary btn-new-review-task">
-              New review task
-            </button>
-            <span class="warning-message"
-                  ng-show="vm.newTaskError && !vm.orchestraTasks.preventNew">
-              No tasks available at the moment
-            </span>
-            <i class="fa fa-spinner fa-spin" ng-show="vm.waiting"></i>
+          <i class="fa fa-spinner fa-spin" ng-show="vm.waiting"></i>
         </h3>
 
       </div>
@@ -58,7 +37,6 @@
               </tr>
             </thead>
             <tbody>
-
               <tr
                  ng-class="{'task-row':true, 'danger': vm.isInDanger(task)}"
                  ng-repeat="task in displayedTasks"

@@ -47608,7 +47608,6 @@ function orchestraTasks($http) {
     data: null,
     tasks: [],
     tasksByAssignmentId: {},
-    preventNew: false,
     reviewerStatus: false,
     currentTask: undefined,
     updateTasks: function updateTasks() {
@@ -47621,19 +47620,7 @@ function orchestraTasks($http) {
           service.tasksByAssignmentId[task.assignment_id] = task;
         });
 
-        service.preventNew = response.data.preventNew;
         service.reviewerStatus = response.data.reviewerStatus;
-      });
-    },
-    newTask: function newTask(taskType) {
-      var service = this;
-
-      return $http.get('/orchestra/api/interface/new_task_assignment/' + taskType + '/').then(function (response) {
-        var task = response.data;
-        task.state = 'just_added';
-        service.tasks.push(task);
-        service.tasksByAssignmentId[task.assignment_id] = task;
-        return response;
       });
     },
     allTasks: function allTasks() {
@@ -60706,7 +60693,6 @@ function tasktable() {
       };
       // Surface service to interpolator
       vm.orchestraTasks = orchestraTasks;
-      vm.enableNewTaskButtons = vm.tasktable.newTasks && window.orchestra.enable_new_task_buttons;
 
       vm.waiting = true;
       orchestraTasks.data.finally(function () {
@@ -60730,30 +60716,6 @@ function tasktable() {
         }
         return null;
       };
-
-      vm.newTask = function (taskType) {
-        // To allow users to read the "no tasks left" message while debouncing
-        // further clicks, we leave the message up for 15 seconds before removing
-        // it and re-enabling the buttons
-        vm.waiting = true;
-        if (!vm.noTaskTimer) {
-          // Initialize task timer to dummy value to prevent subsequent API calls
-          vm.noTaskTimer = 'temp';
-          orchestraTasks.newTask(taskType).then(function (response) {
-            $location.path('task/' + response.data.id);
-            vm.noTaskTimer = undefined;
-            vm.waiting = false;
-            return response;
-          }, function (response) {
-            vm.newTaskError = true;
-            // Rate limit button-clicking
-            vm.noTaskTimer = $timeout(function () {
-              vm.noTaskTimer = undefined;
-              vm.newTaskError = false;
-            }, 15000);
-          });
-        }
-      };
     }
   };
 }
@@ -60762,7 +60724,7 @@ function tasktable() {
 /* 181 */
 /***/ (function(module, exports) {
 
-module.exports = "<section class=\"section-panel tasks-section\"\n         st-table=\"displayedTasks\"\n         st-safe-src=\"vm.tasktable.tasks\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-10 collapsed-toggle\" ng-click=\"vm.toggleCollapsed()\">\n        <h3>\n          <span>\n            <i ng-show=\"!vm.collapsed\" class=\"fa fa-angle-up\"></i>\n            <i ng-show=\"vm.collapsed\" class=\"fa fa-angle-down\"></i>\n          </span>\n          {{vm.tasktable.label}} ({{ vm.tasktable.tasks.length || 0 }})\n          <button type=\"button\"\n                    ng-if=\"vm.enableNewTaskButtons\"\n                    ng-click=\"vm.newTask('entry_level')\"\n                    ng-class=\"{'disabled': vm.orchestraTasks.preventNew ||\n                                           vm.noTaskTimer}\"\n                    class=\"btn btn-primary btn-new-entry-task\">\n              New delivery task\n            </button>\n            <button type=\"button\"\n                    ng-if=\"vm.orchestraTasks.reviewerStatus &&\n                           vm.enableNewTaskButtons\"\n                    ng-click=\"vm.newTask('reviewer')\"\n                    ng-class=\"{'disabled': vm.orchestraTasks.preventNew ||\n                                           vm.noTaskTimer}\"\n                    class=\"btn btn-primary btn-new-review-task\">\n              New review task\n            </button>\n            <span class=\"warning-message\"\n                  ng-show=\"vm.newTaskError && !vm.orchestraTasks.preventNew\">\n              No tasks available at the moment\n            </span>\n            <i class=\"fa fa-spinner fa-spin\" ng-show=\"vm.waiting\"></i>\n        </h3>\n\n      </div>\n      <div class=\"tasks-search-bar-container col-lg-2\">\n        <div class=\"tasks-search-bar\">\n          <i class=\"fa fa-search\"></i>\n          <input st-search=\"\" placeholder=\"Search...\" type=\"text\"/>\n        </div>\n      </div>\n    </div>\n    <div class=\"row\" ng-show=\"!vm.collapsed\">\n          <table ng-if=\"vm.tasktable.tasks.length > 0\"\n                 class=\"table table-striped\">\n            <thead>\n              <tr>\n                <th st-sort=\"assignment_start_datetime\">Task assigned</th>\n                <th st-sort=\"project\">Project</th>\n                <th st-sort=\"step\">Task</th>\n                <th st-sort=\"detail\">Details</th>\n                <th class=\"tags-col\" st-sort=\"tags\" ng-if=\"vm.showTagsCol\">Tags</th>\n                <th st-sort=\"next_todo_dict.title\">Next steps</th>\n                <th st-sort=\"next_todo_dict.start_by_datetime\">Start by</th>\n                <th st-sort=\"next_todo_dict.due_datetime\">Due on</th>\n              </tr>\n            </thead>\n            <tbody>\n\n              <tr\n                 ng-class=\"{'task-row':true, 'danger': vm.isInDanger(task)}\"\n                 ng-repeat=\"task in displayedTasks\"\n                 ng-click=\"vm.openTask(task)\">\n                <td><datetime-display datetime=\"task.assignment_start_datetime\" custom-format=\"'MM/DD/YYYY'\" /></td>\n                <td>{{task.project}}</td>\n                <td>{{task.step}}</td>\n                <td>{{task.detail|limitTo:50}}{{task.detail.length > 50 ? '...' : ''}}</td>\n                <td class=\"tags-col\" ng-if=\"vm.showTagsCol\">\n                  <span ng-repeat=\"tag in task.tags\"\n                        class=\"label label-{{tag.status}}\">\n                    {{tag.label}}\n                  </span>\n                </td>\n                <td>{{task.next_todo_dict.title|limitTo:50}}{{task.next_todo_dict.title.length > 50 ? '...' : ''}}</td>\n                <td><datetime-display datetime=\"task.next_todo_dict.start_by_datetime\" show-time=\"false\" custom-format=\"vm.getDatetimeFormat(task.next_todo_dict.start_by_datetime)\" /></td>\n                <td><datetime-display datetime=\"task.next_todo_dict.due_datetime\" show-time=\"false\" custom-format=\"vm.getDatetimeFormat(task.next_todo_dict.due_datetime)\" /></td>\n              </tr>\n            </tbody>\n          </table>\n    </div>\n  </div>\n</section>\n";
+module.exports = "<section class=\"section-panel tasks-section\"\n         st-table=\"displayedTasks\"\n         st-safe-src=\"vm.tasktable.tasks\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-10 collapsed-toggle\" ng-click=\"vm.toggleCollapsed()\">\n        <h3>\n          <span>\n            <i ng-show=\"!vm.collapsed\" class=\"fa fa-angle-up\"></i>\n            <i ng-show=\"vm.collapsed\" class=\"fa fa-angle-down\"></i>\n          </span>\n          {{vm.tasktable.label}} ({{ vm.tasktable.tasks.length || 0 }})\n          <i class=\"fa fa-spinner fa-spin\" ng-show=\"vm.waiting\"></i>\n        </h3>\n\n      </div>\n      <div class=\"tasks-search-bar-container col-lg-2\">\n        <div class=\"tasks-search-bar\">\n          <i class=\"fa fa-search\"></i>\n          <input st-search=\"\" placeholder=\"Search...\" type=\"text\"/>\n        </div>\n      </div>\n    </div>\n    <div class=\"row\" ng-show=\"!vm.collapsed\">\n          <table ng-if=\"vm.tasktable.tasks.length > 0\"\n                 class=\"table table-striped\">\n            <thead>\n              <tr>\n                <th st-sort=\"assignment_start_datetime\">Task assigned</th>\n                <th st-sort=\"project\">Project</th>\n                <th st-sort=\"step\">Task</th>\n                <th st-sort=\"detail\">Details</th>\n                <th class=\"tags-col\" st-sort=\"tags\" ng-if=\"vm.showTagsCol\">Tags</th>\n                <th st-sort=\"next_todo_dict.title\">Next steps</th>\n                <th st-sort=\"next_todo_dict.start_by_datetime\">Start by</th>\n                <th st-sort=\"next_todo_dict.due_datetime\">Due on</th>\n              </tr>\n            </thead>\n            <tbody>\n              <tr\n                 ng-class=\"{'task-row':true, 'danger': vm.isInDanger(task)}\"\n                 ng-repeat=\"task in displayedTasks\"\n                 ng-click=\"vm.openTask(task)\">\n                <td><datetime-display datetime=\"task.assignment_start_datetime\" custom-format=\"'MM/DD/YYYY'\" /></td>\n                <td>{{task.project}}</td>\n                <td>{{task.step}}</td>\n                <td>{{task.detail|limitTo:50}}{{task.detail.length > 50 ? '...' : ''}}</td>\n                <td class=\"tags-col\" ng-if=\"vm.showTagsCol\">\n                  <span ng-repeat=\"tag in task.tags\"\n                        class=\"label label-{{tag.status}}\">\n                    {{tag.label}}\n                  </span>\n                </td>\n                <td>{{task.next_todo_dict.title|limitTo:50}}{{task.next_todo_dict.title.length > 50 ? '...' : ''}}</td>\n                <td><datetime-display datetime=\"task.next_todo_dict.start_by_datetime\" show-time=\"false\" custom-format=\"vm.getDatetimeFormat(task.next_todo_dict.start_by_datetime)\" /></td>\n                <td><datetime-display datetime=\"task.next_todo_dict.due_datetime\" show-time=\"false\" custom-format=\"vm.getDatetimeFormat(task.next_todo_dict.due_datetime)\" /></td>\n              </tr>\n            </tbody>\n          </table>\n    </div>\n  </div>\n</section>\n";
 
 /***/ }),
 /* 182 */
@@ -69470,7 +69432,7 @@ function config($locationProvider, $routeProvider) {
 /* 252 */
 /***/ (function(module, exports) {
 
-module.exports = "<section class=\"wrapper\">\n  <div tasktable=\"{label: 'Active', tasks: vm.orchestraTasks.activeTasks(), newTasks: true}\"></div>\n  <div tasktable=\"{label: 'Pending', tasks: vm.orchestraTasks.pendingTasks()}\"></div>\n  <div tasktable=\"{label: 'Paused', tasks: vm.orchestraTasks.pausedTasks()}\"\n    collapsed=\"true\"></div>\n  <div tasktable=\"{label: 'Completed', tasks: vm.orchestraTasks.completedTasks()}\" collapsed=\"true\"></div>\n</section>\n";
+module.exports = "<section class=\"wrapper\">\n  <div tasktable=\"{label: 'Active', tasks: vm.orchestraTasks.activeTasks()}\"></div>\n  <div tasktable=\"{label: 'Pending', tasks: vm.orchestraTasks.pendingTasks()}\"></div>\n  <div tasktable=\"{label: 'Paused', tasks: vm.orchestraTasks.pausedTasks()}\"\n    collapsed=\"true\"></div>\n  <div tasktable=\"{label: 'Completed', tasks: vm.orchestraTasks.completedTasks()}\" collapsed=\"true\"></div>\n</section>\n";
 
 /***/ }),
 /* 253 */
