@@ -60506,7 +60506,7 @@ function orchestraTeamMessages() {
 /* 173 */
 /***/ (function(module, exports) {
 
-module.exports = "<website-iframe title=\"Team Messages\"\n\t\tid=\"team-messages\" \n\t\tng-if=\"vm.taskAssignment.project.team_messages_url\"\n\t\tiframe-url=\"{{vm.taskAssignment.project.team_messages_url}}\">\n</website-iframe>\n";
+module.exports = "<website-iframe title=\"Scratchpad\"\n\t\tid=\"team-messages\" \n\t\tng-if=\"vm.taskAssignment.project.scratchpad_url\"\n\t\tiframe-url=\"{{vm.taskAssignment.project.scratchpad_url}}\">\n</website-iframe>\n";
 
 /***/ }),
 /* 174 */

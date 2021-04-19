@@ -54,7 +54,7 @@ All requests must be signed using `HTTP signatures <http://tools.ietf.org/html/d
               "id": 123,
               "short_description": "Project Description",
               "priority": 10,
-              "team_messages_url": "http://review.document.url",
+              "scratchpad_url": "http://review.document.url",
               "task_class": 1,
               "project_data": {
                   "sample_data_item": "sample_data_value_new"

@@ -22,7 +22,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             'start_datetime',
             'priority',
             'project_data',
-            'team_messages_url',
+            'scratchpad_url',
             'task_class',
             'status'
         )

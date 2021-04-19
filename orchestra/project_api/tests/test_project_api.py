@@ -87,7 +87,7 @@ class ProjectAPITestCase(OrchestraTestCase):
                 'workflow_slug': 'w1',
                 'workflow_version_slug': 'test_workflow',
                 'project_data': {},
-                'team_messages_url': None,
+                'scratchpad_url': None,
                 'priority': 0,
                 'status': 0
             },

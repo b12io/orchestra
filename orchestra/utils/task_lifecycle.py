@@ -373,7 +373,7 @@ def get_task_details(task_id):
         'project': {
             'id': project.id,
             'details': project.short_description,
-            'team_messages_url': project.team_messages_url,
+            'scratchpad_url': project.scratchpad_url,
             'project_data': project.project_data,
             'status': dict(Project.STATUS_CHOICES)[project.status]
         },

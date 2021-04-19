@@ -534,7 +534,7 @@ class DashboardTestCase(OrchestraTransactionTestCase):
                         'project_data': {},
                         'status': dict(
                             Project.STATUS_CHOICES)[task.project.status],
-                        'team_messages_url': None},
+                        'scratchpad_url': None},
             'status': assignment_status,
             'task': {'data': task_data, 'status': task_status},
             'task_id': task.id,
