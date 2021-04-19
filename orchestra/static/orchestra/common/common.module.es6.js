@@ -14,7 +14,7 @@ import {
 import orchestraChecklist from 'orchestra/common/components/checklist/checklist.directive.es6.js'
 import orchestraChecklistItem from 'orchestra/common/components/checklist/checklist-item.directive.es6.js'
 import orchestraQuill from 'orchestra/common/components/quill/quill.directive.es6.js'
-import orchestraTeamMessages from 'orchestra/common/components/team-messages/team-messages.directive.es6.js'
+import orchestraScratchpad from 'orchestra/common/components/scratchpad/scratchpad.directive.es6.js'
 import projectFolder from 'orchestra/common/components/project-folder/project-folder.directive.es6.js'
 import websiteIframe from 'orchestra/common/components/website-iframe/website-iframe.directive.es6.js'
 
@@ -30,7 +30,7 @@ angular.module('orchestra.common', [])
   .directive('orchestraChecklist', orchestraChecklist)
   .directive('orchestraChecklistItem', orchestraChecklistItem)
   .directive('orchestraQuill', orchestraQuill)
-  .directive('orchestraTeamMessages', orchestraTeamMessages)
+  .directive('orchestraScratchpad', orchestraScratchpad)
   .directive('projectFolder', projectFolder)
   .directive('websiteIframe', websiteIframe)
 

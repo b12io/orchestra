@@ -1,6 +1,6 @@
-import template from './team-messages.html'
+import template from './scratchpad.html'
 
-export default function orchestraTeamMessages () {
+export default function orchestraScratchpad () {
   return {
     template,
     restrict: 'E',

@@ -32540,9 +32540,9 @@ var _quillDirectiveEs = __webpack_require__(165);
 
 var _quillDirectiveEs2 = _interopRequireDefault(_quillDirectiveEs);
 
-var _teamMessagesDirectiveEs = __webpack_require__(172);
+var _scratchpadDirectiveEs = __webpack_require__(172);
 
-var _teamMessagesDirectiveEs2 = _interopRequireDefault(_teamMessagesDirectiveEs);
+var _scratchpadDirectiveEs2 = _interopRequireDefault(_scratchpadDirectiveEs);
 
 var _projectFolderDirectiveEs = __webpack_require__(174);
 
@@ -32557,7 +32557,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /* global angular */
 
 var name = 'orchestra.common';
-angular.module('orchestra.common', []).factory('orchestraService', _orchestraServicesEs.orchestraService).factory('orchestraTasks', _orchestraServicesEs.orchestraTasks).factory('orchestraApi', _orchestra_apiEs2.default).factory('helpers', _helpersEs2.default).filter('capitalize', _orchestraFiltersEs.capitalize).filter('toArray', _orchestraFiltersEs.toArray).directive('orchestraChecklist', _checklistDirectiveEs2.default).directive('orchestraChecklistItem', _checklistItemDirectiveEs2.default).directive('orchestraQuill', _quillDirectiveEs2.default).directive('orchestraTeamMessages', _teamMessagesDirectiveEs2.default).directive('projectFolder', _projectFolderDirectiveEs2.default).directive('websiteIframe', _websiteIframeDirectiveEs2.default);
+angular.module('orchestra.common', []).factory('orchestraService', _orchestraServicesEs.orchestraService).factory('orchestraTasks', _orchestraServicesEs.orchestraTasks).factory('orchestraApi', _orchestra_apiEs2.default).factory('helpers', _helpersEs2.default).filter('capitalize', _orchestraFiltersEs.capitalize).filter('toArray', _orchestraFiltersEs.toArray).directive('orchestraChecklist', _checklistDirectiveEs2.default).directive('orchestraChecklistItem', _checklistItemDirectiveEs2.default).directive('orchestraQuill', _quillDirectiveEs2.default).directive('orchestraScratchpad', _scratchpadDirectiveEs2.default).directive('projectFolder', _projectFolderDirectiveEs2.default).directive('websiteIframe', _websiteIframeDirectiveEs2.default);
 
 exports.default = name;
 
@@ -60482,17 +60482,17 @@ module.exports = SnowTheme;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = orchestraTeamMessages;
+exports.default = orchestraScratchpad;
 
-var _teamMessages = __webpack_require__(173);
+var _scratchpad = __webpack_require__(173);
 
-var _teamMessages2 = _interopRequireDefault(_teamMessages);
+var _scratchpad2 = _interopRequireDefault(_scratchpad);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function orchestraTeamMessages() {
+function orchestraScratchpad() {
   return {
-    template: _teamMessages2.default,
+    template: _scratchpad2.default,
     restrict: 'E',
     controllerAs: 'vm',
     controller: function controller($scope, orchestraService) {
@@ -60506,7 +60506,7 @@ function orchestraTeamMessages() {
 /* 173 */
 /***/ (function(module, exports) {
 
-module.exports = "<website-iframe title=\"Scratchpad\"\n\t\tid=\"team-messages\" \n\t\tng-if=\"vm.taskAssignment.project.scratchpad_url\"\n\t\tiframe-url=\"{{vm.taskAssignment.project.scratchpad_url}}\">\n</website-iframe>\n";
+module.exports = "<website-iframe title=\"Scratchpad\"\n\t\tid=\"scratchpad\" \n\t\tng-if=\"vm.taskAssignment.project.scratchpad_url\"\n\t\tiframe-url=\"{{vm.taskAssignment.project.scratchpad_url}}\">\n</website-iframe>\n";
 
 /***/ }),
 /* 174 */
