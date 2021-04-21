@@ -35,7 +35,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTestCase):
         project_folder = create_project_google_folder(project)
         self.assertEqual(project_folder['id'], 1)
         self.assertEqual(
-            project.team_messages_url, 'http://a.google.com/link')
+            project.scratchpad_url, 'http://a.google.com/link')
 
     @override_settings(ORCHESTRA_SLACK_EXPERTS_ENABLED=True)
     def test_create_project_slack_group(self):

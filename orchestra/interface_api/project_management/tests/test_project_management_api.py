@@ -66,7 +66,7 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
         expected_project = {
             'task_class': project.task_class,
             'start_datetime': '2015-10-12T00:00:00Z',
-            'team_messages_url': None,
+            'scratchpad_url': None,
             'admin_url': settings.ORCHESTRA_URL + reverse(
                 'admin:orchestra_project_change',
                 args=(project.id,)),

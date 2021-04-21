@@ -387,7 +387,7 @@ class Project(ProjectMixin, models.Model):
         task_class (int):
             Represents whether the project is a worker training exercise
             or a deliverable project.
-        team_messages_url (str):
+        scratchpad_url (str):
             A scratchpad in which teammates can collaborate, created only if
             Google Apps support is turned on.
         slack_group_id (str):
@@ -419,7 +419,7 @@ class Project(ProjectMixin, models.Model):
     project_data = JSONField(default={}, blank=True)
     task_class = models.IntegerField(
         choices=WorkerCertification.TASK_CLASS_CHOICES)
-    team_messages_url = models.URLField(null=True, blank=True)
+    scratchpad_url = models.URLField(null=True, blank=True)
     slack_group_id = models.CharField(max_length=200, null=True, blank=True)
 
     class Meta:
