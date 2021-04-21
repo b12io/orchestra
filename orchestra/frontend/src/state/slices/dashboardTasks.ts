@@ -26,7 +26,6 @@ export interface Task {
 
 interface DashboardTasksState {
   reviewerStatus: boolean;
-  preventNew: boolean;
   tasks: Task[];
   loading: boolean;
   error?: string;
@@ -34,7 +33,6 @@ interface DashboardTasksState {
 
 const initialState: DashboardTasksState = {
   tasks: [],
-  preventNew: true,
   reviewerStatus: false,
   loading: false,
   error: null
@@ -50,7 +48,6 @@ const dashboardTasks = createSlice({
     },
     getTodosSuccess (state, action: PayloadAction<DashboardTasksState>): void {
       state.tasks = action.payload.tasks
-      state.preventNew = action.payload.preventNew
       state.reviewerStatus = action.payload.reviewerStatus
       state.loading = false
     },

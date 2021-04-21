@@ -38,8 +38,6 @@ from orchestra.utils.task_lifecycle import get_task_overview_for_worker
 from orchestra.utils.task_lifecycle import save_task
 from orchestra.utils.task_lifecycle import submit_task
 from orchestra.utils.task_lifecycle import tasks_assigned_to_worker
-from orchestra.utils.task_lifecycle import worker_assigned_to_max_tasks
-from orchestra.utils.task_lifecycle import worker_assigned_to_rejected_task
 from orchestra.utils.task_lifecycle import worker_has_reviewer_status
 from orchestra.utils.common_helpers import IsAssociatedWorker
 
@@ -103,10 +101,7 @@ def newindex(request):
 def dashboard_tasks(request):
     worker = Worker.objects.get(user=request.user)
     tasks = tasks_assigned_to_worker(worker)
-    prevent_new_tasks = (worker_assigned_to_rejected_task(worker) or
-                         worker_assigned_to_max_tasks(worker))
     return {'tasks': tasks,
-            'preventNew': prevent_new_tasks,
             'reviewerStatus': worker_has_reviewer_status(worker)}
 
 
