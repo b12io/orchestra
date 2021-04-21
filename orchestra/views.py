@@ -19,11 +19,9 @@ from rest_framework import generics
 from rest_framework import permissions
 
 from orchestra.core.errors import IllegalTaskSubmission
-from orchestra.core.errors import NoTaskAvailable
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import TaskStatusError
 from orchestra.core.errors import TimerError
-from orchestra.core.errors import WorkerCertificationError
 from orchestra.filters import TimeEntryFilter
 from orchestra.models import Iteration
 from orchestra.models import Step
@@ -36,13 +34,10 @@ from orchestra.project_api.serializers import TimeEntrySerializer
 from orchestra.utils import time_tracking
 from orchestra.utils.load_json import load_encoded_json
 from orchestra.utils.s3 import upload_editor_image
-from orchestra.utils.task_lifecycle import get_new_task_assignment
 from orchestra.utils.task_lifecycle import get_task_overview_for_worker
 from orchestra.utils.task_lifecycle import save_task
 from orchestra.utils.task_lifecycle import submit_task
 from orchestra.utils.task_lifecycle import tasks_assigned_to_worker
-from orchestra.utils.task_lifecycle import worker_assigned_to_max_tasks
-from orchestra.utils.task_lifecycle import worker_assigned_to_rejected_task
 from orchestra.utils.task_lifecycle import worker_has_reviewer_status
 from orchestra.utils.common_helpers import IsAssociatedWorker
 
@@ -68,7 +63,6 @@ def index(request):
     orchestra_arguments = {
         'angular_modules': [],
         'angular_directives': defaultdict(lambda: defaultdict(lambda: {})),
-        'enable_new_task_buttons': settings.ORCHESTRA_ENABLE_NEW_TASK_BUTTONS,
     }
 
     for step in Step.objects.filter(is_human=True):
@@ -107,41 +101,8 @@ def newindex(request):
 def dashboard_tasks(request):
     worker = Worker.objects.get(user=request.user)
     tasks = tasks_assigned_to_worker(worker)
-    prevent_new_tasks = (worker_assigned_to_rejected_task(worker) or
-                         worker_assigned_to_max_tasks(worker))
     return {'tasks': tasks,
-            'preventNew': prevent_new_tasks,
             'reviewerStatus': worker_has_reviewer_status(worker)}
-
-
-@json_view
-@login_required
-def new_task_assignment(request, task_type):
-    new_tasks_status = {
-        'entry_level': Task.Status.AWAITING_PROCESSING,
-        'reviewer': Task.Status.PENDING_REVIEW
-    }
-    try:
-        task_status = new_tasks_status[task_type]
-    except KeyError:
-        raise BadRequest('No such task type')
-
-    worker = Worker.objects.get(user=request.user)
-    try:
-        task_assignment = get_new_task_assignment(worker, task_status)
-    except WorkerCertificationError:
-        raise BadRequest('No worker certificates')
-    except NoTaskAvailable:
-        raise BadRequest('No task')
-
-    task = task_assignment.task
-    return {
-        'id': task.id,
-        'assignment_id': task_assignment.id,
-        'step': task.step.slug,
-        'project': task.project.workflow_version.slug,
-        'detail': task.project.short_description
-    }
 
 
 @json_view

@@ -77,7 +77,6 @@ export function orchestraTasks ($http) {
     data: null,
     tasks: [],
     tasksByAssignmentId: {},
-    preventNew: false,
     reviewerStatus: false,
     currentTask: undefined,
     updateTasks: function () {
@@ -91,20 +90,7 @@ export function orchestraTasks ($http) {
             service.tasksByAssignmentId[task.assignment_id] = task
           })
 
-          service.preventNew = response.data.preventNew
           service.reviewerStatus = response.data.reviewerStatus
-        })
-    },
-    newTask: function (taskType) {
-      var service = this
-
-      return $http.get('/orchestra/api/interface/new_task_assignment/' + taskType + '/')
-        .then(function (response) {
-          var task = response.data
-          task.state = 'just_added'
-          service.tasks.push(task)
-          service.tasksByAssignmentId[task.assignment_id] = task
-          return response
         })
     },
     allTasks: function () { return this.tasks },

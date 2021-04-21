@@ -19,8 +19,6 @@ from orchestra.communication.utils import mark_worker_as_winner
 from orchestra.core.errors import AssignmentPolicyError
 from orchestra.core.errors import CreationPolicyError
 from orchestra.core.errors import IllegalTaskSubmission
-from orchestra.core.errors import ModelSaveError
-from orchestra.core.errors import NoTaskAvailable
 from orchestra.core.errors import ReviewPolicyError
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import TaskDependencyError
@@ -758,56 +756,6 @@ def assert_new_task_status_valid(task_status):
                       Task.Status.PENDING_REVIEW]
     if task_status not in valid_statuses:
         raise TaskStatusError('Invalid status for new task assignment.')
-
-
-def get_new_task_assignment(worker, task_status):
-    """
-    Check if new task assignment is available for the provided worker
-    and task status; if so, assign the task to the worker and return the
-    assignment.
-
-    Args:
-        worker (orchestra.models.Worker):
-            The worker submitting the task.
-        task_status (orchestra.models.Task.Status):
-            The status of the desired new task assignment.
-
-    Returns:
-        assignment (orchestra.models.TaskAssignment):
-            The newly created task assignment.
-
-    Raises:
-        orchestra.core.errors.WorkerCertificationError:
-            No human tasks are available for the given task status
-            except those for which the worker is not certified.
-        orchestra.core.errors.NoTaskAvailable:
-            No human tasks are available for the given task status.
-    """
-    assert_new_task_status_valid(task_status)
-    check_worker_allowed_new_assignment(worker)
-
-    tasks = (Task.objects
-             .filter(status=task_status)
-             .exclude(assignments__worker=worker)
-             .order_by('-project__priority')
-             .order_by('project__start_datetime'))
-
-    certification_error = False
-    for task in tasks:
-        try:
-            task = assign_task(worker.id, task.id)
-            return current_assignment(task)
-        except WorkerCertificationError:
-            certification_error = True
-        except ModelSaveError:
-            # Machine task cannot have human worker; treat machine tasks as if
-            # they do not exist
-            pass
-
-    if certification_error:
-        raise WorkerCertificationError
-    else:
-        raise NoTaskAvailable('No task available for {}'.format(worker))
 
 
 @transaction.atomic

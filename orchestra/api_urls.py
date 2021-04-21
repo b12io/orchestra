@@ -15,7 +15,6 @@ from orchestra.views import TimeEntryDetail
 from orchestra.views import TimeEntryList
 from orchestra.views import dashboard_tasks
 from orchestra.views import get_timer
-from orchestra.views import new_task_assignment
 from orchestra.views import save_task_assignment
 from orchestra.views import start_timer
 from orchestra.views import status
@@ -43,10 +42,6 @@ urlpatterns = [
     url(r'^interface/submit_task_assignment/$',
         submit_task_assignment,
         name='submit_task_assignment'),
-
-    url(r'^interface/new_task_assignment/(?P<task_type>\w+)/$',
-        new_task_assignment,
-        name='new_task_assignment'),
 
     url(r'^interface/upload_image/$',
         upload_image,

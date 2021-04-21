@@ -32,7 +32,7 @@ from orchestra.tests.helpers.fixtures import TodoFactory
 from orchestra.tests.helpers.fixtures import WorkflowVersionFactory
 from orchestra.tests.helpers.google_apps import mock_create_drive_service
 from orchestra.utils.load_json import load_encoded_json
-from orchestra.utils.task_lifecycle import get_new_task_assignment
+from orchestra.utils.task_lifecycle import assign_task
 
 
 class ProjectAPITestCase(OrchestraTestCase):
@@ -177,8 +177,10 @@ class ProjectAPITestCase(OrchestraTestCase):
         task = self.tasks['review_task']
         assignment = TaskAssignment.objects.filter(
             worker=worker, task=task).first()
-        other_assignment = get_new_task_assignment(
-            worker, Task.Status.AWAITING_PROCESSING)
+        other_task = self.tasks['awaiting_processing']
+        assign_task(worker.id, other_task.id)
+        other_assignment = TaskAssignment.objects.filter(
+            worker=worker, task=other_task).first()
 
         # create 3 time entries
         TimeEntry.objects.create(
