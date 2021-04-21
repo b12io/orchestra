@@ -37,7 +37,7 @@ from orchestra.utils.task_lifecycle import is_worker_certified_for_task
 from orchestra.utils.task_lifecycle import role_counter_required_for_new_task
 from orchestra.utils.task_lifecycle import submit_task
 from orchestra.utils.task_lifecycle import tasks_assigned_to_worker
-# from orchestra.utils.task_lifecycle import worker_assigned_to_rejected_task
+from orchestra.utils.task_lifecycle import worker_assigned_to_rejected_task
 from orchestra.utils.task_lifecycle import worker_has_reviewer_status
 from orchestra.utils.task_lifecycle import end_project
 from orchestra.utils.task_properties import current_assignment
@@ -113,6 +113,14 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
     # TODO(jrbotros): write this test when per-user max tasks logic created
     def test_worker_assigned_to_max_tasks(self):
         pass
+
+    def test_worker_assigned_to_rejected_task(self):
+        assignments = TaskAssignment.objects.filter(
+            worker=self.workers[4],
+            status=TaskAssignment.Status.PROCESSING,
+            task__status=Task.Status.POST_REVIEW_PROCESSING)
+        self.assertTrue(assignments.exists())
+        self.assertTrue(worker_assigned_to_rejected_task(self.workers[4]))
 
     def test_worker_has_reviewer_status(self):
         self.assertFalse(worker_has_reviewer_status(self.workers[0]))
