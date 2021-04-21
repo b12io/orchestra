@@ -22,10 +22,6 @@ class ModelSaveError(Exception):
     pass
 
 
-class NoTaskAvailable(Exception):
-    pass
-
-
 class ReviewPolicyError(Exception):
     pass
 
