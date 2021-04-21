@@ -44,10 +44,6 @@ urlpatterns = [
         submit_task_assignment,
         name='submit_task_assignment'),
 
-    url(r'^interface/new_task_assignment/(?P<task_type>\w+)/$',
-        new_task_assignment,
-        name='new_task_assignment'),
-
     url(r'^interface/upload_image/$',
         upload_image,
         name='upload_image'),
