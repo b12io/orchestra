@@ -9,7 +9,6 @@ from orchestra.core.errors import AssignmentPolicyError
 from orchestra.core.errors import CreationPolicyError
 from orchestra.core.errors import IllegalTaskSubmission
 from orchestra.core.errors import ModelSaveError
-from orchestra.core.errors import NoTaskAvailable
 from orchestra.core.errors import ReviewPolicyError
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import TaskStatusError
@@ -29,16 +28,16 @@ from orchestra.tests.helpers.fixtures import ProjectFactory
 from orchestra.tests.helpers.fixtures import setup_models
 from orchestra.tests.helpers.fixtures import WorkflowVersionFactory
 from orchestra.utils.task_lifecycle import AssignmentPolicyType
+from orchestra.utils.task_lifecycle import assert_new_task_status_valid
 from orchestra.utils.task_lifecycle import assign_task
 from orchestra.utils.task_lifecycle import create_subsequent_tasks
-from orchestra.utils.task_lifecycle import get_new_task_assignment
 from orchestra.utils.task_lifecycle import get_next_task_status
 from orchestra.utils.task_lifecycle import get_task_overview_for_worker
 from orchestra.utils.task_lifecycle import is_worker_certified_for_task
 from orchestra.utils.task_lifecycle import role_counter_required_for_new_task
 from orchestra.utils.task_lifecycle import submit_task
 from orchestra.utils.task_lifecycle import tasks_assigned_to_worker
-from orchestra.utils.task_lifecycle import worker_assigned_to_rejected_task
+# from orchestra.utils.task_lifecycle import worker_assigned_to_rejected_task
 from orchestra.utils.task_lifecycle import worker_has_reviewer_status
 from orchestra.utils.task_lifecycle import end_project
 from orchestra.utils.task_properties import current_assignment
@@ -91,6 +90,8 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
                                          WorkerCertification.Role.ENTRY_LEVEL))
 
     def test_not_allowed_new_assignment(self):
+        assert_new_task_status_valid(Task.Status.AWAITING_PROCESSING)
+        assert_new_task_status_valid(Task.Status.PENDING_REVIEW)
         invalid_statuses = [Task.Status.PROCESSING,
                             Task.Status.REVIEWING,
                             Task.Status.POST_REVIEW_PROCESSING,
@@ -98,77 +99,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
                             Task.Status.ABORTED]
         for status in invalid_statuses:
             with self.assertRaises(TaskStatusError):
-                get_new_task_assignment(self.workers[2], status)
-
-    def test_get_new_task_assignment_entry_level(self):
-        # Entry-level assignment
-        self.assertEqual(Task.objects
-                         .filter(status=Task.Status.AWAITING_PROCESSING)
-                         .count(),
-                         1)
-
-        with self.assertRaises(WorkerCertificationError):
-            get_new_task_assignment(self.workers[5],
-                                    Task.Status.PENDING_REVIEW)
-
-        # assign a new task to a worker
-        assignment = get_new_task_assignment(self.workers[5],
-                                             Task.Status.AWAITING_PROCESSING)
-        self.assertTrue(assignment is not None)
-
-        self.assertEqual(assignment.task.status,
-                         Task.Status.PROCESSING)
-
-        # No more tasks left in AWAITING_PROCESSING
-        with self.assertRaises(NoTaskAvailable):
-            get_new_task_assignment(self.workers[5],
-                                    Task.Status.AWAITING_PROCESSING)
-
-        # Worker should not be served machine tasks
-        workflow_version = self.workflow_versions['test_workflow_2']
-        simple_machine = self.workflow_steps[
-            workflow_version.slug]['simple_machine']
-        project = Project.objects.create(workflow_version=workflow_version,
-                                         short_description='',
-                                         priority=0,
-                                         task_class=0)
-        Task.objects.create(project=project,
-                            status=Task.Status.AWAITING_PROCESSING,
-                            step=simple_machine)
-
-        with self.assertRaises(NoTaskAvailable):
-            get_new_task_assignment(self.workers[5],
-                                    Task.Status.AWAITING_PROCESSING)
-
-    def test_get_new_task_assignment_reviewer(self):
-        # Reviewer assignment
-        self.assertEqual(Task.objects
-                         .filter(status=Task.Status.PENDING_REVIEW)
-                         .count(),
-                         1)
-
-        # assign a review task to worker
-        assignment = get_new_task_assignment(self.workers[7],
-                                             Task.Status.PENDING_REVIEW)
-        self.assertTrue(assignment is not None)
-        self.assertEqual(assignment.task.status,
-                         Task.Status.REVIEWING)
-
-        self.assertEqual(assignment.in_progress_task_data,
-                         {'test_key': 'test_value'})
-
-        # No tasks in state PENDING_REVIEW
-        # No more tasks left in AWAITING_PROCESSING
-        with self.assertRaises(NoTaskAvailable):
-            get_new_task_assignment(self.workers[7],
-                                    Task.Status.PENDING_REVIEW)
-
-        # Assign an entry-level task to reviewer
-        assignment = get_new_task_assignment(self.workers[7],
-                                             Task.Status.AWAITING_PROCESSING)
-        with self.assertRaises(NoTaskAvailable):
-            get_new_task_assignment(self.workers[7],
-                                    Task.Status.AWAITING_PROCESSING)
+                assert_new_task_status_valid(status)
 
     def test_is_worker_assigned(self):
         task = self.tasks['review_task']
@@ -182,20 +113,6 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
     # TODO(jrbotros): write this test when per-user max tasks logic created
     def test_worker_assigned_to_max_tasks(self):
         pass
-
-    def test_worker_assigned_to_rejected_task(self):
-        assignments = TaskAssignment.objects.filter(
-            worker=self.workers[4],
-            status=TaskAssignment.Status.PROCESSING,
-            task__status=Task.Status.POST_REVIEW_PROCESSING)
-        self.assertTrue(assignments.exists())
-        self.assertTrue(worker_assigned_to_rejected_task(self.workers[4]))
-        with patch('orchestra.utils.task_lifecycle.settings.'
-                   + 'ORCHESTRA_ENFORCE_NO_NEW_TASKS_DURING_REVIEW',
-                   return_value=True):
-            with self.assertRaises(TaskAssignmentError):
-                get_new_task_assignment(self.workers[4],
-                                        Task.Status.AWAITING_PROCESSING)
 
     def test_worker_has_reviewer_status(self):
         self.assertFalse(worker_has_reviewer_status(self.workers[0]))

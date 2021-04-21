@@ -40,8 +40,8 @@ def migrate_certifications(source_workflow_slug,
                 slug=certification_slug)
         except Certification.DoesNotExist:
             logger.exception(
-                ("Certification {} doesn't exist for the destination workflow"
-                    .format(certification_slug, destination_workflow_slug)))
+                ("Certification {} doesn't exist for the destination workflow",
+                 certification_slug, destination_workflow_slug))
             continue
 
         for worker_certification in source_worker_certifications.filter(

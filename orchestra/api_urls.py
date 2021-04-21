@@ -15,7 +15,6 @@ from orchestra.views import TimeEntryDetail
 from orchestra.views import TimeEntryList
 from orchestra.views import dashboard_tasks
 from orchestra.views import get_timer
-from orchestra.views import new_task_assignment
 from orchestra.views import save_task_assignment
 from orchestra.views import start_timer
 from orchestra.views import status
