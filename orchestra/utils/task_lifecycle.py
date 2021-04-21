@@ -19,8 +19,6 @@ from orchestra.communication.utils import mark_worker_as_winner
 from orchestra.core.errors import AssignmentPolicyError
 from orchestra.core.errors import CreationPolicyError
 from orchestra.core.errors import IllegalTaskSubmission
-from orchestra.core.errors import ModelSaveError
-from orchestra.core.errors import NoTaskAvailable
 from orchestra.core.errors import ReviewPolicyError
 from orchestra.core.errors import TaskAssignmentError
 from orchestra.core.errors import TaskDependencyError
