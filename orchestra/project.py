@@ -8,7 +8,6 @@ from orchestra.utils.task_lifecycle import create_subsequent_tasks
 
 def _run_create_project_google_folder_in_background(project):
     t = threading.Thread(target=create_project_google_folder, args=(project,))
-    t.daemon = True
     t.start()
 
 
