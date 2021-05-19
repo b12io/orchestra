@@ -254,3 +254,12 @@ a.logo {
         width: 10%; }
       .staffing-container .card table .row-actions {
         width: 15%; }
+
+.tags-col {
+  max-width: 150px;
+}
+
+.tags-col span {
+  display: inline-block;
+  margin-right: 3px;
+}
