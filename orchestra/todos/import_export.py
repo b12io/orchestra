@@ -15,6 +15,7 @@ from orchestra.models import TodoListTemplateImportRecord
 
 REMOVE_IF_HEADER = 'Remove if'
 SKIP_IF_HEADER = 'Skip if'
+SLUG_HEADER = 'Slug'
 
 
 def _write_template_rows(writer, todo, depth):
@@ -26,7 +27,8 @@ def _write_template_rows(writer, todo, depth):
     """
     writer.writerow(
         [json.dumps(todo.get('remove_if', [])),
-         json.dumps(todo.get('skip_if', []))] +
+         json.dumps(todo.get('skip_if', [])),
+         todo.get('slug', '')] +
         ([''] * depth) +
         [todo.get('description', '')])
     # `reversed` iteration because the JSON-serialized order of
@@ -62,7 +64,7 @@ def export_to_spreadsheet(todo_list_template):
     """
     with NamedTemporaryFile(mode='w+', delete=False) as file:
         writer = csv.writer(file)
-        writer.writerow([REMOVE_IF_HEADER, SKIP_IF_HEADER])
+        writer.writerow([REMOVE_IF_HEADER, SKIP_IF_HEADER, SLUG_HEADER])
         _write_template_rows(writer, todo_list_template.todos, 0)
         file.flush()
         return _upload_csv_to_google(
