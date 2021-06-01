@@ -753,6 +753,10 @@ class Todo(TodoMixin, BaseModel):
         activity_log (str)
             A JSON blob that records the user actions
             with this todo
+        slug (str)
+            A unique identifier for each todo list item.
+            It is used to reference and retrieve specific
+            to-do items.
 
 
     Constraints:
