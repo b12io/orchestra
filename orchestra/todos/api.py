@@ -96,6 +96,7 @@ def _add_template_todo(
             project=project,
             step=step,
             title=template_todo['description'],
+            slug=template_todo['slug'],
             template=todolist_template,
             parent_todo=parent_todo,
             status=status,
