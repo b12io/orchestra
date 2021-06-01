@@ -23,7 +23,7 @@ python-dateutil==2.6.1
 py-moneyed==1.1.0
 django-hijack==2.1.6
 django-hijack-admin==2.1.6
-django-money==0.12.3
+django-money==2.0
 django-filter==2.3.0
 django-widget-tweaks==1.4.8
 django-bitfield==2.0.1
