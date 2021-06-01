@@ -795,6 +795,7 @@ class Todo(TodoMixin, BaseModel):
     status = models.IntegerField(
         default=Status.PENDING.value, choices=Status.choices())
     additional_data = JSONField(default=dict)
+    slug = models.CharField(max_length=255, null=True, blank=True)
 
 
 class TodoQA(TodoQAMixin, BaseModel):
