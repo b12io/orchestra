@@ -100,7 +100,7 @@ def import_from_spreadsheet(todo_list_template, spreadsheet_url, request):
             'id': rowindex,
             'remove_if': json.loads(row[1] or '[]'),
             'skip_if': json.loads(row[2] or '[]'),
-            'slug': row[0],
+            'slug': row[0] or None,
             'items': []
         }
         nonempty_columns = [(columnindex, text)

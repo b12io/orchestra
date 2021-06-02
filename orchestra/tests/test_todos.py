@@ -40,7 +40,8 @@ def _todo_data(title, status=Todo.Status.PENDING.value,
                start_by=None,
                due=None, parent_todo=None, template=None,
                activity_log=str({'actions': []}), qa=None,
-               project=None, step=None, details=None, is_deleted=False):
+               project=None, step=None, details=None, is_deleted=False,
+               slug=None):
     return {
         'title': title,
         'template': template,
@@ -55,6 +56,7 @@ def _todo_data(title, status=Todo.Status.PENDING.value,
         'section': None,
         'status': status,
         'step': step,
+        'slug': slug,
         'details': details,
         'is_deleted': is_deleted
     }
@@ -428,6 +430,7 @@ class TodoTemplateEndpointTests(EndpointTestCase):
         self.step = StepFactory(
             slug='step-slug',
             workflow_version=self.workflow_version)
+        self.slug = 'todo-item-slug'
         self.project = ProjectFactory(
             workflow_version=self.workflow_version)
         self.project2 = ProjectFactory()
@@ -538,15 +541,18 @@ class TodoTemplateEndpointTests(EndpointTestCase):
                 'description': 'todo parent',
                 'project': self.project.id,
                 'step': self.step.slug,
+                'slug': None,
                 'items': [{
                     'id': 2,
                     'project': self.project.id,
                     'step': self.step.slug,
+                    'slug': self.slug,
                     'description': 'todo child',
                     'items': []
                 }]
             }]},
         )
+
         resp = self.request_client.post(
             update_todos_from_todolist_template_url,
             {
@@ -563,7 +569,8 @@ class TodoTemplateEndpointTests(EndpointTestCase):
                        template=todolist_template.id,
                        parent_todo=todos[1]['id'],
                        project=self.project.id,
-                       step=self.step.slug),
+                       step=self.step.slug,
+                       slug=self.slug),
             _todo_data('todo parent',
                        template=todolist_template.id,
                        parent_todo=todos[2]['id'],
@@ -645,9 +652,11 @@ class TodoTemplateEndpointTests(EndpointTestCase):
                     'id': 1,
                     'description': 'todo parent 1',
                     'project': self.project.id,
+                    'slug': None,
                     'items': [{
                         'id': 2,
                         'description': 'todo child 1',
+                        'slug': None,
                         'project': self.project.id,
                         'items': []
                     }],
@@ -661,9 +670,11 @@ class TodoTemplateEndpointTests(EndpointTestCase):
                     'id': 3,
                     'description': 'todo parent 2',
                     'project': self.project.id,
+                    'slug': None,
                     'items': [{
                         'id': 4,
                         'description': 'todo child 2',
+                        'slug': None,
                         'project': self.project.id,
                         'items': [],
                         'skip_if': [{
