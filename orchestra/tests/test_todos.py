@@ -552,7 +552,6 @@ class TodoTemplateEndpointTests(EndpointTestCase):
                 }]
             }]},
         )
-
         resp = self.request_client.post(
             update_todos_from_todolist_template_url,
             {
