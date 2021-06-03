@@ -41,7 +41,7 @@ PICKUP_DELAY = timedelta(hours=1)
 
 TODO_TEMPLATE_GOOD_CSV_TEXT = """Slug,Remove if,Skip if
 ,[],[],the root
-,[],[],,todo parent 1
+todo-parent-slug,[],[],,todo parent 1
 ,[],"[{""prop"": {""value"": true, ""operator"": ""==""}}]",,,todo child 1-1
 ,"[{""prop"": {""value"": true, ""operator"": ""==""}}]",[],,todo parent 2
 ,[],[],,,todo child 2-1
@@ -102,7 +102,7 @@ TODO_TEMPLATE_NESTED_TODOS = {
         {
             'id': 1,
             'description': 'todo parent 1',
-            'slug': None,
+            'slug': 'todo-parent-slug',
             'items': [{
                 'id': 11,
                 'description': 'todo child 1-1',
