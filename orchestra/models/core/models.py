@@ -755,7 +755,7 @@ class Todo(TodoMixin, BaseModel):
             with this todo
         slug (str)
             A unique identifier for each todo list item.
-            It is used to reference and retrieve specific
+            It is used to refer and retrieve specific
             to-do items.
 
 
