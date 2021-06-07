@@ -137,6 +137,7 @@ class BulkTodoSerializer(serializers.ModelSerializer):
             'section',
             'project',
             'step',
+            'slug',
             'order',
             'status',
             'additional_data',

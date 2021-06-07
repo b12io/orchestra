@@ -753,6 +753,10 @@ class Todo(TodoMixin, BaseModel):
         activity_log (str)
             A JSON blob that records the user actions
             with this todo
+        slug (str)
+            A unique identifier for each todo list item.
+            It is used to refer and retrieve specific
+            to-do items.
 
 
     Constraints:
@@ -795,6 +799,7 @@ class Todo(TodoMixin, BaseModel):
     status = models.IntegerField(
         default=Status.PENDING.value, choices=Status.choices())
     additional_data = JSONField(default=dict)
+    slug = models.CharField(max_length=255, null=True, blank=True)
 
 
 class TodoQA(TodoQAMixin, BaseModel):

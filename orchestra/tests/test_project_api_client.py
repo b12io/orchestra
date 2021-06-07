@@ -75,6 +75,7 @@ class TodoTemplatesAPITests(TestCase):
             return_value.text = json.dumps(return_value.json())
             return return_value
 
+        todo_child_slug = 'todo-child-slug'
         todolist_template = TodoListTemplateFactory(
             slug=self.todolist_template_slug,
             name=self.todolist_template_name,
@@ -84,10 +85,12 @@ class TodoTemplatesAPITests(TestCase):
                 'description': 'todo parent',
                 'project': self.project.id,
                 'step': self.step.slug,
+                'slug': None,
                 'items': [{
                     'id': 2,
                     'project': self.project.id,
                     'step': self.step.slug,
+                    'slug': todo_child_slug,
                     'description': 'todo child',
                     'items': []
                 }]
@@ -105,6 +108,8 @@ class TodoTemplatesAPITests(TestCase):
             additional_data)
         self.assertEqual(result['success'], True)
         self.assertEqual(len(result['todos']), 3)
+        self.assertEqual(result['todos'][0]['slug'], todo_child_slug)
+        self.assertEqual(result['todos'][1]['slug'], None)
         for t in result['todos']:
             self.assertEqual(t['template'], todolist_template.id)
             self.assertEqual(t['section'], None)
