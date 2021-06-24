@@ -289,6 +289,7 @@ class StaffBot(BaseBot):
                 worker.user)
         return {
             'user': user,
+            'tags': staffbot_request.task.tags.get('tags', []),
             'accept_url': accept_url,
             'reject_url': reject_url,
             'role_counter': staffbot_request.required_role_counter,

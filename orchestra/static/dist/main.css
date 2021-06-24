@@ -1383,12 +1383,6 @@ li.checklist-item, .new-item {
   border: 1px solid #cccccc; }
 .collapsed-toggle {
   cursor: pointer; }
-
-.tags-col {
-  max-width: 150px; }
-  .tags-col span {
-    display: inline-block;
-    margin-right: 3px; }
 /**
  * Common stylesheet for Orchestra.
  *

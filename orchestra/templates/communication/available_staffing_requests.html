@@ -15,7 +15,7 @@
       <table class="table">
         <tr>
           <th class="row-project">Project</th>
-          <th class="row-project-description">Project description</th>
+          <th class="row-project-description tags-col">Project description</th>
           <th class="row-task">Task</th>
           <th class="row-details">Details</th>
           <th class="row-created-at">Available since</th>
@@ -24,7 +24,15 @@
         {% for request in requests %}
         <tr>
           <td>{{ request.workflow_description }}</td>
-          <td>{{ request.project_description }}</td>
+          <td class="tags-col">
+            {{ request.project_description }}
+            <br>
+            {% for tag in request.tags %}
+              <span class="label label-{{tag.status}}">
+                {{tag.label}}
+              </span>
+            {% endfor %}
+          </td>
           <td>{% if request.role_counter > 0 %}[Review] {% endif %}{{ request.step_description }}</td>
           <td>{{ request.detailed_description | safe }}</td>
           <td>{{ request.available_datetime|date:"m/d/Y H:i" }}</td>
