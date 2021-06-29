@@ -1,3 +1,6 @@
+import json
+import logging
+
 from annoying.functions import get_object_or_None
 from collections import defaultdict
 from datetime import timedelta
@@ -31,6 +34,8 @@ from orchestra.utils.task_lifecycle import check_worker_allowed_new_assignment
 from orchestra.utils.task_lifecycle import get_role_from_counter
 from orchestra.utils.task_lifecycle import is_worker_certified_for_task
 from orchestra.utils.task_lifecycle import reassign_assignment
+
+logger = logging.getLogger(__name__)
 
 
 @transaction.atomic
@@ -143,9 +148,6 @@ def address_staffing_requests(
     cutoff_datetime = timezone.now() - frequency
     requests = _exclude_inactive_staffbot_requests(
         StaffBotRequest.objects
-        .filter(status__in=[
-            StaffBotRequest.Status.SENDING_INQUIRIES.value,
-            StaffBotRequest.Status.DONE_SENDING_INQUIRIES.value])
         .filter(Q(last_inquiry_sent__isnull=True) |
                 Q(last_inquiry_sent__lte=cutoff_datetime))
         .order_by('-task__project__priority', 'created_at'))
@@ -236,6 +238,7 @@ def _attempt_to_automatically_staff(staffbot, request, worker_certifications):
         CommunicationPreference.CommunicationType.NEW_TASK_AVAILABLE.value)
     previously_opted_in_method = (
         StaffingRequestInquiry.CommunicationMethod.PREVIOUSLY_OPTED_IN.value)
+    worker = None
     for certification in worker_certifications:
         worker = certification.worker
         if worker.id in attempted_workers:
@@ -255,6 +258,16 @@ def _attempt_to_automatically_staff(staffbot, request, worker_certifications):
                 worker, staffing_request_inquiry.id, is_available=True)
             successfully_staffed = True
             break
+    logger.info('Autostaff attempt: %s', json.dumps({
+        'successfully_staffed': successfully_staffed,
+        'attempted_workers': list(attempted_workers),
+        'most_recent_worker': str(worker) if worker else None,
+        'most_recent_worker_id': worker.id if worker else None,
+        'staffing_request': str(request),
+        'staffing_request_id': request.id,
+        'task': str(request.task),
+        'task_id': request.task.id
+    }))
     return successfully_staffed
 
 
