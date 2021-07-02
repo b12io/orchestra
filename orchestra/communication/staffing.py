@@ -145,6 +145,8 @@ def _get_worker_allowed_hours():
     today = timezone.now().date()
     today_abbreviation = ['mon', 'tues', 'wed', 'thurs', 'fri', 'sat', 'sun'][
         today.weekday()]
+    # For each Worker, their allowed hours is the smaller of the their
+    # daily (desired) availability and their max hours per day.
     return {
         availability.worker.id:
         min(
