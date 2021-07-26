@@ -757,6 +757,8 @@ class Todo(TodoMixin, BaseModel):
             A unique identifier for each todo list item.
             It is used to refer and retrieve specific
             to-do items.
+        required (boolean):
+            Whether todo is required for something.
 
 
     Constraints:
@@ -800,6 +802,7 @@ class Todo(TodoMixin, BaseModel):
         default=Status.PENDING.value, choices=Status.choices())
     additional_data = JSONField(default=dict)
     slug = models.CharField(max_length=255, null=True, blank=True)
+    required = models.BooleanField(default=False)
 
 
 class TodoQA(TodoQAMixin, BaseModel):
