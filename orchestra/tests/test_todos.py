@@ -41,7 +41,7 @@ def _todo_data(title, status=Todo.Status.PENDING.value,
                due=None, parent_todo=None, template=None,
                activity_log=str({'actions': []}), qa=None,
                project=None, step=None, details=None, is_deleted=False,
-               slug=None):
+               slug=None, required=False):
     return {
         'title': title,
         'template': template,
@@ -58,7 +58,8 @@ def _todo_data(title, status=Todo.Status.PENDING.value,
         'step': step,
         'slug': slug,
         'details': details,
-        'is_deleted': is_deleted
+        'is_deleted': is_deleted,
+        'required': required
     }
 
 
