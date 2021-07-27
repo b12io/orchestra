@@ -758,7 +758,7 @@ class Todo(TodoMixin, BaseModel):
             It is used to refer and retrieve specific
             to-do items.
         required (boolean):
-            Whether to do is required.
+            Whether the todo is required.
 
 
     Constraints:
