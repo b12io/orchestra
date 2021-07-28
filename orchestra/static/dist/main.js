@@ -47351,7 +47351,7 @@ angular.module('orchestra', ['ngRoute', _commonModuleEs2.default, _timingModuleE
   // Update xsrf $http headers to align with Django's defaults
 
   $http.defaults.xsrfHeaderName = 'X-CSRFToken';
-  $http.defaults.xsrfCookieName = 'csrftoken';
+  $http.defaults.xsrfCookieName = window.orchestra.csrf_cookie_name || 'csrftoken';
 
   // Change title based on route
   var baseTitle = ' | Orchestra';

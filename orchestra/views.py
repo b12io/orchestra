@@ -63,6 +63,7 @@ def index(request):
     orchestra_arguments = {
         'angular_modules': [],
         'angular_directives': defaultdict(lambda: defaultdict(lambda: {})),
+        'csrf_cookie_name': settings.CSRF_COOKIE_NAME,
     }
 
     for step in Step.objects.filter(is_human=True):
