@@ -24,7 +24,8 @@ class ProjectSerializer(serializers.ModelSerializer):
             'project_data',
             'scratchpad_url',
             'task_class',
-            'status'
+            'status',
+            'slack_group_id'
         )
 
     workflow_slug = serializers.SerializerMethodField()
