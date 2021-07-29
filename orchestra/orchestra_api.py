@@ -159,13 +159,12 @@ def get_todo_templates():
 
 
 def create_todos_from_template(todolist_template_slug, project_id,
-                               step_slug, additional_data, required=False):
+                               step_slug, additional_data):
     data = {
         'todolist_template_slug': todolist_template_slug,
         'project_id': project_id,
         'step_slug': step_slug,
         'additional_data': additional_data,
-        'required': required
     }
     response = _make_api_request('post', 'create_todos_from_template',
                                  data=json.dumps(data))
