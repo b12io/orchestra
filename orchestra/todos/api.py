@@ -37,7 +37,7 @@ def add_todolist_template(todolist_template_slug, project_id,
     if is_required_path:
         try:
             get_required_field = locate(is_required_path)
-            required = get_required_field(project)
+            required = get_required_field(project, step)
         except Exception:
             logger.exception('Invalid is required function path')
 

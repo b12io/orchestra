@@ -70,7 +70,7 @@ def _get_test_conditional_props(project):
     }
 
 
-def _get_test_is_todo_required(project):
+def _get_test_is_todo_required(project, step):
     return True
 
 
