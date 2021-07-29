@@ -41,7 +41,6 @@ def add_todolist_template(todolist_template_slug, project_id,
         except Exception:
             logger.exception('Invalid is required function path')
 
-
     root_todo = Todo(
         project=project,
         step=step,
