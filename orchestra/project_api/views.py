@@ -175,7 +175,6 @@ def create_todos_from_template(request):
         'todolist_template_slug': 'some-template-slug-123',
         'step_slug': 'some-step-slug-123',
         'project_id': 'some-project-id-123'
-        'required: False,
         'additional_data': {
             'some_key': 'some_value'
         }
@@ -187,10 +186,9 @@ def create_todos_from_template(request):
         step_slug = data.get('step_slug')
         project_id = data.get('project_id')
         additional_data = data.get('additional_data')
-        required = data.get('required', False)
         if step_slug and project_id and todolist_template_slug:
             add_todolist_template(todolist_template_slug, project_id,
-                                  step_slug, additional_data, required)
+                                  step_slug, additional_data)
             todos = Todo.objects.filter(
                 template__slug=todolist_template_slug,
                 project__id=project_id,
