@@ -88,6 +88,7 @@ class ProjectAPITestCase(OrchestraTestCase):
                 'workflow_version_slug': 'test_workflow',
                 'project_data': {},
                 'scratchpad_url': None,
+                'slack_group_id': project.slack_group_id,
                 'priority': 0,
                 'status': 0
             },

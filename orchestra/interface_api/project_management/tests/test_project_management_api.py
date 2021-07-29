@@ -65,6 +65,7 @@ class ProjectManagementAPITestCase(OrchestraTestCase):
         # Skipping the `tasks` key/value pair for this test
         expected_project = {
             'task_class': project.task_class,
+            'slack_group_id': project.slack_group_id,
             'start_datetime': '2015-10-12T00:00:00Z',
             'scratchpad_url': None,
             'admin_url': settings.ORCHESTRA_URL + reverse(
