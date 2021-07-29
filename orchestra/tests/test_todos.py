@@ -70,6 +70,10 @@ def _get_test_conditional_props(project):
     }
 
 
+def _get_test_is_todo_required(project):
+    return True
+
+
 class TodosEndpointTests(EndpointTestCase):
 
     def setUp(self):
@@ -634,6 +638,94 @@ class TodoTemplateEndpointTests(EndpointTestCase):
             })
 
         self.assertEqual(resp.status_code, 400)
+
+    def test_getting_required_field_from_template(self):
+        update_todos_from_todolist_template_url = \
+            reverse('orchestra:todos:update_todos_from_todolist_template')
+
+        todolist_template = TodoListTemplateFactory(
+            slug=self.todolist_template_slug,
+            name=self.todolist_template_name,
+            description=self.todolist_template_description,
+            conditional_property_function={
+                'path': 'orchestra.tests.test_todos'
+                        '._get_test_conditional_props'
+            },
+            is_todo_required_function={
+                'path': 'orchestra.tests.test_todos'
+                        '._get_test_is_todo_required'
+            },
+            todos={'items': [
+                {
+                    'id': 1,
+                    'description': 'todo parent 1',
+                    'project': self.project.id,
+                    'slug': None,
+                    'items': [{
+                        'id': 2,
+                        'description': 'todo child 1',
+                        'slug': None,
+                        'project': self.project.id,
+                        'items': []
+                    }],
+                    'remove_if': [{
+                        'prop1': {
+                            'operator': '==',
+                            'value': True
+                        }
+                    }]
+                }, {
+                    'id': 3,
+                    'description': 'todo parent 2',
+                    'project': self.project.id,
+                    'slug': None,
+                    'items': [{
+                        'id': 4,
+                        'description': 'todo child 2',
+                        'slug': None,
+                        'project': self.project.id,
+                        'items': [],
+                        'skip_if': [{
+                            'prop2': {
+                                'operator': '!=',
+                                'value': True
+                            }
+                        }]
+                    }]
+                }]},
+        )
+        resp = self.request_client.post(
+            update_todos_from_todolist_template_url,
+            {
+                'todolist_template': todolist_template.slug,
+                'project': self.project.id,
+                'step': self.step.slug
+            })
+        self.assertEqual(resp.status_code, 200)
+        todos = load_encoded_json(resp.content)
+
+        expected_todos = [
+            _todo_data('todo child 2',
+                       template=todolist_template.id,
+                       parent_todo=todos[1]['id'],
+                       status=Todo.Status.DECLINED.value,
+                       project=self.project.id,
+                       step=self.step.slug,
+                       required=True),
+            _todo_data('todo parent 2',
+                       template=todolist_template.id,
+                       parent_todo=todos[2]['id'],
+                       project=self.project.id,
+                       step=self.step.slug,
+                       required=True),
+            _todo_data(self.todolist_template_name,
+                       template=todolist_template.id,
+                       project=self.project.id,
+                       step=self.step.slug,
+                       required=True),
+        ]
+        for todo, expected_todo in zip(todos, expected_todos):
+            self._verify_todo_content(todo, expected_todo)
 
     def test_conditional_skip_remove_todos_from_template(self):
         update_todos_from_todolist_template_url = \

@@ -31,6 +31,17 @@ def add_todolist_template(todolist_template_slug, project_id,
     step = get_step_by_project_id_and_step_slug(project_id, step_slug)
     template_todos = todolist_template.todos.get('items', [])
     additional_data = additional_data if additional_data else {}
+
+    is_required_path = todolist_template.is_todo_required_function.get(
+        'path', None)
+    if is_required_path:
+        try:
+            get_required_field = locate(is_required_path)
+            required = get_required_field(project)
+        except Exception:
+            logger.exception('Invalid is required function path')
+
+
     root_todo = Todo(
         project=project,
         step=step,
@@ -51,15 +62,6 @@ def add_todolist_template(todolist_template_slug, project_id,
             cond_props = get_cond_props(project)
         except Exception:
             logger.exception('Invalid conditional function path.')
-
-    is_required_path = todolist_template.is_todo_required_function.get(
-        'path', None)
-    if is_required_path:
-        try:
-            get_required_field = locate(is_required_path)
-            required = get_required_field(project)
-        except Exception:
-            logger.exception('Invalid is required function path')
 
     for template_todo in template_todos:
         _add_template_todo(
