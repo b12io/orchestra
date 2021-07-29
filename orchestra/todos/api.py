@@ -22,7 +22,8 @@ OPERATORS = {
 
 @transaction.atomic
 def add_todolist_template(todolist_template_slug, project_id,
-                          step_slug, additional_data=None):
+                          step_slug, additional_data=None,
+                          required=False):
     todolist_template = TodoListTemplate.objects.get(
         slug=todolist_template_slug)
 
@@ -36,6 +37,7 @@ def add_todolist_template(todolist_template_slug, project_id,
         title=todolist_template.name,
         template=todolist_template,
         additional_data=additional_data,
+        required=required,
         status=Todo.Status.PENDING.value
     )
     root_todo.save()
@@ -52,7 +54,8 @@ def add_todolist_template(todolist_template_slug, project_id,
     for template_todo in template_todos:
         _add_template_todo(
             template_todo, todolist_template,
-            root_todo, project, step, cond_props, additional_data)
+            root_todo, project, step, cond_props, additional_data,
+            required)
 
 
 def _to_exclude(props, conditions):
@@ -79,7 +82,7 @@ def _to_exclude(props, conditions):
 def _add_template_todo(
         template_todo, todolist_template,
         parent_todo, project, step, conditional_props,
-        additional_data):
+        additional_data, required=False):
     remove = _to_exclude(conditional_props, template_todo.get('remove_if', []))
     if not remove:
         if parent_todo.status == Todo.Status.DECLINED.value:
@@ -100,10 +103,12 @@ def _add_template_todo(
             template=todolist_template,
             parent_todo=parent_todo,
             status=status,
-            additional_data=additional_data
+            additional_data=additional_data,
+            required=required
         )
         todo.save()
         for template_todo_item in template_todo.get('items', []):
             _add_template_todo(
                 template_todo_item, todolist_template, todo,
-                project, step, conditional_props, additional_data)
+                project, step, conditional_props, additional_data,
+                required)
