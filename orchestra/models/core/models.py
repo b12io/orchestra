@@ -687,6 +687,9 @@ class TodoListTemplate(TodoListTemplateMixin, BaseModel):
         conditional_property_function (str)
             A JSON blob containing the path to and name of a python method
             that will return the preconditions to prune the created todos.
+        is_todo_required_function (str)
+            A JSON blog containing the path to and name of a python method
+            that will return if the created todos should have required = True
     """
     class Meta:
         app_label = 'orchestra'
@@ -699,6 +702,7 @@ class TodoListTemplate(TodoListTemplateMixin, BaseModel):
         related_name='creator', on_delete=models.SET_NULL)
     todos = JSONField(default={'items': []})
     conditional_property_function = JSONField(default={})
+    is_todo_required_function = JSONField(default={})
 
 
 class TodoListTemplateImportRecord(

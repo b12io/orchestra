@@ -22,7 +22,8 @@ OPERATORS = {
 
 @transaction.atomic
 def add_todolist_template(todolist_template_slug, project_id,
-                          step_slug, additional_data=None):
+                          step_slug, additional_data=None,
+                          required=False):
     todolist_template = TodoListTemplate.objects.get(
         slug=todolist_template_slug)
 
@@ -30,12 +31,23 @@ def add_todolist_template(todolist_template_slug, project_id,
     step = get_step_by_project_id_and_step_slug(project_id, step_slug)
     template_todos = todolist_template.todos.get('items', [])
     additional_data = additional_data if additional_data else {}
+
+    is_required_path = todolist_template.is_todo_required_function.get(
+        'path', None)
+    if is_required_path:
+        try:
+            get_required_field = locate(is_required_path)
+            required = get_required_field(project, step)
+        except Exception:
+            logger.exception('Invalid is required function path')
+
     root_todo = Todo(
         project=project,
         step=step,
         title=todolist_template.name,
         template=todolist_template,
         additional_data=additional_data,
+        required=required,
         status=Todo.Status.PENDING.value
     )
     root_todo.save()
@@ -49,10 +61,12 @@ def add_todolist_template(todolist_template_slug, project_id,
             cond_props = get_cond_props(project)
         except Exception:
             logger.exception('Invalid conditional function path.')
+
     for template_todo in template_todos:
         _add_template_todo(
             template_todo, todolist_template,
-            root_todo, project, step, cond_props, additional_data)
+            root_todo, project, step, cond_props, additional_data,
+            required)
 
 
 def _to_exclude(props, conditions):
@@ -79,7 +93,7 @@ def _to_exclude(props, conditions):
 def _add_template_todo(
         template_todo, todolist_template,
         parent_todo, project, step, conditional_props,
-        additional_data):
+        additional_data, required=False):
     remove = _to_exclude(conditional_props, template_todo.get('remove_if', []))
     if not remove:
         if parent_todo.status == Todo.Status.DECLINED.value:
@@ -100,10 +114,12 @@ def _add_template_todo(
             template=todolist_template,
             parent_todo=parent_todo,
             status=status,
-            additional_data=additional_data
+            additional_data=additional_data,
+            required=required
         )
         todo.save()
         for template_todo_item in template_todo.get('items', []):
             _add_template_todo(
                 template_todo_item, todolist_template, todo,
-                project, step, conditional_props, additional_data)
+                project, step, conditional_props, additional_data,
+                required)
