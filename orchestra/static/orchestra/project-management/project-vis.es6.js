@@ -51,12 +51,20 @@ export default function projectVis (
         .attr('class', 'x label')
 
       scope.$on('orchestra:projectManagement:dataUpdate', vis.draw)
-      dataService.ready.then(function () {
-        if (projectId) {
-          dataService.changeProject(projectId)
-          visUtils.parentContainer.node().scrollLeft = 100
-        }
-      })
+      if (projectId) {
+        dataService.changeProject(projectId)
+        visUtils.parentContainer.node().scrollLeft = 100
+      } else {
+        dataService.ready
+      }
+
+      // dataService.ready.then(function () {
+      //   console.log(projectId)
+      //   if (projectId) {
+      //     dataService.changeProject(projectId)
+      //     visUtils.parentContainer.node().scrollLeft = 100
+      //   }
+      // })
     },
     draw: function () {
       /**

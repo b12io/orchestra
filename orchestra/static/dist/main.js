@@ -62798,7 +62798,7 @@ function dataService($location, $rootScope, $route, orchestraApi, helpers) {
         'tasks': {}
       };
     },
-    getAllProjects: function getAllProjects() {
+    getAllProjects: function getAllProjects(q) {
       var dataService = this;
       dataService.loading = true;
       dataService.ready = orchestraApi.allProjects().then(function (response) {
@@ -62811,8 +62811,7 @@ function dataService($location, $rootScope, $route, orchestraApi, helpers) {
     },
     setSelectedProject: function setSelectedProject() {
       $route.updateParams({ projectId: this.currentProject.id });
-      this.resetData();
-      return this.updateData();
+      return this.changeProject(this.currentProject.id);
     },
     setCurrentProjectStatus: function setCurrentProjectStatus(status) {
       var _this = this;
@@ -62828,15 +62827,13 @@ function dataService($location, $rootScope, $route, orchestraApi, helpers) {
       });
     },
     changeProject: function changeProject(projectId) {
-      this.ready.then(function () {
-        if (!projectId || !this.allProjects[projectId]) {
-          $route.updateParams({ projectId: undefined });
-          return;
-        }
-
-        this.currentProject = this.allProjects[projectId];
-        return this.setSelectedProject();
-      }.bind(this));
+      if (!projectId) {
+        $route.updateParams({ projectId: undefined });
+        return;
+      }
+      this.currentProject.id = projectId;
+      this.resetData();
+      return this.updateData();
     },
     updateData: function updateData() {
       /**
@@ -62866,6 +62863,7 @@ function dataService($location, $rootScope, $route, orchestraApi, helpers) {
       /**
        * Prepares raw project data for visualization.
        */
+      this.currentProject = data[this.currentProject.id].project;
       this.data = data;
 
       var steps = {};
@@ -62999,7 +62997,6 @@ function dataService($location, $rootScope, $route, orchestraApi, helpers) {
       };
     }
   };
-
   service.getAllProjects();
   return service;
 }
@@ -63153,12 +63150,20 @@ function projectVis($uibModal, $location, dataService, orchestraApi, crosshair, 
       axisWrapper.append('span').attr('class', 'x label');
 
       scope.$on('orchestra:projectManagement:dataUpdate', vis.draw);
-      dataService.ready.then(function () {
-        if (projectId) {
-          dataService.changeProject(projectId);
-          visUtils.parentContainer.node().scrollLeft = 100;
-        }
-      });
+      if (projectId) {
+        dataService.changeProject(projectId);
+        visUtils.parentContainer.node().scrollLeft = 100;
+      } else {
+        dataService.ready;
+      }
+
+      // dataService.ready.then(function () {
+      //   console.log(projectId)
+      //   if (projectId) {
+      //     dataService.changeProject(projectId)
+      //     visUtils.parentContainer.node().scrollLeft = 100
+      //   }
+      // })
     },
     draw: function draw() {
       /**
@@ -63744,6 +63749,7 @@ function ProjectManagementController($route, $routeParams, $scope, projectVis, d
   'ngAnnotate';
 
   $scope.activate = function () {
+    console.log(dataService.currentProject.id, $routeParams.projectId);
     if (dataService.currentProject.id) {
       $route.updateParams({ projectId: dataService.currentProject.id });
     }

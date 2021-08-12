@@ -16,7 +16,7 @@ export default function dataService ($location, $rootScope, $route, orchestraApi
         'tasks': {}
       }
     },
-    getAllProjects: function () {
+    getAllProjects: function (q) {
       var dataService = this
       dataService.loading = true
       dataService.ready = orchestraApi.allProjects().then(function (response) {
@@ -29,8 +29,7 @@ export default function dataService ($location, $rootScope, $route, orchestraApi
     },
     setSelectedProject: function () {
       $route.updateParams({projectId: this.currentProject.id})
-      this.resetData()
-      return this.updateData()
+      return this.changeProject(this.currentProject.id)
     },
     setCurrentProjectStatus: function (status) {
       orchestraApi.setProjectStatus(this.currentProject.id, status)
@@ -43,15 +42,13 @@ export default function dataService ($location, $rootScope, $route, orchestraApi
         })
     },
     changeProject: function (projectId) {
-      this.ready.then(function () {
-        if (!projectId || !this.allProjects[projectId]) {
-          $route.updateParams({projectId: undefined})
-          return
-        }
-
-        this.currentProject = this.allProjects[projectId]
-        return this.setSelectedProject()
-      }.bind(this))
+      if (!projectId) {
+        $route.updateParams({projectId: undefined})
+        return
+      }
+      this.currentProject.id = projectId
+      this.resetData()
+      return this.updateData()
     },
     updateData: function () {
       /**
@@ -82,6 +79,7 @@ export default function dataService ($location, $rootScope, $route, orchestraApi
       /**
        * Prepares raw project data for visualization.
        */
+      this.currentProject = data[this.currentProject.id].project
       this.data = data
 
       var steps = {}
@@ -216,7 +214,6 @@ export default function dataService ($location, $rootScope, $route, orchestraApi
       }
     }
   }
-
   service.getAllProjects()
   return service
 }
