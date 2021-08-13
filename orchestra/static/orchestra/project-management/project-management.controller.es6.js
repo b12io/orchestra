@@ -5,7 +5,6 @@ import moment from 'moment-timezone'
 export default function ProjectManagementController ($route, $routeParams, $scope, projectVis, dataService) {
   'ngAnnotate'
   $scope.activate = function () {
-    console.log(dataService.currentProject.id, $routeParams.projectId)
     if (dataService.currentProject.id) {
       $route.updateParams({projectId: dataService.currentProject.id})
     }

@@ -57,14 +57,6 @@ export default function projectVis (
       } else {
         dataService.ready
       }
-
-      // dataService.ready.then(function () {
-      //   console.log(projectId)
-      //   if (projectId) {
-      //     dataService.changeProject(projectId)
-      //     visUtils.parentContainer.node().scrollLeft = 100
-      //   }
-      // })
     },
     draw: function () {
       /**
