@@ -145,7 +145,8 @@ class TodosEndpointTests(EndpointTestCase):
             todo = load_encoded_json(resp.content)
             self._verify_todo_content(
                 todo, _todo_data(
-                    self.todo_title, project=project, step=step.slug, required=False))
+                    self.todo_title, project=project,
+                    step=step.slug, required=False))
             self.assertTrue(mock_notify.called)
         else:
             self.assertEqual(resp.status_code, 403)
