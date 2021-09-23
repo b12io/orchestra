@@ -36,7 +36,8 @@ def add_todolist_template(todolist_template_slug, project_id,
         title=todolist_template.name,
         template=todolist_template,
         additional_data=additional_data,
-        status=Todo.Status.PENDING.value
+        status=Todo.Status.PENDING.value,
+        required=True
     )
     root_todo.save()
 
@@ -100,7 +101,8 @@ def _add_template_todo(
             template=todolist_template,
             parent_todo=parent_todo,
             status=status,
-            additional_data=additional_data
+            additional_data=additional_data,
+            required=True
         )
         todo.save()
         for template_todo_item in template_todo.get('items', []):
