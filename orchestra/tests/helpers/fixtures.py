@@ -254,6 +254,7 @@ class TodoFactory(factory.django.DjangoModelFactory):
     start_by_datetime = None
     due_datetime = None
     slug = None
+    required = True
 
     class Meta:
         model = 'orchestra.Todo'

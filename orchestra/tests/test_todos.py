@@ -41,7 +41,7 @@ def _todo_data(title, status=Todo.Status.PENDING.value,
                due=None, parent_todo=None, template=None,
                activity_log=str({'actions': []}), qa=None,
                project=None, step=None, details=None, is_deleted=False,
-               slug=None, required=False):
+               slug=None, required=True):
     return {
         'title': title,
         'template': template,
@@ -145,7 +145,7 @@ class TodosEndpointTests(EndpointTestCase):
             todo = load_encoded_json(resp.content)
             self._verify_todo_content(
                 todo, _todo_data(
-                    self.todo_title, project=project, step=step.slug))
+                    self.todo_title, project=project, step=step.slug, required=False))
             self.assertTrue(mock_notify.called)
         else:
             self.assertEqual(resp.status_code, 403)
@@ -185,7 +185,8 @@ class TodosEndpointTests(EndpointTestCase):
                                 [_todo_data(
                                     self.todo_title,
                                     project=self.project.id,
-                                    step=self.step.slug)],
+                                    step=self.step.slug,
+                                    required=False)],
                                 True)
 
     def test_todos_list_create_permissions(self):
