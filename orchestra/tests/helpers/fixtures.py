@@ -42,12 +42,12 @@ PICKUP_DELAY = timedelta(hours=1)
 TODO_TEMPLATE_GOOD_CSV_TEXT = """Slug,Remove if,Skip if,Required
 ,[],[],False,the root
 todo-parent-slug,[],[],False,,todo parent 1
-,[],"[{""prop"": {""value"": true, ""operator"": ""==""}}]",False,,,todo child 1-1  # noqa
-,"[{""prop"": {""value"": true, ""operator"": ""==""}}]",[],False,,todo parent 2
+,[],"[{""prop"": {""value"": true, ""operator"": ""==""}}]",False,,,todo child 1-1
+,"[{""prop"": {""value"": true, ""operator"": ""==""}}]",[],True,,todo parent 2
 ,[],[],False,,,todo child 2-1
 ,[],[],False,,,,todo child 2-1-1
 ,[],[],False,,,todo child 2-2
-"""
+"""  # noqa
 
 TODO_TEMPLATE_BAD_HEADER_CSV_TEXT = """,Remove if,Skip if,Required,
 [],[],False,the root
@@ -71,7 +71,7 @@ TODO_TEMPLATE_NESTED_TODOS = {
         {
             'id': 2,
             'description': 'todo parent 2',
-            'required': False,
+            'required': True,
             'slug': None,
             'items': [
                 {
