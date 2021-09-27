@@ -16,6 +16,7 @@ from orchestra.models import TodoListTemplateImportRecord
 REMOVE_IF_HEADER = 'Remove if'
 SKIP_IF_HEADER = 'Skip if'
 SLUG_HEADER = 'Slug'
+REQUIRED_HEADER = 'Required'
 
 
 def _write_template_rows(writer, todo, depth):
@@ -28,7 +29,8 @@ def _write_template_rows(writer, todo, depth):
     writer.writerow(
         [todo.get('slug', ''),
          json.dumps(todo.get('remove_if', [])),
-         json.dumps(todo.get('skip_if', []))] +
+         json.dumps(todo.get('skip_if', [])),
+         todo.get('required', '')] +
         ([''] * depth) +
         [todo.get('description', '')])
     # `reversed` iteration because the JSON-serialized order of
@@ -64,7 +66,7 @@ def export_to_spreadsheet(todo_list_template):
     """
     with NamedTemporaryFile(mode='w+', delete=False) as file:
         writer = csv.writer(file)
-        writer.writerow([SLUG_HEADER, REMOVE_IF_HEADER, SKIP_IF_HEADER])
+        writer.writerow([SLUG_HEADER, REMOVE_IF_HEADER, SKIP_IF_HEADER, REQUIRED_HEADER])
         _write_template_rows(writer, todo_list_template.todos, 0)
         file.flush()
         return _upload_csv_to_google(
@@ -86,7 +88,7 @@ def import_from_spreadsheet(todo_list_template, spreadsheet_url, request):
     except ValueError as e:
         raise TodoListTemplateValidationError(e)
     header = next(reader)
-    if header[:3] != [SLUG_HEADER, REMOVE_IF_HEADER, SKIP_IF_HEADER]:
+    if header[:4] != [SLUG_HEADER, REMOVE_IF_HEADER, SKIP_IF_HEADER, REQUIRED_HEADER]:
         raise TodoListTemplateValidationError(
             'Unexpected header: {}'.format(header))
     # The `i`'th entry in parent_items is current list of child to-dos
@@ -101,10 +103,11 @@ def import_from_spreadsheet(todo_list_template, spreadsheet_url, request):
             'remove_if': json.loads(row[1] or '[]'),
             'skip_if': json.loads(row[2] or '[]'),
             'slug': row[0] or None,
+            'required': row[3] and row[3].lower() or False,
             'items': []
         }
         nonempty_columns = [(columnindex, text)
-                            for columnindex, text in enumerate(row[3:])
+                            for columnindex, text in enumerate(row[4:])
                             if text]
         if len(nonempty_columns) == 0:
             continue
