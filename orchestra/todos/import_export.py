@@ -66,7 +66,8 @@ def export_to_spreadsheet(todo_list_template):
     """
     with NamedTemporaryFile(mode='w+', delete=False) as file:
         writer = csv.writer(file)
-        writer.writerow([SLUG_HEADER, REMOVE_IF_HEADER, SKIP_IF_HEADER, REQUIRED_HEADER])
+        writer.writerow(
+            [SLUG_HEADER, REMOVE_IF_HEADER, SKIP_IF_HEADER, REQUIRED_HEADER])
         _write_template_rows(writer, todo_list_template.todos, 0)
         file.flush()
         return _upload_csv_to_google(
@@ -88,7 +89,8 @@ def import_from_spreadsheet(todo_list_template, spreadsheet_url, request):
     except ValueError as e:
         raise TodoListTemplateValidationError(e)
     header = next(reader)
-    if header[:4] != [SLUG_HEADER, REMOVE_IF_HEADER, SKIP_IF_HEADER, REQUIRED_HEADER]:
+    if header[:4] != [
+            SLUG_HEADER, REMOVE_IF_HEADER, SKIP_IF_HEADER, REQUIRED_HEADER]:
         raise TodoListTemplateValidationError(
             'Unexpected header: {}'.format(header))
     # The `i`'th entry in parent_items is current list of child to-dos
