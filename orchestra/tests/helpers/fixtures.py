@@ -42,7 +42,7 @@ PICKUP_DELAY = timedelta(hours=1)
 TODO_TEMPLATE_GOOD_CSV_TEXT = """Slug,Remove if,Skip if,Required
 ,[],[],False,the root
 todo-parent-slug,[],[],False,,todo parent 1
-,[],"[{""prop"": {""value"": true, ""operator"": ""==""}}]",False,,,todo child 1-1
+,[],"[{""prop"": {""value"": true, ""operator"": ""==""}}]",False,,,todo child 1-1  # noqa
 ,"[{""prop"": {""value"": true, ""operator"": ""==""}}]",[],False,,todo parent 2
 ,[],[],False,,,todo child 2-1
 ,[],[],False,,,,todo child 2-1-1
