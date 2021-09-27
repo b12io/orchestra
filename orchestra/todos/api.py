@@ -100,7 +100,8 @@ def _add_template_todo(
             template=todolist_template,
             parent_todo=parent_todo,
             status=status,
-            additional_data=additional_data
+            additional_data=additional_data,
+            required=template_todo.get('required', False)
         )
         todo.save()
         for template_todo_item in template_todo.get('items', []):
