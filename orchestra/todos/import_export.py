@@ -105,9 +105,7 @@ def import_from_spreadsheet(todo_list_template, spreadsheet_url, request):
             'remove_if': json.loads(row[1] or '[]'),
             'skip_if': json.loads(row[2] or '[]'),
             'slug': row[0] or None,
-            # We want to treat empty cells as False
-            # that's why we need the `or False` part
-            'required': row[3] and row[3].lower() == 'true' or False,
+            'required': isinstance(row[3], str) and row[3].lower() == 'true',
             'items': []
         }
         nonempty_columns = [(columnindex, text)
