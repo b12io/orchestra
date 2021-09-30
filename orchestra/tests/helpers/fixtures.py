@@ -39,53 +39,58 @@ BASE_DATETIME = parse('2015-10-12T00:00:00+00:00')
 ITERATION_DURATION = timedelta(hours=1)
 PICKUP_DELAY = timedelta(hours=1)
 
-TODO_TEMPLATE_GOOD_CSV_TEXT = """Slug,Remove if,Skip if
-,[],[],the root
-todo-parent-slug,[],[],,todo parent 1
-,[],"[{""prop"": {""value"": true, ""operator"": ""==""}}]",,,todo child 1-1
-,"[{""prop"": {""value"": true, ""operator"": ""==""}}]",[],,todo parent 2
-,[],[],,,todo child 2-1
-,[],[],,,,todo child 2-1-1
-,[],[],,,todo child 2-2
+TODO_TEMPLATE_GOOD_CSV_TEXT = """Slug,Remove if,Skip if,Required
+,[],[],False,the root
+todo-parent-slug,[],[],False,,todo parent 1
+,[],"[{""prop"": {""value"": true, ""operator"": ""==""}}]",False,,,todo child 1-1
+,"[{""prop"": {""value"": true, ""operator"": ""==""}}]",[],True,,todo parent 2
+,[],[],False,,,todo child 2-1
+,[],[],False,,,,todo child 2-1-1
+,[],[],False,,,todo child 2-2
+"""  # noqa
+
+TODO_TEMPLATE_BAD_HEADER_CSV_TEXT = """,Remove if,Skip if,Required,
+[],[],False,the root
 """
 
-TODO_TEMPLATE_BAD_HEADER_CSV_TEXT = """,Remove if,Skip if
-[],[],the root
+TODO_TEMPLATE_TWO_ENTRIES_CSV_TEXT = """Slug,Remove if,Skip if,Required
+,[],[],False,the root,the second root
 """
 
-TODO_TEMPLATE_TWO_ENTRIES_CSV_TEXT = """Slug,Remove if,Skip if
-,[],[],the root,the second root
-"""
-
-TODO_TEMPLATE_INVALID_PARENT_CSV_TEXT = """Slug,Remove if,Skip if
-,[],[],the root
-,[],[],,,,,,an impossible child
+TODO_TEMPLATE_INVALID_PARENT_CSV_TEXT = """Slug,Remove if,Skip if,Required
+,[],[],False,the root
+,[],[],False,,,,,,an impossible child
 """
 
 TODO_TEMPLATE_NESTED_TODOS = {
     'description': 'the root',
+    'required': False,
     'slug': None,
     'id': 0,
     'items': [
         {
             'id': 2,
             'description': 'todo parent 2',
+            'required': True,
             'slug': None,
             'items': [
                 {
                     'id': 22,
                     'description': 'todo child 2-2',
+                    'required': False,
                     'slug': None,
                     'items': []
                 },
                 {
                     'id': 21,
                     'description': 'todo child 2-1',
+                    'required': False,
                     'slug': None,
                     'items': [
                         {
                             'id': 211,
                             'description': 'todo child 2-1-1',
+                            'required': False,
                             'slug': None,
                             'items': []
                         }
@@ -102,10 +107,12 @@ TODO_TEMPLATE_NESTED_TODOS = {
         {
             'id': 1,
             'description': 'todo parent 1',
+            'required': False,
             'slug': 'todo-parent-slug',
             'items': [{
                 'id': 11,
                 'description': 'todo child 1-1',
+                'required': False,
                 'slug': None,
                 'items': [],
                 'skip_if': [{
