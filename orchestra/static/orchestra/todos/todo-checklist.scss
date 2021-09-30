@@ -36,6 +36,10 @@
         font-weight: normal;
       }
     }
+    &__required::after {
+      content: "*";
+      color: red;
+    }
   }
   .angular-ui-tree-node {
       padding-top: 12px;
