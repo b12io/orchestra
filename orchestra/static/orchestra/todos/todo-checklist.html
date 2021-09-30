@@ -16,7 +16,7 @@
         <i class="fa fa-circle-o" aria-hidden="true" ng-if="(!todo.items || todo.items.length === 0) && showSkipped" data-nodrag></i>
         <span ng-hide="!todo.items || todo.items.length < 1 || showSkipped">[{{ ( filterTodoList(todo.items, showSkipped) | filter: { status: COMPLETED_STATUS } ).length }}/{{ filterTodoList(todo.items, showSkipped).length }}] </span>
         <span class="todo__role">{{steps[todo.step].name}}:&nbsp;</span>
-        <span ng-class="{'todo__description': true, 'todo__required': todo.required}" ng-bind-html="todo.title | linky:'_blank'"></span>
+        <span class="todo__description" ng-bind-html="todo.title | linky:'_blank'"></span>
         <span ng-class="{'todo__dates': true, 'todo__dates-danger': isInDanger(todo)}">
           <span ng-if="isNonEmptyString(todo.start_by_datetime)">
             Start <datetime-display datetime="todo.start_by_datetime" show-time="true"/>

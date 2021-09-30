@@ -2414,9 +2414,6 @@ a.logo {
         padding: 5px;
         font-size: x-small;
         font-weight: normal; }
-    .list-by-status .todo__required::after {
-      content: "*";
-      color: red; }
   .list-by-status .angular-ui-tree-node {
     padding-top: 12px;
     padding-bottom: 0; }
