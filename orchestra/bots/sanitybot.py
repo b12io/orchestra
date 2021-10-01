@@ -45,10 +45,9 @@ def _filter_checks(project, checks, check_configurations):
             check_configurations.get(check.check_slug, {})
             .get('repetition_seconds'))
         now = timezone.now()
-        delta_gt_seconds = (
-            (seconds is not None) and (
-                (now - max_created_at).total_seconds() > seconds))
-        if max_created_at is None or delta_gt_seconds:
+        rep_seconds_less = (now - max_created_at).total_seconds() > seconds
+        seconds_none_or_rep_sec_lt = seconds is not None and rep_seconds_less
+        if max_created_at is None or seconds_none_or_rep_sec_lt:
             yield check
 
 
