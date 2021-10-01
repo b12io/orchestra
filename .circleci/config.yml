@@ -6,10 +6,10 @@ jobs:
         - image: python:3.5.6-stretch
     steps:
       - checkout
+      - run: sudo apt-get update && sudo apt-get install -y ca-certificates
       - run:
           name: Install dependencies
           command: |
-            apt-get update && apt-get install -y ca-certificates
             echo -e "deb http://deb.debian.org/debian stretch main\ndeb http://security.debian.org stretch/updates main" > /etc/apt/sources.list
             curl -sL https://deb.nodesource.com/setup_8.x | bash - && apt-get install -y nodejs
             curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.15.2
