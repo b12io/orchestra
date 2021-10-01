@@ -13,7 +13,7 @@ export default function todoApi ($http) {
   return {
     create: (todo) => $http.post(listCreate(), todo)
       .then(response => response.data),
-    list: (projectId) => $http.get(listCreate(projectId), {cache: true})
+    list: (projectId, cache = true) => $http.get(listCreate(projectId), {cache: cache})
       .then(response => response.data),
     update: (todo) => $http.put(details(todo.id), todo),
     delete: (todo) => $http.delete(details(todo.id))

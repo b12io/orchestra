@@ -67149,7 +67149,8 @@ function todoApi($http) {
       });
     },
     list: function list(projectId) {
-      return $http.get(listCreate(projectId), { cache: true }).then(function (response) {
+      var cache = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+      return $http.get(listCreate(projectId), { cache: cache }).then(function (response) {
         return response.data;
       });
     },
