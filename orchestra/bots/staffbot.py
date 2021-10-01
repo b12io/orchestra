@@ -34,7 +34,7 @@ VALID_RESPONSE_TYPES = {'ephemeral', 'in_channel'}
 # A regex for markdown links, which are of the form [link text](url).
 # We capture link text and url as an text that isn't a closing ] or )
 # respectively.
-MARKDOWN_LINK_REGEX = re.compile('\[(?P<text>[^\]]*)\]\((?P<url>[^\)]*)\)')
+MARKDOWN_LINK_REGEX = re.compile('\[(?P<text>[^\]]*)\]\((?P<url>[^\)]*)\)')  # noqa
 
 
 class StaffBot(BaseBot):
