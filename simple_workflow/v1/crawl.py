@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
 
-IMAGE_FILE_REGEX = re.compile('([-\w]+\.(?:jpg|jpeg|gif|png))',  # noqa
+IMAGE_FILE_REGEX = re.compile(r'([-\w]+\.(?:jpg|jpeg|gif|png))',
                               re.IGNORECASE)
 
 
