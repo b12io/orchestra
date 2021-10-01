@@ -14,8 +14,9 @@ def _handle(project, sanity_check, handler):
     handler_type = handler.get('type')
     handler_message = handler.get('message')
     handler_steps = handler.get('steps')
-    if (handler_type != 'slack_project_channel' or
-            not handler_message or not handler_steps):
+    is_invalid = (handler_type != 'slack_project_channel') or (
+        not handler_message or not handler_steps)
+    if is_invalid:
         raise SanityBotError('Invalid handler: {}'.format(handler))
     tasks = (
         task for task in project.tasks.all()
@@ -44,9 +45,10 @@ def _filter_checks(project, checks, check_configurations):
             check_configurations.get(check.check_slug, {})
             .get('repetition_seconds'))
         now = timezone.now()
-        if (max_created_at is None or
-                ((seconds is not None) and
-                 ((now - max_created_at).total_seconds() > seconds))):
+        seconds_none_or_rep_sec_lt = (max_created_at is None) or (
+                (seconds is not None) and (
+                    (now - max_created_at).total_seconds() > seconds))
+        if seconds_none_or_rep_sec_lt:
             yield check
 
 
@@ -71,10 +73,11 @@ def _handle_sanity_checks(project, sanity_checks, check_configurations):
 
 def create_and_handle_sanity_checks():
     workflow_versions = WorkflowVersion.objects.all()
+    active = Q(status=Project.Status.ACTIVE)
+    paused = Q(status=Project.Status.PAUSED)
     incomplete_projects = (Project.objects
                            .filter(workflow_version__in=workflow_versions)
-                           .filter(Q(status=Project.Status.ACTIVE) |
-                                   Q(status=Project.Status.PAUSED)))
+                           .filter(active | paused))
 
     for project in incomplete_projects:
         sanity_checks = project.workflow_version.sanity_checks
