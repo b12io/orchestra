@@ -33,7 +33,7 @@ def add_todolist_template(todolist_template_slug, project_id,
     root_todo = Todo(
         project=project,
         step=step,
-        slug=todolist_template.todos.get('slug', ''),
+        slug=todolist_template.todos.get('slug'),
         title=todolist_template.name,
         template=todolist_template,
         additional_data=additional_data,
