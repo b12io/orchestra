@@ -1649,7 +1649,7 @@ a.logo {
       transform: translate(-50%, -50%); }
   .project-management .project-description {
     margin: 10px 0; }
-    .project-management .project-description .ui-select-bootstrap > .ui-select-match > .btn {
+    .project-management .project-description.ui-select-bootstrap > .ui-select-match > .btn {
       height: auto;
       width: auto;
       font-size: 30px;

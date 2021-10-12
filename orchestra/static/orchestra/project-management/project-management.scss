@@ -71,7 +71,7 @@
 
   .project-description {
     margin: 10px 0;
-    .ui-select-bootstrap > .ui-select-match > .btn {
+    &.ui-select-bootstrap > .ui-select-match > .btn {
       height: auto;
       width: auto;
       font-size: 30px;
