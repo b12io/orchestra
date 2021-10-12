@@ -62861,6 +62861,7 @@ function dataService($location, $rootScope, $route, orchestraApi, helpers) {
       /**
        * Prepares raw project data for visualization.
        */
+      // Update current project to use the new project data
       this.currentProject = data[this.currentProject.id].project;
       this.data = data;
 
