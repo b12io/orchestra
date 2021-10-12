@@ -62798,7 +62798,7 @@ function dataService($location, $rootScope, $route, orchestraApi, helpers) {
         'tasks': {}
       };
     },
-    getAllProjects: function getAllProjects(q) {
+    getAllProjects: function getAllProjects() {
       var dataService = this;
       dataService.loading = true;
       dataService.ready = orchestraApi.allProjects().then(function (response) {
@@ -63154,7 +63154,7 @@ function projectVis($uibModal, $location, dataService, orchestraApi, crosshair, 
         dataService.changeProject(projectId);
         visUtils.parentContainer.node().scrollLeft = 100;
       } else {
-        dataService.ready;
+        dataService.getAllProjects();
       }
     },
     draw: function draw() {

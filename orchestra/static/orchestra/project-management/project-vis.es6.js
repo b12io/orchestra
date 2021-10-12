@@ -55,7 +55,7 @@ export default function projectVis (
         dataService.changeProject(projectId)
         visUtils.parentContainer.node().scrollLeft = 100
       } else {
-        dataService.ready
+        dataService.getAllProjects()
       }
     },
     draw: function () {

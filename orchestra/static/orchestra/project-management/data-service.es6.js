@@ -16,7 +16,7 @@ export default function dataService ($location, $rootScope, $route, orchestraApi
         'tasks': {}
       }
     },
-    getAllProjects: function (q) {
+    getAllProjects: function () {
       var dataService = this
       dataService.loading = true
       dataService.ready = orchestraApi.allProjects().then(function (response) {
