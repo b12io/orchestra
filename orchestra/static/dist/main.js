@@ -62801,13 +62801,12 @@ function dataService($location, $rootScope, $route, orchestraApi, helpers) {
     getAllProjects: function getAllProjects() {
       var dataService = this;
       dataService.loading = true;
-      dataService.ready = orchestraApi.allProjects().then(function (response) {
+      return orchestraApi.allProjects().then(function (response) {
         response.data.forEach(function (project) {
           dataService.allProjects[project.id] = project;
         });
         dataService.loading = false;
       });
-      return dataService.ready;
     },
     setSelectedProject: function setSelectedProject() {
       $route.updateParams({ projectId: this.currentProject.id });
@@ -62841,7 +62840,7 @@ function dataService($location, $rootScope, $route, orchestraApi, helpers) {
        */
       var dataService = this;
       dataService.loading = true;
-      dataService.ready = orchestraApi.projectInformation(this.currentProject.id).then(function (response) {
+      return orchestraApi.projectInformation(this.currentProject.id).then(function (response) {
         dataService.setData(response.data);
         if (dataService.data[dataService.currentProject.id].project.status === 'Aborted') {
           window.alert('Project is aborted.');
@@ -62857,7 +62856,6 @@ function dataService($location, $rootScope, $route, orchestraApi, helpers) {
         }
         window.alert(errorMessage);
       });
-      return dataService.ready;
     },
     setData: function setData(data) {
       /**
