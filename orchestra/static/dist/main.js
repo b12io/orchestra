@@ -62996,6 +62996,7 @@ function dataService($location, $rootScope, $route, orchestraApi, helpers) {
       };
     }
   };
+
   service.getAllProjects();
   return service;
 }

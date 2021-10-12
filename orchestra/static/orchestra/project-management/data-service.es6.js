@@ -213,6 +213,7 @@ export default function dataService ($location, $rootScope, $route, orchestraApi
       }
     }
   }
+
   service.getAllProjects()
   return service
 }
