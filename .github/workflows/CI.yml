@@ -28,6 +28,8 @@ jobs:
           pip install coveralls
 
       - name: Run tests
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           make lint
           make coverage
