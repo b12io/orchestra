@@ -16,7 +16,7 @@ jobs:
           yarn global add gulp
 
       - name: Set env vars
-        run: export npm_config_target=v10.19.0
+        run: export npm_config_target=v10.24.1
 
       - name: Install js and python dependencies
         run: |
