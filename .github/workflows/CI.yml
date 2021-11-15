@@ -28,12 +28,11 @@ jobs:
           pip install coveralls
 
       - name: Run tests
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           make lint
           make coverage
-          make coveralls
-          # Circle uses XUnit reports
-          mkdir -p $CIRCLE_TEST_REPORTS/python/
-          find . -wholename *nosetests.xml -exec mv {} $CIRCLE_TEST_REPORTS/python/ \;
+
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
