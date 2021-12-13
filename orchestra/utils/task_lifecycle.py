@@ -622,8 +622,9 @@ def tasks_assigned_to_worker(worker):
                     )
                 )
                 should_be_active = (
-                    (num_non_template_todos == 0)
-                    or task_started)
+                    state != 'paused' and
+                    ((num_non_template_todos == 0)
+                     or task_started))
             tasks_assigned.append({
                 'id': task_assignment.task.id,
                 'assignment_id': task_assignment.id,
