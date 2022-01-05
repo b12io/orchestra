@@ -61,7 +61,7 @@ class IterationAdmin(AjaxSelectAdmin):
         'status')
     search_fields = (
         'assignment__task__step__name',
-        'assignment__task__project__short_description'
+        'assignment__task__project__short_description',
         'assignment__worker__user__username')
     ordering = ('assignment__worker__user__username',)
     list_filter = ('status', 'assignment__worker__user__username')
