@@ -212,7 +212,7 @@ def _verify_dependencies_not_updated(step_data, dependency_attr,
             'Drop and recreate the database to reset, or create a new '
             'version for your workflow.')
     if new_set != old_set:
-        logger.warn(
+        logger.warning(
             ('Step `%s` changed dependencies from %s to %s. You '
              'will manually have to re-run task creation logic if you '
              'want existing projects to receive new tasks.'),
