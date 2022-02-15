@@ -87,4 +87,4 @@ class QueryParamsFilterBackendTests(OrchestraTransactionTestCase):
         self.assertEqual(
             kwargs,
             {'project__id': str(project.id), 'title': dangerous_sql})
-        self.assertTrue(todos.count, 0)
+        self.assertEqual(todos.count(), 0)
