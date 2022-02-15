@@ -60,7 +60,7 @@ class DashboardTestCase(OrchestraTransactionTestCase):
         self.assertTrue(machine_task_assignment.status,
                         TaskAssignment.Status.SUBMITTED)
 
-        self.assertTrue(machine_task_assignment.in_progress_task_data,
+        self.assertEqual(machine_task_assignment.in_progress_task_data,
                         {'simple': 'json'})
 
         self.assertTrue(machine_task_assignment.task.status,
