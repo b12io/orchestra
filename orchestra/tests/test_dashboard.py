@@ -57,14 +57,14 @@ class DashboardTestCase(OrchestraTransactionTestCase):
             .filter(task__step=machine_step,
                     task__project=project)[0])
 
-        self.assertTrue(machine_task_assignment.status,
+        self.assertEqual(machine_task_assignment.status,
                         TaskAssignment.Status.SUBMITTED)
 
         self.assertEqual(machine_task_assignment.in_progress_task_data,
-                        {'simple': 'json'})
+                         {'simple': 'json'})
 
-        self.assertTrue(machine_task_assignment.task.status,
-                        Task.Status.COMPLETE)
+        self.assertEqual(machine_task_assignment.task.status,
+                         Task.Status.COMPLETE)
 
     def test_index(self):
         response = self.clients[0].get('/orchestra/app/')
