@@ -128,7 +128,7 @@ def update_todos(updated_todos):
 
 
 def delete_todos(todo_ids):
-    headers = { 'Content-Type': 'application/json; charset=UTF-8' }
+    headers = {'Content-Type': 'application/json; charset=UTF-8'}
     response = _make_api_request('delete', 'todo-api',
                                  headers=headers,
                                  data=json.dumps(todo_ids))
