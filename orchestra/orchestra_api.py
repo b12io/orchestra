@@ -34,8 +34,6 @@ def _make_api_request(method, endpoint, query_params='', *args, **kwargs):
     headers = {'date': format_date_time(mktime(datetime.now().timetuple())),
                'X-Api-Version': '~6.5',
                'X-Api-Key': settings.ORCHESTRA_PROJECT_API_KEY}
-    # Fixes {"detail":"Unsupported media type \"\" in request."}
-    headers['Content-Type'] = 'application/json; charset=UTF-8'
     headers.update(kwargs.pop('headers', {}))
     all_kwargs = {'auth': _httpsig_auth, 'headers': headers}
     all_kwargs.update(kwargs)
@@ -130,9 +128,10 @@ def update_todos(updated_todos):
 
 
 def delete_todos(todo_ids):
+    headers = { 'Content-Type': 'application/json; charset=UTF-8' }
     response = _make_api_request('delete', 'todo-api',
+                                 headers=headers,
                                  data=json.dumps(todo_ids))
-    print('@@@', response)
     return json.loads(response.text)
 
 
