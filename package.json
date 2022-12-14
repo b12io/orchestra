@@ -34,7 +34,7 @@
     "gulp-sass": "^2.2.0",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-util": "^3.0.7",
-    "gulp-watch": "^4.3.5",
+    "gulp-watch": "^5.0.1",
     "html-loader": "^0.5.5",
     "htmlhint": "^0.9.13",
     "htmlhint-loader": "^1.2.0",
