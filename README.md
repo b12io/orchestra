@@ -19,7 +19,7 @@ workflows can be added with some simple python glue and an html interface.
 
 To learn more about Orchestra with some examples and a getting
 started guide, or to reach out to the Orchestra team, take
-a look at some of these resources:
+a look at some of these resources: 
 
 * [Orchestra website](http://orchestra.b12.io)
 * [A blog post introducing Orchestra v0.1.0 to the world](https://blog.b12.io/introducing-orchestra-23bace45d4a7)
