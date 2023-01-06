@@ -3,8 +3,8 @@
 [![PyPI version](https://badge.fury.io/py/orchestra.svg?maxAge=2592000)](https://badge.fury.io/py/orchestra)
 [![Documentation status](https://readthedocs.org/projects/orchestra/badge/?version=latest)](http://orchestra.readthedocs.org/en/stable/?badge=latest)
 [![Circle CI](https://circleci.com/gh/b12io/orchestra.svg?maxAge=2592000&style=shield)](https://circleci.com/gh/b12io/orchestra)
-[![Coverage status](https://coveralls.io/repos/github/b12io/orchestra/badge.svg?maxAge=2592000&branch=master)](https://coveralls.io/github/b12io/orchestra?branch=master)
-[![Apache license](https://img.shields.io/pypi/l/orchestra.svg?maxAge=2592000)](https://github.com/b12io/orchestra/blob/master/LICENSE)
+[![Coverage status](https://coveralls.io/repos/github/b12io/orchestra/badge.svg?maxAge=2592000&branch=main)](https://coveralls.io/github/b12io/orchestra?branch=main)
+[![Apache license](https://img.shields.io/pypi/l/orchestra.svg?maxAge=2592000)](https://github.com/b12io/orchestra/blob/main/LICENSE)
 [![Discussion forum](https://img.shields.io/badge/forum-GH%20Discussions-brightgreen)](https://github.com/b12io/orchestra/discussions)
 
 Orchestra is a Robotic Process Automation system for orchestrating project teams of experts and machines.
