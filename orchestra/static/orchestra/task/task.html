@@ -114,7 +114,8 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12">
-          <button ng-if="!vm.taskAssignment.is_reviewer"
+          <button ng-if="!vm.taskAssignment.is_reviewer &&
+                        vm.taskAssignment.is_project_admin"
                   type="button"
                   class="btn btn-primary navbar-btn"
                   ng-click="vm.submitTask('submit')"
