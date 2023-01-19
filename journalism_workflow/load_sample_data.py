@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.contrib.auth.models import Group
 
 from orchestra.models import Certification
 from orchestra.models import Worker
@@ -19,6 +20,8 @@ def load(workflow_version):
         user.set_password(password)
         user.save()
         worker, _ = Worker.objects.update_or_create(user=user)
+        project_admins = Group.objects.get_or_create(name='project_admins') 
+        project_admins.user_set.add(user)
 
         # Grant the worker the desired certifications.
         for certification_slug, certification_role in certifications:
