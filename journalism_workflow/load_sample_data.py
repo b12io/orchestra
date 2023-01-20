@@ -20,7 +20,7 @@ def load(workflow_version):
         user.set_password(password)
         user.save()
         worker, _ = Worker.objects.update_or_create(user=user)
-        project_admins = Group.objects.get_or_create(name='project_admins') 
+        project_admins = Group.objects.get_or_create(name='project_admins')
         project_admins.user_set.add(user)
 
         # Grant the worker the desired certifications.
