@@ -23,5 +23,4 @@ def load(workflow_version):
         Worker.objects.create(user=user)
     project_admins, created = Group.objects.get_or_create(
         name='project_admins')
-    if created:
-        user.groups.add(project_admins)
+    user.groups.add(project_admins)

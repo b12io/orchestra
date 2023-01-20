@@ -22,8 +22,7 @@ def load(workflow_version):
         worker, _ = Worker.objects.update_or_create(user=user)
         project_admins, created = Group.objects.get_or_create(
             name='project_admins')
-        if created:
-            user.groups.add(project_admins)
+        user.groups.add(project_admins)
 
         # Grant the worker the desired certifications.
         for certification_slug, certification_role in certifications:
