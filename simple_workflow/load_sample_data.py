@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.contrib.auth.models import Group
 
 from orchestra.models import Worker
 
@@ -20,3 +21,6 @@ def load(workflow_version):
     user.save()
     if created:
         Worker.objects.create(user=user)
+    project_admins, created = Group.objects.get_or_create(
+        name='project_admins')
+    user.groups.add(project_admins)
