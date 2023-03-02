@@ -7,7 +7,7 @@
 [![Apache license](https://img.shields.io/pypi/l/orchestra.svg?maxAge=2592000)](https://github.com/b12io/orchestra/blob/main/LICENSE)
 [![Discussion forum](https://img.shields.io/badge/forum-GH%20Discussions-brightgreen)](https://github.com/b12io/orchestra/discussions)
 
-Orchestra is a Robotic Process Automation system for orchestrating project teams of experts and machines.
+Orchestra is a human-in-the-loop AI system for orchestrating project teams of experts and machines.
 Projects can include everything from design teams working on a client's project
 to newsrooms bringing together reporters, photographers, and editors for a
 story. In Orchestra workflows, you can assign senior experts to review other
