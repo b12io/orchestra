@@ -34,8 +34,11 @@
     line-height: 16px;
     text-align: left;
     font-weight: normal; }
-    .hijacked-warning__message span {
-      font-weight: bold; }
+    @media (max-width: 825px) {
+      .hijacked-warning__message {
+        font-size: 12px; }
+        .hijacked-warning__message .hidden-mobile {
+          display: none; } }
   .hijacked-warning__actions {
     display: flex;
     justify-content: flex-end; }
@@ -78,6 +81,11 @@
     padding: 4px 16px;
     cursor: pointer;
     border: 1px solid #ae9e49; }
+    @media (max-width: 825px) {
+      .hijacked-warning__button {
+        padding: 0 4px;
+        margin-left: 4px;
+        font-size: 12px; } }
     .hijacked-warning__button:hover {
       background: #fcfcfc; }
     .hijacked-warning__button:focus, .hijacked-warning__button:active {
