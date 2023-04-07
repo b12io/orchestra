@@ -1,0 +1,35 @@
+{% load url from compat %}
+{% load i18n %}
+
+<div class="hijacked-warning hijacked-warning-default">
+  <div class="hijacked-warning__message">
+    {% blocktrans with user=request.user%}<span class="hidden-mobile">You are currently working on behalf of</span><b> {{ user }}</b>{% endblocktrans %}
+  </div>
+  <div class="hijacked-warning__actions">
+    <form action="{% url 'hijack:release_hijack' %}" method="POST">
+      {% csrf_token %}
+      <button class="hijacked-warning__button">{% blocktrans with user=request.user %}Release{% endblocktrans %}</button>
+    </form>
+    <button type="submit" class="hijacked-warning__button js-hijack-btn-hide">{% trans "Hide" %}</button>
+  </div>
+  <div class="hijacked-warning__show js-hijack-message-show">
+    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 256 256"><path d="M225.813 48.907L128 146.72 30.187 48.907 0 79.093l128 128 128-128z"/></svg>
+    <span>Show</span>
+  </div>
+</div>
+
+<script>
+  var btnElement = document.querySelector('.js-hijack-btn-hide')
+  var bodyElement = document.body
+  var hideElement = document.querySelector('.js-hijack-message-show')
+
+  btnElement.onclick = function(e) {
+    e.preventDefault()
+
+    bodyElement.classList.add('hijack-message-hidden')
+  }
+
+  hideElement.onclick = function(e) {
+    bodyElement.classList.remove('hijack-message-hidden')
+  }
+</script>
