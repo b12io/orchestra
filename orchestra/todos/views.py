@@ -205,7 +205,7 @@ class TodoViewset(GenericTodoViewset):
     todo/ -- For creating and listing Todos.
     todo/1234/ -- For updating a Todo.
     """
-    http_method_names = ['get', 'post', 'put', 'delete']
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
 
     def get_permissions(self):
         permission_classes = (permissions.IsAuthenticated,
