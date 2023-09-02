@@ -14,7 +14,7 @@ flake8==3.8.4
 djangorestframework==3.11.0
 djangorestframework-httpsignature==1.0.0
 djangocms-admin-style==1.2.7
-lxml==4.6.3
+lxml==4.9.1
 beautifulsoup4==4.6.0
 pyOpenSSL==21.0.0
 cryptography==3.3
