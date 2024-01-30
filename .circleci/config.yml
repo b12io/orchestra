@@ -2,8 +2,8 @@ version: 2
 jobs:
   build:
     working_directory: ~/orchestra
-    docker:
-        - image: current
+    machine:
+        - image: default
     steps:
       - checkout
       - run:
