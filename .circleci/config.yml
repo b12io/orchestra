@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: ~/orchestra
     docker:
-        - image: python:3.8-buster
+        - image: current
     steps:
       - checkout
       - run:
