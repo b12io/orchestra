@@ -662,7 +662,7 @@ class PayRate(PayRateMixin, models.Model):
     worker = models.ForeignKey(
         Worker, related_name='pay_rates', on_delete=models.CASCADE)
     hourly_rate = MoneyField(
-        max_digits=10, decimal_places=2, default_currency='USD')
+        max_digits=10, default=0.0, decimal_places=2, default_currency='USD')
     hourly_multiplier = models.DecimalField(max_digits=6, decimal_places=4)
     start_date = models.DateField(default=timezone.now)
     end_date = models.DateField(null=True, blank=True)
