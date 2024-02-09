@@ -220,7 +220,9 @@ def pypi_release(tag_str, fake=False):
 
     # Release to pypi
     print('Releasing Orchestra to PyPI.')
-    pypi_cmd = ['python3', 'setup.py', 'sdist', 'upload', '-r', 'pypi']
+    pypi_cmd = ['python3', 'setup.py', 'sdist']
+    wrap_command(pypi_cmd, fake)
+    pypi_cmd = ['twine', 'upload', '--repository', 'orchestra', 'dist/*']
     wrap_command(pypi_cmd, fake)
 
     # Clean up
