@@ -219,8 +219,12 @@ def pypi_release(tag_str, fake=False):
         os.chdir('orchestra')
 
     # Release to pypi
-    print('Releasing Orchestra to PyPI.')
-    pypi_cmd = ['python3', 'setup.py', 'sdist', 'upload', '-r', 'pypi']
+    print('Building the distribution.')
+    pypi_cmd = ['python3', 'setup.py', 'sdist']
+    wrap_command(pypi_cmd, fake)
+
+    print('Uploading to PyPI.')
+    pypi_cmd = ['twine', 'upload', '--repository', 'orchestra', 'dist/*']
     wrap_command(pypi_cmd, fake)
 
     # Clean up
