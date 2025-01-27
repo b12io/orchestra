@@ -32,7 +32,7 @@
     "gulp-rename": "^2.0.0",
     "gulp-print": "^5.0.2",
     "gulp-sass": "^2.2.0",
-    "gulp-sourcemaps": "^1.6.0",
+    "gulp-sourcemaps": "^3.0.0",
     "gulp-util": "^3.0.7",
     "gulp-watch": "^4.3.5",
     "html-loader": "^0.5.5",
