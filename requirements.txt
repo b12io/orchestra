@@ -46,4 +46,4 @@ jsonschema==3.2.0
 twine==4.0.2
 
 # Journalism Workflow requirements
-Pillow==7.0.0
+Pillow==8.1.1
