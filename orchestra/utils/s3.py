@@ -1,7 +1,7 @@
 import os
 from uuid import uuid1
 
-import boto
+import boto3
 from django.conf import settings
 
 from orchestra.core.errors import S3UploadError
@@ -40,20 +40,25 @@ def upload_file(bucket_name, data, mime_type, extension,
     Upload file to provided s3 bucket and set file properties and permission.
     Returns a URL to the file.
     """
-    s3_conn = boto.connect_s3(settings.AWS_S3_KEY, settings.AWS_S3_SECRET)
-    bucket = s3_conn.get_bucket(bucket_name)
+    s3_client = boto3.client('s3', aws_access_key_id=settings.AWS_S3_KEY, aws_secret_access_key=settings.AWS_S3_SECRET)
 
     s3_file_name = '{}.{}'.format(uuid1().hex, extension)
     if len(data) > MAX_UPLOAD_SIZE_MB * 10 ** 6:
         raise S3UploadError('File larger than {}MB max upload size.'
                             .format(MAX_UPLOAD_SIZE_MB))
 
-    s3_file_key = boto.s3.key.Key(bucket)
     if prefix is not None:
         s3_file_name = os.path.join(prefix, s3_file_name)
-    s3_file_key.key = s3_file_name
-    s3_file_key.set_metadata('Content-Type', mime_type)
-    s3_file_key.set_contents_from_string(data)
+    
+    extra_args = {'ContentType': mime_type}
     if acl_string is not None:
-        s3_file_key.set_acl(acl_string)
-    return s3_file_key.generate_url(expires_in=0, query_auth=False)
+        extra_args['ACL'] = acl_string
+    
+    s3_client.put_object(
+        Bucket=bucket_name,
+        Key=s3_file_name,
+        Body=data,
+        **extra_args
+    )
+    
+    return f"https://{bucket_name}.s3.amazonaws.com/{s3_file_name}"

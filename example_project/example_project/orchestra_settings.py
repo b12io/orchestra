@@ -57,11 +57,6 @@ def setup_orchestra(settings_module_name):
     # of the INSTALLED_APPS list to preserve that property.
     settings.INSTALLED_APPS = install_admin(settings.INSTALLED_APPS)
 
-    settings.INSTALLED_APPS += (
-        'django_nose',
-    )
-    settings.TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-
     # Tasks and Workflows
     ######################
 

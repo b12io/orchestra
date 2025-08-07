@@ -3,21 +3,20 @@ jobs:
   build:
     working_directory: ~/orchestra
     docker:
-        - image: python:3.8-buster
+        - image: default
     steps:
       - checkout
       - run:
           name: Install dependencies
           command: |
-            echo -e "deb http://deb.debian.org/debian buster main\ndeb http://security.debian.org buster/updates main" > /etc/apt/sources.list
-            curl -sL https://deb.nodesource.com/setup_8.x | bash - && apt-get install -y nodejs
-            curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.15.2
+            apt-get update
+            curl -sL https://deb.nodesource.com/setup_18.x | bash - && apt-get install -y nodejs
+            npm install -g yarn
             export PATH="$HOME/.yarn/bin:$PATH"
             yarn global add gulp
             yarn
-            # circle has a really old version of pip by default which seems to break
-            # builds sometimes.
-            pip install --upgrade pip==20.2.4
+            # Upgrade pip to latest version
+            pip install --upgrade pip
             pip install -r requirements.txt
             pip install coveralls
       - run:
@@ -26,6 +25,3 @@ jobs:
             make lint
             make coverage
             make coveralls
-            # Circle uses XUnit reports
-            mkdir -p $CIRCLE_TEST_REPORTS/python/
-            find . -wholename *nosetests.xml -exec mv {} $CIRCLE_TEST_REPORTS/python/ \;

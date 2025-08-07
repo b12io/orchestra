@@ -20,9 +20,9 @@ class MigrateCertificationsTestCase(OrchestraTestCase):
         # Test
         call_command('migrate_certifications',
                      'test_source_workflow_slug',
-                     'ntest_destination_workflow_slug',
+                     'test_destination_workflow_slug',
                      certifications=['test_cert_1', 'test_cert_2'])
-        mock_migrate.called_once_with(
+        mock_migrate.assert_called_once_with(
             'test_source_workflow_slug',
             'test_destination_workflow_slug',
             ['test_cert_1', 'test_cert_2']
