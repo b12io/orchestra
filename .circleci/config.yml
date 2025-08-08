@@ -3,13 +3,14 @@ jobs:
   build:
     working_directory: ~/orchestra
     machine:
-      image: ubuntu-2404:2024.11.1
+      image: default
     steps:
       - checkout
       - run:
           name: Install dependencies
           command: |
             sudo apt-get update
+            sudo rm -f /usr/local/bin/node /usr/local/bin/npm /usr/local/bin/npx
             curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
             sudo apt-get install -y nodejs
             npm install -g yarn
