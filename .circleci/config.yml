@@ -11,8 +11,9 @@ jobs:
           command: |
             sudo apt-get update
             sudo apt-get install -y libpq-dev
-            pyenv install 3.12.11
-            pyenv global 3.12.11
+            pyenv update
+            pyenv install 3.12.3
+            pyenv global 3.12.3
             nvm install 18.20
             nvm use 18.20
             npm install -g yarn
@@ -25,7 +26,7 @@ jobs:
       - run:
           name: Run tests
           command: |
-            pyenv global 3.12.11
+            pyenv global 3.12.3
             nvm use 18.20
             make lint
             make coverage
