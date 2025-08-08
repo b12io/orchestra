@@ -228,8 +228,8 @@ def setup_orchestra(settings_module_name):
 
 def install_context_processors(settings):
     try:
-        assert(len(settings.TEMPLATES) == 1)
-        assert(settings.TEMPLATES[0]['BACKEND'] ==
+        assert (len(settings.TEMPLATES) == 1)
+        assert (settings.TEMPLATES[0]['BACKEND'] ==
                'django.template.backends.django.DjangoTemplates')
         settings.TEMPLATES[0]['OPTIONS']['context_processors'].append(
             'orchestra.context_processors.third_party_scripts')

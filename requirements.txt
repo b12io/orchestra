@@ -10,7 +10,7 @@ djrill==2.1.0
 ipython==7.23.1
 boto3==1.35.46
 moto==4.2.8
-flake8==3.8.4
+flake8==7.3.0
 djangorestframework==3.11.0
 djangorestframework-httpsignature==1.0.0
 djangocms-admin-style==3.3.0
