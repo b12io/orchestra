@@ -36,13 +36,11 @@
     ],
     all_scss: [],
     jslint: [
-      './gulpfile.js', // Lint ourselves!
-      '!**/common/js/lib/**',
-      '!**/dist2/**'
+      './gulpfile.js' // Lint ourselves!
     ],
     jsonlint: [
-      '!node_modules/**',
       '**/*.json',
+      '!node_modules/**',
     ],
     htmllint: [],
   };
@@ -57,7 +55,9 @@
 
     // jslint
     files.jslint.push(appName + '/static/**/*.js');
+    files.jslint.push('!' + appName + '/static/**/common/js/lib/**');
     files.jslint.push('!' + appName + '/static/dist/**/*.js');
+    files.jslint.push('!' + appName + '/static/**/dist2/**');
     files.jslint.push('!' + appName + '/static/**/*.min.js');
     files.jslint.push('!' + appName + '/static/**/*.es6.js');
 
@@ -111,13 +111,13 @@
   });
 
   // TODO(joshblum): add css and scss linting
-  gulp.task('lint', ['jslint', 'jsonlint', 'htmllint']);
+  gulp.task('lint', gulp.parallel('jslint', 'jsonlint', 'htmllint'));
 
   gulp.task('watch', function() {
     var all_lint_files = [].concat.apply([], [files.jslint, files.jsonlint]);
-    gulp.watch(all_lint_files, ['lint']);
-    gulp.watch(files.all_scss, ['scss']);
-    gulp.watch(all_lint_files, ['webpack']);
+    gulp.watch(all_lint_files, gulp.series('lint'));
+    gulp.watch(files.all_scss, gulp.series('scss'));
+    gulp.watch(all_lint_files, gulp.series('webpack'));
   });
 
   gulp.task('webpack', function(callback) {
@@ -130,6 +130,6 @@
     });
   });
 
-  gulp.task('default', ['build', 'watch']);
-  gulp.task('build', ['lint', 'scss']);
+  gulp.task('build', gulp.parallel('lint', 'scss'));
+  gulp.task('default', gulp.series('build', 'watch'));
 })();
