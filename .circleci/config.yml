@@ -2,21 +2,15 @@ version: 2
 jobs:
   build:
     working_directory: ~/orchestra
-    machine:
-      image: default
+    docker:
+        - image: cimg/python:3.12-node  # Include Node.js & Yarn
     steps:
       - checkout
       - run:
           name: Install dependencies
           command: |
             sudo apt-get update
-            sudo apt-get install -y libpq-dev
-            cd ~/.pyenv && git pull && cd -
-            pyenv install 3.12.3
-            pyenv global 3.12.3
-            nvm install 18.20
-            nvm use 18.20
-            npm install -g yarn
+            sudo apt-get install -y build-essential
             yarn global add gulp
             yarn
             # Upgrade pip to latest version
@@ -26,8 +20,6 @@ jobs:
       - run:
           name: Run tests
           command: |
-            pyenv global 3.12.3
-            nvm use 18.20
             make lint
             make coverage
             make coveralls
