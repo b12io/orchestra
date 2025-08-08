@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: ~/orchestra
     machine:
-      image: default
+      image: ubuntu-2404:2024.11.1
     steps:
       - checkout
       - run:
