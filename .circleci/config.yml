@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: ~/orchestra
     docker:
-        - image: cimg/python:3.12
+        - image: cimg/python:3.12-node  # Include Node.js & Yarn
     steps:
       - checkout
       - run:
@@ -11,8 +11,6 @@ jobs:
           command: |
             sudo apt-get update
             sudo apt-get install -y build-essential
-            npm install -g yarn
-            export PATH="$HOME/.yarn/bin:$PATH"
             yarn global add gulp
             yarn
             # Upgrade pip to latest version
