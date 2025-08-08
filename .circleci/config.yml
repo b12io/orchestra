@@ -9,8 +9,8 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apt-get update
-            curl -sL https://deb.nodesource.com/setup_18.x | bash - && apt-get install -y nodejs
+            sudo apt-get update
+            sudo apt-get install -y build-essential
             npm install -g yarn
             export PATH="$HOME/.yarn/bin:$PATH"
             yarn global add gulp

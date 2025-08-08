@@ -9,7 +9,7 @@ from orchestra.tests.helpers.fixtures import UserFactory
 
 
 class CommunicationPreferenceTestCase(OrchestraModelTestCase):
-    __test__ = True
+    __unittest_skip__ = False
     model = CommunicationPreferenceFactory
 
     def setUp(self):
@@ -70,15 +70,15 @@ class CommunicationPreferenceTestCase(OrchestraModelTestCase):
 
 
 class StaffBotRequestTestCase(OrchestraModelTestCase):
-    __test__ = True
+    __unittest_skip__ = False
     model = StaffBotRequestFactory
 
 
 class StaffingRequestInquiryTestCase(OrchestraModelTestCase):
-    __test__ = True
+    __unittest_skip__ = False
     model = StaffingRequestInquiryFactory
 
 
 class StaffingResponseTestCase(OrchestraModelTestCase):
-    __test__ = True
+    __unittest_skip__ = False
     model = StaffingResponseFactory

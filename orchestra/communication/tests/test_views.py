@@ -53,7 +53,7 @@ class StaffRequestBase(OrchestraAuthenticatedTestCase):
 
 
 class AcceptStaffRequestTest(StaffRequestBase):
-    __test__ = True
+    __unittest_skip__ = False
     template = 'communication/staffing_request_accepted.html'
     url_reverse = 'orchestra:communication:accept_staffing_request_inquiry'
 
@@ -73,6 +73,7 @@ class AcceptStaffRequestTest(StaffRequestBase):
 
 
 class RejectStaffRequestTest(StaffRequestBase):
-    __test__ = True
+    # Unskip this subclass
+    __unittest_skip__ = False
     template = 'communication/staffing_request_rejected.html'
     url_reverse = 'orchestra:communication:reject_staffing_request_inquiry'
