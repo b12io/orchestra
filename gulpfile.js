@@ -10,6 +10,8 @@
   var gutil = require('gulp-util');
   var watch = require('gulp-watch');
   var webpack = require('webpack');
+  var path = require('path');
+  var URL = require('url').URL;
 
   // js
   var jscs = require('gulp-jscs');
@@ -24,7 +26,8 @@
 
   // scss
   var sourcemaps = require('gulp-sourcemaps');
-  var sass = require('gulp-sass');
+  var dartSass = require('sass');
+  var sass = require('gulp-sass')(dartSass);
 
   // Files will be output here
   var staticBuildDestination = 'orchestra/static/dist/';
@@ -65,12 +68,30 @@
     files.htmllint.push(appName + '/static/**/*.html');
   }
 
+  // Modern Dart Sass importer to rewrite legacy absolute imports
+  var legacyImporter = {
+    findFileUrl: function(url) {
+      var prefix = 'orchestra/static/';
+      if (url && url.indexOf(prefix) === 0) {
+        var rel = url.substring(prefix.length);
+        var absPath = path.join(__dirname, 'orchestra/static', rel);
+        return new URL('file://' + absPath);
+      }
+      return null; // fall back to default
+    }
+  };
+
   gulp.task('scss', function() {
     return gulp.src(files.scss, {
+        cwd: __dirname,
         base: './'
       })
       .pipe(gulpif(!argv.production, sourcemaps.init()))
-      .pipe(sass())
+      .pipe(sass({ includePaths: [
+        __dirname,
+        path.join(__dirname, 'orchestra/static'),
+        path.join(__dirname, 'orchestra/static/orchestra'),
+      ], importers: [legacyImporter] }))
       .pipe(gulpif(!argv.production, sourcemaps.write()))
       .pipe(rename(function(path) {
         // move to a css dir if it is in a scss dir

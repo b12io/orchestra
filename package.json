@@ -47,6 +47,7 @@
     "node-sass": "8.0.0",
     "pikaday": "^1.4.0",
     "quill": "^0.20.0",
+    "sass": "^1.77.6",
     "sass-loader": "^6.0.5",
     "style-loader": "^0.17.0",
     "webpack": "3.3.0",
