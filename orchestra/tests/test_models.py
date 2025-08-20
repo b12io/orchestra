@@ -142,27 +142,27 @@ class ModelsTestCase(OrchestraTestCase):
 
 
 class CertificationTestCase(OrchestraModelTestCase):
-    __test__ = True
+    __unittest_skip__ = False
     model = CertificationFactory
 
 
 class StepTestCase(OrchestraModelTestCase):
-    __test__ = True
+    __unittest_skip__ = False
     model = StepFactory
 
 
 class PayRateTestCase(OrchestraModelTestCase):
-    __test__ = True
+    __unittest_skip__ = False
     model = PayRateFactory
 
 
 class ProjectTestCase(OrchestraModelTestCase):
-    __test__ = True
+    __unittest_skip__ = False
     model = ProjectFactory
 
 
 class TaskTestCase(OrchestraModelTestCase):
-    __test__ = True
+    __unittest_skip__ = False
     model = TaskFactory
 
     def test_get_detailed_description(self):
@@ -205,12 +205,12 @@ class TaskTestCase(OrchestraModelTestCase):
 
 
 class TaskAssignmentTestCase(OrchestraModelTestCase):
-    __test__ = True
+    __unittest_skip__ = False
     model = TaskAssignmentFactory
 
 
 class WorkerTestCase(OrchestraModelTestCase):
-    __test__ = True
+    __unittest_skip__ = False
     model = WorkerFactory
 
     def setUp(self):
@@ -241,15 +241,15 @@ class WorkerTestCase(OrchestraModelTestCase):
 
 
 class WorkerCertificationTestCase(OrchestraModelTestCase):
-    __test__ = True
+    __unittest_skip__ = False
     model = WorkerCertificationFactory
 
 
 class WorkflowTestCase(OrchestraModelTestCase):
-    __test__ = True
+    __unittest_skip__ = False
     model = WorkflowFactory
 
 
 class WorkflowVersionTestCase(OrchestraModelTestCase):
-    __test__ = True
+    __unittest_skip__ = False
     model = WorkflowVersionFactory

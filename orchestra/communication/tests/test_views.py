@@ -1,14 +1,15 @@
 from django.urls import reverse
+from unittest import skip
 
 from orchestra.tests.helpers import OrchestraAuthenticatedTestCase
 from orchestra.tests.helpers.fixtures import StaffingResponseFactory
 from orchestra.tests.helpers.fixtures import WorkerFactory
 
 
+@skip("Base test class - should not be run directly")
 class StaffRequestBase(OrchestraAuthenticatedTestCase):
     template = ''
     url_reverse = ''
-    __test__ = False
 
     def setUp(self):
         super().setUp()
@@ -52,7 +53,7 @@ class StaffRequestBase(OrchestraAuthenticatedTestCase):
 
 
 class AcceptStaffRequestTest(StaffRequestBase):
-    __test__ = True
+    __unittest_skip__ = False
     template = 'communication/staffing_request_accepted.html'
     url_reverse = 'orchestra:communication:accept_staffing_request_inquiry'
 
@@ -72,6 +73,7 @@ class AcceptStaffRequestTest(StaffRequestBase):
 
 
 class RejectStaffRequestTest(StaffRequestBase):
-    __test__ = True
+    # Unskip this subclass
+    __unittest_skip__ = False
     template = 'communication/staffing_request_rejected.html'
     url_reverse = 'orchestra:communication:reject_staffing_request_inquiry'

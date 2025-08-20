@@ -1,5 +1,6 @@
 import json
 from unittest.mock import patch
+from unittest import skip
 
 from django.test import override_settings
 from django.test import TestCase
@@ -124,6 +125,7 @@ class OrchestraAuthenticatedTestCase(OrchestraTestCase,
     pass
 
 
+@skip("Base test class - should not be run directly")
 class OrchestraModelTestCase(OrchestraTestCase):
     """
     This is a basic test to ensure that we update the __str__ method on models
@@ -133,7 +135,6 @@ class OrchestraModelTestCase(OrchestraTestCase):
     NOTE: This does not test the validity of __str__ it just verifies that the
     function can run without error.
     """
-    __test__ = False
     model = None
     model_kwargs = {}
 

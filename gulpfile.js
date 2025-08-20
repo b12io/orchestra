@@ -10,6 +10,8 @@
   var gutil = require('gulp-util');
   var watch = require('gulp-watch');
   var webpack = require('webpack');
+  var path = require('path');
+  var URL = require('url').URL;
 
   // js
   var jscs = require('gulp-jscs');
@@ -24,7 +26,8 @@
 
   // scss
   var sourcemaps = require('gulp-sourcemaps');
-  var sass = require('gulp-sass');
+  var dartSass = require('sass');
+  var sass = require('gulp-sass')(dartSass);
 
   // Files will be output here
   var staticBuildDestination = 'orchestra/static/dist/';
@@ -36,13 +39,11 @@
     ],
     all_scss: [],
     jslint: [
-      './gulpfile.js', // Lint ourselves!
-      '!**/common/js/lib/**',
-      '!**/dist2/**'
+      './gulpfile.js' // Lint ourselves!
     ],
     jsonlint: [
-      '!node_modules/**',
       '**/*.json',
+      '!node_modules/**',
     ],
     htmllint: [],
   };
@@ -57,7 +58,9 @@
 
     // jslint
     files.jslint.push(appName + '/static/**/*.js');
+    files.jslint.push('!' + appName + '/static/**/common/js/lib/**');
     files.jslint.push('!' + appName + '/static/dist/**/*.js');
+    files.jslint.push('!' + appName + '/static/**/dist2/**');
     files.jslint.push('!' + appName + '/static/**/*.min.js');
     files.jslint.push('!' + appName + '/static/**/*.es6.js');
 
@@ -65,12 +68,30 @@
     files.htmllint.push(appName + '/static/**/*.html');
   }
 
+  // Modern Dart Sass importer to rewrite legacy absolute imports
+  var legacyImporter = {
+    findFileUrl: function(url) {
+      var prefix = 'orchestra/static/';
+      if (url && url.indexOf(prefix) === 0) {
+        var rel = url.substring(prefix.length);
+        var absPath = path.join(__dirname, 'orchestra/static', rel);
+        return new URL('file://' + absPath);
+      }
+      return null; // fall back to default
+    }
+  };
+
   gulp.task('scss', function() {
     return gulp.src(files.scss, {
+        cwd: __dirname,
         base: './'
       })
       .pipe(gulpif(!argv.production, sourcemaps.init()))
-      .pipe(sass())
+      .pipe(sass({ includePaths: [
+        __dirname,
+        path.join(__dirname, 'orchestra/static'),
+        path.join(__dirname, 'orchestra/static/orchestra'),
+      ], importers: [legacyImporter] }))
       .pipe(gulpif(!argv.production, sourcemaps.write()))
       .pipe(rename(function(path) {
         // move to a css dir if it is in a scss dir
@@ -111,13 +132,13 @@
   });
 
   // TODO(joshblum): add css and scss linting
-  gulp.task('lint', ['jslint', 'jsonlint', 'htmllint']);
+  gulp.task('lint', gulp.parallel('jslint', 'jsonlint', 'htmllint'));
 
   gulp.task('watch', function() {
     var all_lint_files = [].concat.apply([], [files.jslint, files.jsonlint]);
-    gulp.watch(all_lint_files, ['lint']);
-    gulp.watch(files.all_scss, ['scss']);
-    gulp.watch(all_lint_files, ['webpack']);
+    gulp.watch(all_lint_files, gulp.series('lint'));
+    gulp.watch(files.all_scss, gulp.series('scss'));
+    gulp.watch(all_lint_files, gulp.series('webpack'));
   });
 
   gulp.task('webpack', function(callback) {
@@ -130,6 +151,6 @@
     });
   });
 
-  gulp.task('default', ['build', 'watch']);
-  gulp.task('build', ['lint', 'scss']);
+  gulp.task('build', gulp.parallel('lint', 'scss'));
+  gulp.task('default', gulp.series('build', 'watch'));
 })();

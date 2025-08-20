@@ -514,7 +514,7 @@ class BasicTaskLifeCycleTestCase(OrchestraTransactionTestCase):
                    new=mock):
             # Create first task in test project
             create_subsequent_tasks(project)
-            assert mock.called_once
+            mock.assert_called_once()
             assert mock.call_args[0][0] == 'project-checklist'
 
     def test_malformed_assignment_policy(self):

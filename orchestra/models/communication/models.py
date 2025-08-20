@@ -169,4 +169,4 @@ class StaffingResponse(StaffingResponseMixin, BaseModel):
                                         related_name='responses')
     response_text = models.TextField(blank=True, null=True)
     is_available = models.BooleanField()
-    is_winner = models.NullBooleanField()
+    is_winner = models.BooleanField(null=True)

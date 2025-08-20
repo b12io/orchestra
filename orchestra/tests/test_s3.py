@@ -8,7 +8,7 @@ from orchestra.utils.s3 import MAX_UPLOAD_SIZE_MB
 from orchestra.utils.s3 import upload_editor_image
 
 
-@patch('orchestra.utils.s3.boto')
+@patch('orchestra.utils.s3.boto3')
 class BasicS3TestCase(TestCase):
     def test_upload_editor_image(self, boto_patch):
         # Sample unicode data string

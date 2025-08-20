@@ -827,7 +827,7 @@ class TodoQA(TodoQAMixin, BaseModel):
     todo = models.OneToOneField(
         Todo, related_name='qa', on_delete=models.CASCADE)
     comment = models.TextField(null=True, blank=True)
-    approved = models.NullBooleanField(blank=True)
+    approved = models.BooleanField(null=True, blank=True)
 
 
 class SanityCheck(SanityCheckMixin, BaseModel):
