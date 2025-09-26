@@ -19,18 +19,16 @@ export default function dataService ($location, $rootScope, $route, orchestraApi
     getAllProjects: function () {
       var dataService = this
       dataService.loading = true
-      dataService.ready = orchestraApi.allProjects().then(function (response) {
+      return orchestraApi.allProjects().then(function (response) {
         response.data.forEach(function (project) {
           dataService.allProjects[project.id] = project
         })
         dataService.loading = false
       })
-      return dataService.ready
     },
     setSelectedProject: function () {
       $route.updateParams({projectId: this.currentProject.id})
-      this.resetData()
-      return this.updateData()
+      return this.changeProject(this.currentProject.id)
     },
     setCurrentProjectStatus: function (status) {
       orchestraApi.setProjectStatus(this.currentProject.id, status)
@@ -43,15 +41,13 @@ export default function dataService ($location, $rootScope, $route, orchestraApi
         })
     },
     changeProject: function (projectId) {
-      this.ready.then(function () {
-        if (!projectId || !this.allProjects[projectId]) {
-          $route.updateParams({projectId: undefined})
-          return
-        }
-
-        this.currentProject = this.allProjects[projectId]
-        return this.setSelectedProject()
-      }.bind(this))
+      if (!projectId) {
+        $route.updateParams({projectId: undefined})
+        return
+      }
+      this.currentProject.id = projectId
+      this.resetData()
+      return this.updateData()
     },
     updateData: function () {
       /**
@@ -59,7 +55,7 @@ export default function dataService ($location, $rootScope, $route, orchestraApi
        */
       var dataService = this
       dataService.loading = true
-      dataService.ready = orchestraApi.projectInformation(this.currentProject.id)
+      return orchestraApi.projectInformation(this.currentProject.id)
         .then(function (response) {
           dataService.setData(response.data)
           if (dataService.data[dataService.currentProject.id].project.status === 'Aborted') {
@@ -76,12 +72,13 @@ export default function dataService ($location, $rootScope, $route, orchestraApi
           }
           window.alert(errorMessage)
         })
-      return dataService.ready
     },
     setData: function (data) {
       /**
        * Prepares raw project data for visualization.
        */
+      // Update current project to use the new project data
+      this.currentProject = data[this.currentProject.id].project
       this.data = data
 
       var steps = {}
