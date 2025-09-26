@@ -41,6 +41,8 @@ from orchestra.utils.task_lifecycle import tasks_assigned_to_worker
 from orchestra.utils.task_lifecycle import worker_has_reviewer_status
 from orchestra.utils.common_helpers import IsAssociatedWorker
 
+from orchestra.settings import ORCHESTRA_JS_INCLUDES
+
 logger = logging.getLogger(__name__)
 UserModel = get_user_model()
 
@@ -94,7 +96,11 @@ def index(request):
 
 @login_required
 def newindex(request):
-    return render(request, 'orchestra/newindex.html')
+    return render(request, 'orchestra/newindex.html', {
+        'javascript_includes': [
+            _get_script_tag(static(file)) for file in ORCHESTRA_JS_INCLUDES
+        ]
+    })
 
 
 @json_view
