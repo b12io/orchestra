@@ -1,4 +1,4 @@
-import { reduce, defaults } from 'lodash'
+import { reduce, remove, defaults } from 'lodash'
 import template from './todo-list.html'
 import moment from 'moment-timezone'
 import './todo-list.scss'
@@ -49,6 +49,18 @@ export default function todoList (orchestraApi) {
         })
       }
 
+      const getNestedTodoIds = (nestedTodo) => {
+        let ids = []
+        if (nestedTodo && nestedTodo.items && nestedTodo.items.length) {
+          nestedTodo.items.forEach(todo => {
+            const interimIds = getNestedTodoIds(todo)
+            ids = [...ids, ...interimIds]
+          })
+        }
+        ids.push(nestedTodo.id)
+        return ids
+      }
+
       todoList.canAddTodo = () => {
         return todoList.newTodoStepSlug && todoList.newTodoDescription
       }
@@ -93,9 +105,10 @@ export default function todoList (orchestraApi) {
       }
 
       todoList.removeTodo = (todo) => {
-        var index = todoList.todos.indexOf(todo)
-        todoList.todos.splice(index, 1)
-        todoApi.delete(todo)
+        const idsToUpdate = getNestedTodoIds(todo)
+        remove(todoList.todos, t => idsToUpdate.includes(t.id))
+        const updateObjectsList = idsToUpdate.map(id => ({ id: id, is_deleted: true }))
+        todoApi.patch(updateObjectsList)
       }
 
       todoList.addActionToTodoActivityLog = (todo, action, datetime) => {
