@@ -1,0 +1,38 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '11'
+
+      - name: Install dependencies
+        run: |
+          curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.15.2
+          export PATH="$HOME/.yarn/bin:$PATH"
+          yarn global add gulp
+
+      - name: Install js and python dependencies
+        run: |
+          yarn
+          # circle has a really old version of pip by default which seems to break
+          # builds sometimes.
+          pip install --upgrade pip==20.2.4
+          pip install -r requirements.txt
+          pip install coveralls
+
+      - name: Run tests
+        run: |
+          make lint
+          make coverage
+
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
