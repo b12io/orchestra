@@ -249,9 +249,6 @@ class WorkerAdmin(AjaxSelectAdmin):
     readonly_fields = ('slack_user_id',)
     search_fields = ('user__username', 'user__email', 'slack_username')
 
-    formfield_overrides = {
-        PhoneNumberField: {'widget': PhoneNumberPrefixWidget(initial='US')},
-    }
 
     def save_model(self, request, obj, form, change):
         instance = form.save(commit=False)

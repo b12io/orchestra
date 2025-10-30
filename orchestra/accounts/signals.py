@@ -5,7 +5,7 @@ from orchestra.models import CommunicationPreference
 from orchestra.models import Worker
 
 # A user has activated his or her account.
-orchestra_user_registered = Signal(providing_args=['user', 'request'])
+orchestra_user_registered = Signal()
 
 
 @receiver(orchestra_user_registered)

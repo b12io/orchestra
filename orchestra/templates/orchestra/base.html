@@ -1,5 +1,5 @@
 {% load static %}
-{% load hijack_tags %}
+{% load hijack %}
 
 <!DOCTYPE html>
 <html lang="en" ng-app="orchestra">
@@ -43,7 +43,6 @@
   </head>
 
   <body>
-  {{ request|hijackNotification }}
   <section id="container" >
     <!--header start-->
     <header class="header">

@@ -1,6 +1,6 @@
 from rest_framework import routers
 from django.conf.urls import include
-from django.conf.urls import url
+from django.urls import re_path
 
 from orchestra.project_api.views import assign_worker_to_task
 from orchestra.project_api.views import create_project
@@ -28,66 +28,66 @@ app_name = 'api'
 
 urlpatterns = [
     # Interface API
-    url(r'^interface/dashboard_tasks/$',
+    re_path(r'^interface/dashboard_tasks/$',
         dashboard_tasks, name='dashboard_tasks'),
 
-    url(r'^interface/task_assignment_information/$',
+    re_path(r'^interface/task_assignment_information/$',
         task_assignment_information,
         name='task_assignment_information'),
 
-    url(r'^interface/save_task_assignment/$',
+    re_path(r'^interface/save_task_assignment/$',
         save_task_assignment,
         name='save_task_assignment'),
 
-    url(r'^interface/submit_task_assignment/$',
+    re_path(r'^interface/submit_task_assignment/$',
         submit_task_assignment,
         name='submit_task_assignment'),
 
-    url(r'^interface/upload_image/$',
+    re_path(r'^interface/upload_image/$',
         upload_image,
         name='upload_image'),
 
-    url(r'^interface/time_entries/$',
+    re_path(r'^interface/time_entries/$',
         TimeEntryList.as_view(), name='time_entries'),
 
-    url(r'^interface/time_entries/(?P<pk>[0-9]+)/$',
+    re_path(r'^interface/time_entries/(?P<pk>[0-9]+)/$',
         TimeEntryDetail.as_view(), name='time_entry'),
 
-    url(r'^interface/timer/start/$', start_timer, name='start_timer'),
-    url(r'^interface/timer/stop/$', stop_timer, name='stop_timer'),
-    url(r'^interface/timer/$', get_timer, name='get_timer'),
-    url(r'^interface/timer/update/$', update_timer, name='update_timer'),
+    re_path(r'^interface/timer/start/$', start_timer, name='start_timer'),
+    re_path(r'^interface/timer/stop/$', stop_timer, name='stop_timer'),
+    re_path(r'^interface/timer/$', get_timer, name='get_timer'),
+    re_path(r'^interface/timer/update/$', update_timer, name='update_timer'),
 
-    url(r'^interface/project_management/',
+    re_path(r'^interface/project_management/',
         include('orchestra.interface_api.project_management.urls',
                 namespace='project_management')),
 
     # Client API
-    url(r'^project/project_information/$',
+    re_path(r'^project/project_information/$',
         project_information,
         name='project_information'),
-    url(r'^project/create_project/$',
+    re_path(r'^project/create_project/$',
         create_project,
         name='create_project'),
-    url(r'^project/workflow_types/$',
+    re_path(r'^project/workflow_types/$',
         workflow_types,
         name='workflow_types'),
-    url(r'^project/project_details_url/$',
+    re_path(r'^project/project_details_url/$',
         project_details_url,
         name='project_details_url'),
-    url(r'^project/assign_worker_to_task/$',
+    re_path(r'^project/assign_worker_to_task/$',
         assign_worker_to_task,
         name='assign_worker_to_task'),
-    url(r'^status/$',
+    re_path(r'^status/$',
         status,
         name='status'),
-    url(r'^project/message_project_team',
+    re_path(r'^project/message_project_team',
         message_project_team,
         name='message_project_team'),
-    url(r'^project/todo_templates/$',
+    re_path(r'^project/todo_templates/$',
         TodoTemplatesList.as_view(),
         name='todo_templates'),
-    url(r'^project/create_todos_from_template/$',
+    re_path(r'^project/create_todos_from_template/$',
         create_todos_from_template,
         name='create_todos_from_template'),
 ]

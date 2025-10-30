@@ -21,7 +21,7 @@ class AccountSettingsTest(OrchestraAuthenticatedTestCase):
             'first_name': 'Mock first',
             'last_name': 'Mock last',
             'slack_username': 'Mock slack',
-            'phone_0': '+1',
+            'phone_0': 'US',
             'phone_1': '3477761527',
         }
 
@@ -44,7 +44,7 @@ class AccountSettingsTest(OrchestraAuthenticatedTestCase):
 
         self.worker.refresh_from_db()
         self.assertEqual(self.worker.slack_username, data['slack_username'])
-        self.assertEqual(self.worker.phone, data['phone_0'] + data['phone_1'])
+        self.assertEqual(str(self.worker.phone), '+13477761527')
         self.assertEqual(self.worker.slack_user_id, 'test_id')
 
     @patch('orchestra.accounts.forms.get_slack_user_id')

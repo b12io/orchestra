@@ -1,7 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from phonenumber_field.formfields import PhoneNumberField
-from phonenumber_field.widgets import PhoneNumberPrefixWidget
+from phonenumber_field.formfields import SplitPhoneNumberField
 
 from orchestra.accounts.bitformfield import BitFormField
 from orchestra.communication.slack import get_slack_user_id
@@ -47,8 +46,7 @@ class WorkerAvailabilityForm(forms.ModelForm):
 
 class WorkerForm(forms.ModelForm):
     slack_username = forms.CharField()
-    phone = PhoneNumberField(
-        widget=PhoneNumberPrefixWidget(initial='US'))
+    phone = SplitPhoneNumberField(region='US')
 
     class Meta:
         model = Worker
