@@ -9,10 +9,10 @@ app_name = 'orchestra'
 
 urlpatterns = [
     re_path(r'^api/',
-        include('orchestra.api_urls', namespace='orchestra')),
+            include('orchestra.api_urls', namespace='orchestra')),
     re_path(r'^communication/',
-        include('orchestra.communication.urls',
-                namespace='communication')),
+            include('orchestra.communication.urls',
+                    namespace='communication')),
     re_path(r'^newapp/?', newindex, name='newindex'),
     re_path(r'^app/?', index, name='index'),
     re_path(r'', include('orchestra.accounts.urls')),

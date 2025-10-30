@@ -33,7 +33,7 @@ urlpatterns = [
     # Eventually these will be auto-registered with the Orchestra URLs, but for
     # now we need to add them separately.
     re_path(r'^orchestra/accounts/',
-        include('registration.backends.default.urls')),
+            include('registration.backends.default.urls')),
 
     # Optionally include these routes to enable user hijack functionality.
     re_path(r'^orchestra/switch/', include('hijack.urls')),
@@ -41,20 +41,20 @@ urlpatterns = [
     # Logout then login is not available as a standard django
     # registration route.
     re_path(r'^orchestra/accounts/logout_then_login/$',
-        auth_views.logout_then_login,
-        name='logout_then_login'),
+            auth_views.logout_then_login,
+            name='logout_then_login'),
 
     # Orchestra URLs
     re_path(r'^orchestra/',
-        include('orchestra.urls', namespace='orchestra')),
+            include('orchestra.urls', namespace='orchestra')),
 
     # Beanstalk Dispatch URLs
     re_path(r'^beanstalk_dispatch/',
-        include('beanstalk_dispatch.urls')),
+            include('beanstalk_dispatch.urls')),
 
     # Favicon redirect for crawlers
     re_path(r'^favicon.ico/$', RedirectView.as_view(
-        url=settings.STATIC_URL + 'orchestra/icons/favicon.ico',
-        permanent=True),
-        name='favicon'),
+            url=settings.STATIC_URL + 'orchestra/icons/favicon.ico',
+            permanent=True),
+            name='favicon'),
 ]

@@ -9,8 +9,6 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.html import format_html
 from django_object_actions import DjangoObjectActions
-from phonenumber_field.modelfields import PhoneNumberField
-from phonenumber_field.widgets import PhoneNumberPrefixWidget
 from related_admin import RelatedFieldAdmin
 
 from orchestra.communication.slack import get_slack_user_id
@@ -248,7 +246,6 @@ class WorkerAdmin(AjaxSelectAdmin):
     ordering = ('user__username',)
     readonly_fields = ('slack_user_id',)
     search_fields = ('user__username', 'user__email', 'slack_username')
-
 
     def save_model(self, request, obj, form, change):
         instance = form.save(commit=False)

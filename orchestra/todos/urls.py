@@ -12,22 +12,22 @@ app_name = 'todos'
 
 urlpatterns = [
     re_path(r'^todo_qa/$',
-        TodoQAList.as_view(), name='todo_qas'),
+            TodoQAList.as_view(), name='todo_qas'),
     re_path(r'^todo_qa/(?P<pk>[0-9]+)/$',
-        TodoQADetail.as_view(), name='todo_qa'),
+            TodoQADetail.as_view(), name='todo_qa'),
     re_path(r'^todolist_templates/$',
-        TodoListTemplateList.as_view(), name='todolist_templates'),
+            TodoListTemplateList.as_view(), name='todolist_templates'),
     re_path(r'^todolist_template/(?P<pk>[0-9]+)/$',
-        TodoListTemplateDetail.as_view(), name='todolist_template'),
+            TodoListTemplateDetail.as_view(), name='todolist_template'),
     re_path(r'^update_todos_from_todolist_template/$',
-        views.update_todos_from_todolist_template,
-        name='update_todos_from_todolist_template'),
+            views.update_todos_from_todolist_template,
+            name='update_todos_from_todolist_template'),
     re_path(r'^worker_task_recent_todo_qas/$',
-        views.worker_task_recent_todo_qas,
-        name='worker_task_recent_todo_qas'),
+            views.worker_task_recent_todo_qas,
+            name='worker_task_recent_todo_qas'),
     re_path(r'^todolist_template/(?P<pk>[0-9]+)/import$',
-        views.ImportTodoListTemplateFromSpreadsheet.as_view(),
-        name='import_todo_list_template_from_spreadsheet'),
+            views.ImportTodoListTemplateFromSpreadsheet.as_view(),
+            name='import_todo_list_template_from_spreadsheet'),
 ]
 
 router = routers.SimpleRouter()

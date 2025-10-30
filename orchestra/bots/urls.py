@@ -6,5 +6,5 @@ app_name = 'bots'
 
 urlpatterns = [
     re_path(r'^staffbot/$',
-        StaffBotView.as_view(), name='staffbot'),
+            StaffBotView.as_view(), name='staffbot'),
 ]

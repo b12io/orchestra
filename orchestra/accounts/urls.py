@@ -10,18 +10,18 @@ urlpatterns = [
     # We have to override the register endpoint to emit the
     # `orchestra_user_registered` signal
     re_path(r'^accounts/register/$',
-        OrchestraRegistrationView.as_view(),
-        name='registration_register'),
+            OrchestraRegistrationView.as_view(),
+            name='registration_register'),
     re_path(r'^accounts/settings/$',
-        AccountSettingsView.as_view(), name='account_settings'),
+            AccountSettingsView.as_view(), name='account_settings'),
     re_path(r'^accounts/communication_preference_settings/$',
-        CommunicationPreferenceSettingsView.as_view(),
-        name='communication_preference_settings'),
+            CommunicationPreferenceSettingsView.as_view(),
+            name='communication_preference_settings'),
     re_path(r'^accounts/availability_settings/$',
-        AvailabilitySettingsView.as_view(),
-        name='availability_settings'),
+            AvailabilitySettingsView.as_view(),
+            name='availability_settings'),
     re_path(r'^password/change/done/$',
-        RedirectView.as_view(
-            pattern_name='account_settings'),
-        name='auth_password_change_done'),
+            RedirectView.as_view(
+                pattern_name='account_settings'),
+            name='auth_password_change_done'),
 ]
