@@ -242,7 +242,7 @@ class TestErrorViews(OrchestraTestCase):
 
     def assert_error_view(self, handler, status_code, exception=None):
         request = RequestFactory().get('/')
-        middleware = SessionMiddleware()
+        middleware = SessionMiddleware(get_response=lambda r: None)
         middleware.process_request(request)
         request.session.save()
 

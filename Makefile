@@ -12,7 +12,7 @@ lint:
 	# TODO(marcua): reenable isort when it works the same in dev and
 	# on CircleCI
 	flake8 . # && isort --check-only --recursive .
-	gulp lint --production
+	npx gulp lint --production
 	!(find . -wholename '**migrations**/*.py' -print0 | xargs -0 grep 'RemoveField\|DeleteModel\|AlterModelTable\|AlterUniqueTogether\|RunSQL\|RunPython\|SeparateDatabaseAndState' | grep -v '# manually-reviewed') || { echo "Migrations need to be manually reviewed!"; exit 1; }
 	cd example_project && python3 manage.py makemigrations --dry-run --check || { printf "Migrations need to be created. Try: \n\t python3 manage.py makemigrations\n"; exit 1; }
 
@@ -33,7 +33,7 @@ endif
 	npm install
 
 gulp_build: npm_install
-	gulp build --production
+	npx gulp build --production
 
 build_docs:
 	cd docs && make html

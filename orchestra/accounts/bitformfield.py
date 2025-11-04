@@ -7,10 +7,8 @@ from django.forms import IntegerField
 from django.forms import ValidationError
 from django.utils.safestring import mark_safe
 
-try:
-    from django.utils.encoding import force_text
-except ImportError:
-    from django.utils.encoding import force_unicode as force_text
+from django.utils.encoding import force_str
+
 
 
 class CheckboxSelectMultipleP(CheckboxSelectMultiple):
@@ -38,8 +36,8 @@ class BitFieldCheckboxSelectMultiple(CheckboxSelectMultipleP):
             data = []
         if initial != data:
             return True
-        initial_set = set([force_text(value) for value in initial])
-        data_set = set([force_text(value) for value in data])
+        initial_set = set([force_str(value) for value in initial])
+        data_set = set([force_str(value) for value in data])
         return data_set != initial_set
 
 

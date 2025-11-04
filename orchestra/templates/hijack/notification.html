@@ -1,4 +1,3 @@
-{% load url from compat %}
 {% load i18n %}
 
 <div class="hijacked-warning hijacked-warning-default">
@@ -6,7 +5,7 @@
     {% blocktrans with user=request.user%}<span class="hidden-mobile">You are currently working on behalf of</span><b> {{ user }}</b>{% endblocktrans %}
   </div>
   <div class="hijacked-warning__actions">
-    <form action="{% url 'hijack:release_hijack' %}" method="POST">
+    <form action="{% url 'hijack:release' %}" method="POST">
       {% csrf_token %}
       <button class="hijacked-warning__button">{% blocktrans with user=request.user %}Release{% endblocktrans %}</button>
     </form>

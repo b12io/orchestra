@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.urls import re_path
 
 from orchestra.communication.views import accept_staffing_request_inquiry
 from orchestra.communication.views import available_staffing_requests
@@ -8,13 +8,13 @@ app_name = 'communication'
 
 urlpatterns = [
     # Interface API
-    url(r'^accept_staffing_request_inquiry/(?P<staffing_request_inquiry_id>[0-9]+)/$',  # noqa
-        accept_staffing_request_inquiry,
-        name='accept_staffing_request_inquiry'),
-    url(r'^reject_staffing_request_inquiry/(?P<staffing_request_inquiry_id>[0-9]+)/$',  # noqa
-        reject_staffing_request_inquiry,
-        name='reject_staffing_request_inquiry'),
-    url(r'^available_staffing_requests/',
-        available_staffing_requests,
-        name='available_staffing_requests'),
+    re_path(r'^accept_staffing_request_inquiry/(?P<staffing_request_inquiry_id>[0-9]+)/$',  # noqa
+            accept_staffing_request_inquiry,
+            name='accept_staffing_request_inquiry'),
+    re_path(r'^reject_staffing_request_inquiry/(?P<staffing_request_inquiry_id>[0-9]+)/$',  # noqa
+            reject_staffing_request_inquiry,
+            name='reject_staffing_request_inquiry'),
+    re_path(r'^available_staffing_requests/',
+            available_staffing_requests,
+            name='available_staffing_requests'),
 ]

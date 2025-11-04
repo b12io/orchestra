@@ -117,9 +117,7 @@ def setup_orchestra(settings_module_name):
     # Hijack settings
     settings.INSTALLED_APPS += (
         'hijack',
-        'compat',
-        'hijack_admin',
-        'related_admin',
+        'hijack.contrib.admin'
     )
 
     # Optionally toggle this to enable user hijack functionality.
