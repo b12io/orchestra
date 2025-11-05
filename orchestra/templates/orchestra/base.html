@@ -103,10 +103,13 @@
               </li>
 
               <li>
-                <a href="{% url 'logout_then_login' %}" target="_self">
+                <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                   <i class="fa fa-sign-out"></i>
                   <span>Sign out</span>
                 </a>
+                <form id="logout-form" method="post" action="{% url 'logout_then_login' %}" style="display: none;">
+                  {% csrf_token %}
+                </form>
               </li>
             </ul>
           </div>
