@@ -195,6 +195,8 @@ If you see the Orchestra sign-in page, your setup is working! If you loaded the
 simple workflow's sample data above, logging in as its user (username ``demo``,
 password ``demo``) should show you a dashboard with no available tasks.
 
+**Note**: the instructions above allow you to get started and test orchestra in Django's development mode. Before running orchestra in production, make sure to follow Django's `best practices for deployment <https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/>`_, including taking security measures like `validating Host headers <https://docs.djangoproject.com/en/5.2/topics/security/#host-header-validation>`_ to prevent spoofing.
+
 .. _demo-section:
 
 ****************************
