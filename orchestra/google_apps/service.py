@@ -7,9 +7,11 @@ import httplib2
 from apiclient import errors
 from apiclient.discovery import build
 from apiclient.http import MediaFileUpload
-from cryptography.hazmat.primitives.serialization import Encoding, NoEncryption, PrivateFormat
+from cryptography.hazmat.primitives.serialization import Encoding
+from cryptography.hazmat.primitives.serialization import NoEncryption
 from cryptography.hazmat.primitives.serialization import pkcs12
-from google.oauth2.service_account import Credentials as ServiceAccountCredentials
+from cryptography.hazmat.primitives.serialization import PrivateFormat
+from google.oauth2.service_account import Credentials
 
 logger = logging.getLogger(__name__)
 _image_mimetype_regex = re.compile('(image/(?:jpg|jpeg|gif|png))',
@@ -19,7 +21,8 @@ _image_mimetype_regex = re.compile('(image/(?:jpg|jpeg|gif|png))',
 def load_credentials_from_p12(service_account_email, p12_path, scopes):
     with open(p12_path, 'rb') as f:
         p12_data = f.read()
-    # Google sets P12 password to the literal string 'notasecret' for all service account exports.
+    # Google sets P12 password to the literal string 'notasecret' for all
+    # service account exports.
     private_key, _, _ = pkcs12.load_key_and_certificates(
         p12_data, b'notasecret'
     )
@@ -28,7 +31,7 @@ def load_credentials_from_p12(service_account_email, p12_path, scopes):
         Encoding.PEM, PrivateFormat.PKCS8, NoEncryption()
     )
     signer = google.auth.crypt.RSASigner.from_string(pem_key)
-    return ServiceAccountCredentials(
+    return Credentials(
         signer=signer,
         service_account_email=service_account_email,
         token_uri='https://oauth2.googleapis.com/token',
@@ -48,7 +51,9 @@ class Service(object):
             google_p12_path,
             scopes=['https://www.googleapis.com/auth/drive'],
         )
-        http_auth = google_auth_httplib2.AuthorizedHttp(credentials, http=httplib2.Http())
+        http_auth = google_auth_httplib2.AuthorizedHttp(
+            credentials, http=httplib2.Http()
+        )
         return build('drive', 'v2', http=http_auth, cache_discovery=False)
 
     def insert_file(self, title, description, parent_id, file_mime_type,
