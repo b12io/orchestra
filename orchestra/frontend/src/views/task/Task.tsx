@@ -1,15 +1,14 @@
 import React from 'react'
-import {
-  useParams
-} from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 const Task = () => {
-  const { taskId } = useParams();
+  const { taskId } = useParams()
+  const LoadableTaskComponent = window.orchestra?.tasks
   return (
-        <div>
-          Task view: { taskId }
-        </div>
-    )
+    <div>
+      <LoadableTaskComponent />
+    </div>
+  )
 }
 
-export default Task;
+export default Task
