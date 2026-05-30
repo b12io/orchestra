@@ -1647,7 +1647,7 @@ a.logo {
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%); }
-  .project-management .project-description.ui-select-bootstrap {
+  .project-management .project-description {
     margin: 10px 0; }
     .project-management .project-description.ui-select-bootstrap > .ui-select-match > .btn {
       height: auto;
