@@ -5736,7 +5736,7 @@
 
 })));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6)(module)))
 
 /***/ }),
 /* 1 */
@@ -32503,7 +32503,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;!function() {
   }
 }.call(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(7)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(6)(module)))
 
 /***/ }),
 /* 5 */
@@ -32563,20 +32563,6 @@ exports.default = name;
 
 /***/ }),
 /* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var PENDING_STATUS = exports.PENDING_STATUS = 0;
-var COMPLETED_STATUS = exports.COMPLETED_STATUS = 1;
-var DECLINED_STATUS = exports.DECLINED_STATUS = 2;
-
-/***/ }),
-/* 7 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -32604,7 +32590,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 8 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -32691,7 +32677,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 9 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -32896,7 +32882,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 10 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -33068,7 +33054,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 11 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -33138,7 +33124,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 12 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -33325,7 +33311,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 13 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -33396,7 +33382,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 14 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -33516,7 +33502,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 15 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -33586,7 +33572,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 16 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -33703,7 +33689,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 17 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -33860,7 +33846,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 18 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -33961,7 +33947,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 19 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -34028,7 +34014,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 20 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -34162,7 +34148,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 21 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -34300,7 +34286,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 22 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -34481,7 +34467,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 23 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -34646,7 +34632,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 24 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -34759,7 +34745,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 25 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -34946,7 +34932,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 26 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -35024,7 +35010,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 27 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -35137,7 +35123,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 28 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -35206,7 +35192,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 29 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -35300,7 +35286,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 30 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -35395,7 +35381,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 31 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -35487,7 +35473,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 32 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -35593,7 +35579,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 33 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -35713,7 +35699,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 34 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -35797,7 +35783,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 35 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -35877,7 +35863,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 36 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -35961,7 +35947,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 37 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -36045,7 +36031,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 38 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -36125,7 +36111,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 39 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -36209,7 +36195,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 40 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -36293,7 +36279,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 41 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -36377,7 +36363,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 42 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -36461,7 +36447,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 43 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -36581,7 +36567,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 44 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -36699,7 +36685,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 45 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -36819,7 +36805,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 46 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -36913,7 +36899,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 47 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -36992,7 +36978,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 48 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -37118,7 +37104,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 49 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -37255,7 +37241,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 50 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -37329,7 +37315,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 51 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -37401,7 +37387,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 52 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -37519,7 +37505,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 53 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -37604,7 +37590,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 54 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -37693,7 +37679,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 55 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -37786,7 +37772,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 56 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -37897,7 +37883,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 57 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -38008,7 +37994,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 58 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -38098,7 +38084,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 59 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -38238,7 +38224,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 60 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -38378,7 +38364,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 61 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -38515,7 +38501,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 62 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -38625,7 +38611,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 63 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -38760,7 +38746,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 64 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -38930,7 +38916,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 65 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -39062,7 +39048,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 66 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -39170,7 +39156,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 67 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -39262,7 +39248,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 68 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -39417,7 +39403,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 69 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -39537,7 +39523,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 70 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -39617,7 +39603,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 71 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -39781,7 +39767,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 72 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -39873,7 +39859,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 73 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -39981,7 +39967,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 74 */
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -40079,7 +40065,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 75 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -40197,7 +40183,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 76 */
+/* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -40336,7 +40322,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 77 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -40427,7 +40413,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 78 */
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -40561,7 +40547,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 79 */
+/* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -40661,7 +40647,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 80 */
+/* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -40812,7 +40798,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 81 */
+/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -40893,7 +40879,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 82 */
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -41032,7 +41018,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 83 */
+/* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -41141,7 +41127,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 84 */
+/* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -41275,7 +41261,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 85 */
+/* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -41350,7 +41336,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 86 */
+/* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -41452,7 +41438,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 87 */
+/* 86 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -41548,7 +41534,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 88 */
+/* 87 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -41663,7 +41649,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 89 */
+/* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -41881,7 +41867,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 90 */
+/* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -41972,7 +41958,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 91 */
+/* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -42064,7 +42050,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 92 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -42135,7 +42121,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 93 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -42242,7 +42228,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 94 */
+/* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -42317,7 +42303,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 95 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -42453,7 +42439,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 96 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -42571,7 +42557,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 97 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -42689,7 +42675,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 98 */
+/* 97 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -42763,7 +42749,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 99 */
+/* 98 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -42862,7 +42848,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 100 */
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -42999,7 +42985,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 101 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -43144,7 +43130,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 102 */
+/* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -43220,7 +43206,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 103 */
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -43292,7 +43278,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 104 */
+/* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -43380,7 +43366,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 105 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -43599,7 +43585,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 106 */
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -43696,7 +43682,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 107 */
+/* 106 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -43769,7 +43755,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 108 */
+/* 107 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -43853,7 +43839,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 109 */
+/* 108 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -44013,7 +43999,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 110 */
+/* 109 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -44199,7 +44185,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 111 */
+/* 110 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -44280,7 +44266,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 112 */
+/* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -44413,7 +44399,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 113 */
+/* 112 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -44544,7 +44530,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 114 */
+/* 113 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -44643,7 +44629,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 115 */
+/* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -44727,7 +44713,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 116 */
+/* 115 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -44797,7 +44783,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 117 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -44942,7 +44928,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 118 */
+/* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -45044,7 +45030,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 119 */
+/* 118 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -45128,7 +45114,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 120 */
+/* 119 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -45255,7 +45241,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 121 */
+/* 120 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -45333,7 +45319,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 122 */
+/* 121 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -45440,7 +45426,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 123 */
+/* 122 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -45513,7 +45499,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 124 */
+/* 123 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -45654,7 +45640,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 125 */
+/* 124 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -45774,7 +45760,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 126 */
+/* 125 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -45879,7 +45865,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 127 */
+/* 126 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -45948,7 +45934,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 128 */
+/* 127 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -46017,7 +46003,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 129 */
+/* 128 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js language configuration
@@ -46143,7 +46129,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 130 */
+/* 129 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -46322,7 +46308,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 131 */
+/* 130 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -46420,7 +46406,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 132 */
+/* 131 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -46487,7 +46473,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 133 */
+/* 132 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -46556,7 +46542,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 134 */
+/* 133 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -46649,7 +46635,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 135 */
+/* 134 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -46736,7 +46722,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 136 */
+/* 135 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -46805,7 +46791,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 137 */
+/* 136 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -46939,7 +46925,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 138 */
+/* 137 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -47056,7 +47042,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 139 */
+/* 138 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -47172,7 +47158,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 140 */
+/* 139 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -47287,10 +47273,24 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 141 */
+/* 140 */
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"data-modal\">\n  <div class=\"modal-inner\">\n    <div class=\"header-wrapper\">\n      <span class=\"data-header\">{{header}}</span>\n      <div class=\"actions-wrapper\">\n        <a href=\"{{admin_url}}\" target=\"_blank\" class=\"btn btn-default btn-sm btn-admin\">\n            View in admin\n        </a>\n      </div>\n    </div>\n    <pre class=\"json-view\">{{data | json}}</pre>\n  </div>\n</div>\n";
+
+/***/ }),
+/* 141 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var PENDING_STATUS = exports.PENDING_STATUS = 0;
+var COMPLETED_STATUS = exports.COMPLETED_STATUS = 1;
+var DECLINED_STATUS = exports.DECLINED_STATUS = 2;
 
 /***/ }),
 /* 142 */
@@ -47325,11 +47325,11 @@ var _todosModuleEs = __webpack_require__(230);
 
 var _todosModuleEs2 = _interopRequireDefault(_todosModuleEs);
 
-var _teamInfoModuleEs = __webpack_require__(248);
+var _teamInfoModuleEs = __webpack_require__(246);
 
 var _teamInfoModuleEs2 = _interopRequireDefault(_teamInfoModuleEs);
 
-var _configEs = __webpack_require__(251);
+var _configEs = __webpack_require__(249);
 
 var _configEs2 = _interopRequireDefault(_configEs);
 
@@ -61442,272 +61442,272 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./af": 8,
-	"./af.js": 8,
-	"./ar": 9,
-	"./ar-dz": 10,
-	"./ar-dz.js": 10,
-	"./ar-kw": 11,
-	"./ar-kw.js": 11,
-	"./ar-ly": 12,
-	"./ar-ly.js": 12,
-	"./ar-ma": 13,
-	"./ar-ma.js": 13,
-	"./ar-sa": 14,
-	"./ar-sa.js": 14,
-	"./ar-tn": 15,
-	"./ar-tn.js": 15,
-	"./ar.js": 9,
-	"./az": 16,
-	"./az.js": 16,
-	"./be": 17,
-	"./be.js": 17,
-	"./bg": 18,
-	"./bg.js": 18,
-	"./bm": 19,
-	"./bm.js": 19,
-	"./bn": 20,
-	"./bn.js": 20,
-	"./bo": 21,
-	"./bo.js": 21,
-	"./br": 22,
-	"./br.js": 22,
-	"./bs": 23,
-	"./bs.js": 23,
-	"./ca": 24,
-	"./ca.js": 24,
-	"./cs": 25,
-	"./cs.js": 25,
-	"./cv": 26,
-	"./cv.js": 26,
-	"./cy": 27,
-	"./cy.js": 27,
-	"./da": 28,
-	"./da.js": 28,
-	"./de": 29,
-	"./de-at": 30,
-	"./de-at.js": 30,
-	"./de-ch": 31,
-	"./de-ch.js": 31,
-	"./de.js": 29,
-	"./dv": 32,
-	"./dv.js": 32,
-	"./el": 33,
-	"./el.js": 33,
-	"./en-au": 34,
-	"./en-au.js": 34,
-	"./en-ca": 35,
-	"./en-ca.js": 35,
-	"./en-gb": 36,
-	"./en-gb.js": 36,
-	"./en-ie": 37,
-	"./en-ie.js": 37,
-	"./en-il": 38,
-	"./en-il.js": 38,
-	"./en-in": 39,
-	"./en-in.js": 39,
-	"./en-nz": 40,
-	"./en-nz.js": 40,
-	"./en-sg": 41,
-	"./en-sg.js": 41,
-	"./eo": 42,
-	"./eo.js": 42,
-	"./es": 43,
-	"./es-do": 44,
-	"./es-do.js": 44,
-	"./es-us": 45,
-	"./es-us.js": 45,
-	"./es.js": 43,
-	"./et": 46,
-	"./et.js": 46,
-	"./eu": 47,
-	"./eu.js": 47,
-	"./fa": 48,
-	"./fa.js": 48,
-	"./fi": 49,
-	"./fi.js": 49,
-	"./fil": 50,
-	"./fil.js": 50,
-	"./fo": 51,
-	"./fo.js": 51,
-	"./fr": 52,
-	"./fr-ca": 53,
-	"./fr-ca.js": 53,
-	"./fr-ch": 54,
-	"./fr-ch.js": 54,
-	"./fr.js": 52,
-	"./fy": 55,
-	"./fy.js": 55,
-	"./ga": 56,
-	"./ga.js": 56,
-	"./gd": 57,
-	"./gd.js": 57,
-	"./gl": 58,
-	"./gl.js": 58,
-	"./gom-deva": 59,
-	"./gom-deva.js": 59,
-	"./gom-latn": 60,
-	"./gom-latn.js": 60,
-	"./gu": 61,
-	"./gu.js": 61,
-	"./he": 62,
-	"./he.js": 62,
-	"./hi": 63,
-	"./hi.js": 63,
-	"./hr": 64,
-	"./hr.js": 64,
-	"./hu": 65,
-	"./hu.js": 65,
-	"./hy-am": 66,
-	"./hy-am.js": 66,
-	"./id": 67,
-	"./id.js": 67,
-	"./is": 68,
-	"./is.js": 68,
-	"./it": 69,
-	"./it-ch": 70,
-	"./it-ch.js": 70,
-	"./it.js": 69,
-	"./ja": 71,
-	"./ja.js": 71,
-	"./jv": 72,
-	"./jv.js": 72,
-	"./ka": 73,
-	"./ka.js": 73,
-	"./kk": 74,
-	"./kk.js": 74,
-	"./km": 75,
-	"./km.js": 75,
-	"./kn": 76,
-	"./kn.js": 76,
-	"./ko": 77,
-	"./ko.js": 77,
-	"./ku": 78,
-	"./ku.js": 78,
-	"./ky": 79,
-	"./ky.js": 79,
-	"./lb": 80,
-	"./lb.js": 80,
-	"./lo": 81,
-	"./lo.js": 81,
-	"./lt": 82,
-	"./lt.js": 82,
-	"./lv": 83,
-	"./lv.js": 83,
-	"./me": 84,
-	"./me.js": 84,
-	"./mi": 85,
-	"./mi.js": 85,
-	"./mk": 86,
-	"./mk.js": 86,
-	"./ml": 87,
-	"./ml.js": 87,
-	"./mn": 88,
-	"./mn.js": 88,
-	"./mr": 89,
-	"./mr.js": 89,
-	"./ms": 90,
-	"./ms-my": 91,
-	"./ms-my.js": 91,
-	"./ms.js": 90,
-	"./mt": 92,
-	"./mt.js": 92,
-	"./my": 93,
-	"./my.js": 93,
-	"./nb": 94,
-	"./nb.js": 94,
-	"./ne": 95,
-	"./ne.js": 95,
-	"./nl": 96,
-	"./nl-be": 97,
-	"./nl-be.js": 97,
-	"./nl.js": 96,
-	"./nn": 98,
-	"./nn.js": 98,
-	"./oc-lnc": 99,
-	"./oc-lnc.js": 99,
-	"./pa-in": 100,
-	"./pa-in.js": 100,
-	"./pl": 101,
-	"./pl.js": 101,
-	"./pt": 102,
-	"./pt-br": 103,
-	"./pt-br.js": 103,
-	"./pt.js": 102,
-	"./ro": 104,
-	"./ro.js": 104,
-	"./ru": 105,
-	"./ru.js": 105,
-	"./sd": 106,
-	"./sd.js": 106,
-	"./se": 107,
-	"./se.js": 107,
-	"./si": 108,
-	"./si.js": 108,
-	"./sk": 109,
-	"./sk.js": 109,
-	"./sl": 110,
-	"./sl.js": 110,
-	"./sq": 111,
-	"./sq.js": 111,
-	"./sr": 112,
-	"./sr-cyrl": 113,
-	"./sr-cyrl.js": 113,
-	"./sr.js": 112,
-	"./ss": 114,
-	"./ss.js": 114,
-	"./sv": 115,
-	"./sv.js": 115,
-	"./sw": 116,
-	"./sw.js": 116,
-	"./ta": 117,
-	"./ta.js": 117,
-	"./te": 118,
-	"./te.js": 118,
-	"./tet": 119,
-	"./tet.js": 119,
-	"./tg": 120,
-	"./tg.js": 120,
-	"./th": 121,
-	"./th.js": 121,
-	"./tk": 122,
-	"./tk.js": 122,
-	"./tl-ph": 123,
-	"./tl-ph.js": 123,
-	"./tlh": 124,
-	"./tlh.js": 124,
-	"./tr": 125,
-	"./tr.js": 125,
-	"./tzl": 126,
-	"./tzl.js": 126,
-	"./tzm": 127,
-	"./tzm-latn": 128,
-	"./tzm-latn.js": 128,
-	"./tzm.js": 127,
-	"./ug-cn": 129,
-	"./ug-cn.js": 129,
-	"./uk": 130,
-	"./uk.js": 130,
-	"./ur": 131,
-	"./ur.js": 131,
-	"./uz": 132,
-	"./uz-latn": 133,
-	"./uz-latn.js": 133,
-	"./uz.js": 132,
-	"./vi": 134,
-	"./vi.js": 134,
-	"./x-pseudo": 135,
-	"./x-pseudo.js": 135,
-	"./yo": 136,
-	"./yo.js": 136,
-	"./zh-cn": 137,
-	"./zh-cn.js": 137,
-	"./zh-hk": 138,
-	"./zh-hk.js": 138,
-	"./zh-mo": 139,
-	"./zh-mo.js": 139,
-	"./zh-tw": 140,
-	"./zh-tw.js": 140
+	"./af": 7,
+	"./af.js": 7,
+	"./ar": 8,
+	"./ar-dz": 9,
+	"./ar-dz.js": 9,
+	"./ar-kw": 10,
+	"./ar-kw.js": 10,
+	"./ar-ly": 11,
+	"./ar-ly.js": 11,
+	"./ar-ma": 12,
+	"./ar-ma.js": 12,
+	"./ar-sa": 13,
+	"./ar-sa.js": 13,
+	"./ar-tn": 14,
+	"./ar-tn.js": 14,
+	"./ar.js": 8,
+	"./az": 15,
+	"./az.js": 15,
+	"./be": 16,
+	"./be.js": 16,
+	"./bg": 17,
+	"./bg.js": 17,
+	"./bm": 18,
+	"./bm.js": 18,
+	"./bn": 19,
+	"./bn.js": 19,
+	"./bo": 20,
+	"./bo.js": 20,
+	"./br": 21,
+	"./br.js": 21,
+	"./bs": 22,
+	"./bs.js": 22,
+	"./ca": 23,
+	"./ca.js": 23,
+	"./cs": 24,
+	"./cs.js": 24,
+	"./cv": 25,
+	"./cv.js": 25,
+	"./cy": 26,
+	"./cy.js": 26,
+	"./da": 27,
+	"./da.js": 27,
+	"./de": 28,
+	"./de-at": 29,
+	"./de-at.js": 29,
+	"./de-ch": 30,
+	"./de-ch.js": 30,
+	"./de.js": 28,
+	"./dv": 31,
+	"./dv.js": 31,
+	"./el": 32,
+	"./el.js": 32,
+	"./en-au": 33,
+	"./en-au.js": 33,
+	"./en-ca": 34,
+	"./en-ca.js": 34,
+	"./en-gb": 35,
+	"./en-gb.js": 35,
+	"./en-ie": 36,
+	"./en-ie.js": 36,
+	"./en-il": 37,
+	"./en-il.js": 37,
+	"./en-in": 38,
+	"./en-in.js": 38,
+	"./en-nz": 39,
+	"./en-nz.js": 39,
+	"./en-sg": 40,
+	"./en-sg.js": 40,
+	"./eo": 41,
+	"./eo.js": 41,
+	"./es": 42,
+	"./es-do": 43,
+	"./es-do.js": 43,
+	"./es-us": 44,
+	"./es-us.js": 44,
+	"./es.js": 42,
+	"./et": 45,
+	"./et.js": 45,
+	"./eu": 46,
+	"./eu.js": 46,
+	"./fa": 47,
+	"./fa.js": 47,
+	"./fi": 48,
+	"./fi.js": 48,
+	"./fil": 49,
+	"./fil.js": 49,
+	"./fo": 50,
+	"./fo.js": 50,
+	"./fr": 51,
+	"./fr-ca": 52,
+	"./fr-ca.js": 52,
+	"./fr-ch": 53,
+	"./fr-ch.js": 53,
+	"./fr.js": 51,
+	"./fy": 54,
+	"./fy.js": 54,
+	"./ga": 55,
+	"./ga.js": 55,
+	"./gd": 56,
+	"./gd.js": 56,
+	"./gl": 57,
+	"./gl.js": 57,
+	"./gom-deva": 58,
+	"./gom-deva.js": 58,
+	"./gom-latn": 59,
+	"./gom-latn.js": 59,
+	"./gu": 60,
+	"./gu.js": 60,
+	"./he": 61,
+	"./he.js": 61,
+	"./hi": 62,
+	"./hi.js": 62,
+	"./hr": 63,
+	"./hr.js": 63,
+	"./hu": 64,
+	"./hu.js": 64,
+	"./hy-am": 65,
+	"./hy-am.js": 65,
+	"./id": 66,
+	"./id.js": 66,
+	"./is": 67,
+	"./is.js": 67,
+	"./it": 68,
+	"./it-ch": 69,
+	"./it-ch.js": 69,
+	"./it.js": 68,
+	"./ja": 70,
+	"./ja.js": 70,
+	"./jv": 71,
+	"./jv.js": 71,
+	"./ka": 72,
+	"./ka.js": 72,
+	"./kk": 73,
+	"./kk.js": 73,
+	"./km": 74,
+	"./km.js": 74,
+	"./kn": 75,
+	"./kn.js": 75,
+	"./ko": 76,
+	"./ko.js": 76,
+	"./ku": 77,
+	"./ku.js": 77,
+	"./ky": 78,
+	"./ky.js": 78,
+	"./lb": 79,
+	"./lb.js": 79,
+	"./lo": 80,
+	"./lo.js": 80,
+	"./lt": 81,
+	"./lt.js": 81,
+	"./lv": 82,
+	"./lv.js": 82,
+	"./me": 83,
+	"./me.js": 83,
+	"./mi": 84,
+	"./mi.js": 84,
+	"./mk": 85,
+	"./mk.js": 85,
+	"./ml": 86,
+	"./ml.js": 86,
+	"./mn": 87,
+	"./mn.js": 87,
+	"./mr": 88,
+	"./mr.js": 88,
+	"./ms": 89,
+	"./ms-my": 90,
+	"./ms-my.js": 90,
+	"./ms.js": 89,
+	"./mt": 91,
+	"./mt.js": 91,
+	"./my": 92,
+	"./my.js": 92,
+	"./nb": 93,
+	"./nb.js": 93,
+	"./ne": 94,
+	"./ne.js": 94,
+	"./nl": 95,
+	"./nl-be": 96,
+	"./nl-be.js": 96,
+	"./nl.js": 95,
+	"./nn": 97,
+	"./nn.js": 97,
+	"./oc-lnc": 98,
+	"./oc-lnc.js": 98,
+	"./pa-in": 99,
+	"./pa-in.js": 99,
+	"./pl": 100,
+	"./pl.js": 100,
+	"./pt": 101,
+	"./pt-br": 102,
+	"./pt-br.js": 102,
+	"./pt.js": 101,
+	"./ro": 103,
+	"./ro.js": 103,
+	"./ru": 104,
+	"./ru.js": 104,
+	"./sd": 105,
+	"./sd.js": 105,
+	"./se": 106,
+	"./se.js": 106,
+	"./si": 107,
+	"./si.js": 107,
+	"./sk": 108,
+	"./sk.js": 108,
+	"./sl": 109,
+	"./sl.js": 109,
+	"./sq": 110,
+	"./sq.js": 110,
+	"./sr": 111,
+	"./sr-cyrl": 112,
+	"./sr-cyrl.js": 112,
+	"./sr.js": 111,
+	"./ss": 113,
+	"./ss.js": 113,
+	"./sv": 114,
+	"./sv.js": 114,
+	"./sw": 115,
+	"./sw.js": 115,
+	"./ta": 116,
+	"./ta.js": 116,
+	"./te": 117,
+	"./te.js": 117,
+	"./tet": 118,
+	"./tet.js": 118,
+	"./tg": 119,
+	"./tg.js": 119,
+	"./th": 120,
+	"./th.js": 120,
+	"./tk": 121,
+	"./tk.js": 121,
+	"./tl-ph": 122,
+	"./tl-ph.js": 122,
+	"./tlh": 123,
+	"./tlh.js": 123,
+	"./tr": 124,
+	"./tr.js": 124,
+	"./tzl": 125,
+	"./tzl.js": 125,
+	"./tzm": 126,
+	"./tzm-latn": 127,
+	"./tzm-latn.js": 127,
+	"./tzm.js": 126,
+	"./ug-cn": 128,
+	"./ug-cn.js": 128,
+	"./uk": 129,
+	"./uk.js": 129,
+	"./ur": 130,
+	"./ur.js": 130,
+	"./uz": 131,
+	"./uz-latn": 132,
+	"./uz-latn.js": 132,
+	"./uz.js": 131,
+	"./vi": 133,
+	"./vi.js": 133,
+	"./x-pseudo": 134,
+	"./x-pseudo.js": 134,
+	"./yo": 135,
+	"./yo.js": 135,
+	"./zh-cn": 136,
+	"./zh-cn.js": 136,
+	"./zh-hk": 137,
+	"./zh-hk.js": 137,
+	"./zh-mo": 138,
+	"./zh-mo.js": 138,
+	"./zh-tw": 139,
+	"./zh-tw.js": 139
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -63016,7 +63016,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = iterationsVis;
 
-var _dataModal = __webpack_require__(141);
+var _dataModal = __webpack_require__(140);
 
 var _dataModal2 = _interopRequireDefault(_dataModal);
 
@@ -63099,7 +63099,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = projectVis;
 
-var _dataModal = __webpack_require__(141);
+var _dataModal = __webpack_require__(140);
 
 var _dataModal2 = _interopRequireDefault(_dataModal);
 
@@ -66521,31 +66521,31 @@ var _todoListDirectiveEs = __webpack_require__(231);
 
 var _todoListDirectiveEs2 = _interopRequireDefault(_todoListDirectiveEs);
 
-var _todoQaDirectiveEs = __webpack_require__(234);
+var _todoQaDirectiveEs = __webpack_require__(232);
 
 var _todoQaDirectiveEs2 = _interopRequireDefault(_todoQaDirectiveEs);
 
-var _todoQaListDirectiveEs = __webpack_require__(236);
+var _todoQaListDirectiveEs = __webpack_require__(234);
 
 var _todoQaListDirectiveEs2 = _interopRequireDefault(_todoQaListDirectiveEs);
 
-var _todoChecklistDirectiveEs = __webpack_require__(239);
+var _todoChecklistDirectiveEs = __webpack_require__(237);
 
 var _todoChecklistDirectiveEs2 = _interopRequireDefault(_todoChecklistDirectiveEs);
 
-var _todosServiceEs = __webpack_require__(243);
+var _todosServiceEs = __webpack_require__(241);
 
 var _todosServiceEs2 = _interopRequireDefault(_todosServiceEs);
 
-var _todolistTemplateServiceEs = __webpack_require__(244);
+var _todolistTemplateServiceEs = __webpack_require__(242);
 
 var _todolistTemplateServiceEs2 = _interopRequireDefault(_todolistTemplateServiceEs);
 
-var _todoQasServiceEs = __webpack_require__(245);
+var _todoQasServiceEs = __webpack_require__(243);
 
 var _todoQasServiceEs2 = _interopRequireDefault(_todoQasServiceEs);
 
-__webpack_require__(246);
+__webpack_require__(244);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -66571,7 +66571,7 @@ exports.default = todoList;
 
 var _lodash = __webpack_require__(4);
 
-var _todoList = __webpack_require__(232);
+var _todoList = __webpack_require__(274);
 
 var _todoList2 = _interopRequireDefault(_todoList);
 
@@ -66579,11 +66579,13 @@ var _momentTimezone = __webpack_require__(1);
 
 var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
 
-__webpack_require__(233);
+__webpack_require__(275);
 
-var _constantsEs = __webpack_require__(6);
+var _constantsEs = __webpack_require__(141);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function todoList(orchestraApi) {
   'ngAnnotate';
@@ -66627,6 +66629,18 @@ function todoList(orchestraApi) {
         });
       };
 
+      var getNestedTodoIds = function getNestedTodoIds(nestedTodo) {
+        var ids = [];
+        if (nestedTodo && nestedTodo.items && nestedTodo.items.length) {
+          nestedTodo.items.forEach(function (todo) {
+            var interimIds = getNestedTodoIds(todo);
+            ids = [].concat(_toConsumableArray(ids), _toConsumableArray(interimIds));
+          });
+        }
+        ids.push(nestedTodo.id);
+        return ids;
+      };
+
       todoList.canAddTodo = function () {
         return todoList.newTodoStepSlug && todoList.newTodoDescription;
       };
@@ -66668,9 +66682,14 @@ function todoList(orchestraApi) {
       };
 
       todoList.removeTodo = function (todo) {
-        var index = todoList.todos.indexOf(todo);
-        todoList.todos.splice(index, 1);
-        todoApi.delete(todo);
+        var idsToUpdate = getNestedTodoIds(todo);
+        (0, _lodash.remove)(todoList.todos, function (t) {
+          return idsToUpdate.includes(t.id);
+        });
+        var updateObjectsList = idsToUpdate.map(function (id) {
+          return { id: id, is_deleted: true };
+        });
+        todoApi.patch(updateObjectsList);
       };
 
       todoList.addActionToTodoActivityLog = function (todo, action, datetime) {
@@ -66766,18 +66785,6 @@ function todoList(orchestraApi) {
 
 /***/ }),
 /* 232 */
-/***/ (function(module, exports) {
-
-module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Todo List\n        </h3>\n      </div>\n    </div>\n\n    <div class=\"row section-body new-todo\">\n      <div class=\"col-lg-2\">\n        <select class=\"form-control input-sm\" name=\"todoList\" id=\"todoList\" ng-model=\"todoList.newTodoStepSlug\">\n          <option value=\"\" selected>Select owner</option>\n          <option value=\"{{task.step_slug}}\" ng-repeat=\"task in todoList.possibleTasks\">{{todoList.steps[task.step_slug].name}}</option>\n        </select>\n      </div>\n      <div class=\"col-lg-5\">\n        <input class=\"form-control input-sm\"\n               type=\"text\"\n               ng-model=\"todoList.newTodoDescription\"\n               placeholder=\"Add a todo item\">\n        <div class=\"pull-right\">\n          <div class=\"new-todo__datetime\">\n            <label>Start</label>\n            <date-picker\n              date=\"todoList.newTodoStartDate\"\n              callback=\"todoList.setTimeOfDate\"></date-picker>\n            <time-input\n              datetime=\"todoList.newTodoStartDate\"\n              default-hour=\"8\"\n              ></time-input>\n          </div>\n          <div class=\"new-todo__datetime\">\n            <label>Due</label>\n            <date-picker\n              date=\"todoList.newTodoDueDate\"\n              callback=\"todoList.setTimeOfDate\"></date-picker>\n            <time-input\n              datetime=\"todoList.newTodoDueDate\"\n              default-hour=\"18\"\n              ></time-input>\n          </div>\n        </div>\n      </div>\n      <div class=\"col-lg-1\">\n        <button type=\"submit\"\n                 class=\"btn btn-primary btn-sm btn-block edit-save-handle\"\n                 ng-disabled=\"!todoList.canAddTodo()\"\n                 ng-click=\"todoList.addTodo()\">\n                Add todo\n        </button>\n      </div>\n      <div class=\"col-lg-2\" ng-if=\"todoList.templates.length > 0\">\n        <div class=\"btn-group\">\n          <button type=\"button\" class=\"btn btn-primary btn-sm dropdown-toggle\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"\n                  ng-disabled=\"!todoList.newTodoStepSlug\">\n            Add todos from a template <span class=\"caret\"></span>\n          </button>\n          <ul class=\"dropdown-menu\">\n            <li ng-repeat=\"template in todoList.templates\" ng-click=\"todoList.updateTodoListFromTemplate(template.slug)\">\n              <a href=\"\">{{template.name}}</a>\n            </li>\n          </ul>\n        </div>\n      </div>\n    </div>\n\n    <div class=\"row section-body\" ng-if=\"todoList.ready\">\n      <div class=\"col-lg-6 col-md-6 col-sm-12\">\n        <div class=\"todolist-pane\">\n          <p class=\"todolist-pane__heading col-sm-3\">Todo items</p>\n          <todo-checklist\n              title=\"Todos\"\n              todos=\"todoList.todos\"\n              todo-qas=\"todoList.todoQas\"\n              templates=\"todoList.templates\"\n              show-skipped=\"false\"\n              update-todo=\"todoList.updateTodo\"\n              remove-todo=\"todoList.removeTodo\"\n              skip-todo=\"todoList.skipTodo\"\n              unskip-todo=\"todoList.unskipTodo\"\n              steps=\"todoList.steps\"\n              on-toggle-todo=\"todoList.onToggleTodo\"\n          ></todo-checklist>\n        </div>\n      </div>\n      <div class=\"col-lg-6 col-md-6 col-sm-12\">\n        <div class=\"todolist-pane\" ng-if=\"todoList.templates.length > 0\">\n          <p class=\"todolist-pane__heading col-sm-4\">Skipped todo items</p>\n          <todo-checklist\n              title=\"Todos\"\n              todos=\"todoList.todos\"\n              todo-qas=\"todoList.todoQas\"\n              templates=\"todoList.templates\"\n              show-skipped=\"true\"\n              update-todo=\"todoList.updateTodo\"\n              remove-todo=\"todoList.removeTodo\"\n              steps=\"todoList.steps\"\n              skip-todo=\"todoList.skipTodo\"\n              unskip-todo=\"todoList.unskipTodo\"\n              on-toggle-todo=\"todoList.onToggleTodo\"\n          ></todo-checklist>\n        </div>\n      </div>\n    </div>\n\n  </div>\n</section>\n";
-
-/***/ }),
-/* 233 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 234 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -66790,7 +66797,7 @@ exports.default = qa;
 
 var _lodash = __webpack_require__(4);
 
-var _todoQa = __webpack_require__(235);
+var _todoQa = __webpack_require__(233);
 
 var _todoQa2 = _interopRequireDefault(_todoQa);
 
@@ -66896,13 +66903,13 @@ function qa(orchestraApi) {
 }
 
 /***/ }),
-/* 235 */
+/* 233 */
 /***/ (function(module, exports) {
 
 module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          QA\n          <button class=\"btn\" ng-if=\"todoQa.todos.length\" ng-click=\"todoQa.copyToClipboard(todoQa.qaSummary())\">\n              Copy QA summary\n          </button>\n        </h3>\n      </div>\n    </div>\n\n    <div class=\"row section-body\" ng-if=\"todoQa.ready\">\n      <div class=\"col-sm-12\">\n        <todo-qa-list\n        todos=\"todoQa.todos\"\n        approve-todo=\"todoQa.approveTodo\"\n        disapprove-todo=\"todoQa.disapproveTodo\"\n        update-todo-qa-comment=\"todoQa.updateTodoQaComment\"\n        ></todo-qa-list>\n      </div>\n    </div>\n\n  </div>\n</section>\n";
 
 /***/ }),
-/* 236 */
+/* 234 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -66915,13 +66922,13 @@ exports.default = todoQaList;
 
 var _lodash = __webpack_require__(4);
 
-var _todoQaList = __webpack_require__(237);
+var _todoQaList = __webpack_require__(235);
 
 var _todoQaList2 = _interopRequireDefault(_todoQaList);
 
-__webpack_require__(238);
+__webpack_require__(236);
 
-var _constantsEs = __webpack_require__(6);
+var _constantsEs = __webpack_require__(141);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -66980,19 +66987,19 @@ function todoQaList() {
 }
 
 /***/ }),
-/* 237 */
+/* 235 */
 /***/ (function(module, exports) {
 
 module.exports = "<script type=\"text/ng-template\" id=\"todoQaItemTemplate\">\n  <div ui-tree-handle class=\"tree-node tree-node-content\">\n    <label ng-class=\"{\n      'todo--disapproved': isDisapproved(todo),\n      'todo--approved': isApproved(todo)\n      }\">\n      <span ng-click=\"toggle(this)\">\n        <i aria-hidden=\"true\" ng-if=\"todo.items && todo.items.length > 0\" data-nodrag\n          class=\"fa skipped-todos\"\n          ng-class=\"{\n            'fa-caret-right': collapsed,\n            'fa-caret-down': !collapsed\n          }\">&nbsp;</i>\n        <i class=\"fa fa-circle-o\" aria-hidden=\"true\" ng-if=\"(!todo.items || todo.items.length === 0)\" data-nodrag>&nbsp;</i>\n        <span ng-class=\"{'todo--skipped': todo.status === DECLINED_STATUS}\" ng-if=\"todo.status === DECLINED_STATUS\">(Not relevant)&nbsp;</span>\n        <span ng-class=\"{'todo--skipped': todo.status === DECLINED_STATUS}\" class=\"todo__description\" ng-bind-html=\"todo.title\"></span>\n      </span>\n      <span>\n        &nbsp;&nbsp;\n        <a href=\"#\" ng-if=\"isApprovalPending(todo) || isDisapproved(todo)\" ng-click=\"approveTodo(todo)\">[approve]</a>\n        <a href=\"#\" ng-if=\"isApprovalPending(todo) || isApproved(todo)\" ng-click=\"disapproveTodo(todo)\">[disapprove]</a>\n        <a href=\"#\" ng-if=\"!isApprovalPending(todo) && !hasComment(todo)\" ng-click=\"addNewComment(todo)\">[add comment]</a>\n      </span>\n    </label>\n    <form class=\"form-inline\" ng-if=\"hasComment(todo)\" >\n      <textarea class=\"form-control input-sm\" rows=\"1\" cols=\"50\" ng-change=\"onCommentChange(todo)\" ng-model=\"todo.qa.comment\" ng-trim=\"true\"></textarea>\n      <button ng-if=\"updatedComments[todo.id]\" ng-click=\"submitComment(todo)\" class=\"btn btn-primary btn-sm\">Submit</button>\n    </form>\n\n  </div>\n  <ol ui-tree-nodes ng-model=\"todo.items\" ng-class=\"{hidden: collapsed}\" ng-if=\"!collapsed\">\n    <li ng-repeat=\"todo in filterTemplateTodos(todo.items)\" ui-tree-node data-collapsed=\"true\" ng-include=\"'todoQaItemTemplate'\"></li>\n  </ol>\n</script>\n\n\n<div class=\"list-by-status\" ng-if=\"todos.length > 0\">\n  <div class=\"todo\">\n    <div ui-tree data-drag-enabled=\"false\" id=\"tree-root\">\n      <ol ui-tree-nodes ng-model=\"todos\">\n        <li ng-repeat=\"todo in filterTemplateTodos(todos)\" ui-tree-node data-collapsed=\"true\" ng-include=\"'todoQaItemTemplate'\"></li>\n      </ol>\n    </div>\n  </div>\n</div>\n";
 
 /***/ }),
-/* 238 */
+/* 236 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 239 */
+/* 237 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -67005,19 +67012,19 @@ exports.default = todoChecklist;
 
 var _lodash = __webpack_require__(4);
 
-var _todoChecklist = __webpack_require__(240);
+var _todoChecklist = __webpack_require__(238);
 
 var _todoChecklist2 = _interopRequireDefault(_todoChecklist);
 
-__webpack_require__(241);
+__webpack_require__(239);
 
-__webpack_require__(242);
+__webpack_require__(240);
 
 var _momentTimezone = __webpack_require__(1);
 
 var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
 
-var _constantsEs = __webpack_require__(6);
+var _constantsEs = __webpack_require__(141);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -67100,25 +67107,25 @@ function todoChecklist() {
 }
 
 /***/ }),
-/* 240 */
+/* 238 */
 /***/ (function(module, exports) {
 
 module.exports = "<script type=\"text/ng-template\" id=\"todoItemTemplate\">\n  <div ui-tree-handle class=\"tree-node tree-node-content\">\n    <input type=\"checkbox\"\n           ng-hide=\"showSkipped\"\n           ng-checked=\"todo.status === COMPLETED_STATUS\"\n           ng-click=\"updateTodo(todo)\">\n    <label ng-class=\"{'text-danger': isInDanger(todo)}\">\n      <span ng-click=\"toggleTodo(todo, this)\">\n        <i aria-hidden=\"true\" ng-if=\"todo.items && todo.items.length > 0\" data-nodrag\n          class=\"fa\"\n          ng-class=\"{\n            'skipped-todos': showSkipped,\n            'fa-caret-right': collapsed,\n            'fa-caret-down': !collapsed\n          }\"></i>\n        <i class=\"fa fa-circle-o\" aria-hidden=\"true\" ng-if=\"(!todo.items || todo.items.length === 0) && showSkipped\" data-nodrag></i>\n        <span ng-hide=\"!todo.items || todo.items.length < 1 || showSkipped\">[{{ ( filterTodoList(todo.items, showSkipped) | filter: { status: COMPLETED_STATUS } ).length }}/{{ filterTodoList(todo.items, showSkipped).length }}] </span>\n        <span class=\"todo__role\">{{steps[todo.step].name}}:&nbsp;</span>\n        <span class=\"todo__description\" ng-bind-html=\"todo.title | linky:'_blank'\"></span>\n        <span ng-class=\"{'todo__dates': true, 'todo__dates-danger': isInDanger(todo)}\">\n          <span ng-if=\"isNonEmptyString(todo.start_by_datetime)\">\n            Start <datetime-display datetime=\"todo.start_by_datetime\" show-time=\"true\"/>\n          </span>\n          <span ng-if=\"isNonEmptyString(todo.start_by_datetime) && isNonEmptyString(todo.due_datetime)\" class=\"todo__dates-separator\">|</span>\n          <span ng-if=\"isNonEmptyString(todo.due_datetime)\">\n            Due <datetime-display datetime=\"todo.due_datetime\" show-time=\"true\"/></span>\n        </span>\n      </span>\n      <span ng-if=\"templates.length > 0\">\n        &nbsp;&nbsp;\n        <a href=\"#\" ng-hide=\"!showSkipped\" ng-click=\"unskipTodo(todo)\">[relevant]</a>\n        <a href=\"#\" ng-hide=\"showSkipped\" ng-click=\"skipTodo(todo)\">[not relevant]</a>\n        <a href=\"#\" ng-hide=\"todo.parent_todo\" ng-click=\"removeTodo(todo)\">[remove]</a>\n      </span>\n    </label>\n    <div class=\"todo-qa panel panel-default\" ng-if=\"todoQas[todo.title] && todoQas[todo.title].comment\">\n      <div class=\"panel-body\">\n        <span>{{todoQas[todo.title].todo === todo.id?\"Feedback on this project\":\"Feedback from previous project\"}}:</span>\n        <strong>{{todoQas[todo.title].comment}}</strong>\n      </div>\n    </div>\n  </div>\n  <ol ui-tree-nodes ng-model=\"todo.items\" ng-class=\"{hidden: collapsed}\" ng-if=\"!collapsed\">\n    <li ng-repeat=\"todo in filterTodoList(todo.items, showSkipped)\" ui-tree-node data-collapsed=\"isCollapsed(todo, showSkipped)\" ng-include=\"'todoItemTemplate'\"></li>\n  </ol>\n</script>\n\n\n<div class=\"list-by-status\" ng-if=\"todos.length > 0\">\n  <div class=\"todo\">\n    <div ui-tree data-drag-enabled=\"false\" id=\"tree-root\">\n      <ol ui-tree-nodes ng-model=\"todos\">\n        <li ng-repeat=\"todo in filterTodoList(todos, showSkipped)\" ui-tree-node data-collapsed=\"isCollapsed(todo, showSkipped)\" ng-include=\"'todoItemTemplate'\"></li>\n      </ol>\n    </div>\n  </div>\n</div>\n";
 
 /***/ }),
+/* 239 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 240 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
 /* 241 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 242 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 243 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -67157,6 +67164,9 @@ function todoApi($http) {
     update: function update(todo) {
       return $http.put(details(todo.id), todo);
     },
+    patch: function patch(idsAndUpdatedFields) {
+      return $http.patch(apiBase, idsAndUpdatedFields);
+    },
     delete: function _delete(todo) {
       return $http.delete(details(todo.id));
     }
@@ -67164,7 +67174,7 @@ function todoApi($http) {
 };
 
 /***/ }),
-/* 244 */
+/* 242 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -67200,7 +67210,7 @@ function todoListTemplateApi($http) {
 };
 
 /***/ }),
-/* 245 */
+/* 243 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -67245,15 +67255,15 @@ function todoQaApi($http) {
 };
 
 /***/ }),
-/* 246 */
+/* 244 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(247);
+__webpack_require__(245);
 module.exports = 'ui.tree';
 
 
 /***/ }),
-/* 247 */
+/* 245 */
 /***/ (function(module, exports) {
 
 /**
@@ -69114,7 +69124,7 @@ module.exports = 'ui.tree';
 })();
 
 /***/ }),
-/* 248 */
+/* 246 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -69128,7 +69138,7 @@ var _commonModuleEs = __webpack_require__(5);
 
 var _commonModuleEs2 = _interopRequireDefault(_commonModuleEs);
 
-var _teamInfoCardDirectiveEs = __webpack_require__(249);
+var _teamInfoCardDirectiveEs = __webpack_require__(247);
 
 var _teamInfoCardDirectiveEs2 = _interopRequireDefault(_teamInfoCardDirectiveEs);
 
@@ -69142,7 +69152,7 @@ angular.module(name, ['ui.select', 'ngSanitize', _commonModuleEs2.default]).dire
 exports.default = name;
 
 /***/ }),
-/* 249 */
+/* 247 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -69155,7 +69165,7 @@ exports.default = teamInfoCard;
 
 var _lodash = __webpack_require__(4);
 
-var _teamInfoCard = __webpack_require__(250);
+var _teamInfoCard = __webpack_require__(248);
 
 var _teamInfoCard2 = _interopRequireDefault(_teamInfoCard);
 
@@ -69363,13 +69373,13 @@ function teamInfoCard(orchestraApi, helpers) {
 }
 
 /***/ }),
-/* 250 */
+/* 248 */
 /***/ (function(module, exports) {
 
 module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"overlay\" ng-if=\"teamInfoCard.loading\">\n    <div class=\"spinner\"></div>\n  </div>\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Team info\n          <a class=\"btn\"\n             ng-if=\"teamInfoCard.isProjectAdmin\"\n             ng-href=\"project/{{teamInfoCard.projectId}}\"\n             target=\"_blank\">\n            Project Management\n          </a>\n          <a class=\"btn\"\n             ng-if=\"teamInfoCard.isProjectAdmin &&\n                    (teamInfoCard.projectStatus === 'Active'\n                    || teamInfoCard.projectStatus === 'Paused')\"\n             ng-click=\"teamInfoCard.togglePauseProject()\">\n             {{teamInfoCard.projectStatus == 'Paused' ? 'Unpause' : 'Pause'}} project\n          </a>\n        </h3>\n      </div>\n    </div>\n    <div class=\"row section-body\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <table class=\"table table-striped\">\n          <thead>\n            <th>Role</th>\n            <th>Username</th>\n            <th>Name</th>\n            <th>Recorded time spent</th>\n            <th>Status</th>\n          </thead>\n          <tbody>\n            <tr ng-repeat=\"assignment in teamInfoCard.assignments\">\n              <td>{{assignment.role}}</td>\n              <td>\n                <div ng-if=\"!teamInfoCard.isProjectAdmin || !teamInfoCard.isTaskStaffable(assignment.task_status)\">{{assignment.worker.username}}</div>\n                <input type=\"text\"\n                  ng-if=\"teamInfoCard.isProjectAdmin && teamInfoCard.isTaskStaffable(assignment.task_status)\"\n                  ng-keydown=\"$event.keyCode === 13 && teamInfoCard.handleAssignmentKeydown(assignment.task_id, assignment.id, assignment.stepSlug, assignment.worker)\"\n                  ng-model=\"teamInfoCard.assignmentInput[assignment.stepSlug]\" />\n                <button\n                  class=\"btn btn-default btn-xs\"\n                  ng-if=\"teamInfoCard.isProjectAdmin && teamInfoCard.isTaskStaffable(assignment.task_status)\"\n                  ng-disabled=\"teamInfoCard.isStaffBotRequestBtnDisabled(assignment.stepSlug)\"\n                  ng-click=\"teamInfoCard.staff(assignment.task_id, assignment.stepSlug)\">\n                  {{\n                    teamInfoCard.sentStaffBotRequest[assignment.stepSlug]\n                      ? teamInfoCard.sentStaffBotRequest[assignment.stepSlug]\n                      : 'Restaff'\n                  }}\n                </button>\n              </td>\n              <td>{{assignment.worker.first_name}} {{assignment.worker.last_name}}</td>\n              <td>{{assignment.recordedTime}}</td>\n              <td>\n                {{assignment.task_status}}\n                <button type=\"submit\"\n                        class=\"btn btn-default btn-sm\"\n                        ng-if=\"teamInfoCard.isProjectAdmin &&\n                               assignment.task_status == 'Processing' &&\n                               assignment.stepSlug != teamInfoCard.step.slug\"\n                        ng-click=\"teamInfoCard.submitTask(assignment.task_id)\">\n                  Submit\n                </button>\n              </td>\n            </tr>\n            <tr ng-if=\"teamInfoCard.isProjectAdmin\">\n              <td colspan=\"5\">\n                <a\n                  class=\"btn\"\n                  ng-click=\"teamInfoCard.toggleShowUnassigned()\">\n                  {{teamInfoCard.showUnassigned ? 'Hide unassigned' : 'Show unassigned'}}\n                </a>\n              </td>\n            </tr>\n            <tr\n              ng-if=\"teamInfoCard.showUnassigned\"\n              ng-repeat=\"unassigned in teamInfoCard.unassigned\">\n              <td>{{unassigned.role}}</td>\n              <td>\n                <input type=\"text\"\n                  placeholder=\"Username\"\n                  ng-keydown=\"$event.keyCode === 13 && teamInfoCard.handleAssignmentKeydown(unassigned.task_id, '', unassigned.stepSlug, unassigned.worker)\"\n                  ng-model=\"teamInfoCard.assignmentInput[unassigned.stepSlug]\" />\n                <button\n                  class=\"btn btn-default btn-xs\"\n                  ng-disabled=\"teamInfoCard.isStaffBotRequestBtnDisabled(unassigned.stepSlug)\"\n                  ng-if=\"teamInfoCard.isTaskStaffable(unassigned.task_status)\"\n                  ng-click=\"teamInfoCard.staff(unassigned.task_id, unassigned.stepSlug)\">\n                  {{\n                    teamInfoCard.sentStaffBotRequest[unassigned.stepSlug]\n                      ? teamInfoCard.sentStaffBotRequest[unassigned.stepSlug]\n                      : 'Staff'\n                  }}\n                </button>\n              </td>\n              <td></td>\n              <td>{{unassigned.recordedTime}}</td>\n              <td>{{unassigned.task_status}}</td>\n            </tr>\n          </tbody>\n        </table>\n      </div>\n    </div>\n  </div>\n</section>\n";
 
 /***/ }),
-/* 251 */
+/* 249 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -69380,19 +69390,19 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = config;
 
-var _dashboard = __webpack_require__(252);
+var _dashboard = __webpack_require__(250);
 
 var _dashboard2 = _interopRequireDefault(_dashboard);
 
-var _task = __webpack_require__(253);
+var _task = __webpack_require__(251);
 
 var _task2 = _interopRequireDefault(_task);
 
-var _timecard = __webpack_require__(254);
+var _timecard = __webpack_require__(252);
 
 var _timecard2 = _interopRequireDefault(_timecard);
 
-var _projectManagement = __webpack_require__(255);
+var _projectManagement = __webpack_require__(253);
 
 var _projectManagement2 = _interopRequireDefault(_projectManagement);
 
@@ -69430,28 +69440,60 @@ function config($locationProvider, $routeProvider) {
 }
 
 /***/ }),
-/* 252 */
+/* 250 */
 /***/ (function(module, exports) {
 
 module.exports = "<section class=\"wrapper\">\n  <div tasktable=\"{label: 'Active', tasks: vm.orchestraTasks.activeTasks()}\"></div>\n  <div tasktable=\"{label: 'Pending', tasks: vm.orchestraTasks.pendingTasks()}\"></div>\n  <div tasktable=\"{label: 'Paused', tasks: vm.orchestraTasks.pausedTasks()}\"\n    collapsed=\"true\"></div>\n  <div tasktable=\"{label: 'Completed', tasks: vm.orchestraTasks.completedTasks()}\" collapsed=\"true\"></div>\n</section>\n";
 
 /***/ }),
-/* 253 */
+/* 251 */
 /***/ (function(module, exports) {
 
 module.exports = "<section class=\"wrapper task-view\">\n\n\n<script type=\"text/ng-template\" id=\"submit_task_modal.html\">\n  <div class=\"modal-header\">\n    <h3 class=\"modal-title\">{{command | capitalize}} Confirmation</h3>\n  </div>\n  <div class=\"modal-body modal-confirm-body\">\n    <div class=\"modal-confirm-text\">\n      <div class=\"time-question\">\n        Approximately how much time did you spend on <strong>this iteration</strong> of the task?\n      </div>\n        <div class=\"time-summary\">\n          <span class=\"time-report form-inline input-group-sm\">\n            <span class=\"time-unit-group\">\n              <input type=\"text\"\n                     class=\"form-control\"\n                     id=\"current-time-hours\"\n                     ng-model=\"currentIterationHours\">\n                     <span class=\"time-unit\"> hours</span>\n            </span>\n            <span class=\"time-unit-group\">\n              <input type=\"text\"\n                     class=\"form-control\"\n                     id=\"current-time-minutes\"\n                     ng-model=\"currentIterationMinutes\">\n                     <span class=\"time-unit\"> mins</span>\n            </span>\n          </span>\n        </div>\n        <div class=\"time-error-message\" ng-bind=\"secondsErrorMessage\"></div>\n        <div class=\"time-summary\">\n          <span class=\"time-label\">Total time so far</span>\n          <span class=\"time-report\">\n            <span class=\"time-unit-group\">\n              <span class=\"time-value-float\">\n                <span class=\"time-value\" ng-bind=\"totalPreviousHoursMinutes()[0]\"></span>\n              </span>\n              <span class=\"time-unit\"> hours</span>\n            </span>\n            <span class=\"time-unit-group\">\n              <span class=\"time-value-float\">\n                <span class=\"time-value\" ng-bind=\"totalPreviousHoursMinutes()[1]\"></span>\n              </span>\n              <span class=\"time-unit\"> mins</span>\n            </span>\n          </span>\n        </div>\n        <hr />\n        <div class=\"time-summary\">\n          <span class=\"time-label\">Total time on task</span>\n          <span class=\"time-report\">\n            <span class=\"time-unit-group\">\n              <span class=\"time-value-float\">\n                <span class=\"time-value\" ng-bind=\"totalHoursMinutes()[0]\"></span>\n              </span>\n              <span class=\"time-unit\"> hours</span>\n            </span>\n            <span class=\"time-unit-group\">\n              <span class=\"time-value-float\">\n                <span class=\"time-value\" ng-bind=\"totalHoursMinutes()[1]\"></span>\n              </span>\n              <span class=\"time-unit\"> mins</span>\n            </span>\n          </span>\n        </div>\n    </div>\n    <div class=\"pull-center\">\n      <button class=\"btn btn-primary\" ng-disabled=\"secondsErrorMessage !== null\" ng-click=\"submit()\">{{command | capitalize}}</button>\n      <button class=\"btn btn-default\" ng-click=\"cancel()\">Cancel</button>\n    </div>\n  </div>\n</script>\n\n\n<nav class=\"topbar-overview\" ng-class=\"{'reviewer-topbar': vm.taskAssignment.is_reviewer}\">\n    <div class=\"topbar-leader\">\n      <div class=\"project-overview\">\n        <div class=\"workflow\">{{ vm.taskAssignment.workflow.name}}</div>\n        {{ vm.taskAssignment.project.details}}\n      </div>\n      <div class=\"arrow-wrapper\">\n        <div class=\"arrow-with-shadow\"></div>\n      </div>\n    </div>\n    <div class=\"topbar-follower\">\n      <div class=\"task-overview\">\n        {{ vm.taskAssignment.step.name}}\n        <span ng-if=\"vm.taskAssignment.is_reviewer\">\n              Review\n        </span>\n      </div>\n    </div>\n</nav>\n\n<div class=\"fixed-infobox-outer\" ng-if=\"vm.is_read_only\">\n  <div class=\"fixed-infobox bg-info\">\n    This task is in view-only mode. You cannot submit or review it.\n  </div>\n</div>\n\n<div class=\"fixed-infobox-outer\" ng-if=\"vm.autoSaver.saveError\">\n  <div class=\"fixed-infobox btn-danger\">\n    Error saving task. Trying again...\n  </div>\n</div>\n\n<div class=\"step-interface\">\n  <div dynamic-load=\"vm.angularDirective\"></div>\n</div>\n\n<section class=\"task-actions-wrapper\">\n  <div class=\"task-actions\">\n    <div class=\"container-fluid\">\n      <div class=\"row\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <button ng-if=\"!vm.taskAssignment.is_reviewer &&\n                        vm.taskAssignment.is_project_admin\"\n                  type=\"button\"\n                  class=\"btn btn-primary navbar-btn\"\n                  ng-click=\"vm.submitTask('submit')\"\n                  ng-disabled=\"vm.is_read_only || vm.autoSaver.saving || vm.submitting\">\n            Submit\n          </button>\n          <button ng-if=\"vm.taskAssignment.is_reviewer\"\n                  type=\"button\"\n                  class=\"btn btn-primary navbar-btn\"\n                  ng-click=\"vm.submitTask('accept')\"\n                  ng-disabled=\"vm.is_read_only || vm.autoSaver.saving || vm.submitting\">\n            Accept\n          </button>\n          <button ng-if=\"vm.taskAssignment.is_reviewer\"\n                  type=\"button\"\n                  class=\"btn btn-default navbar-btn\"\n                  ng-click=\"vm.submitTask('reject')\"\n                  ng-disabled=\"vm.is_read_only || vm.autoSaver.saving || vm.submitting\">\n            Reject\n          </button>\n          <button type=\"button\"\n                  class=\"btn btn-default navbar-btn\"\n                  ng-click=\"vm.autoSaver.save()\"\n                  ng-disabled=\"vm.is_read_only || vm.autoSaver.saving || vm.submitting\">\n            Save\n          </button>\n          <div class=\"save-message\">\n            <div ng-show=\"vm.autoSaver.saving\">Saving...</div>\n            <div ng-show=\"vm.autoSaver.lastSaved && !vm.autoSaver.saving\">\n              Saved at {{ vm.autoSaver.lastSaved | date:'mediumTime' }}\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n\n\n</section><!--/wrapper -->\n";
 
 /***/ }),
-/* 254 */
+/* 252 */
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"timecard-view\" ng-if=\"!vm.dataLoading\">\n  <div class=\"entries\">\n    <div class=\"container-fluid\">\n      <div class=\"row no-padding\">\n        <div class=\"col-xs-10 col-xs-offset-2\">\n          <div class=\"row\">\n            <div class=\"col-xs-12 col-md-10\">\n              <span class=\"edit-label\">\n                Date range\n              </span>\n              <date-picker date=\"vm.minDate\" max-date=\"vm.maxDate\"></date-picker>–\n              <date-picker date=\"vm.maxDate\" min-date=\"vm.minDate\"\n              max-date=\"vm.weekEnd\"></date-picker>\n            </div>\n            <div class=\"col-xs-12 col-md-2\">\n              <a href=\"//orchestra.readthedocs.org/en/stable/features.html#time-tracking\" target=\"_blank\"\n              class=\"pull-right help-icon\"><i class=\"fa fa-question-circle\"></i></a>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n    <div class=\"date-group\" ng-repeat=\"dateEntries in vm.timeEntries.entriesByDate | toArray | orderBy:vm.datetimeFromKey:'true'\">\n      <div class=\"container-fluid\">\n        <div class=\"row no-padding\">\n          <div class=\"col-xs-12 col-md-2\">\n            <span class=\"day-name\">{{ vm.dayName(dateEntries.$key) }}</span>\n          </div>\n          <div class=\"col-xs-12 col-md-10\">\n            <div class=\"date-entries\">\n              <h2>\n                <span class=\"date-label\">{{ vm.prettyDate(dateEntries.$key) }}</span>\n                <i ng-click=\"vm.addEntry(vm.datetimeFromKey(dateEntries))\" class=\"fa fa-plus btn-add-entry\"></i>\n                <span class=\"date-duration\" ng-show=\"vm.timeEntries.invalidEntriesForDate(dateEntries.$key).length\">\n                  <em class=\"incomplete\">Invalid Entries</em>\n                </span>\n                <span class=\"date-duration\" ng-hide=\"vm.timeEntries.invalidEntriesForDate(dateEntries.$key).length\">\n                  {{ vm.timeEntries.timeWorkedForDate(dateEntries.$key).humanizeUnits() }}\n                </span>\n              </h2>\n              <div class=\"entry-row\" ng-if=\"!dateEntries.length\">\n                <div class=\"row\">\n                  <div class=\"col-xs-12\">\n                    <em>No entries for this date</em>\n                  </div>\n                </div>\n              </div>\n              <div class=\"entry-row\" ng-class=\"{'gray-stripe': $index % 2}\" ng-repeat=\"entry in dateEntries | orderBy:'-id'\">\n                <form class=\"container-fluid form-inline\" novalidate name=\"entryForm\">\n                  <div class=\"row\">\n                    <div class=\"col-xs-2 edit-tools disable-select\">\n                      <i ng-click=\"vm.timeEntries.deleteEntry(entry)\" class=\"fa fa-times-circle\"></i>\n                      <i class=\"fa fa-pencil-square-o\" ng-class=\"{active: entry.editing}\" ng-click=\"vm.editEntry(entry)\"></i>\n                    </div>\n\n                    <!-- Readonly view for description and time worked -->\n                    <div class=\"col-xs-6 description\" ng-if=\"!entry.editing\">\n                      <span ng-show=\"entry.description\">\n                        {{ entry.description }}\n                      </span>\n                      <span class=\"incomplete\" ng-hide=\"entry.description\">\n                        <em>No description</em>\n                      </span>\n                    </div>\n                    <div class=\"col-xs-4 edit-time\" ng-if=\"!entry.editing\">\n                      {{ entry.time_worked.roundMinute().humanizeUnits() }}\n                    </div>\n                    <div class=\"col-xs-12\" ng-if=\"!entry.editing\">\n                      <em class=\"pull-right\" ng-show=\"vm.orchestraTasks.tasksByAssignmentId[entry.assignment]\">\n                        {{ vm.orchestraTasks.getDescription(vm.orchestraTasks.tasksByAssignmentId[entry.assignment]) }}\n                      </em>\n                      <em class=\"pull-right incomplete\" ng-hide=\"vm.orchestraTasks.tasksByAssignmentId[entry.assignment]\">\n                        Unassigned\n                      </em>\n                    </div>\n\n                    <!-- Editable view for description and time worked -->\n                    <div class=\"col-xs-6\" ng-if=\"entry.editing\">\n                      <input class=\"form-control\" type=\"text\" ng-model=\"entry.editData.description\" placeholder=\"What did you work on?\">\n                    </div>\n                    <div class=\"col-xs-4 edit-time\" ng-if=\"entry.editing\">\n                      <div class=\"time-component\">\n                        <input class=\"form-control\" type=\"number\" ng-model=\"entry.editData.timeWorked.h\"\n                        min=\"0\" max=\"23\" enforce-integers>\n                        <label>hours</label>\n                      </div>\n                      <div class=\"time-component\">\n                        <input class=\"form-control\" type=\"number\" ng-model=\"entry.editData.timeWorked.m\"\n                        min=\"0\" max=\"59\" enforce-integers>\n                        <label>minutes</label>\n                      </div>\n                    </div>\n                  </div>\n\n                  <div class=\"row\" ng-if=\"entry.editing\">\n                    <div class=\"col-xs-4\">\n                      <div class=\"edit-date\">\n                        <label class=\"edit-label\">Move to date</label>\n                        <date-picker date=\"entry.editData.date\" max-date=\"vm.weekEnd\"></date-picker>\n                      </div>\n                    </div>\n                    <div class=\"col-xs-8\">\n                      <div class=\"edit-task\">\n                        <task-select task=\"entry.editData.task\"></task-select>\n                      </div>\n                    </div>\n                  </div>\n                  <div class=\"row\" ng-if=\"entry.editing\">\n                    <div class=\"col-xs-12\">\n                      <div class=\"edit-options pull-right\">\n                        <div class=\"edit-cancel-handle\" ng-click=\"vm.cancelChanges(entry)\">\n                          Cancel\n                        </div>\n                        <div class=\"btn btn-primary btn-sm edit-save-handle\" ng-disabled=\"vm.entryUnchanged(entry)\"\n                        ng-click=\"vm.saveChanges(entry)\">\n                          Save changes\n                        </div>\n                      </div>\n                    </div>\n                  </div>\n                </form>\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n";
 
 /***/ }),
-/* 255 */
+/* 253 */
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"project-management\">\n  <div class=\"overlay\" ng-if=\"vis.dataService.loading\">\n    <div class=\"spinner\"></div>\n  </div>\n  <section class=\"section-panel\">\n    <div class=\"container-fluid\">\n      <div class=\"row padded\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <ui-select class=\"project-description\" ng-model=\"vis.dataService.currentProject\"\n              ng-change=\"vis.dataService.setSelectedProject()\"\n              ng-disabled=\"vis.dataService.loading\">\n            <ui-select-match>\n              <span ng-bind=\"projectDescription($select.selected)\"></span>\n            </ui-select-match>\n            <ui-select-choices repeat=\"item in (vis.dataService.allProjects | toArray | filter: $select.search) track by item.id\">\n              <span ng-bind=\"projectDescription(item)\"></span>\n            </ui-select-choices>\n          </ui-select>\n          <div class=\"project-actions\" ng-show=\"vis.dataService.currentProject.id\">\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.createSubsequentTasks()\" class=\"btn btn-default\">\n              Create subsequent tasks\n            </button>\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.showSlackActions()\" class=\"btn btn-default\">\n              Edit Slack users\n            </button>\n            <button type=\"button\" ng-disabled=\"vis.dataService.loading\" ng-click=\"vis.showProjectData()\" class=\"btn btn-default\">\n              View project data\n            </button>\n            <a ng-href=\"/vip/orchestra/project/{{vis.dataService.currentProject.id}}/change\" ng-disabled=\"vis.dataService.loading\" target=\"_blank\">\n              <button type=\"button\" class=\"btn btn-default\">View in admin</button>\n            </a>\n            <button type=\"button\" class=\"btn btn-default\"\n              ng-show=\"vis.dataService.currentProject.status === 'Paused'\n                || vis.dataService.currentProject.status === 'Active'\"\n              ng-click=\"vis.dataService.setCurrentProjectStatus(\n                vis.dataService.currentProject.status === 'Paused' ? 'Active' : 'Paused')\">\n              {{vis.dataService.currentProject.status === 'Paused' ? 'Unpause' : 'Pause'}} project\n            </button>\n            <button ng-click=\"vis.endProject()\" class=\"btn btn-danger\">Abort project</button>\n          </div>\n        </div>\n      </div>\n      <div class=\"row\">\n        <div class=\"col-lg-12 col-md-12 col-sm-12\">\n          <div class=\"vis-wrapper\" ng-show=\"vis.dataService.currentProject.id\">\n            <div class=\"freeze-pane-left\">\n              <div class=\"scale-buttons\">\n                <button ng-click=\"vis.axis.relativeTime = !vis.axis.relativeTime; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  Switch to {{vis.axis.relativeTime ? 'local' : 'relative'}} time\n                </button>\n                <button ng-click=\"vis.params.scaleWidth = vis.params.scaleWidth / 1.1; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  -\n                </button>\n                <button ng-click=\"vis.params.scaleWidth = vis.params.scaleWidth * 1.1; vis.draw()\"\n                        class=\"btn btn-default btn-sm\">\n                  +\n                </button>\n              </div>\n              <div class=\"task-names\"></div>\n            </div>\n            <div class=\"svg-wrapper\"></div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n</div>\n";
+
+/***/ }),
+/* 254 */,
+/* 255 */,
+/* 256 */,
+/* 257 */,
+/* 258 */,
+/* 259 */,
+/* 260 */,
+/* 261 */,
+/* 262 */,
+/* 263 */,
+/* 264 */,
+/* 265 */,
+/* 266 */,
+/* 267 */,
+/* 268 */,
+/* 269 */,
+/* 270 */,
+/* 271 */,
+/* 272 */,
+/* 273 */,
+/* 274 */
+/***/ (function(module, exports) {
+
+module.exports = "<section class=\"section-panel todo-list\">\n  <div class=\"container-fluid\">\n    <div class=\"row section-header\">\n      <div class=\"col-lg-12 col-md-12 col-sm-12\">\n        <h3>\n          Todo List\n        </h3>\n      </div>\n    </div>\n\n    <div class=\"row section-body new-todo\">\n      <div class=\"col-lg-2\">\n        <select class=\"form-control input-sm\" name=\"todoList\" id=\"todoList\" ng-model=\"todoList.newTodoStepSlug\">\n          <option value=\"\" selected>Select owner</option>\n          <option value=\"{{task.step_slug}}\" ng-repeat=\"task in todoList.possibleTasks\">{{todoList.steps[task.step_slug].name}}</option>\n        </select>\n      </div>\n      <div class=\"col-lg-5\">\n        <input class=\"form-control input-sm\"\n               type=\"text\"\n               ng-model=\"todoList.newTodoDescription\"\n               placeholder=\"Add a todo item\">\n        <div class=\"pull-right\">\n          <div class=\"new-todo__datetime\">\n            <label>Start</label>\n            <date-picker\n              date=\"todoList.newTodoStartDate\"\n              callback=\"todoList.setTimeOfDate\"></date-picker>\n            <time-input\n              datetime=\"todoList.newTodoStartDate\"\n              default-hour=\"8\"\n              ></time-input>\n          </div>\n          <div class=\"new-todo__datetime\">\n            <label>Due</label>\n            <date-picker\n              date=\"todoList.newTodoDueDate\"\n              callback=\"todoList.setTimeOfDate\"></date-picker>\n            <time-input\n              datetime=\"todoList.newTodoDueDate\"\n              default-hour=\"18\"\n              ></time-input>\n          </div>\n        </div>\n      </div>\n      <div class=\"col-lg-1\">\n        <button type=\"submit\"\n                 class=\"btn btn-primary btn-sm btn-block edit-save-handle\"\n                 ng-disabled=\"!todoList.canAddTodo()\"\n                 ng-click=\"todoList.addTodo()\">\n                Add todo\n        </button>\n      </div>\n      <div class=\"col-lg-2\" ng-if=\"todoList.templates.length > 0\">\n        <div class=\"btn-group\">\n          <button type=\"button\" class=\"btn btn-primary btn-sm dropdown-toggle\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"\n                  ng-disabled=\"!todoList.newTodoStepSlug\">\n            Add todos from a template <span class=\"caret\"></span>\n          </button>\n          <ul class=\"dropdown-menu\">\n            <li ng-repeat=\"template in todoList.templates\" ng-click=\"todoList.updateTodoListFromTemplate(template.slug)\">\n              <a href=\"\">{{template.name}}</a>\n            </li>\n          </ul>\n        </div>\n      </div>\n    </div>\n\n    <div class=\"row section-body\" ng-if=\"todoList.ready\">\n      <div class=\"col-lg-6 col-md-6 col-sm-12\">\n        <div class=\"todolist-pane\">\n          <p class=\"todolist-pane__heading col-sm-3\">Todo items</p>\n          <todo-checklist\n              title=\"Todos\"\n              todos=\"todoList.todos\"\n              todo-qas=\"todoList.todoQas\"\n              templates=\"todoList.templates\"\n              show-skipped=\"false\"\n              update-todo=\"todoList.updateTodo\"\n              remove-todo=\"todoList.removeTodo\"\n              skip-todo=\"todoList.skipTodo\"\n              unskip-todo=\"todoList.unskipTodo\"\n              steps=\"todoList.steps\"\n              on-toggle-todo=\"todoList.onToggleTodo\"\n          ></todo-checklist>\n        </div>\n      </div>\n      <div class=\"col-lg-6 col-md-6 col-sm-12\">\n        <div class=\"todolist-pane\" ng-if=\"todoList.templates.length > 0\">\n          <p class=\"todolist-pane__heading col-sm-4\">Skipped todo items</p>\n          <todo-checklist\n              title=\"Todos\"\n              todos=\"todoList.todos\"\n              todo-qas=\"todoList.todoQas\"\n              templates=\"todoList.templates\"\n              show-skipped=\"true\"\n              update-todo=\"todoList.updateTodo\"\n              remove-todo=\"todoList.removeTodo\"\n              steps=\"todoList.steps\"\n              skip-todo=\"todoList.skipTodo\"\n              unskip-todo=\"todoList.unskipTodo\"\n              on-toggle-todo=\"todoList.onToggleTodo\"\n          ></todo-checklist>\n        </div>\n      </div>\n    </div>\n\n  </div>\n</section>\n";
+
+/***/ }),
+/* 275 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
 
 /***/ })
 /******/ ]);
