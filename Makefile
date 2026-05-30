@@ -24,7 +24,7 @@ coverage:
 	  coverage run --rcfile=../.coveragerc $(TEST_CMD)
 
 coveralls:
-	cd example_project && coveralls
+	cd example_project && coveralls --service=gihtub
 
 npm_install:
 ifndef GULP
